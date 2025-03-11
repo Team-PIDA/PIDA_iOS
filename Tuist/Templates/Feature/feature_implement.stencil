@@ -1,0 +1,19 @@
+//
+//  {{ name }}.swift
+//
+//  {{name}}
+//
+//  Created by {{author}}
+//
+
+import ComposableArchitecture
+
+public struct {{ name }}Feature: {{ name }}Interface {
+    public let store: StoreOf<{{ name }}Reducer>
+
+    public init() {
+        self.store = Store(initialState: {{ name }}Reducer.State()) {
+            {{ name }}Reducer()
+        }
+    }
+}
