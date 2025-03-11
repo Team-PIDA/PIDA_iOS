@@ -1,0 +1,3 @@
+BASE_URL = https:/$()/api.walwal.life
+EXCLUDE_RESOURCE = Resources/Dev/**
+OTHER_SWIFT_FLAGS[config=RELEASE][sdk=*] = $(inherited) -DRELEASE

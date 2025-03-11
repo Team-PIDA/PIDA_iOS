@@ -1,0 +1,4 @@
+BUNDLE_ID_SUFFIX = .dev
+BASE_URL = https:/$()/dev-api.walwal.life
+EXCLUDE_RESOURCE = Resources/Release/**
+OTHER_SWIFT_FLAGS[config=DEBUG][sdk=*] = $(inherited) -DDEBUG
