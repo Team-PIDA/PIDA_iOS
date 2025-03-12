@@ -12,7 +12,7 @@ fileprivate let name: Template.Attribute = .required("name")
 fileprivate let author: Template.Attribute = .required("author")
 fileprivate let currentDate: Template.Attribute = .optional("currentDate", default: .string(DateFormatter().string(from: Date())))
 
-let template = Template(
+let featureTemplate = Template(
     description: "SwiftUI + TCA 기반 Feature 모듈 템플릿",
     attributes: [
         name,

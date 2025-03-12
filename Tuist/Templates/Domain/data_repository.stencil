@@ -1,0 +1,14 @@
+//
+//  {{ name }}Data.swift
+//
+//  {{name}}
+//
+//  Created by {{author}}
+//
+
+import Foundation
+import {{ name }}Domain
+
+public protocol {{ name }}Repository {
+    func fetchData() async throws -> Void
+}

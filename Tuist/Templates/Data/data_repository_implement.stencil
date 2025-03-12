@@ -1,0 +1,25 @@
+//
+//  {{ name }}RepositoryImpl.swift
+//
+//  {{name}}
+//
+//  Created by {{author}}
+//
+
+import Foundation
+import {{ name }}Data
+import Core
+
+public struct {{ name }}RepositoryImpl: {{ name }}Repository {
+    private let networker: PIDANetworkProtocol
+
+    public init(
+        networker: PIDANetworkProtocol
+    ) {
+        self.networker = networker
+    }
+
+    public func fetchData() async throws -> Void {
+        
+    }
+}

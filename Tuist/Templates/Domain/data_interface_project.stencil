@@ -1,0 +1,17 @@
+//
+//  {{ name }}DataProject.swift
+//
+//  {{name}}
+//
+//  Created by {{author}}
+//
+
+import ProjectDescription
+
+let project = Project.makeInterfaceProject(
+    name: "{{ name }}",
+    layer: .data,
+    interfaceDependency: [
+        .Domain.{{ name }}.Interface
+    ]
+)
