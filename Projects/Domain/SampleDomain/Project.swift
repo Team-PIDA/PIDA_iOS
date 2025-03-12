@@ -1,5 +1,5 @@
 //
-//  SampleProject.swift
+//  SampleDomainImplementProject.swift
 //
 //  Sample
 //
@@ -9,10 +9,10 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeFeature(
+let project = Project.makeImplementProject(
     name: "Sample",
-    featureInterfaceDependencies: [
+    layer: .domain,
+    implementDependency: [
         .Domain.Sample.Interface
-        // 필요 시, Domain Interface Dependency 추가
     ]
 )
