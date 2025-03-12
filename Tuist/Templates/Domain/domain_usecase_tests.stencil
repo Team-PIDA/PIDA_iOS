@@ -8,7 +8,7 @@
 
 import XCTest
 import Dependencies
-@testable import {{ name }}Interface
+@testable import {{ name }}Domain
 
 final class {{ name }}UseCaseTests: XCTestCase {
     
