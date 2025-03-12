@@ -7,7 +7,8 @@
 //
 
 import Foundation
-import {{ name }}Data
+import {{ name }}DataInterface
+import {{ name }}DomainInterface
 import Core
 
 public struct {{ name }}RepositoryImpl: {{ name }}Repository {

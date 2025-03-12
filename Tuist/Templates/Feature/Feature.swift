@@ -27,37 +27,37 @@ let featureTemplate = Template(
         ),
         // Feature의 Interface 폴더 및 파일 생성
         .file(
-            path: "Projects/Features/\(name)/Interface/\(name)Interface.swift",
+            path: "Projects/Features/\(name)/\(name)FeatureInterface/\(name)FeatureInterface.swift",
             templatePath: "feature_interface.stencil"
         ),
         // Feature의 Implement 폴더 및 파일 생성
         .file(
-            path: "Projects/Features/\(name)/Implement/\(name)Feature.swift",
+            path: "Projects/Features/\(name)/\(name)Feature/\(name)Feature.swift",
             templatePath: "feature_implement.stencil"
         ),
         // Feature의 Reducer 파일 (TCA)
         .file(
-            path: "Projects/Features/\(name)/Implement/\(name)Reducer.swift",
+            path: "Projects/Features/\(name)/\(name)Feature/\(name)Reducer.swift",
             templatePath: "feature_reducer.stencil"
         ),
         // Feature의 SwiftUI View 파일
         .file(
-            path: "Projects/Features/\(name)/Implement/\(name)View.swift",
+            path: "Projects/Features/\(name)/\(name)Feature/\(name)View.swift",
             templatePath: "feature_view.stencil"
         ),
         // Feature의 Unit Test 폴더 및 파일 생성
         .file(
-            path: "Projects/Features/\(name)/Testing/\(name)UnitTests.swift",
+            path: "Projects/Features/\(name)/\(name)Testing/\(name)UnitTests.swift",
             templatePath: "feature_tests.stencil"
         ),
         // Feature의 Demo (예제) 파일 생성
         .file(
-            path: "Projects/Features/\(name)/Demo/Sources/AppDelegate.swift",
+            path: "Projects/Features/\(name)/\(name)Demo/Sources/AppDelegate.swift",
             templatePath: "feature_demo_appdelegate.stencil"
         ),
         // Feature의 Resources 파일 생성
         .file(
-            path: "Projects/Features/\(name)/Demo/Resources/Assets.xcassets",
+            path: "Projects/Features/\(name)/\(name)Demo/Resources/Assets.xcassets",
             templatePath: "feature_resources.stencil"
         )
     ]

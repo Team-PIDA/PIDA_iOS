@@ -1,5 +1,5 @@
 //
-//  {{ name }}RepositoryTests.swift
+//  {{ name }}DataTests.swift
 //
 //  {{name}}
 //
@@ -8,7 +8,8 @@
 
 import XCTest
 import Dependencies
-@testable import {{ name }}Data
+@testable import {{ name }}DataInterface
+@testable import {{ name }}DomainInterface
 @testable import Core
 
 final class {{ name }}RepositoryTests: XCTestCase {
@@ -17,13 +18,13 @@ final class {{ name }}RepositoryTests: XCTestCase {
         let networker = MockNetworker()
         let repository = {{ name }}RepositoryImpl(networker: networker)
 
-        let result = try await repository.fetchData()
+        let result = try await repository.requestMockData()
         XCTAssertEqual(result, "Mocked API Data")
     }
 }
 
-final class MockNetworker: NetworkerProtocol {
-    override func requestMockData() async throws -> String {
+final class {{ name }}RepositoryImpl: {{ name }}Repository {
+    func requestMockData() async throws -> String {
         return "Mocked API Data"
     }
 }

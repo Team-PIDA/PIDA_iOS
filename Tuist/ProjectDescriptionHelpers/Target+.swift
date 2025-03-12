@@ -18,13 +18,13 @@ public extension Target {
         dependencies: [TargetDependency] = []
     ) -> Target {
         return target(
-            name: name,
+            name: name + "Demo",
             destinations: .iOS,
             product: .app,
-            bundleId: "\(organizationName).\(name)", // com.yongin.pida.Sample
+            bundleId: "\(organizationName).\(name)Demo",
             infoPlist: .extendingDefault(with: infoPlist),
-            sources: ["./Demo/Sources/**"],
-            resources: ["./Demo/Resources/**"],
+            sources: ["./\(name)Demo/Sources/**"],
+            resources: ["./\(name)Demo/Resources/**"],
             dependencies: dependencies
         )
     }
@@ -35,14 +35,15 @@ public extension Target {
         layer: Layer,
         dependencies: [TargetDependency] = []
     ) -> Target {
+        let middle = layer.rawValue
         return target(
-            name: "\(name)Interface",
+            name: "\(name)\(middle)Interface",
             destinations: .iOS,
             product: .framework,
-            bundleId: "\(organizationName).\(layer.rawValue).\(name)Interface", // com.yongin.pida.Domain.SampleInferface
+            bundleId: "\(organizationName).\(layer.rawValue).\(name)\(middle)Interface",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["./Interface/**"],
+            sources: ["./**"],
             dependencies: dependencies
         )
     }
@@ -53,14 +54,15 @@ public extension Target {
         layer: Layer,
         dependencies: [TargetDependency] = []
     ) -> Target {
+        let middle = layer.rawValue
         return target(
-            name: "\(name)",
+            name: "\(name)\(middle)",
             destinations: .iOS,
             product: .staticLibrary,
-            bundleId: "\(organizationName).\(layer.rawValue).\(name)", // com.yongin.pida.Domain.Sample
+            bundleId: "\(organizationName).\(layer.rawValue).\(name)\(middle)",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["./Implement/**"],
+            sources: ["./**"],
             dependencies: dependencies
         )
     }
@@ -71,14 +73,15 @@ public extension Target {
         layer: Layer,
         dependencies: [TargetDependency] = []
     ) -> Target {
+        let middle = layer.rawValue
         return target(
-            name: "\(name)Testing",
+            name: "\(name)\(middle)Testing",
             destinations: .iOS,
             product: .unitTests,
-            bundleId: "\(organizationName).\(layer.rawValue).\(name)Testing", // com.yongin.pida.Domain.SampleTesting
+            bundleId: "\(organizationName).\(layer.rawValue).\(name)\(middle)Testing",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["./Testing/**"],
+            sources: ["./**"],
             dependencies: dependencies
         )
     }
@@ -95,7 +98,7 @@ public extension Target {
             bundleId: "\(organizationName).\(name)", // com.yongin.pida.Network
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["./Sources/\(name)/**"],
+            sources: ["./**"],
             dependencies: dependencies
         )
     }

@@ -22,16 +22,25 @@ let dataTemplate = Template(
     items: [
         // Data Implement 프로젝트 생성
         .file(
-            path: "Projects/Data/\(name)Implement/Project.swift",
+            path: "Projects/Data/\(name)Data/Project.swift",
             templatePath: "data_implement_project.stencil"
         ),
         .file(
-            path: "Projects/Data/\(name)Implement/\(name)RepositoryImpl.swift",
+            path: "Projects/Data/\(name)Data/\(name)RepositoryImpl.swift",
             templatePath: "data_repository_implement.stencil"
         ),
+        // Data Interface 프로젝트 생성
         .file(
-            path: "Projects/Data/\(name)Testing/\(name)RepositoryTests.swift",
-            templatePath: "data_repository_tests.stencil"
+            path: "Projects/Data/\(name)DataInterface/Project.swift",
+            templatePath: "data_interface_project.stencil"
+        ),
+        .file(
+            path: "Projects/Data/\(name)DataInterface/\(name)DTO.swift",
+            templatePath: "data_dto.stencil"
+        ),
+        .file(
+            path: "Projects/Data/\(name)DataTesting/\(name)RepositoryTests.swift",
+            templatePath: "data_tests.stencil"
         )
     ]
 )

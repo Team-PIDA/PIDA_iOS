@@ -43,8 +43,9 @@ public extension Project {
             .debug(name: "Debug", xcconfig: .relativeToRoot("Config/Debug.xcconfig")),
             .release(name: "Release", xcconfig: .relativeToRoot("Config/Release.xcconfig")),
         ])
+        let middle = layer.rawValue
         return .init(
-            name: name,
+            name: "\(name)\(middle)Interface",
             organizationName: organizationName,
             settings: settings,
             targets: [
@@ -54,9 +55,9 @@ public extension Project {
                     dependencies: interfaceDependency
                 ),
                 .makeTestingTarget(
-                    name: "\(name)Testing",
+                    name: name,
                     layer: layer,
-                    dependencies: [.target(name: "\(name)Interface")]
+                    dependencies: [.target(name: "\(name)\(middle)Interface")]
                 )
             ]
         )
@@ -72,8 +73,9 @@ public extension Project {
             .debug(name: "Debug", xcconfig: .relativeToRoot("Config/Debug.xcconfig")),
             .release(name: "Release", xcconfig: .relativeToRoot("Config/Release.xcconfig")),
         ])
+        let middle = layer.rawValue
         return .init(
-            name: name,
+            name: "\(name)\(middle)",
             organizationName: organizationName,
             settings: settings,
             targets: [
@@ -101,25 +103,25 @@ public extension Project {
             targets: [
                 // Example (App 실행 예제)
                 .makeDemoTargets(
-                    name: "\(name)Demo",
-                    dependencies: [.target(name: name)]
+                    name: name,
+                    dependencies: [.target(name: "\(name)Feature")]
                 ),
                 // Test 모듈 (Unit Test)
                 .makeTestingTarget(
-                    name: "\(name)UnitTests",
-                    layer: .features,
-                    dependencies: [.target(name: "\(name)Interface")]
+                    name: name,
+                    layer: .feature,
+                    dependencies: [.target(name: "\(name)FeatureInterface")]
                 ),
                 // Feature 모듈 (Static Library)
                 .makeImplementTarget(
                     name: name,
-                    layer: .features,
-                    dependencies: [.target(name: "\(name)Interface")]
+                    layer: .feature,
+                    dependencies: [.target(name: "\(name)FeatureInterface")]
                 ),
                 // Interface 모듈 (Dynamic Framework)
                 .makeInterfaceTarget(
                     name: name,
-                    layer: .features,
+                    layer: .feature,
                     dependencies: featureInterfaceDependencies
                 )
             ]
