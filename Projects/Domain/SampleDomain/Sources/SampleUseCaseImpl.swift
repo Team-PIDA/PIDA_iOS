@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import SampleDomain
+import SampleDomainInterface
 
 public struct SampleUseCaseImpl: SampleUseCase {
     private let repository: SampleRepository
