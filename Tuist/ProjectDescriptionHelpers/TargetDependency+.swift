@@ -12,6 +12,7 @@ public enum Layer: String {
     case domain = "Domain"
     case data = "Data"
     case feature = "Feature"
+    case app = "PIDA"
 }
 
 public enum Feature: String {
@@ -32,12 +33,12 @@ public enum InternalTarget: String {
     
     public var path: String {
         switch self {
-        case .keyChain:
-            return "./Projects/Core/KeyChain"
         case .network:
             return "./Projects/Core/Networker"
         case .designKit:
             return "./Projects/Core/DesignKit"
+        case .keyChain:
+            return "./Projects/Shared/KeyChain"
         case .utility:
             return "./Projects/Shared/Utility"
         case .thirdParty:
@@ -74,8 +75,8 @@ extension PIDADependency {
     public static func projectWithFeature(feature: Feature) -> TargetDependency {
         let featureName = feature.rawValue
         return .project(
-            target: feature.rawValue,
-            path: .relativeToRoot("./Features/\(featureName)")
+            target: feature.rawValue + "Feature",
+            path: .relativeToRoot("./Projects/Features/\(featureName)")
         )
     }
     

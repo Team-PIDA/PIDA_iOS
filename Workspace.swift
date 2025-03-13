@@ -15,9 +15,7 @@ let workspace = Workspace(
   schemes: [
     .scheme(
       name: "Debug-PIDA",
-      buildAction: .buildAction(
-        targets: [.project(path: "./Projects/Features/Sample", target: "Debug-PIDA")]
-      ),
+      buildAction: .buildAction(targets: [.project(path: "./Projects/PIDA", target: "PIDA_DEV")]),
       runAction: .runAction(configuration: .debug),
       archiveAction: .archiveAction(configuration: .debug),
       profileAction: .profileAction(configuration: .debug),
@@ -25,7 +23,7 @@ let workspace = Workspace(
     ),
     .scheme(
       name: "PROD-PIDA",
-      buildAction: .buildAction(targets: [.project(path: "./Projects/Features/Sample", target: "PIDA")]),
+      buildAction: .buildAction(targets: [.project(path: "./Projects/PIDA", target: "PIDA")]),
       runAction: .runAction(configuration: .release),
       archiveAction: .archiveAction(configuration: .release),
       profileAction: .profileAction(configuration: .release),

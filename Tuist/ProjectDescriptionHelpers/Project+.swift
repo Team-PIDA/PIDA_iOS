@@ -167,5 +167,42 @@ public extension Project {
             ]
         )
     }
-    
+  
+  static func makePIDA(
+    infoPlist: [String: Plist.Value] = [:],
+    dependencies: [TargetDependency] = []
+  ) -> Project {
+    return .init(
+      name: "PIDA",
+      organizationName: organizationName,
+      options: .options(
+        automaticSchemesOptions: .disabled,
+        defaultKnownRegions: ["ko"],
+        developmentRegion: "ko",
+        textSettings: .textSettings(
+          indentWidth: 2,
+          tabWidth: 2,
+          wrapsLines: true
+        )
+      ),
+      settings: .settings(configurations: [
+        .debug(name: "Debug", xcconfig: .relativeToRoot("Config/Debug.xcconfig")),
+        .release(name: "Release", xcconfig: .relativeToRoot("Config/Release.xcconfig")),
+      ]),
+      targets: [
+        .makeApp(
+          name: "PIDA",
+          env: .production,
+          infoPlist: infoPlist,
+          dependencies: dependencies
+        ),
+        .makeApp(
+          name: "PIDA_DEV",
+          env: .development,
+          infoPlist: infoPlist,
+          dependencies: dependencies
+        )
+      ]
+    )
+  }
 }

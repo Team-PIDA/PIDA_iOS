@@ -23,10 +23,8 @@ let project = Project(
             bundleId: "com.yongin.pida.KeyChain",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["./**"],
-            dependencies: [
-                .InternalDependency.Shared
-            ]
+            sources: ["Sources/**"],
+            dependencies: []
         )
     ]
 )

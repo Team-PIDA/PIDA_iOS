@@ -10,8 +10,64 @@ import ProjectDescription
 
 public extension Target {
     static let organizationName = "com.pida.me.ios"
+  
+  enum SchemeType {
+    case development
+    case production
     
+    var entitlementsPath: String {
+      switch self {
+      case .development: "Config/Debug.entitlements"
+      case .production: "Config/Release.entitlements"
+      }
+    }
+    
+    var addedBundlePath: String {
+      switch self {
+      case .development: ".dev"
+      case .production: ""
+      }
+    }
+    
+    var configPath: String {
+      switch self {
+      case .development: "Config/Debug.xcconfig"
+      case .production: "Config/Release.xcconfig"
+      }
+    }
+    
+  }
+  
     // MARK: - App Target 생성
+    static func makeApp(
+      name: String,
+      env: SchemeType,
+      infoPlist: [String: Plist.Value] = [:],
+      script: [TargetScript] = [],
+      dependencies: [TargetDependency] = []
+    ) -> Target {
+      let config: Configuration = env == .development
+      ? .debug(name: .debug, xcconfig: .relativeToRoot(env.configPath))
+      : .release(name: .release, xcconfig: .relativeToRoot(env.configPath))
+      return target(
+        name: name,
+        destinations: .iOS,
+        product: .app,
+        bundleId: organizationName + env.addedBundlePath,
+        deploymentTargets: .iOS("18.0"),
+        infoPlist: .extendingDefault(with: infoPlist),
+        sources: ["./Sources/**"],
+        resources: ["./Resources/**"],
+        entitlements: .file(path: .relativeToRoot(env.entitlementsPath)),
+        scripts: script,
+        dependencies: dependencies,
+        settings: .settings(
+          configurations: [config]
+        )
+      )
+    }
+    
+    // MARK: - Demo App Target 생성
     static func makeDemoTargets(
         name: String,
         infoPlist: [String: Plist.Value] = [:],
@@ -36,6 +92,7 @@ public extension Target {
         dependencies: [TargetDependency] = []
     ) -> Target {
         let middle = layer.rawValue
+        let sourcesPath = layer == .feature ? "./\(name)\(middle)Testing" : "."
         return target(
             name: "\(name)\(middle)Interface",
             destinations: .iOS,
@@ -43,7 +100,7 @@ public extension Target {
             bundleId: "\(organizationName).\(layer.rawValue).\(name)\(middle)Interface",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["./**"],
+            sources: ["\(sourcesPath)/Sources/**"],
             dependencies: dependencies
         )
     }
@@ -55,6 +112,7 @@ public extension Target {
         dependencies: [TargetDependency] = []
     ) -> Target {
         let middle = layer.rawValue
+        let sourcesPath = layer == .feature ? "./\(name)\(middle)Testing" : "."
         return target(
             name: "\(name)\(middle)",
             destinations: .iOS,
@@ -62,7 +120,7 @@ public extension Target {
             bundleId: "\(organizationName).\(layer.rawValue).\(name)\(middle)",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["./**"],
+            sources: ["\(sourcesPath)/Sources/**"],
             dependencies: dependencies
         )
     }
@@ -74,6 +132,7 @@ public extension Target {
         dependencies: [TargetDependency] = []
     ) -> Target {
         let middle = layer.rawValue
+        let sourcesPath = layer == .feature ? "./\(name)\(middle)Testing" : "."
         return target(
             name: "\(name)\(middle)Testing",
             destinations: .iOS,
@@ -81,7 +140,7 @@ public extension Target {
             bundleId: "\(organizationName).\(layer.rawValue).\(name)\(middle)Testing",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["./**"],
+            sources: ["\(sourcesPath)/Sources/**"],
             dependencies: dependencies
         )
     }
@@ -98,7 +157,7 @@ public extension Target {
             bundleId: "\(organizationName).\(name)", // com.yongin.pida.Network
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["./**"],
+            sources: ["./Sources/**"],
             dependencies: dependencies
         )
     }

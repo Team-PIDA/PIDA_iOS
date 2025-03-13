@@ -26,7 +26,7 @@ let dataTemplate = Template(
             templatePath: "data_implement_project.stencil"
         ),
         .file(
-            path: "Projects/Data/\(name)Data/\(name)RepositoryImpl.swift",
+            path: "Projects/Data/\(name)Data/Sources/\(name)RepositoryImpl.swift",
             templatePath: "data_repository_implement.stencil"
         ),
         // Data Interface 프로젝트 생성
@@ -35,11 +35,11 @@ let dataTemplate = Template(
             templatePath: "data_interface_project.stencil"
         ),
         .file(
-            path: "Projects/Data/\(name)DataInterface/\(name)DTO.swift",
+            path: "Projects/Data/\(name)DataInterface/Sources/\(name)DTO.swift",
             templatePath: "data_dto.stencil"
         ),
         .file(
-            path: "Projects/Data/\(name)DataTesting/\(name)RepositoryTests.swift",
+            path: "Projects/Data/\(name)DataTesting/Sources/\(name)RepositoryTests.swift",
             templatePath: "data_tests.stencil"
         )
     ]

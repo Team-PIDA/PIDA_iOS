@@ -23,7 +23,7 @@ let project = Project(
             bundleId: "com.yongin.pida.Networker",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
-            sources: ["./**"],
+            sources: ["Sources/**"],
             dependencies: [
                 .InternalDependency.Shared
             ]
