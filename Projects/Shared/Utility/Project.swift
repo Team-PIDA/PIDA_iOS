@@ -20,7 +20,7 @@ let project = Project(
             name: "Utility",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.yongin.pida.Utility", // com.yongin.pida.Network
+            bundleId: "com.yongin.pida.Utility",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
             sources: ["Sources/**"],

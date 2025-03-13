@@ -20,11 +20,13 @@ let project = Project(
             name: "ThirdParty",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.yongin.pida.ThirdParty", // com.yongin.pida.Network
+            bundleId: "com.yongin.pida.ThirdParty",
             deploymentTargets: .iOS("18.0"),
             infoPlist: .default,
             sources: ["Sources/**"],
-            dependencies: []
+            dependencies: [
+                .ThirdParty.TCA
+            ]
         )
     ]
 )
