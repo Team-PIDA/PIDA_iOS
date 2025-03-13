@@ -23,6 +23,16 @@ public extension Project {
         return .init(
             name: name,
             organizationName: organizationName,
+            options: .options(
+              automaticSchemesOptions: .disabled,
+              defaultKnownRegions: ["ko"],
+              developmentRegion: "ko",
+              textSettings: .textSettings(
+                indentWidth: 2,
+                tabWidth: 2,
+                wrapsLines: true
+              )
+            ),
             settings: settings,
             targets: [
                 .makeInternalFrameworkTarget(
@@ -47,6 +57,16 @@ public extension Project {
         return .init(
             name: "\(name)\(middle)Interface",
             organizationName: organizationName,
+            options: .options(
+              automaticSchemesOptions: .disabled,
+              defaultKnownRegions: ["ko"],
+              developmentRegion: "ko",
+              textSettings: .textSettings(
+                indentWidth: 2,
+                tabWidth: 2,
+                wrapsLines: true
+              )
+            ),
             settings: settings,
             targets: [
                 .makeInterfaceTarget(
@@ -77,6 +97,16 @@ public extension Project {
         return .init(
             name: "\(name)\(middle)",
             organizationName: organizationName,
+            options: .options(
+              automaticSchemesOptions: .disabled,
+              defaultKnownRegions: ["ko"],
+              developmentRegion: "ko",
+              textSettings: .textSettings(
+                indentWidth: 2,
+                tabWidth: 2,
+                wrapsLines: true
+              )
+            ),
             settings: settings,
             targets: [
                 .makeImplementTarget(
@@ -99,6 +129,16 @@ public extension Project {
         return .init(
             name: name,
             organizationName: organizationName,
+            options: .options(
+              automaticSchemesOptions: .disabled,
+              defaultKnownRegions: ["ko"],
+              developmentRegion: "ko",
+              textSettings: .textSettings(
+                indentWidth: 2,
+                tabWidth: 2,
+                wrapsLines: true
+              )
+            ),
             settings: settings,
             targets: [
                 // Example (App 실행 예제)
