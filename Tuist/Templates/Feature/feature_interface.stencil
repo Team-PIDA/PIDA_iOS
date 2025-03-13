@@ -1,0 +1,13 @@
+//
+//  {{ name }}Interface.swift
+//
+//  {{name}}
+//
+//  Created by {{author}}
+//
+
+import ComposableArchitecture
+
+public protocol {{ name }}Interface {
+    var store: StoreOf<{{ name }}Reducer> { get }
+}

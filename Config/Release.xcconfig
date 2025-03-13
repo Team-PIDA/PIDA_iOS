@@ -1,0 +1,3 @@
+BASE_URL = https:/$()/api.pida.me
+EXCLUDE_RESOURCE = Resources/Dev/**
+OTHER_SWIFT_FLAGS[config=RELEASE][sdk=*] = $(inherited) -DRELEASE

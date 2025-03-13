@@ -1,0 +1,19 @@
+//
+//  {{ name }}DataImplementProject.swift
+//
+//  {{name}}
+//
+//  Created by {{author}}
+//
+
+import ProjectDescription
+import ProjectDescriptionHelpers
+
+let project = Project.makeImplementProject(
+    name: "{{ name }}",
+    layer: .data,
+    implementDependency: [
+        .Data.{{ name }}.Interface
+    ]
+)
+

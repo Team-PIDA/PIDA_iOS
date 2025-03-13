@@ -1,0 +1,22 @@
+//
+//  {{ name }}DemoApp.swift
+//
+//  {{name}}
+//
+//  Created by {{author}}
+//
+
+import SwiftUI
+import ComposableArchitecture
+
+@main
+struct {{ name }}DemoApp: App {
+    let feature = {{ name }}Feature()
+
+    var body: some Scene {
+        WindowGroup {
+            {{ name }}View(store: feature.store)
+        }
+    }
+}
+
