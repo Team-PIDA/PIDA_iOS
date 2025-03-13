@@ -25,7 +25,8 @@ let project = Project(
             infoPlist: .default,
             sources: ["Sources/**"],
             dependencies: [
-                .ThirdParty.TCA
+                .ThirdParty.TCA,
+                .ThirdParty.NMaps
             ]
         )
     ]

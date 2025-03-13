@@ -9,6 +9,7 @@ import PackageDescription
 let package = Package(
     name: "PIDA_iOS",
     dependencies: [
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.18.0")
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.18.0"),
+        .package(url: "https://github.com/navermaps/SPM-NMapsMap.git", exact: "3.20.0")
     ]
 )
