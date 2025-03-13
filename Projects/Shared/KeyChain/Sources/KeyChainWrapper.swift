@@ -8,24 +8,17 @@
 
 import Foundation
 
-/// 키체인 키 설정
-public enum KeychainKey: String {
-  case accessToken
-}
-
-public final class KeychainWrapper {
-  public static let shared = KeychainWrapper()
-  private init() {}
+public struct KeyChainWrapper {
   
-  private let bundleId = Bundle.main.bundleIdentifier ?? ""
+  private static let bundleId = Bundle.main.bundleIdentifier ?? ""
   
   /// 키체인 저장 메서드
   ///
   /// 사용 예시:
   /// ```swift
-  /// KeychainWrapper.shared.save("abcd1234", key: .accessToken)
+  /// KeychainWrapper.save("abcd1234", key: .accessToken)
   /// ```
-  public func save<T: Codable>(_ value: T, forKey key: KeychainKey) -> Bool {
+  public static func save<T: Codable>(_ value: T, forKey key: KeychainKey) -> Bool {
     do {
       let data = try JSONEncoder().encode(value)
       let query: [CFString: Any] = [
@@ -55,7 +48,6 @@ public final class KeychainWrapper {
       """)
       return false
     }
-    
   }
   
   /// 키체인 불러오기 메서드
@@ -63,9 +55,9 @@ public final class KeychainWrapper {
   /// 사용 예시:
   /// ```swift
   /// var token: String? =
-  ///   KeychainWrapper.shared.read(key: .accessToken)
+  ///   KeychainWrapper.read(key: .accessToken)
   /// ```
-  public func read<T: Codable>(forKey key: KeychainKey) -> T? {
+  public static func read<T: Codable>(forKey key: KeychainKey) -> T? {
     let query: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrService: bundleId,
@@ -101,9 +93,9 @@ public final class KeychainWrapper {
   ///
   /// 사용 예시:
   /// ```swift
-  /// KeychainWrapper.shared.update("def", key: .accessToken)
+  /// KeychainWrapper.update("def", key: .accessToken)
   /// ```
-  public func update<T: Codable>(_ value: T, forKey key: KeychainKey) -> Bool {
+  public static func update<T: Codable>(_ value: T, forKey key: KeychainKey) -> Bool {
     do {
       let data = try JSONEncoder().encode(value)
       let query: [CFString: Any] = [
@@ -142,9 +134,9 @@ public final class KeychainWrapper {
   ///
   /// 사용 예시:
   /// ```swift
-  /// KeychainWrapper.shared.delete(key: .accessToken)
+  /// KeychainWrapper.delete(key: .accessToken)
   /// ```
-  public func delete(forKey key: KeychainKey) -> Bool {
+  public static func delete(forKey key: KeychainKey) -> Bool {
     let query: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,
       kSecAttrService: bundleId,
@@ -161,5 +153,3 @@ public final class KeychainWrapper {
   }
   
 }
-
-
