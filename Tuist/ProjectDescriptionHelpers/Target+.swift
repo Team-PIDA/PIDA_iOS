@@ -9,7 +9,7 @@ import Foundation
 import ProjectDescription
 
 public extension Target {
-    static let organizationName = "com.yongin.pida"
+    static let organizationName = "com.pida.me.ios"
     
     // MARK: - App Target 생성
     static func makeDemoTargets(
