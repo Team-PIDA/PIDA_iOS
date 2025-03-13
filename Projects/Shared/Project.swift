@@ -12,6 +12,7 @@ let project = Project.makeInternalFramework(
     name: "Shared",
     dependencies: [
         .SharedTarget.Utility,
+        .SharedTarget.KeyChain,
         .SharedTarget.ThirdParty
     ]
 )

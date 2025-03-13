@@ -126,12 +126,12 @@ extension TargetDependency {
     }
     
     public struct CoreTarget: PIDADependency {
-        public static let KeyChain = Self.internal(name: .keyChain)
         public static let Networker = Self.internal(name: .network)
         public static let DesignKit = Self.internal(name: .designKit)
     }
     
     public struct SharedTarget: PIDADependency {
+        public static let KeyChain = Self.internal(name: .keyChain)
         public static let Utility = Self.internal(name: .utility)
         public static let ThirdParty = Self.projectWithFramework(framework: .thirdParty)
     }
