@@ -10,7 +10,7 @@ import Foundation
 
 struct EmptyResponse: Codable {}
 
-public struct Endpoint<R>: APIRequestable where R: Decodable {
+public struct Endpoint<R>: APIRequestable where R: Decodable & Sendable {
     public typealias Response = R
     
     public let headers: HTTPHeaders

@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol NetworkProtocol {
-  func execute<E: APIRequestable>(with endpoint: E) async throws -> E.Response
+  func execute<E: APIRequestable>(with endpoint: E) async throws -> E.Response where E.Response: Decodable & Sendable
 }

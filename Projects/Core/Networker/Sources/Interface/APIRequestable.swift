@@ -25,7 +25,7 @@ public enum HTTPMethod: String {
 }
 
 public protocol APIRequestable {
-  associatedtype Response: Decodable
+  associatedtype Response: Decodable & Sendable
   
   var baseURL: URL? { get }
   var method: HTTPMethod { get }
