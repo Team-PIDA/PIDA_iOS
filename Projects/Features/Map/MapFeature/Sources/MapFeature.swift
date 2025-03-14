@@ -6,15 +6,15 @@
 //  Created by JiYeon
 //
 
+import SwiftUI
 import MapFeatureInterface
 import ComposableArchitecture
 
 public struct MapFeature: MapInterface {
-    public let store: StoreOf<MapReducer>
-
-    public init() {
-        self.store = Store(initialState: MapReducer.State()) {
-            MapReducer()
-        }
-    }
+  
+  public init() { }
+  
+  public func startView(store: StoreOf<MapReducer>) -> AnyView {
+    return AnyView(MapView(store: store))
+  }
 }

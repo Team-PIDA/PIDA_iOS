@@ -6,8 +6,9 @@
 //  Created by JiYeon
 //
 
+import SwiftUI
 import ComposableArchitecture
 
 public protocol MapInterface {
-    var store: StoreOf<MapReducer> { get }
+  func startView(store: StoreOf<MapReducer>) -> AnyView
 }

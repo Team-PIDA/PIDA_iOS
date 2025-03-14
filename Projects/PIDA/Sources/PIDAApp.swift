@@ -16,8 +16,7 @@ struct PIDAApp: App {
   
   var body: some Scene {
     WindowGroup {
-      ContentView()
-        
+      PIDAView()
     }
   }
 }

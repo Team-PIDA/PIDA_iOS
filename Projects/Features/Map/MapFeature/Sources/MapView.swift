@@ -11,28 +11,14 @@ import MapFeatureInterface
 import ComposableArchitecture
 
 public struct MapView: View {
-  let store: StoreOf<MapReducer> = Store(initialState: MapReducer.State(), reducer: {
-    MapReducer()
-  })
+  let store: StoreOf<MapReducer>
   
-//  public init(store: StoreOf<MapReducer>) {
-//    self.store = store
-//  }
-  public init() { }
+  public init(store: StoreOf<MapReducer>) {
+    self.store = store
+  }
   
   public var body: some View {
-    Text(store.state.text)
-    Button {
-      store.send(.events)
-    } label: {
-      Text("Text")
-    }
-
+    MapViewRepresentable()
+      .ignoresSafeArea()
   }
 }
-
-//#Preview {
-//  MapView(store: Store(initialState: MapReducer.State(), reducer: {
-//    MapReducer()
-//  }))
-//}
