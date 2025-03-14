@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct APIResponse<R>: Decodable where R: Decodable {
+public struct APIResponse<R>: Decodable & Sendable where R: Decodable & Sendable {
   let success: Bool?
   let status: Int?
   let timestamp: String?
