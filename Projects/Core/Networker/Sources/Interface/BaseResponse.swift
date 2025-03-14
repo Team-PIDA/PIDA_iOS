@@ -12,5 +12,5 @@ public struct APIResponse<R>: Decodable & Sendable where R: Decodable & Sendable
   let success: Bool?
   let status: Int?
   let timestamp: String?
-  let data: [R]
+  let data: R?
 }
