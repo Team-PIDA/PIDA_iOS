@@ -6,6 +6,7 @@
 //  Created by JiYeon
 //
 
+import MapFeatureInterface
 import ComposableArchitecture
 
 public struct MapFeature: MapInterface {

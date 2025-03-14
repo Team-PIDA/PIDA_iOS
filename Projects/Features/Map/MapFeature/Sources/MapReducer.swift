@@ -6,29 +6,19 @@
 //  Created by JiYeon
 //
 
+import MapFeatureInterface
 import ComposableArchitecture
 
-@Reducer
-public struct MapReducer {
-    public struct State: Equatable {
-        var count: Int = 0
+extension MapReducer {
+  public static let mapReducer = Reduce<State, Action> { state, action in
+    switch action {
+    case .events:
+      state.text = "hello"
+      return .none
     }
-
-    public enum Action {
-        case increment
-        case decrement
-    }
-
-    public var body: some ReducerOf<Self> {
-        Reduce { state, action in
-            switch action {
-            case .increment:
-                state.count += 1
-                return .none
-            case .decrement:
-                state.count -= 1
-                return .none
-            }
-        }
-    }
+  }
+  
+  public init() {
+    self.init(reducer: Self.mapReducer)
+  }
 }
