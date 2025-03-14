@@ -2,3 +2,4 @@ BUNDLE_ID_SUFFIX = .dev
 BASE_URL = https:/$()/api.pida.me
 EXCLUDE_RESOURCE = Resources/Release/**
 OTHER_SWIFT_FLAGS[config=DEBUG][sdk=*] = $(inherited) -DDEBUG
+SWIFT_OPTIMIZATION_LEVEL = -Onone

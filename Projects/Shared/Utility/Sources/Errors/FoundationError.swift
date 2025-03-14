@@ -11,8 +11,8 @@ import Foundation
 public enum FoundationError: Error, LocalizedError, Sendable {
   
   case invalidBody
-  case failedToEncode(Error)
-  case failedToDecode(Error)
+  case failedToEncode(Sendable)
+  case failedToDecode(Sendable)
   case failedToCreateURLComponents
   case failedToCasting(from: Sendable, to: Sendable)
   case thisValueIsNil(Sendable)
@@ -23,8 +23,8 @@ public enum FoundationError: Error, LocalizedError, Sendable {
   public var errorDescription: String {
     switch self {
     case .invalidBody: return "[Body가 존재하지 않습니다.]"
-    case let .failedToEncode(error): return "[인코딩에 실패하였습니다.] - \(error.localizedDescription)"
-    case let .failedToDecode(error): return "[디코딩에 실패하였습니다.] - \(error.localizedDescription)"
+    case let .failedToEncode(type): return "[\(type)을(를) 인코딩하는데 실패하였습니다.]"
+    case let .failedToDecode(type): return "[\(type)을(를 )디코딩에 실패하였습니다.]"
     case .failedToCreateURLComponents: return "[URLComponent 생성에 실패하였습니다.]"
     case let .failedToCasting(from, to): return "[\(from)을(를) \(to)로 캐스팅 하는데 실패하였습니다.]"
     case let .thisValueIsNil(type): return "[\(type)은(는) nil입니다.]"

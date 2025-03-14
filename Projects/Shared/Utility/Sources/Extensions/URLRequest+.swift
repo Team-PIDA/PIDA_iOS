@@ -24,7 +24,7 @@ public extension URLRequest {
   func setBody(_ body: Encodable?, encoder: JSONEncoder = JSONEncoder()) throws -> URLRequest {
     var urlRequest = self
     guard let body = body else { throw FoundationError.invalidBody }
-    guard let data = try? encoder.encode(body) else { throw FoundationError.failedToEncode}
+    guard let data = try? encoder.encode(body) else { throw FoundationError.failedToEncode(body) }
     urlRequest.httpBody = data
     return urlRequest
   }
