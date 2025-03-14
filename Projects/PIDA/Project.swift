@@ -18,11 +18,10 @@ let project = Project.makePIDA(
     "UIApplicationSceneManifest": [
       "UIApplicationSupportsMultipleScenes": false,
       "UISceneConfigurations": []
-    ]
+    ],
+    "Privacy - Location Always and When In Use Usage Description": "'피다'앱이 사용자의 위치를 사용하도록 허용하겠습니까?"
   ],
   dependencies: [
-    .Features.Sample,
-    .Data.Sample.Implement,
-    .Domain.Sample.Implement
+    .Features.Map
   ]
 )
