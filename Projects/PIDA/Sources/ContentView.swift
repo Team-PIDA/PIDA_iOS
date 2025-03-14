@@ -7,10 +7,18 @@
 //
 
 import SwiftUI
+import DesignKit
 
 struct ContentView: View {
+  
+  typealias Font = DesignKitFontFamily.FontSet
+  typealias Color = DesignKitAsset.ColorSet
+  
   var body: some View {
     Text("Hello, World!")
+      .font(Font.Heading.heading1)
+    Rectangle()
+      .fill(Color.GradiantSet.gra1)
   }
   
 }
