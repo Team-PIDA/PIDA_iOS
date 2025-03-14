@@ -103,7 +103,7 @@ extension DesignKitAsset {
       public static let Error = ColorSet.SubColor.red
     }
     
-    public struct Gra: Sendable {
+    public struct GradiantSet: Sendable {
       public static let gra1 = LinearGradient(
         gradient: Gradient(stops: [
           .init(color: ColorSet.Pink._300.swiftUIColor, location: 0.0),
