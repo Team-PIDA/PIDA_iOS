@@ -9,8 +9,10 @@
 import Foundation
 
 public struct APIResponse<R>: Decodable & Sendable where R: Decodable & Sendable {
-  let success: Bool?
-  let status: Int?
-  let timestamp: String?
+  let success: Bool
+  let status: Int
+  let timestamp: String
   let data: R?
+  
+  var isSuccess: Bool { success && (200..<300).contains(status) && data != nil }
 }
