@@ -7,12 +7,17 @@
 //
 
 import SwiftUI
+import MapFeature
+import NMapsMap
 
 @main
 struct PIDAApp: App {
+  @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+  
   var body: some Scene {
     WindowGroup {
       ContentView()
+        
     }
   }
 }
