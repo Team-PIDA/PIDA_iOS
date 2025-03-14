@@ -26,7 +26,11 @@ let project = Project(
       product: .framework,
       bundleId: "com.yongin.pida.DesignKit",
       deploymentTargets: .iOS("18.0"),
-      infoPlist: .default,
+      infoPlist: .extendingDefault(with: [
+        "UIAppFonts": [
+          "Item 0": "Pretendard-SemiBold.otf"
+        ]
+      ]),
       sources: ["Sources/**"],
       resources: ["Resources/**"],
       dependencies: [
