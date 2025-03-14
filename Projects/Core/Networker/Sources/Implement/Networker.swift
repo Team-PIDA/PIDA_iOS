@@ -116,7 +116,7 @@ extension Networker {
       let response = try decoder.decode(R.self, from: data)
       return response
     } catch {
-      throw FoundationError.failedToDecode(error)
+      throw FoundationError.failedToDecode(data)
     }
   }
 }
