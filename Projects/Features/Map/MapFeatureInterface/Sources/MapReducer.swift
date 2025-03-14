@@ -16,6 +16,7 @@ public struct MapReducer: Reducer {
     self.reducer = reducer
   }
   
+  @ObservableState
   public struct State: Equatable {
     public var text: String = ""
     public init() {}

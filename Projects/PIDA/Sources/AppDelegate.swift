@@ -14,7 +14,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    NMFAuthManager.shared().clientId = Bundle.main.infoDictionary?["NMClientID"] as? String
+    NMFAuthManager.shared().clientId = Bundle.main.infoDictionary?["NMCLIENTID"] as? String
     return true
   }
 }

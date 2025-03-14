@@ -10,7 +10,6 @@ import SwiftUI
 import DesignKit
 
 struct ContentView: View {
-  
   typealias Font = DesignKitFontFamily.FontSet
   typealias Color = DesignKitAsset.ColorSet
   typealias Icon = DesignKitAsset.Icons

@@ -14,6 +14,7 @@ extension MapReducer {
     switch action {
     case .events:
       state.text = "hello"
+      print("event")
       return .none
     }
   }
