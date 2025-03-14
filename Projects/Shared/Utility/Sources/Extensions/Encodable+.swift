@@ -12,7 +12,7 @@ public extension Encodable {
   func toDictionary() throws -> [String: Any] {
     let data = try JSONEncoder().encode(self)
     let jsonData = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
-    guard let convertedDict = jsonData as? [String: Any] else { throw NSError(domain: "Encodable", code: 0, userInfo: nil) } // TODO: FoundationError로 변경
+    guard let convertedDict = jsonData as? [String: Any] else { throw FoundationError.failedToCasting(from: jsonData, to: [String: Any]()) }
     return convertedDict
   }
 }

@@ -23,8 +23,8 @@ public extension URLRequest {
   
   func setBody(_ body: Encodable?, encoder: JSONEncoder = JSONEncoder()) throws -> URLRequest {
     var urlRequest = self
-    guard let body = body else { throw NSError(domain: "CLNetworker", code: 0, userInfo: nil) } // TODO: FoundationError로 변경
-    guard let data = try? encoder.encode(body) else { throw NSError(domain: "CLNetworker", code: 0, userInfo: nil) } // TODO: FoundationError로 변경
+    guard let body = body else { throw FoundationError.invalidBody }
+    guard let data = try? encoder.encode(body) else { throw FoundationError.failedToEncode}
     urlRequest.httpBody = data
     return urlRequest
   }

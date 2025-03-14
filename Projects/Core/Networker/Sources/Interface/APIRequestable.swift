@@ -52,7 +52,7 @@ public extension APIRequestable {
   }
   
   fileprivate func configureURL() throws -> URL {
-    guard let baseURL = baseURL else { throw NSError(domain: "Encodable", code: 0, userInfo: nil) } // TODO: FoundationError로 변경
+    guard let baseURL = baseURL else { throw FoundationError.thisValueIsNil(baseURL) }
     var url = baseURL.appendingPathComponent(path)
     if let parameters = parameters {
       switch parameters {
