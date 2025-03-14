@@ -1,7 +1,7 @@
 //
-//  SampleDemoApp.swift
+//  MapDemoApp.swift
 //
-//  Sample
+//  Map
 //
 //  Created by JiYeon
 //
@@ -10,12 +10,12 @@ import SwiftUI
 import ComposableArchitecture
 
 @main
-struct SampleDemoApp: App {
-    let feature = SampleFeature()
+struct MapDemoApp: App {
+    let feature = MapFeature()
 
     var body: some Scene {
         WindowGroup {
-            SampleView(store: feature.store)
+            MapView(store: feature.store)
         }
     }
 }

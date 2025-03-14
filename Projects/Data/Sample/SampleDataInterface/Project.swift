@@ -1,5 +1,5 @@
 //
-//  SampleProject.swift
+//  SampleDataInterfaceProject.swift
 //
 //  Sample
 //
@@ -9,10 +9,10 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeFeature(
+let project = Project.makeInterfaceProject(
     name: "Sample",
-    featureInterfaceDependencies: [
+    layer: .data,
+    interfaceDependency: [
         .Domain.Sample.Interface
-        // 필요 시, Domain Interface Dependency 추가
     ]
 )

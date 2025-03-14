@@ -1,7 +1,7 @@
 //
-//  SampleReducer.swift
+//  MapReducer.swift
 //
-//  Sample
+//  Map
 //
 //  Created by JiYeon
 //
@@ -9,7 +9,7 @@
 import ComposableArchitecture
 
 @Reducer
-public struct SampleReducer {
+public struct MapReducer {
     public struct State: Equatable {
         var count: Int = 0
     }

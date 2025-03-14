@@ -1,7 +1,7 @@
 //
-//  SampleView.swift
+//  MapView.swift
 //
-//  Sample
+//  Map
 //
 //  Created by JiYeon
 //
@@ -9,10 +9,10 @@
 import SwiftUI
 import ComposableArchitecture
 
-public struct SampleView: View {
-    let store: StoreOf<SampleReducer>
+public struct MapView: View {
+    let store: StoreOf<MapReducer>
 
-    public init(store: StoreOf<SampleReducer>) {
+    public init(store: StoreOf<MapReducer>) {
         self.store = store
     }
 

@@ -3,7 +3,7 @@
 //
 //  Sample
 //
-//  Created by yongin
+//  Created by JiYeon
 //
 
 import ComposableArchitecture
