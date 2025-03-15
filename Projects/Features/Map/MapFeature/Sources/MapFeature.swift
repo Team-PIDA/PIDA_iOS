@@ -11,10 +11,13 @@ import MapFeatureInterface
 import ComposableArchitecture
 
 public struct MapFeature: MapInterface {
+  public var reducer: StoreOf<MapReducer>
   
-  public init() { }
+  public init(reducer: StoreOf<MapReducer>) {
+    self.reducer = reducer
+  }
   
-  public func startView(store: StoreOf<MapReducer>) -> AnyView {
-    return AnyView(MapView(store: store))
+  public func startView() -> AnyView {
+    return AnyView(MapView(store: reducer))
   }
 }

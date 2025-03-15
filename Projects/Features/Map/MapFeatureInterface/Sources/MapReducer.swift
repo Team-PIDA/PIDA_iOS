@@ -9,7 +9,8 @@
 import Foundation
 import ComposableArchitecture
 
-public struct MapReducer: Reducer {
+@Reducer
+public struct MapReducer {
   private let reducer: Reduce<State, Action>
   
   public init(reducer: Reduce<State, Action>) {
@@ -26,7 +27,7 @@ public struct MapReducer: Reducer {
     case events
   }
   
-  public var body: some Reducer<State, Action> {
+  public var body: some ReducerOf<Self> {
     reducer
   }
 }

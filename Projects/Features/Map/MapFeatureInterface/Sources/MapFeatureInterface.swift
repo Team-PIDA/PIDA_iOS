@@ -10,5 +10,7 @@ import SwiftUI
 import ComposableArchitecture
 
 public protocol MapInterface {
-  func startView(store: StoreOf<MapReducer>) -> AnyView
+  var reducer: StoreOf<MapReducer> { get }
+  func startView() -> AnyView
 }
+

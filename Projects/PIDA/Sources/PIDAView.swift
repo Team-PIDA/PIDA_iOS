@@ -12,12 +12,12 @@ import MapFeatureInterface
 import MapFeature
 
 struct PIDAView: View {
-  private let store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) {
-    PIDAReducer()
+  private let store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) { PIDAReducer() }
+  private var mapFeature: MapInterface {
+    MapFeature(reducer: store.scope(state: \.mapView, action: \.mapView))
   }
-  private let mapFeature: MapInterface = MapFeature()
   
   var body: some View {
-    mapFeature.startView(store: store.scope(state: \.mapView, action: \.mapView))
+    mapFeature.startView()
   }
 }

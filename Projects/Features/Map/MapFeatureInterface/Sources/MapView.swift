@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import MapFeatureInterface
 import ComposableArchitecture
 
 public struct MapView: View {
@@ -22,3 +21,9 @@ public struct MapView: View {
       .ignoresSafeArea()
   }
 }
+
+//#Preview {
+//  MapView(store: Store(initialState: MapReducer.State(), reducer: {
+//    MapReducer()
+//  }))
+//}
