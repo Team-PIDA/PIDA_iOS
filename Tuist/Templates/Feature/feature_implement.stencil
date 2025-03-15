@@ -6,14 +6,18 @@
 //  Created by {{author}}
 //
 
+import SwiftUI
+import {{ name }}FeatureInterFace
 import ComposableArchitecture
 
 public struct {{ name }}Feature: {{ name }}Interface {
-    public let store: StoreOf<{{ name }}Reducer>
+  public let store: StoreOf<{{ name }}Reducer>
 
-    public init() {
-        self.store = Store(initialState: {{ name }}Reducer.State()) {
-            {{ name }}Reducer()
-        }
-    }
+  public init(store: StoreOf<{{ name }}Reducer) {
+    self.store = store
+  }
+  
+  public func startView() {
+    return AnyView({{ name }}View(store: store))
+  }
 }

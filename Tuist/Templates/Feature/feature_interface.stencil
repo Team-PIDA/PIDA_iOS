@@ -6,8 +6,10 @@
 //  Created by {{author}}
 //
 
+import SwiftUI
 import ComposableArchitecture
 
 public protocol {{ name }}Interface {
-    var store: StoreOf<{{ name }}Reducer> { get }
+  var store: StoreOf<{{ name }}Reducer> { get }
+  func startView() -> AnyView
 }
