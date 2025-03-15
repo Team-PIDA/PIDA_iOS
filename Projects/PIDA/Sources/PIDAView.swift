@@ -9,15 +9,14 @@
 import SwiftUI
 import ComposableArchitecture
 import MapFeatureInterface
-import MapFeature
 
 struct PIDAView: View {
   private let store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) { PIDAReducer() }
-  private var mapFeature: MapInterface {
-    MapFeature(reducer: store.scope(state: \.mapView, action: \.mapView))
-  }
-  
   var body: some View {
-    mapFeature.startView()
+    MapView(store: store.scope(state: \.mapView, action: \.mapView))
   }
+}
+
+#Preview {
+  PIDAView()
 }
