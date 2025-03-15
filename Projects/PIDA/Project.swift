@@ -23,6 +23,8 @@ let project = Project.makePIDA(
     "NMCLIENTID": "$(NM_CLIENT_ID)"
   ],
   dependencies: [
-    .Features.Map
+    .Features.Map,
+    .Data.Map.Implement,
+    .Domain.Map.Implement
   ]
 )
