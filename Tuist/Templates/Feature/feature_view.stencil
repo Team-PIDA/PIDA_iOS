@@ -10,25 +10,14 @@ import SwiftUI
 import ComposableArchitecture
 
 public struct {{ name }}View: View {
-    let store: StoreOf<{{ name }}Reducer>
+  let store: StoreOf<{{ name }}Reducer>
 
-    public init(store: StoreOf<{{ name }}Reducer>) {
-        self.store = store
-    }
+  public init(store: StoreOf<{{ name }}Reducer>) {
+    self.store = store
+  }
 
-    public var body: some View {
-        WithViewStore(self.store, observe: \.count) { viewStore in
-            VStack {
-                Text("Count: \(viewStore.state)")
-                    .font(.largeTitle)
-
-                HStack {
-                    Button("-") { viewStore.send(.decrement) }
-                    Button("+") { viewStore.send(.increment) }
-                }
-                .padding()
-            }
-        }
-    }
+  public var body: some View {
+    EmptyView()
+  }
 }
 

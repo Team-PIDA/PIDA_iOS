@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import {{ name }}Domain
+import {{ name }}DomainInterface
 
 public struct {{ name }}UseCaseImpl: {{ name }}UseCase {
     private let repository: {{ name }}Repository

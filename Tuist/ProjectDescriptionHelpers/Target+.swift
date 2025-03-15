@@ -92,7 +92,7 @@ public extension Target {
         dependencies: [TargetDependency] = []
     ) -> Target {
         let middle = layer.rawValue
-        let sourcesPath = layer == .feature ? "./\(name)\(middle)Testing" : "."
+        let sourcesPath = layer == .feature ? "./\(name)\(middle)Interface" : "."
         return target(
             name: "\(name)\(middle)Interface",
             destinations: .iOS,
@@ -112,7 +112,7 @@ public extension Target {
         dependencies: [TargetDependency] = []
     ) -> Target {
         let middle = layer.rawValue
-        let sourcesPath = layer == .feature ? "./\(name)\(middle)Testing" : "."
+        let sourcesPath = layer == .feature ? "./\(name)\(middle)" : "."
         return target(
             name: "\(name)\(middle)",
             destinations: .iOS,
