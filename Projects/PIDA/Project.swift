@@ -19,7 +19,7 @@ let project = Project.makePIDA(
       "UIApplicationSupportsMultipleScenes": false,
       "UISceneConfigurations": []
     ],
-    "Privacy - Location Always and When In Use Usage Description": "'피다'앱이 사용자의 위치를 사용하도록 허용하겠습니까?",
+    "NSLocationWhenInUseUsageDescription": "'피다'앱이 사용자의 위치를 사용하도록 허용하겠습니까?",
     "NMCLIENTID": "$(NM_CLIENT_ID)"
   ],
   dependencies: [

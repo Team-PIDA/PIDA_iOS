@@ -15,26 +15,31 @@ public struct MapView: View {
   private typealias Icons = DesignKitAsset.Icons
   private typealias Colors = DesignKitAsset.ColorSet
   
-  
+  @Bindable var store: StoreOf<MapReducer>
   
   public init(store: StoreOf<MapReducer>) {
     self.store = store
   }
   
   public var body: some View {
-    MapViewRepresentable()
+    ZStack {
+      MapViewRepresentable(
+        position: $store.state.position
+      )
       .ignoresSafeArea()
-    VStack {
-      Spacer()
-      HStack {
+      VStack {
         Spacer()
-        curLocationButton()
+        HStack {
+          Spacer()
+          curLocationButton()
+        }
       }
-    }
-    .padding(.trailing, 16)
+      .padding(.trailing, 16)
       
     }
-    
+    .onAppear {
+      store.send(.fetchUserLocation)
+    }
   }
   
   

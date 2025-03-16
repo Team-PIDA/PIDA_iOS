@@ -19,15 +19,28 @@ public struct MapReducer {
   
   @ObservableState
   public struct State: Equatable {
-    public var text: String = ""
+    public var position: MapPoint? = nil
     public init() {}
   }
   
-  public enum Action: Equatable {
-    case events
+  public enum Action: BindableAction, Equatable {
+    case fetchUserLocation
+    case moveLocation(MapPoint)
+    case binding(BindingAction<State>)
   }
   
   public var body: some ReducerOf<Self> {
+    BindingReducer()
     reducer
+  }
+}
+
+public struct MapPoint: Equatable {
+  public var latitude: Double
+  public var longitude: Double
+  
+  public init(latitude: Double, longitude: Double) {
+    self.latitude = latitude
+    self.longitude = longitude
   }
 }
