@@ -25,7 +25,8 @@ public struct MapView: View {
   public var body: some View {
     ZStack {
       MapViewRepresentable(
-        position: $store.state.position
+        position: $store.state.position,
+        flowerPositions: $store.state.flowerPositions
       )
       .ignoresSafeArea()
       VStack {
@@ -40,6 +41,7 @@ public struct MapView: View {
     }
     .onAppear {
       store.send(.fetchUserLocation)
+      store.send(.fetchFlowers)
     }
     .onReceive(LocationService.shared.userLocationEvent) { _ in
       store.send(.moveUserLocation)

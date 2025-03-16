@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MapDomainInterface
 import ComposableArchitecture
 
 @Reducer
@@ -20,6 +21,7 @@ public struct MapReducer {
   @ObservableState
   public struct State: Equatable {
     public var position: MapPoint? = nil
+    public var flowerPositions: [Int: FlowerPosition] = [:]
     public init() {}
   }
   
@@ -27,22 +29,12 @@ public struct MapReducer {
     case fetchUserLocation
     case moveUserLocation
     case moveLocation(MapPoint)
+    case fetchFlowers
     case binding(BindingAction<State>)
   }
   
   public var body: some ReducerOf<Self> {
     BindingReducer()
     reducer
-  }
-}
-
-// TODO: - Domain으로 이동
-public struct MapPoint: Equatable {
-  public var latitude: Double
-  public var longitude: Double
-  
-  public init(latitude: Double, longitude: Double) {
-    self.latitude = latitude
-    self.longitude = longitude
   }
 }

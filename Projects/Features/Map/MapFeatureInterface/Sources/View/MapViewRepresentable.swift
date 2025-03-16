@@ -9,13 +9,16 @@
 import UIKit
 import SwiftUI
 import Combine
+import MapDomainInterface
 
 import NMapsMap
+
 
 struct MapViewRepresentable: UIViewRepresentable {
   
   private let locationManager = CLLocationManager()
   @Binding var position: MapPoint?
+  @Binding var flowerPositions: [Int: FlowerPosition]
   
   // MARK: - UI
   
@@ -38,6 +41,9 @@ struct MapViewRepresentable: UIViewRepresentable {
   
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
     configMovePosition(uiView, context: context)
+    if context.coordinator.markers.isEmpty {
+      presentMarkers(uiView, context: context)
+    }
   }
   
   func makeCoordinator() -> Coordinator {
@@ -51,6 +57,9 @@ struct MapViewRepresentable: UIViewRepresentable {
     var parent: MapViewRepresentable
     /// 마지막 카메라 이동 위치
     var lastCameraPoint: MapPoint? = nil
+    
+    /// 현재 표시되어있는 마커 배열
+    var markers: [NMFMarker] = []
     
     init(_ parent: MapViewRepresentable) {
       self.parent = parent
@@ -85,4 +94,31 @@ extension MapViewRepresentable {
       
     }
   }
+  
+  /// 지도 위에 마커를 표시하기 위한 메서드
+  private func presentMarkers(_ view: NMFNaverMapView, context: Context) {
+    for pin in flowerPositions {
+      
+      let position = pin.value.currentPosition
+      let marker = NMFMarker()
+      marker.position = NMGLatLng(
+        lat: position.latitude,
+        lng: position.longitude
+      )
+      marker.mapView = view.mapView
+      marker.iconImage = .init(image: pin.value.state.inactiveImage)
+      marker.tag = UInt(pin.key)
+      marker.isHideCollidedSymbols = true
+      marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
+        if let marker = overlay as? NMFMarker {
+          marker.iconImage = .init(image: pin.value.state.activeImage)
+          moveCamera(view, point: position)
+        }
+        return true
+      }
+      context.coordinator.markers.append(marker)
+    }
+    
+  }
+  
 }
