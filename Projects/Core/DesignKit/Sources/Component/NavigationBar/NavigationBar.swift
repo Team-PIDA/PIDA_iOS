@@ -15,9 +15,9 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
   public let title: String?
   
   public init(
-    @ViewBuilder backContent: @escaping () -> BackContent = { Spacer().frame(width: 44, height: 44) },
+    @ViewBuilder backContent: @escaping () -> BackContent = { Spacer().frame(width: .Number48, height: .Number48) },
     title: String? = nil,
-    @ViewBuilder closeContent: @escaping () -> CloseContent = { Spacer().frame(width: 44, height: 44) }
+    @ViewBuilder closeContent: @escaping () -> CloseContent = { Spacer().frame(width: .Number48, height: .Number48) }
   ) {
     self.backContent = backContent
     self.title = title
@@ -32,13 +32,13 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
   private var content: some View {
     HStack {
       backContent.map {
-        $0().padding(.leading, 4)
+        $0().padding(.leading, .Number4)
       }
       Spacer()
       if let title = title { Text(title) }
       Spacer()
       closeContent.map {
-        $0().padding(.leading, 4)
+        $0().padding(.leading, .Number4)
       }
     }
   }

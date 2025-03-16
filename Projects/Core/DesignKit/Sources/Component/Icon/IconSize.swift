@@ -13,10 +13,10 @@ public enum IconSize {
   
   public var dimension: CGFloat {
     switch self {
-    case .superLage: return 32
-    case .large: return 20
-    case .medium: return 18
-    case .small: return 16
+    case .superLage: return .Number32
+    case .large: return .Number20
+    case .medium: return .Number18
+    case .small: return .Number16
     }
   }
 }

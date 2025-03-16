@@ -24,7 +24,7 @@ public struct PIDIconButton<IconContent: View>: View {
   public var body: some View {
     content
       .gesture(
-        DragGesture(minimumDistance: 0)
+        DragGesture(minimumDistance: .Number0)
           .onChanged { _ in isPressed = true }
           .onEnded {
             _ in
@@ -52,7 +52,7 @@ public struct PIDIconButton<IconContent: View>: View {
             .fill(ColorSet.Component.Pressed)
         }
       }
-      .frame(width: 48, height: 48)
+      .frame(width: .Number48, height: .Number48)
   }
 }
 
@@ -66,7 +66,7 @@ public struct PIDIconButton<IconContent: View>: View {
       print("Button tapped")
     }
     .elevation(
-      cornerRadius: 24
+      cornerRadius: .Number24
     )
     .border(Color.red)
     
@@ -75,7 +75,7 @@ public struct PIDIconButton<IconContent: View>: View {
         .foregroundColor(ColorSet.Icon.Accent)
     }
     .elevation(
-      cornerRadius: 24
+      cornerRadius: .Number24
     )
     .border(Color.red)
   }

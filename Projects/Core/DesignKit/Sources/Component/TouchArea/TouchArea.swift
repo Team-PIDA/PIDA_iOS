@@ -32,7 +32,7 @@ public struct TouchArea: View {
         Icon(icon: image)
           .size(size)
       }
-      .padding(12)
+      .padding(.Number12)
       .onTapGesture {
         if let action = action {
           Task { @MainActor in
@@ -40,7 +40,7 @@ public struct TouchArea: View {
           }
         }
       }
-      .frame(width: 48, height: 48)
+      .frame(width: .Number48, height: .Number48)
   }
 }
 

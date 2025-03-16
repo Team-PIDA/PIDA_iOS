@@ -42,7 +42,7 @@ public struct PIDButton<IconContent: View>: View {
   public var body: some View {
     content
       .gesture(
-        DragGesture(minimumDistance: 0)
+        DragGesture(minimumDistance: .Number0)
           .onChanged { _ in isPressed = true }
           .onEnded {
             _ in
@@ -62,7 +62,7 @@ public struct PIDButton<IconContent: View>: View {
     RoundedRectangle(cornerRadius: size.cornerRadius)
       .fill(backgroundColor)
       .overlay {
-        HStack(spacing: 6) {
+        HStack(spacing: .Number6) {
           iconContent.map { $0() }
           Text(title)
             .foregroundColor(

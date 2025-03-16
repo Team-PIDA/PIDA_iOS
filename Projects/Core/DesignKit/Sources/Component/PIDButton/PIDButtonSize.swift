@@ -13,17 +13,17 @@ public enum PIDButtonSize {
   
   public var cornerRadius: CGFloat {
     switch self {
-    case .large: return 10
-    case .medium: return 8
-    case .small: return 6
+    case .large: return .Number12
+    case .medium: return .Number8
+    case .small: return .Number6
     }
   }
   
   public var padding: (vertical: CGFloat, horizonal: CGFloat) {
     switch self {
-    case .large: return (12, 28)
-    case .medium: return (10, 20)
-    case .small: return (8, 12)
+    case .large: return (.Number12, .Number28)
+    case .medium: return (.Number12, .Number20)
+    case .small: return (.Number8, .Number12)
     }
   }
   

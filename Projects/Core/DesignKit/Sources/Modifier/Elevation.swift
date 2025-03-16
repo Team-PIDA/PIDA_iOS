@@ -59,8 +59,8 @@ public struct ElevationModifier: ViewModifier {
             .shadow(
               color: .black.opacity(shadowLevel.opacity),
               radius: shadowLevel.radius,
-              x: 0,
-              y: 0
+              x: .Number0,
+              y: .Number0
             )
         }
       )
