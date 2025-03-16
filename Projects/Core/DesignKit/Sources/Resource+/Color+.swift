@@ -96,7 +96,7 @@ extension DesignKitAsset {
       public static let Accent = ColorSet.Mint._50
     }
     
-    public struct Button: Sendable {
+    public struct Component: Sendable {
       public static let Primary = ColorSet.Mint._300
       public static let Disabled = ColorSet.Gray._50
       public static let Pressed = ColorSet.Gray._1000.opacity(0.12)
