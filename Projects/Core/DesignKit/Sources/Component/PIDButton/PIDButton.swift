@@ -14,7 +14,7 @@ public struct PIDButton<IconContent: View>: View {
   public var size: PIDButtonSize = .large
   public var isDisabled: Bool = false
   public var isError: Bool = false
-  public var action: () -> Void = {}
+  public var action: (() async -> Void)? = nil
   public var iconContent: (() -> IconContent)?
   
   public var backgroundColor: Color {
@@ -47,7 +47,11 @@ public struct PIDButton<IconContent: View>: View {
           .onEnded {
             _ in
             isPressed = false
-            action()
+            if let action = action {
+              Task { @MainActor in
+                await action()
+              }
+            }
           }
       )
       .disabled(isDisabled)
