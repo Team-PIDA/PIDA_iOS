@@ -25,6 +25,7 @@ public struct MapReducer {
   
   public enum Action: BindableAction, Equatable {
     case fetchUserLocation
+    case moveUserLocation
     case moveLocation(MapPoint)
     case binding(BindingAction<State>)
   }
@@ -35,6 +36,7 @@ public struct MapReducer {
   }
 }
 
+// TODO: - Domain으로 이동
 public struct MapPoint: Equatable {
   public var latitude: Double
   public var longitude: Double

@@ -8,17 +8,20 @@
 
 import SwiftUI
 import ComposableArchitecture
+import MapFeatureInterface
 import MapFeature
 
 import NMapsMap
 
 @main
 struct MapDemoApp: App {
-  let feature = MapFeature()
+  let store = Store(initialState: MapReducer.State()) {
+    MapReducer()
+  }
   
   var body: some Scene {
     WindowGroup {
-      MapView(store: feature.store)
+      MapView(store: store)
         
     }
   }

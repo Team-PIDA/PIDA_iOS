@@ -18,6 +18,8 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
   public var userLostion: (Double, Double)? = nil
   
   private let locationManager = CLLocationManager()
+  /// 위치 권한 팝업 나타날 때 선택할 때 까지 await 상태로 기다리기 위한 프로퍼티
+  private var continuation: CheckedContinuation<Void, Never>?
   
   // MARK: - Initialize
   
@@ -36,6 +38,10 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
       await currentLocation()
     case .notDetermined:
       locationManager.requestWhenInUseAuthorization()
+      await withCheckedContinuation { continuation in
+        self.continuation = continuation
+      }
+      await currentLocation()
     case .denied, .restricted:
       // TODO: - 위치 권한 거부 시 토스트?
       break
@@ -59,4 +65,11 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
     }
   }
   
+  public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+    let status = manager.authorizationStatus
+    if status == .authorizedWhenInUse || status == .authorizedAlways {
+      continuation?.resume()
+      continuation = nil
+    }
+  }
 }

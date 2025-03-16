@@ -9,6 +9,7 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignKit
+import Utility
 
 public struct MapView: View {
   
@@ -40,9 +41,12 @@ public struct MapView: View {
     .onAppear {
       store.send(.fetchUserLocation)
     }
+    .onReceive(LocationService.shared.userLocationEvent) { _ in
+      store.send(.moveUserLocation)
+    }
   }
   
-  
+  // TODO: - DesignSystem 버튼으로 변경
   private func curLocationButton() -> some View {
     Button {
       store.send(.fetchUserLocation)
@@ -56,9 +60,3 @@ public struct MapView: View {
     .shadow(color: .black.opacity(0.2), radius: 4)
   }
 }
-
-//#Preview {
-//  MapView(store: Store(initialState: MapReducer.State(), reducer: {
-//    MapReducer()
-//  }))
-//}

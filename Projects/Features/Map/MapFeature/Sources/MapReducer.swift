@@ -17,6 +17,18 @@ extension MapReducer {
       return .run { _ in
         await LocationService.shared.requestUserLocation()
       }
+    case .moveUserLocation:
+      if let userLocation = LocationService.shared.userLostion {
+        return .send(
+          .moveLocation(
+            .init(
+              latitude: userLocation.0,
+              longitude: userLocation.1
+            )
+          )
+        )
+      }
+      return .none
     case let .moveLocation(point):
       state.position = point
       return .none
