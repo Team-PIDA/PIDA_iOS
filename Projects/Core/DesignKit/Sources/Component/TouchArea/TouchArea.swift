@@ -40,6 +40,7 @@ public struct TouchArea: View {
           }
         }
       }
+      .frame(width: 48, height: 48)
   }
 }
 
