@@ -88,14 +88,17 @@ public struct PIDButton<IconContent: View>: View {
       PIDButton()
       .title("Label")
       .size(.large)
+      .border(Color.red)
       
       PIDButton()
       .title("Label")
       .size(.medium)
+      .border(Color.red)
       
       PIDButton()
       .title("Label")
       .size(.small)
+      .border(Color.red)
       
       PIDButton()
       .title("Action")
@@ -103,6 +106,7 @@ public struct PIDButton<IconContent: View>: View {
       .action {
         print("Button Clicked")
       }
+      .border(Color.red)
     }
     
     Section("아이콘 버튼") {
@@ -113,6 +117,7 @@ public struct PIDButton<IconContent: View>: View {
       }
       .title("Label")
       .size(.large)
+      .border(Color.red)
       
       PIDButton {
         Icon(icon: IconSet.flower.swiftUIImage)
@@ -121,6 +126,7 @@ public struct PIDButton<IconContent: View>: View {
       }
       .title("Label")
       .size(.medium)
+      .border(Color.red)
       
       PIDButton {
         Icon(icon: IconSet.flower.swiftUIImage)
@@ -129,6 +135,7 @@ public struct PIDButton<IconContent: View>: View {
       }
       .title("Label")
       .size(.small)
+      .border(Color.red)
       
       PIDButton {
         Icon(icon: IconSet.flower.swiftUIImage)
@@ -140,6 +147,7 @@ public struct PIDButton<IconContent: View>: View {
       .action {
         print("Button Clicked")
       }
+      .border(Color.red)
     }
     
     Section("비활성화 버튼") {
@@ -147,6 +155,7 @@ public struct PIDButton<IconContent: View>: View {
       .title("Label")
       .size(.large)
       .isDisabled(true)
+      .border(Color.red)
       
       PIDButton {
         Icon(icon: IconSet.flower.swiftUIImage)
@@ -156,6 +165,7 @@ public struct PIDButton<IconContent: View>: View {
       .title("Label")
       .size(.large)
       .isDisabled(true)
+      .border(Color.red)
     }
     
     Section("에러 버튼") {
@@ -163,6 +173,7 @@ public struct PIDButton<IconContent: View>: View {
       .title("Label")
       .size(.large)
       .isError(true)
+      .border(Color.red)
       
       PIDButton {
         Icon(icon: IconSet.flower.swiftUIImage)
@@ -172,6 +183,7 @@ public struct PIDButton<IconContent: View>: View {
       .title("Label")
       .size(.large)
       .isError(true)
+      .border(Color.red)
     }
   }
 }

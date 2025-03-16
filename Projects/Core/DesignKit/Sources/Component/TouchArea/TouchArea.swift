@@ -49,17 +49,21 @@ public struct TouchArea: View {
     TouchArea(image: IconSet.close.swiftUIImage)
       .size(.superLage)
       .action { print("Super Large") }
+      .border(Color.red)
     
     TouchArea(image: IconSet.close.swiftUIImage)
       .size(.large)
       .action { print("Large") }
+      .border(Color.red)
     
     TouchArea(image: IconSet.close.swiftUIImage)
       .size(.medium)
       .action { print("Medium") }
+      .border(Color.red)
     
     TouchArea(image: IconSet.close.swiftUIImage)
       .size(.small)
       .action { print("small") }
+      .border(Color.red)
   }
 }

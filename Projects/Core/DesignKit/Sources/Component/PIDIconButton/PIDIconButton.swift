@@ -68,6 +68,7 @@ public struct PIDIconButton<IconContent: View>: View {
     .elevation(
       cornerRadius: 24
     )
+    .border(Color.red)
     
     PIDIconButton {
       Icon(icon: IconSet.flower.swiftUIImage)
@@ -76,6 +77,7 @@ public struct PIDIconButton<IconContent: View>: View {
     .elevation(
       cornerRadius: 24
     )
+    .border(Color.red)
   }
 }
 
