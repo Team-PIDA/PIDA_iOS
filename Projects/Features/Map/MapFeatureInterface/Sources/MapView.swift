@@ -27,10 +27,14 @@ public struct MapView: View {
   public var body: some View {
     ZStack {
       MapViewRepresentable(
-        position: $store.state.position,
+        userLocation: $store.state.position,
         flowerPositions: $store.state.flowerPositions,
+        selectedPath: $store.state.selectedPathLines,
         markerTappedEvent: markerTappedEvent
       )
+      .onReceive(markerTappedEvent) {
+        store.send(.fetchPathLines(id: $0))
+      }
       .ignoresSafeArea()
       VStack {
         Spacer()

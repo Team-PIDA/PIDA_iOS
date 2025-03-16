@@ -21,14 +21,10 @@ extension MapReducer {
     case .moveUserLocation:
       if let userLocation = LocationService.shared.userLostion {
         return .send(
-          .moveLocation(
-            .init(
-              latitude: userLocation.0,
-              longitude: userLocation.1
-            )
-          )
+          .moveLocation(.init(latitude: userLocation.0, longitude: userLocation.1))
         )
       }
+      // TODO: - 디폴트 위치 설정하기
       return .none
     case let .moveLocation(point):
       state.position = point
@@ -36,6 +32,14 @@ extension MapReducer {
     case .fetchFlowers:
       testData.forEach {
         state.flowerPositions[$0.id] = $0
+      }
+      return .none
+    case let .fetchPathLines(id):
+      if let id = id,
+         let data = state.flowerPositions[id] {
+        state.selectedPathLines = data.pathLines
+      } else {
+        state.selectedPathLines = []
       }
       return .none
     case .binding:
@@ -66,7 +70,7 @@ let testData: [FlowerPosition] = [
   ),
   FlowerPosition(
     id: 2,
-    state: .many,
+    state: .few,
     currentPosition: MapPoint(latitude: 37.51013, longitude: 127.09919),
     pathLines: [
       MapPoint(latitude: 37.513628, longitude: 127.107195),

@@ -8,8 +8,6 @@
 
 import Foundation
 
-// TODO: - 수정 필요
-
 public enum FlowerState: String {
   case gone
   case many

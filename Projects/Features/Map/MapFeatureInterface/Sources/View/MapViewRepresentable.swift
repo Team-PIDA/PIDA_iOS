@@ -13,12 +13,20 @@ import MapDomainInterface
 
 import NMapsMap
 
-
 struct MapViewRepresentable: UIViewRepresentable {
   
   private let locationManager = CLLocationManager()
-  @Binding var position: MapPoint?
+  
+  /// 사용자의 현재 위치 정보
+  ///
+  /// - 초기 및 현위치 버튼 탭 시에만 값이 채워져 있음
+  /// - 현 위치 이동 플래그 기능과 유사하게 동작
+  @Binding var userLocation: MapPoint?
+  /// 지도에 보여줄 데이터
   @Binding var flowerPositions: [Int: FlowerPosition]
+  /// 마커 탭 시 경로를 보여주기 위한 프로퍼티
+  @Binding var selectedPath: [MapPoint]
+  /// 마커 탭 시 이벤트를 전달하기 위한 publisher
   var markerTappedEvent: PassthroughSubject<Int?, Never>
   
   // MARK: - UI
@@ -41,72 +49,49 @@ struct MapViewRepresentable: UIViewRepresentable {
   }
   
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    configMovePosition(uiView, context: context)
+    if let _ = userLocation {
+      moveUserLocation(uiView, context: context)
+    }
     if context.coordinator.markers.isEmpty {
       presentMarkers(uiView, context: context)
+    }
+    if let _ = context.coordinator.selectedPin {
+      drawMultipartPath(uiView, context: context)
     }
   }
   
   func makeCoordinator() -> Coordinator {
     return Coordinator(self)
   }
-  
-  // MARK: - Delegate
-  
-  class Coordinator: NSObject, NMFMapViewTouchDelegate, NMFMapViewCameraDelegate {
-    /// 부모 뷰
-    var parent: MapViewRepresentable
-    /// 마지막 카메라 이동 위치
-    var lastCameraPoint: MapPoint? = nil
-    /// 현재 표시되어있는 마커 배열
-    var markers: [NMFMarker] = []
-    /// 현재 선택 된 마커가 있는지 체크하기 위한 프로퍼티
-    var selectedPin: Int?
-    
-    var activeMarker: NMFMarker? = nil
-    
-    init(_ parent: MapViewRepresentable) {
-      self.parent = parent
-    }
-    
-    func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
-      if let activeMarker = activeMarker {
-        selectedPin = nil
-        let id = Int(activeMarker.tag)
-        if let image = parent.flowerPositions[id]?.state {
-          activeMarker.iconImage = .init(image: image.inactiveImage)
-        }
-        
-      }
-    }
-    
-  }
 }
+
+// MARK: - MapEvent
 
 extension MapViewRepresentable {
   
-  // MARK: - MapEvent
-  
   /// 특정 위치로 이동하기 위한 메서드
-  private func configMovePosition(_ view: NMFNaverMapView, context: Context) {
+  private func moveUserLocation(_ view: NMFNaverMapView, context: Context) {
     /// 카메라 위치의 변화가 있을 때만 설정
     let cameraPosition = view.mapView.cameraPosition.target
     let point = MapPoint(latitude: cameraPosition.lat, longitude: cameraPosition.lng)
     if point != context.coordinator.lastCameraPoint {
       view.mapView.positionMode = .normal
-      moveCamera(view, point: position)
-      context.coordinator.lastCameraPoint = position
+      moveCamera(view, point: userLocation)
+      context.coordinator.lastCameraPoint = userLocation
+      
     }
+    userLocation = nil
   }
   
+  /// 카메라 이동 메서드
   private func moveCamera(_ view: NMFNaverMapView, point: MapPoint?) {
     if let point = point {
       let coord = NMGLatLng(lat: point.latitude, lng: point.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: coord)
       cameraUpdate.animation = .easeOut
       cameraUpdate.animationDuration = 1
+      view.mapView.zoomLevel = 13
       view.mapView.moveCamera(cameraUpdate)
-      
     }
   }
   
@@ -137,11 +122,49 @@ extension MapViewRepresentable {
     
   }
   
+  /// 마커 및 경로 비활성화 처리 메서드
+  private func markerInactive(context: Context) {
+    if let existingPath = context.coordinator.paths {
+      existingPath.mapView = nil
+      context.coordinator.paths = nil
+      
+    }
+    if let data = context.coordinator.selectedPin,
+        let activeMarker = context.coordinator.activeMarker {
+      activeMarker.iconImage = .init(image: data.state.inactiveImage)
+    }
+  }
+  
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
   private func markerTapEvent(marker: NMFMarker, context: Context) {
+    markerInactive(context: context)
     let tag = Int(marker.tag)
-    context.coordinator.selectedPin = tag
+    context.coordinator.selectedPin = flowerPositions[tag]
     context.coordinator.activeMarker = marker
+    
     markerTappedEvent.send(tag)
   }
+  
+  /// 경로 선을 그리기 위한 메서드
+  private func drawMultipartPath(_ view: NMFNaverMapView, context: Context) {
+    
+    if !selectedPath.isEmpty, let data = context.coordinator.selectedPin {
+      let lines = selectedPath.map {
+        NMGLatLng(lat: $0.latitude, lng: $0.longitude)
+      }
+      let path = NMFPath()
+      path.color = data.state.color
+      path.outlineColor = data.state.color
+      path.path = NMGLineString(points: lines)
+      path.mapView = view.mapView
+      context.coordinator.paths = path
+      
+    } else if let _ = context.coordinator.paths {
+      // 경로 데이터가 비어있지만 저장된 경로가 있을 경우 -> 선택 비활성화
+      markerInactive(context: context)
+    }
+    
+  }
 }
+
+

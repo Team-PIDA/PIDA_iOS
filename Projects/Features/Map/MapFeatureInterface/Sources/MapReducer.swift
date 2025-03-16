@@ -22,6 +22,7 @@ public struct MapReducer {
   public struct State: Equatable {
     public var position: MapPoint? = nil
     public var flowerPositions: [Int: FlowerPosition] = [:]
+    public var selectedPathLines: [MapPoint] = []
     public init() {}
   }
   
@@ -30,6 +31,7 @@ public struct MapReducer {
     case moveUserLocation
     case moveLocation(MapPoint)
     case fetchFlowers
+    case fetchPathLines(id: Int?)
     case binding(BindingAction<State>)
   }
   
