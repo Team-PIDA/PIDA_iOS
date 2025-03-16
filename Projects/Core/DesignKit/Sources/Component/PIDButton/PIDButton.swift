@@ -62,38 +62,38 @@ public struct PIDButton<IconContent: View>: View {
   
   @ViewBuilder
   private var content: some View {
-    RoundedRectangle(cornerRadius: size.cornerRadius)
-      .fill(backgroundColor)
-      .overlay(
+    HStack(spacing: .Number6) {
+      iconContent.map { $0() }
+      Text(title)
+        .foregroundColor(
+          isDisabled
+          ? ColorSet.Text.Disabled
+          : isSecondary ? ColorSet.Text.Primary : ColorSet.Text.Inverse
+        )
+        .font(size.font)
+    }
+    .frame(maxWidth: .infinity)
+    .padding(.vertical, size.padding.vertical)
+    .background(
+      RoundedRectangle(cornerRadius: size.cornerRadius)
+        .fill(backgroundColor)
+    )
+    .overlay(
+      RoundedRectangle(cornerRadius: size.cornerRadius)
+        .inset(by: 0.5)
+        .stroke(
+          isSecondary
+          ? ColorSet.Border.Secondary
+          : backgroundColor,
+          lineWidth: 1
+        )
+    )
+    .overlay {
+      if isPressed {
         RoundedRectangle(cornerRadius: size.cornerRadius)
-          .inset(by: 0.5)
-          .stroke(
-            isSecondary
-            ? ColorSet.Border.Secondary
-            : backgroundColor,
-            lineWidth: 1
-          )
-      )
-      .overlay {
-        HStack(spacing: .Number6) {
-          iconContent.map { $0() }
-          Text(title)
-            .foregroundColor(
-              isDisabled
-              ? ColorSet.Text.Disabled
-              : isSecondary ? ColorSet.Text.Primary : ColorSet.Text.Inverse
-            )
-            .font(size.font)
-        }
-        .padding(.vertical, size.padding.vertical)
-        .padding(.horizontal, size.padding.horizonal)
+          .fill(ColorSet.Component.Pressed)
       }
-      .overlay {
-        if isPressed {
-          RoundedRectangle(cornerRadius: size.cornerRadius)
-            .fill(ColorSet.Component.Pressed)
-        }
-      }
+    }
   }
 }
 
