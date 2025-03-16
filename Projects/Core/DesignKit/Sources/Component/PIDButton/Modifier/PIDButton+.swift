@@ -64,4 +64,12 @@ public extension PIDButton {
     button.isError = isError
     return button
   }
+  
+  func isSecondary(
+    _ isSecondary: Bool
+  ) -> Self {
+    var button = self
+    button.isSecondary = isSecondary
+    return button
+  }
 }

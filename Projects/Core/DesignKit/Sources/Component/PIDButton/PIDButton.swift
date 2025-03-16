@@ -14,6 +14,7 @@ public struct PIDButton<IconContent: View>: View {
   public var size: PIDButtonSize = .large
   public var isDisabled: Bool = false
   public var isError: Bool = false
+  public var isSecondary: Bool = false
   public var action: (() async -> Void)? = nil
   public var iconContent: (() -> IconContent)?
   
@@ -22,6 +23,8 @@ public struct PIDButton<IconContent: View>: View {
       return ColorSet.Component.Disabled
     } else if isError {
       return ColorSet.Component.Error
+    } else if isSecondary {
+      return ColorSet.Background.Primary
     } else {
       return ColorSet.Component.Primary
     }
@@ -61,12 +64,24 @@ public struct PIDButton<IconContent: View>: View {
   private var content: some View {
     RoundedRectangle(cornerRadius: size.cornerRadius)
       .fill(backgroundColor)
+      .overlay(
+        RoundedRectangle(cornerRadius: size.cornerRadius)
+          .inset(by: 0.5)
+          .stroke(
+            isSecondary
+            ? ColorSet.Border.Secondary
+            : backgroundColor,
+            lineWidth: 1
+          )
+      )
       .overlay {
         HStack(spacing: .Number6) {
           iconContent.map { $0() }
           Text(title)
             .foregroundColor(
-              isDisabled ? ColorSet.Text.Disabled : ColorSet.Text.Inverse
+              isDisabled
+              ? ColorSet.Text.Disabled
+              : isSecondary ? ColorSet.Text.Primary : ColorSet.Text.Inverse
             )
             .font(size.font)
         }
@@ -184,6 +199,30 @@ public struct PIDButton<IconContent: View>: View {
       .size(.large)
       .isError(true)
       .border(Color.red)
+    }
+    
+    Section("보조 버튼") {
+      PIDButton()
+        .title("Label")
+        .size(.large)
+        .isSecondary(true)
+      
+      PIDButton {
+        Icon(icon: IconSet.flower.swiftUIImage)
+          .size(.large)
+          .foregroundColor(ColorSet.Icon.Accent)
+      }
+      .title("Icon")
+      .size(.large)
+      .isSecondary(true)
+      
+      PIDButton {
+        Icon(icon: IconSet.flower.swiftUIImage)
+          .size(.large)
+          .foregroundColor(ColorSet.Icon.Accent)
+      }
+      .title("Disabled")
+      .isDisabled(true)
     }
   }
 }
