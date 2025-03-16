@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Combine
 import ComposableArchitecture
 import DesignKit
 import Utility
@@ -17,6 +18,7 @@ public struct MapView: View {
   private typealias Colors = DesignKitAsset.ColorSet
   
   @Bindable var store: StoreOf<MapReducer>
+  private var markerTappedEvent = PassthroughSubject<Int?, Never>()
   
   public init(store: StoreOf<MapReducer>) {
     self.store = store
@@ -26,7 +28,8 @@ public struct MapView: View {
     ZStack {
       MapViewRepresentable(
         position: $store.state.position,
-        flowerPositions: $store.state.flowerPositions
+        flowerPositions: $store.state.flowerPositions,
+        markerTappedEvent: markerTappedEvent
       )
       .ignoresSafeArea()
       VStack {

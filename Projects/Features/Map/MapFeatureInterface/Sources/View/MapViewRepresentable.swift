@@ -19,6 +19,7 @@ struct MapViewRepresentable: UIViewRepresentable {
   private let locationManager = CLLocationManager()
   @Binding var position: MapPoint?
   @Binding var flowerPositions: [Int: FlowerPosition]
+  var markerTappedEvent: PassthroughSubject<Int?, Never>
   
   // MARK: - UI
   
@@ -57,12 +58,26 @@ struct MapViewRepresentable: UIViewRepresentable {
     var parent: MapViewRepresentable
     /// 마지막 카메라 이동 위치
     var lastCameraPoint: MapPoint? = nil
-    
     /// 현재 표시되어있는 마커 배열
     var markers: [NMFMarker] = []
+    /// 현재 선택 된 마커가 있는지 체크하기 위한 프로퍼티
+    var selectedPin: Int?
+    
+    var activeMarker: NMFMarker? = nil
     
     init(_ parent: MapViewRepresentable) {
       self.parent = parent
+    }
+    
+    func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
+      if let activeMarker = activeMarker {
+        selectedPin = nil
+        let id = Int(activeMarker.tag)
+        if let image = parent.flowerPositions[id]?.state {
+          activeMarker.iconImage = .init(image: image.inactiveImage)
+        }
+        
+      }
     }
     
   }
@@ -112,6 +127,7 @@ extension MapViewRepresentable {
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
           marker.iconImage = .init(image: pin.value.state.activeImage)
+          markerTapEvent(marker: marker, context: context)
           moveCamera(view, point: position)
         }
         return true
@@ -121,4 +137,11 @@ extension MapViewRepresentable {
     
   }
   
+  /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
+  private func markerTapEvent(marker: NMFMarker, context: Context) {
+    let tag = Int(marker.tag)
+    context.coordinator.selectedPin = tag
+    context.coordinator.activeMarker = marker
+    markerTappedEvent.send(tag)
+  }
 }
