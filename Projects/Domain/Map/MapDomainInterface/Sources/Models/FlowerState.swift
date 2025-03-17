@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum FlowerState: String {
+public enum FlowerState: String, Sendable {
   case gone
   case many
   case few

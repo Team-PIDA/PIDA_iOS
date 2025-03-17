@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct FlowerPosition: Equatable {
+public struct FlowerPosition: Equatable, Sendable {
   public var id: Int
   public var state: FlowerState
   public var currentPosition: MapPoint

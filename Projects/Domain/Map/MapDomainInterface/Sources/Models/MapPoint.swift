@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct MapPoint: Equatable {
+public struct MapPoint: Equatable, Sendable {
   public var latitude: Double
   public var longitude: Double
   
