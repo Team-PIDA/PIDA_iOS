@@ -45,8 +45,10 @@ public struct MapView: View {
       store.send(.fetchUserLocation)
       store.send(.fetchFlowers)
     }
-    .onReceive(LocationService.shared.userLocationEvent) { _ in
-      store.send(.moveUserLocation)
+    .task {
+      for await _ in await LocationService.shared.userLocationStream {
+        store.send(.moveUserLocation)
+      }
     }
   }
   

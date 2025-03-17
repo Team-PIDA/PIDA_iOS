@@ -7,19 +7,24 @@
 //
 
 import UIKit
-import Combine
 import CoreLocation
 
 /// 위치 권한 관련 서비스 구현
-public final class LocationService: NSObject, CLLocationManagerDelegate {
+public actor LocationService: NSObject, CLLocationManagerDelegate {
   
   public static let shared = LocationService()
-  public var userLocationEvent = PassthroughSubject<Void, Never>()
-  public var userLostion: (Double, Double)? = nil
+  public private(set) var userLocation: (Double, Double)? = nil
   
   private let locationManager = CLLocationManager()
   /// 위치 권한 팝업 나타날 때 선택할 때 까지 await 상태로 기다리기 위한 프로퍼티
   private var continuation: CheckedContinuation<Void, Never>?
+  
+  private var userLocationContinuation: AsyncStream<Void>.Continuation?
+  public lazy var userLocationStream: AsyncStream<Void> = {
+    AsyncStream(bufferingPolicy: .bufferingNewest(1)) { continuation in
+      self.userLocationContinuation = continuation
+    }
+  }()
   
   // MARK: - Initialize
   
@@ -35,13 +40,13 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
     let authorizationStatus = locationManager.authorizationStatus
     switch authorizationStatus {
     case .authorizedWhenInUse, .authorizedAlways:
-      await currentLocation()
+      await updateCurrentLocation()
     case .notDetermined:
       locationManager.requestWhenInUseAuthorization()
       await withCheckedContinuation { continuation in
         self.continuation = continuation
       }
-      await currentLocation()
+      await updateCurrentLocation()
     case .denied, .restricted:
       // TODO: - 위치 권한 거부 시 토스트?
       break
@@ -50,26 +55,33 @@ public final class LocationService: NSObject, CLLocationManagerDelegate {
     }
   }
   
-  /// 현재 위치 좌표 받아오기
-  @MainActor
-  private func currentLocation() {
+  private func updateCurrentLocation() async {
     locationManager.startUpdatingLocation()
-    let lat: Double? = locationManager.location?.coordinate.latitude
-    let lng: Double? = locationManager.location?.coordinate.longitude
-    if let lat = lat, let lng = lng {
-      userLostion = (lat, lng)
-      userLocationEvent.send(())
+    
+    if let location = locationManager.location {
+      let lat: Double? = location.coordinate.latitude
+      let lng: Double? = location.coordinate.longitude
+      if let lat = lat, let lng = lng {
+        userLocation = (lat, lng)
+        userLocationContinuation?.yield(())
+      } else {
+        userLocation = nil
+      }
       locationManager.stopUpdatingLocation()
-    } else {
-      userLostion = nil
     }
   }
   
-  public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+  nonisolated public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
     let status = manager.authorizationStatus
     if status == .authorizedWhenInUse || status == .authorizedAlways {
-      continuation?.resume()
-      continuation = nil
+      Task {
+        await self.resumeContinuation()
+      }
     }
+  }
+  
+  private func resumeContinuation() {
+    continuation?.resume()
+    continuation = nil
   }
 }
