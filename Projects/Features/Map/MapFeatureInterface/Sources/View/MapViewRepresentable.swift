@@ -28,7 +28,8 @@ struct MapViewRepresentable: UIViewRepresentable {
   @Binding var selectedPath: [MapPoint]
   /// 마커 탭 시 이벤트를 전달하기 위한 publisher
   var markerTappedEvent: PassthroughSubject<Int?, Never>
-  
+  /// 지도 초기 위치 설정 - 석촌호수 근처
+  private let defaultPoint: MapPoint = .init(latitude: 37.50545, longitude: 127.10143)
   // MARK: - UI
   
   private let mapView: NMFNaverMapView = {
@@ -45,6 +46,7 @@ struct MapViewRepresentable: UIViewRepresentable {
     mapView.mapView.isTiltGestureEnabled = false
     mapView.mapView.touchDelegate = context.coordinator
     mapView.mapView.addCameraDelegate(delegate: context.coordinator)
+    moveCamera(mapView, to: defaultPoint)
     return mapView
   }
   
@@ -122,6 +124,7 @@ extension MapViewRepresentable {
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
   private func markerTapEvent(to marker: NMFMarker, context: Context) {
+    if marker == context.coordinator.activeMarker { return }
     context.coordinator.deletePathMarkers()
     let tag = Int(marker.tag)
     context.coordinator.selectedPin = flowerPositions[tag]
@@ -132,7 +135,8 @@ extension MapViewRepresentable {
   /// 경로 선을 그리기 위한 메서드
   private func drawPathLine(_ view: NMFNaverMapView, context: Context) {
     
-    if !selectedPath.isEmpty, let data = context.coordinator.selectedPin {
+    if !selectedPath.isEmpty,
+        let data = context.coordinator.selectedPin {
       let lines = selectedPath.map {
         NMGLatLng(lat: $0.latitude, lng: $0.longitude)
       }

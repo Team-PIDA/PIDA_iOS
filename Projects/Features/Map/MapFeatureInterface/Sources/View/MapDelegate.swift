@@ -57,6 +57,8 @@ extension MapViewRepresentable {
       if let data = selectedPin,
          let activeMarker = activeMarker {
         activeMarker.iconImage = data.state.inactiveImage
+        self.activeMarker = nil
+        self.selectedPin = nil
       }
     }
     
