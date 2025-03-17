@@ -10,35 +10,33 @@ import Foundation
 import UIKit
 import DesignKit
 import MapDomainInterface
+import NMapsMap
 
 extension FlowerState {
   private typealias Images = DesignKitAsset.Icons
   private typealias Colors = DesignKitAsset.ColorSet
   
-  var activeImage: UIImage {
-    switch self {
-    case .gone:
-      return Images.goneActive.image
-    case .many:
-      return Images.manyActive.image
-    case .few:
-      return Images.fewActive.image
-    case .none:
-      return Images.noneActive.image
-    }
+  private static let activeImages: [FlowerState: NMFOverlayImage] = [
+    .gone: NMFOverlayImage(image: Images.goneActive.image),
+    .many: NMFOverlayImage(image: Images.manyActive.image),
+    .few: NMFOverlayImage(image: Images.fewActive.image),
+    .none: NMFOverlayImage(image: Images.noneActive.image)
+  ]
+  private static let inactiveImages: [FlowerState: NMFOverlayImage] = [
+    .gone: NMFOverlayImage(image: Images.goneInactive.image),
+    .many: NMFOverlayImage(image: Images.manyInactive.image),
+    .few: NMFOverlayImage(image: Images.fewInactive.image),
+    .none: NMFOverlayImage(image: Images.noneInactive.image)
+  ]
+  
+  var activeImage: NMFOverlayImage {
+    Self.activeImages[self]!
   }
-  var inactiveImage: UIImage {
-    switch self {
-    case .gone:
-      return Images.goneInactive.image
-    case .many:
-      return Images.manyInactive.image
-    case .few:
-      return Images.fewInactive.image
-    case .none:
-      return Images.noneInactive.image
-    }
+  
+  var inactiveImage: NMFOverlayImage {
+    Self.inactiveImages[self]!
   }
+  
   var color: UIColor {
     switch self {
     case .gone:

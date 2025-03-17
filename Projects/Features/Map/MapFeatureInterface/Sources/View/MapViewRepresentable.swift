@@ -56,7 +56,7 @@ struct MapViewRepresentable: UIViewRepresentable {
       presentMarkers(uiView, context: context)
     }
     if let _ = context.coordinator.selectedPin {
-      drawMultipartPath(uiView, context: context)
+      drawPathLine(uiView, context: context)
     }
   }
   
@@ -106,12 +106,12 @@ extension MapViewRepresentable {
         lng: position.longitude
       )
       marker.mapView = view.mapView
-      marker.iconImage = .init(image: pin.value.state.inactiveImage)
+      marker.iconImage = pin.value.state.inactiveImage
       marker.tag = UInt(pin.key)
       marker.isHideCollidedSymbols = true
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
-          marker.iconImage = .init(image: pin.value.state.activeImage)
+          marker.iconImage = pin.value.state.activeImage
           markerTapEvent(marker: marker, context: context)
           moveCamera(view, point: position)
         }
@@ -131,7 +131,7 @@ extension MapViewRepresentable {
     }
     if let data = context.coordinator.selectedPin,
         let activeMarker = context.coordinator.activeMarker {
-      activeMarker.iconImage = .init(image: data.state.inactiveImage)
+      activeMarker.iconImage = data.state.inactiveImage
     }
   }
   
@@ -146,13 +146,14 @@ extension MapViewRepresentable {
   }
   
   /// 경로 선을 그리기 위한 메서드
-  private func drawMultipartPath(_ view: NMFNaverMapView, context: Context) {
+  private func drawPathLine(_ view: NMFNaverMapView, context: Context) {
     
     if !selectedPath.isEmpty, let data = context.coordinator.selectedPin {
       let lines = selectedPath.map {
         NMGLatLng(lat: $0.latitude, lng: $0.longitude)
       }
       let path = NMFPath()
+      path.width = 6
       path.color = data.state.color
       path.outlineColor = data.state.color
       path.path = NMGLineString(points: lines)
