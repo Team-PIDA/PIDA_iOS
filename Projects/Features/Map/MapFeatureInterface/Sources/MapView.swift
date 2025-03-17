@@ -38,13 +38,8 @@ public struct MapView: View {
       .ignoresSafeArea()
       VStack {
         Spacer()
-        HStack {
-          Spacer()
-          curLocationButton()
-        }
+        currentButton
       }
-      .padding(.trailing, 16)
-      
     }
     .onAppear {
       store.send(.fetchUserLocation)
@@ -55,17 +50,19 @@ public struct MapView: View {
     }
   }
   
-  // TODO: - DesignSystem 버튼으로 변경
-  private func curLocationButton() -> some View {
-    Button {
-      store.send(.fetchUserLocation)
-    } label: {
-      Image(asset: Icons.myLocation).renderingMode(.template)
+  @ViewBuilder
+  private var currentButton: some View {
+    HStack {
+      Spacer()
+      PIDIconButton {
+        Icon(image: .myLocation)
+          .size(.superLage)
+      }
+      .action {
+        store.send(.fetchUserLocation)
+      }
+      .elevation(cornerRadius: .Number24)
     }
-    .foregroundStyle(Colors.Icon.Primary)
-    .frame(width: 48, height: 48)
-    .background(Colors.Background.Primary)
-    .clipShape(.circle)
-    .shadow(color: .black.opacity(0.2), radius: 4)
+    .padding(.trailing, 16)
   }
 }
