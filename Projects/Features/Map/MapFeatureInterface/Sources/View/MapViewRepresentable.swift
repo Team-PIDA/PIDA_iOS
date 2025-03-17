@@ -60,6 +60,8 @@ struct MapViewRepresentable: UIViewRepresentable {
     }
     if let _ = context.coordinator.selectedPin {
       drawPathLine(uiView, context: context)
+    } else {
+      context.coordinator.deletePathMarkers()
     }
   }
   
@@ -129,38 +131,35 @@ extension MapViewRepresentable {
   
   /// 경로 선을 그리기 위한 메서드
   private func drawPathLine(_ view: NMFNaverMapView, context: Context) {
-    
-    if !selectedPath.isEmpty,
-        let data = context.coordinator.selectedPin {
-      let lines = selectedPath.map {
-        NMGLatLng(lat: $0.latitude, lng: $0.longitude)
-      }
-      let path = NMFPath()
-      path.width = 6
-      path.color = data.state.color
-      path.outlineColor = data.state.color
-      path.path = NMGLineString(points: lines)
-      path.mapView = view.mapView
-      context.coordinator.paths = path
-      
-      // 양 끝 원 마커 그리기
-      if let firstPoint = lines.first, let lastPoint = lines.last {
-        let startMarker = drawMarker(view,
-                                     to: firstPoint,
-                                     icon: data.state.circleImage,
-                                     anchor: CGPoint(x: 0.5, y: 0.5))
-        let endMarker = drawMarker(view,
-                                   to: lastPoint,
-                                   icon: data.state.circleImage,
-                                   anchor: CGPoint(x: 0.5, y: 0.5))
-        
-        context.coordinator.startMarker = startMarker
-        context.coordinator.endMarker = endMarker
-      }
-    } else if let _ = context.coordinator.paths {
-      // 경로 데이터가 비어있지만 저장된 경로가 있을 경우 -> 선택 비활성화
+    guard !selectedPath.isEmpty, let data = context.coordinator.selectedPin else {
       context.coordinator.deletePathMarkers()
+      return
     }
+    
+    let lines = selectedPath.map {
+      NMGLatLng(lat: $0.latitude, lng: $0.longitude)
+    }
+    
+    // 기존 경로와 동일하면 다시 그리지 않음
+    if let existingPath = context.coordinator.paths?.path,
+        existingPath.points as? [NMGLatLng] == lines { return }
+    
+    let flowerState = data.state
+    // 새로운 경로 그리기
+    let path = NMFPath()
+    path.width = 6
+    path.color = flowerState.color
+    path.outlineColor = flowerState.color
+    path.path = NMGLineString(points: lines)
+    path.mapView = view.mapView
+    context.coordinator.paths = path
+    
+    // 양 끝 원 마커 추가
+    guard let firstPoint = lines.first, let lastPoint = lines.last else { return }
+    let start = drawMarker(view, to: firstPoint, icon: flowerState.circleImage, anchor: CGPoint(x: 0.5, y: 0.5))
+    let end = drawMarker(view, to: lastPoint, icon: flowerState.circleImage, anchor: CGPoint(x: 0.5, y: 0.5))
+    context.coordinator.startMarker = start
+    context.coordinator.endMarker = end
   }
   
   /// 마커 기본 설정 메서드
