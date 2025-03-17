@@ -31,3 +31,7 @@ public extension Icon {
     return icon
   }
 }
+
+public extension Icon {
+  
+}

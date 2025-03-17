@@ -13,21 +13,21 @@ public enum ImageSet {
        flower, location, myLocation, placeholder,
        replay, search, sentimentDissatisfied, warning
   
-  public var swiftUIImage: Image {
+  public var swiftUIImage: DesignKitImages {
     switch self {
-    case .back: return DesignKitAsset.Icons.back.swiftUIImage
-    case .chevronRight: return DesignKitAsset.Icons.chevronRight.swiftUIImage
-    case .close: return DesignKitAsset.Icons.close.swiftUIImage
-    case .copy: return DesignKitAsset.Icons.copy.swiftUIImage
-    case .distance: return DesignKitAsset.Icons.distance.swiftUIImage
-    case .flower: return DesignKitAsset.Icons.flower.swiftUIImage
-    case .location: return DesignKitAsset.Icons.location.swiftUIImage
-    case .myLocation: return DesignKitAsset.Icons.myLocation.swiftUIImage
-    case .placeholder: return DesignKitAsset.Icons.placeholder.swiftUIImage
-    case .replay: return DesignKitAsset.Icons.replay.swiftUIImage
-    case .search: return DesignKitAsset.Icons.search.swiftUIImage
-    case .sentimentDissatisfied: return DesignKitAsset.Icons.sentimentDissatisfied.swiftUIImage
-    case .warning: return DesignKitAsset.Icons.warning.swiftUIImage
+    case .back: return DesignKitAsset.Icons.back
+    case .chevronRight: return DesignKitAsset.Icons.chevronRight
+    case .close: return DesignKitAsset.Icons.close
+    case .copy: return DesignKitAsset.Icons.copy
+    case .distance: return DesignKitAsset.Icons.distance
+    case .flower: return DesignKitAsset.Icons.flower
+    case .location: return DesignKitAsset.Icons.location
+    case .myLocation: return DesignKitAsset.Icons.myLocation
+    case .placeholder: return DesignKitAsset.Icons.placeholder
+    case .replay: return DesignKitAsset.Icons.replay
+    case .search: return DesignKitAsset.Icons.search
+    case .sentimentDissatisfied: return DesignKitAsset.Icons.sentimentDissatisfied
+    case .warning: return DesignKitAsset.Icons.warning
     }
   }
 }
