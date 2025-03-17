@@ -10,18 +10,18 @@ import SwiftUI
 
 public struct Icon: View {
   
-  public var icon: Image
+  public var image: ImageSet
   public var size: IconSize = .large
   public var color: Color = ColorSet.Icon.Primary
   
   public init(
-    icon: Image
+    image: ImageSet
   ) {
-    self.icon = icon
+    self.image = image
   }
   
   public var body: some View {
-    icon
+    image.swiftUIImage
       .renderingMode(.template)
       .resizable()
       .scaledToFit()

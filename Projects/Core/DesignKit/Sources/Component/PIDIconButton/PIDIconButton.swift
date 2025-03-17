@@ -59,7 +59,7 @@ public struct PIDIconButton<IconContent: View>: View {
 #Preview {
   HStack {
     PIDIconButton {
-      Icon(icon: IconSet.flower.swiftUIImage)
+      Icon(image: .flower)
         .foregroundColor(ColorSet.Icon.Accent)
     }
     .action {
@@ -71,7 +71,7 @@ public struct PIDIconButton<IconContent: View>: View {
     .border(Color.red)
     
     PIDIconButton {
-      Icon(icon: IconSet.flower.swiftUIImage)
+      Icon(image: .flower)
         .foregroundColor(ColorSet.Icon.Accent)
     }
     .elevation(

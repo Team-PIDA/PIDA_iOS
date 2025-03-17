@@ -49,12 +49,12 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
     Section("뒤로가기 + 타이틀 + 닫기") {
       NavigationBar(
         backContent: {
-          TouchArea(image: IconSet.back.swiftUIImage)
+          TouchArea(image: .back)
             .size(.superLage)
         },
         title: "text",
         closeContent: {
-          TouchArea(image: IconSet.close.swiftUIImage)
+          TouchArea(image: .close)
             .size(.superLage)
         }
       )
@@ -64,7 +64,7 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
     Section("뒤로가기 + 타이틀") {
       NavigationBar(
         backContent: {
-          TouchArea(image: IconSet.back.swiftUIImage)
+          TouchArea(image: .back)
             .size(.superLage)
             .action {
               print("뒤로가기 버튼")
@@ -79,7 +79,7 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
       NavigationBar(
         title: "text",
         closeContent: {
-          TouchArea(image: IconSet.close.swiftUIImage)
+          TouchArea(image: .close)
             .size(.superLage)
             .action {
               print("닫기 버튼")

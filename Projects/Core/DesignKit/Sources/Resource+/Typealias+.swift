@@ -10,4 +10,3 @@ import Foundation
 
 public typealias FontSet = DesignKitFontFamily.FontSet
 public typealias ColorSet = DesignKitAsset.ColorSet
-public typealias IconSet = DesignKitAsset.Icons

@@ -10,13 +10,13 @@ import SwiftUI
 
 public struct TouchArea: View {
   
-  public var image: Image
+  public var image: ImageSet
   public var action: (() async -> Void)? = nil
   public var size: IconSize = .superLage
   public var color: Color = ColorSet.Icon.Primary
   
   public init(
-    image: Image
+    image: ImageSet
   ) {
     self.image = image
   }
@@ -29,7 +29,7 @@ public struct TouchArea: View {
     Rectangle()
       .fill(.clear)
       .overlay {
-        Icon(icon: image)
+        Icon(image: image)
           .size(size)
       }
       .padding(.Number12)
@@ -46,22 +46,22 @@ public struct TouchArea: View {
 
 #Preview {
   HStack {
-    TouchArea(image: IconSet.close.swiftUIImage)
+    TouchArea(image: .close)
       .size(.superLage)
       .action { print("Super Large") }
       .border(Color.red)
     
-    TouchArea(image: IconSet.close.swiftUIImage)
+    TouchArea(image: .close)
       .size(.large)
       .action { print("Large") }
       .border(Color.red)
     
-    TouchArea(image: IconSet.close.swiftUIImage)
+    TouchArea(image: .close)
       .size(.medium)
       .action { print("Medium") }
       .border(Color.red)
     
-    TouchArea(image: IconSet.close.swiftUIImage)
+    TouchArea(image: .close)
       .size(.small)
       .action { print("small") }
       .border(Color.red)

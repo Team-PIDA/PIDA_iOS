@@ -142,7 +142,7 @@ public struct PIDButton<IconContent: View>: View {
         title: "Label",
         size: .large
       ) {
-        Icon(icon: IconSet.flower.swiftUIImage)
+        Icon(image: .flower)
           .size(.large)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
@@ -152,7 +152,7 @@ public struct PIDButton<IconContent: View>: View {
         title: "Label",
         size: .medium
       ) {
-        Icon(icon: IconSet.flower.swiftUIImage)
+        Icon(image: .flower)
           .size(.medium)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
@@ -162,7 +162,7 @@ public struct PIDButton<IconContent: View>: View {
         title: "Label",
         size: .small
       ) {
-        Icon(icon: IconSet.flower.swiftUIImage)
+        Icon(image: .flower)
           .size(.small)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
@@ -172,7 +172,7 @@ public struct PIDButton<IconContent: View>: View {
         title: "Label",
         size: .small
       ) {
-        Icon(icon: IconSet.flower.swiftUIImage)
+        Icon(image: .flower)
           .size(.small)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
@@ -194,7 +194,7 @@ public struct PIDButton<IconContent: View>: View {
         title: "Label",
         size: .large
       ) {
-        Icon(icon: IconSet.flower.swiftUIImage)
+        Icon(image: .flower)
           .size(.large)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
@@ -214,7 +214,7 @@ public struct PIDButton<IconContent: View>: View {
         title: "Label",
         size: .large
       )  {
-        Icon(icon: IconSet.flower.swiftUIImage)
+        Icon(image: .flower)
           .size(.large)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
@@ -233,7 +233,7 @@ public struct PIDButton<IconContent: View>: View {
         title: "Icon",
         size: .large
       )  {
-        Icon(icon: IconSet.flower.swiftUIImage)
+        Icon(image: .flower)
           .size(.large)
           .foregroundColor(ColorSet.Icon.Accent)
       }
@@ -243,7 +243,7 @@ public struct PIDButton<IconContent: View>: View {
         title: "Disabled",
         size: .large
       )  {
-        Icon(icon: IconSet.flower.swiftUIImage)
+        Icon(image: .flower)
           .size(.large)
           .foregroundColor(ColorSet.Icon.Accent)
       }
