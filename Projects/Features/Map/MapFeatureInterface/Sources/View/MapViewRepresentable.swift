@@ -14,9 +14,6 @@ import MapDomainInterface
 import NMapsMap
 
 struct MapViewRepresentable: UIViewRepresentable {
-  
-  private let locationManager = CLLocationManager()
-  
   /// 사용자의 현재 위치 정보
   ///
   /// - 초기 및 현위치 버튼 탭 시에만 값이 채워져 있음
