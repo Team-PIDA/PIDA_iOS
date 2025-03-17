@@ -10,8 +10,8 @@ import SwiftUI
 
 public struct PIDButton<IconContent: View>: View {
   
-  public var title: String = ""
-  public var size: PIDButtonSize = .large
+  public var title: String
+  public var size: PIDButtonSize
   public var isDisabled: Bool = false
   public var isError: Bool = false
   public var isSecondary: Bool = false
@@ -33,12 +33,21 @@ public struct PIDButton<IconContent: View>: View {
   @State private var isPressed: Bool = false
   
   public init(
+    title: String,
+    size: PIDButtonSize = .large,
     @ViewBuilder iconContent: @escaping () -> IconContent
   ) {
+    self.title = title
+    self.size = size
     self.iconContent = iconContent
   }
   
-  public init() where IconContent == EmptyView {
+  public init(
+    title: String,
+    size: PIDButtonSize
+  ) where IconContent == EmptyView {
+    self.title = title
+    self.size = size
     self.iconContent = nil
   }
   
@@ -100,24 +109,28 @@ public struct PIDButton<IconContent: View>: View {
 #Preview {
   List {
     Section("일반 텍스트 버튼") {
-      PIDButton()
-      .title("Label")
-      .size(.large)
+      PIDButton(
+        title: "Label",
+        size: .large
+      )
       .border(Color.red)
       
-      PIDButton()
-      .title("Label")
-      .size(.medium)
+      PIDButton(
+        title: "Label",
+        size: .medium
+      )
       .border(Color.red)
       
-      PIDButton()
-      .title("Label")
-      .size(.small)
+      PIDButton(
+        title: "Label",
+        size: .small
+      )
       .border(Color.red)
       
-      PIDButton()
-      .title("Action")
-      .size(.small)
+      PIDButton(
+        title: "Action",
+        size: .small
+      )
       .action {
         print("Button Clicked")
       }
@@ -125,40 +138,44 @@ public struct PIDButton<IconContent: View>: View {
     }
     
     Section("아이콘 버튼") {
-      PIDButton {
+      PIDButton(
+        title: "Label",
+        size: .large
+      ) {
         Icon(icon: IconSet.flower.swiftUIImage)
           .size(.large)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
-      .title("Label")
-      .size(.large)
       .border(Color.red)
       
-      PIDButton {
+      PIDButton(
+        title: "Label",
+        size: .medium
+      ) {
         Icon(icon: IconSet.flower.swiftUIImage)
           .size(.medium)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
-      .title("Label")
-      .size(.medium)
       .border(Color.red)
       
-      PIDButton {
+      PIDButton(
+        title: "Label",
+        size: .small
+      ) {
         Icon(icon: IconSet.flower.swiftUIImage)
           .size(.small)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
-      .title("Label")
-      .size(.small)
       .border(Color.red)
       
-      PIDButton {
+      PIDButton(
+        title: "Label",
+        size: .small
+      ) {
         Icon(icon: IconSet.flower.swiftUIImage)
           .size(.small)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
-      .title("Action")
-      .size(.small)
       .action {
         print("Button Clicked")
       }
@@ -166,62 +183,70 @@ public struct PIDButton<IconContent: View>: View {
     }
     
     Section("비활성화 버튼") {
-      PIDButton()
-      .title("Label")
-      .size(.large)
+      PIDButton(
+        title: "Label",
+        size: .large
+      )
       .isDisabled(true)
       .border(Color.red)
       
-      PIDButton {
+      PIDButton(
+        title: "Label",
+        size: .large
+      ) {
         Icon(icon: IconSet.flower.swiftUIImage)
           .size(.large)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
-      .title("Label")
-      .size(.large)
       .isDisabled(true)
       .border(Color.red)
     }
     
     Section("에러 버튼") {
-      PIDButton()
-      .title("Label")
-      .size(.large)
+      PIDButton(
+        title: "Label",
+        size: .large
+      )
       .isError(true)
       .border(Color.red)
       
-      PIDButton {
+      PIDButton(
+        title: "Label",
+        size: .large
+      )  {
         Icon(icon: IconSet.flower.swiftUIImage)
           .size(.large)
           .foregroundColor(ColorSet.Icon.Inverse)
       }
-      .title("Label")
-      .size(.large)
       .isError(true)
       .border(Color.red)
     }
     
     Section("보조 버튼") {
-      PIDButton()
-        .title("Label")
-        .size(.large)
-        .isSecondary(true)
-      
-      PIDButton {
-        Icon(icon: IconSet.flower.swiftUIImage)
-          .size(.large)
-          .foregroundColor(ColorSet.Icon.Accent)
-      }
-      .title("Icon")
-      .size(.large)
+      PIDButton(
+        title: "Label",
+        size: .large
+      )
       .isSecondary(true)
       
-      PIDButton {
+      PIDButton(
+        title: "Icon",
+        size: .large
+      )  {
         Icon(icon: IconSet.flower.swiftUIImage)
           .size(.large)
           .foregroundColor(ColorSet.Icon.Accent)
       }
-      .title("Disabled")
+      .isSecondary(true)
+      
+      PIDButton(
+        title: "Disabled",
+        size: .large
+      )  {
+        Icon(icon: IconSet.flower.swiftUIImage)
+          .size(.large)
+          .foregroundColor(ColorSet.Icon.Accent)
+      }
       .isDisabled(true)
     }
   }

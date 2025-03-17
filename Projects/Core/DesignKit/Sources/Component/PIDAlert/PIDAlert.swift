@@ -63,8 +63,10 @@ public struct PIDAlert: View {
   @ViewBuilder
   private var buttonView: some View {
     HStack(spacing: .Number12) {
-      PIDButton()
-      .title("닫기")
+      PIDButton(
+        title: "닫기",
+        size: .large
+      )
       .isSecondary(true)
       .action {
         Task { @MainActor in
@@ -72,8 +74,10 @@ public struct PIDAlert: View {
         }
       }
       
-      PIDButton()
-      .title("확인")
+      PIDButton(
+        title: "확인",
+        size: .large
+      )
       .action {
         Task { @MainActor in
           await acceptAction()
