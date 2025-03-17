@@ -28,6 +28,10 @@ extension MapViewRepresentable {
     var activeMarker: NMFMarker? = nil
     /// 현재 그려져있는 경로 데이터
     var paths: NMFPath?
+    /// 경로선 시작 마커
+    var startMarker: NMFMarker? = nil
+    /// 경로선 끝 마커
+    var endMarker: NMFMarker? = nil
     
     init(_ parent: MapViewRepresentable) {
       self.parent = parent
@@ -36,6 +40,24 @@ extension MapViewRepresentable {
     /// 지도 탭 이벤트
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
       parent.markerTappedEvent.send(nil)
+    }
+    
+    /// 마커 및 경로 비활성화 처리 메서드
+    func deletePathMarkers() {
+      if let paths = paths,
+         let startMarker = startMarker,
+         let endMarker = endMarker {
+        paths.mapView = nil
+        startMarker.mapView = nil
+        endMarker.mapView = nil
+        self.paths = nil
+        self.startMarker = nil
+        self.endMarker = nil
+      }
+      if let data = selectedPin,
+         let activeMarker = activeMarker {
+        activeMarker.iconImage = data.state.inactiveImage
+      }
     }
     
   }

@@ -24,7 +24,6 @@ extension MapReducer {
           .moveLocation(.init(latitude: userLocation.0, longitude: userLocation.1))
         )
       }
-      // TODO: - 디폴트 위치 설정하기
       return .none
     case let .moveLocation(point):
       state.position = point

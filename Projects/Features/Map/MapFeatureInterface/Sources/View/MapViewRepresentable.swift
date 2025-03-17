@@ -76,15 +76,14 @@ extension MapViewRepresentable {
     let point = MapPoint(latitude: cameraPosition.lat, longitude: cameraPosition.lng)
     if point != context.coordinator.lastCameraPoint {
       view.mapView.positionMode = .normal
-      moveCamera(view, point: userLocation)
+      moveCamera(view, to: userLocation)
       context.coordinator.lastCameraPoint = userLocation
-      
     }
     userLocation = nil
   }
   
   /// 카메라 이동 메서드
-  private func moveCamera(_ view: NMFNaverMapView, point: MapPoint?) {
+  private func moveCamera(_ view: NMFNaverMapView, to point: MapPoint?) {
     if let point = point {
       let coord = NMGLatLng(lat: point.latitude, lng: point.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: coord)
@@ -112,36 +111,21 @@ extension MapViewRepresentable {
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
           marker.iconImage = pin.value.state.activeImage
-          markerTapEvent(marker: marker, context: context)
-          moveCamera(view, point: position)
+          markerTapEvent(to: marker, context: context)
+          moveCamera(view, to: position)
         }
         return true
       }
       context.coordinator.markers.append(marker)
     }
-    
-  }
-  
-  /// 마커 및 경로 비활성화 처리 메서드
-  private func markerInactive(context: Context) {
-    if let existingPath = context.coordinator.paths {
-      existingPath.mapView = nil
-      context.coordinator.paths = nil
-      
-    }
-    if let data = context.coordinator.selectedPin,
-        let activeMarker = context.coordinator.activeMarker {
-      activeMarker.iconImage = data.state.inactiveImage
-    }
   }
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
-  private func markerTapEvent(marker: NMFMarker, context: Context) {
-    markerInactive(context: context)
+  private func markerTapEvent(to marker: NMFMarker, context: Context) {
+    context.coordinator.deletePathMarkers()
     let tag = Int(marker.tag)
     context.coordinator.selectedPin = flowerPositions[tag]
     context.coordinator.activeMarker = marker
-    
     markerTappedEvent.send(tag)
   }
   
@@ -160,12 +144,32 @@ extension MapViewRepresentable {
       path.mapView = view.mapView
       context.coordinator.paths = path
       
+      // 양 끝 원 마커 그리기
+      if let firstPoint = lines.first, let lastPoint = lines.last {
+        let startMarker = drawCircleMarker(view, to: firstPoint, type: data.state)
+        let endMarker = drawCircleMarker(view, to: lastPoint, type: data.state)
+        
+        context.coordinator.startMarker = startMarker
+        context.coordinator.endMarker = endMarker
+      }
     } else if let _ = context.coordinator.paths {
       // 경로 데이터가 비어있지만 저장된 경로가 있을 경우 -> 선택 비활성화
-      markerInactive(context: context)
+      context.coordinator.deletePathMarkers()
     }
-    
   }
+  
+  /// 경로 선 양 끝에 포인트 마커 그리기
+  private func drawCircleMarker(
+    _ view: NMFNaverMapView,
+    to point: NMGLatLng,
+    type: FlowerState
+  ) -> NMFMarker{
+    let marker = NMFMarker(position: point)
+    marker.isHideCollidedSymbols = true
+    marker.iconImage = type.circleImage
+    marker.anchor = CGPoint(x: 0.5, y: 0.5)
+    marker.mapView = view.mapView
+    return marker
+  }
+  
 }
-
-

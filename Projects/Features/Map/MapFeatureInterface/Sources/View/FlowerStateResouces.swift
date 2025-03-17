@@ -28,6 +28,12 @@ extension FlowerState {
     .few: NMFOverlayImage(image: Images.fewInactive.image),
     .none: NMFOverlayImage(image: Images.noneInactive.image)
   ]
+  private static let pathPointImages: [FlowerState: NMFOverlayImage] = [
+    .gone: NMFOverlayImage(image: Images.gonePathpoint.image),
+    .many: NMFOverlayImage(image: Images.manyPathpoint.image),
+    .few: NMFOverlayImage(image: Images.fewPathpoint.image),
+    .none: NMFOverlayImage(image: Images.nonePathpoint.image)
+  ]
   
   var activeImage: NMFOverlayImage {
     Self.activeImages[self]!
@@ -48,6 +54,10 @@ extension FlowerState {
     case .none:
       UIColor(Colors.Gray._400)
     }
+  }
+  
+  var circleImage: NMFOverlayImage {
+    Self.pathPointImages[self]!
   }
 }
 
