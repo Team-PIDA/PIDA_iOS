@@ -65,6 +65,6 @@ public struct MapView: View {
       }
       .elevation(cornerRadius: .Number24)
     }
-    .padding(.trailing, 16)
+    .padding(.trailing, .Number16)
   }
 }
