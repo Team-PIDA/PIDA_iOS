@@ -30,6 +30,7 @@ struct MapViewRepresentable: UIViewRepresentable {
   var markerTappedEvent: PassthroughSubject<Int?, Never>
   /// 지도 초기 위치 설정 - 석촌호수 근처
   private let defaultPoint: MapPoint = .init(latitude: 37.50545, longitude: 127.10143)
+  
   // MARK: - UI
   
   private let mapView: NMFNaverMapView = {
@@ -101,15 +102,9 @@ extension MapViewRepresentable {
     for pin in flowerPositions {
       
       let position = pin.value.currentPosition
-      let marker = NMFMarker()
-      marker.position = NMGLatLng(
-        lat: position.latitude,
-        lng: position.longitude
-      )
-      marker.mapView = view.mapView
-      marker.iconImage = pin.value.state.inactiveImage
+      let point = NMGLatLng(lat: position.latitude, lng: position.longitude)
+      let marker = drawMarker(view, to: point, icon: pin.value.state.inactiveImage)
       marker.tag = UInt(pin.key)
-      marker.isHideCollidedSymbols = true
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
           marker.iconImage = pin.value.state.activeImage
@@ -150,8 +145,14 @@ extension MapViewRepresentable {
       
       // 양 끝 원 마커 그리기
       if let firstPoint = lines.first, let lastPoint = lines.last {
-        let startMarker = drawCircleMarker(view, to: firstPoint, type: data.state)
-        let endMarker = drawCircleMarker(view, to: lastPoint, type: data.state)
+        let startMarker = drawMarker(view,
+                                     to: firstPoint,
+                                     icon: data.state.circleImage,
+                                     anchor: CGPoint(x: 0.5, y: 0.5))
+        let endMarker = drawMarker(view,
+                                   to: lastPoint,
+                                   icon: data.state.circleImage,
+                                   anchor: CGPoint(x: 0.5, y: 0.5))
         
         context.coordinator.startMarker = startMarker
         context.coordinator.endMarker = endMarker
@@ -162,16 +163,17 @@ extension MapViewRepresentable {
     }
   }
   
-  /// 경로 선 양 끝에 포인트 마커 그리기
-  private func drawCircleMarker(
+  /// 마커 기본 설정 메서드
+  private func drawMarker(
     _ view: NMFNaverMapView,
     to point: NMGLatLng,
-    type: FlowerState
+    icon: NMFOverlayImage,
+    anchor: CGPoint = CGPoint(x: 0.5, y: 1)
   ) -> NMFMarker{
     let marker = NMFMarker(position: point)
     marker.isHideCollidedSymbols = true
-    marker.iconImage = type.circleImage
-    marker.anchor = CGPoint(x: 0.5, y: 0.5)
+    marker.iconImage = icon
+    marker.anchor = anchor
     marker.mapView = view.mapView
     return marker
   }
