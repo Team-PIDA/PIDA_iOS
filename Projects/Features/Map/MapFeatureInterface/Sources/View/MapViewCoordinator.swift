@@ -1,5 +1,5 @@
 //
-//  MapDelegate.swift
+//  MapViewCoordinator.swift
 //  MapFeatureInterface
 //
 //  Created by Jiyeon on 3/16/25.
