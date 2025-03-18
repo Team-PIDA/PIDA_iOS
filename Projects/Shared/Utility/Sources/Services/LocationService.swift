@@ -10,14 +10,18 @@ import UIKit
 import CoreLocation
 
 /// 위치 권한 관련 서비스 구현
-public actor LocationService: NSObject, CLLocationManagerDelegate {
+@MainActor
+public class LocationService: NSObject, CLLocationManagerDelegate {
   
   public static let shared = LocationService()
   public private(set) var userLocation: (Double, Double)? = nil
   
-  private let locationManager = CLLocationManager()
-  /// 위치 권한 팝업 나타날 때 선택할 때 까지 await 상태로 기다리기 위한 프로퍼티
-  private var continuation: CheckedContinuation<Void, Never>?
+  private lazy var locationManager: CLLocationManager = {
+    let manager = CLLocationManager()
+    manager.delegate = self
+    manager.desiredAccuracy = kCLLocationAccuracyBest
+    return manager
+  }()
   
   private var userLocationContinuation: AsyncStream<Void>.Continuation?
   public lazy var userLocationStream: AsyncStream<Void> = {
@@ -30,23 +34,17 @@ public actor LocationService: NSObject, CLLocationManagerDelegate {
   
   private override init() {
     super.init()
-    locationManager.delegate = self
-    locationManager.desiredAccuracy = .greatestFiniteMagnitude
   }
   
   // MARK: - Location Method
   
-  public func requestUserLocation() async {
+  public func requestUserLocation() {
     let authorizationStatus = locationManager.authorizationStatus
     switch authorizationStatus {
     case .authorizedWhenInUse, .authorizedAlways:
-      await updateCurrentLocation()
+      locationManager.startUpdatingLocation()
     case .notDetermined:
       locationManager.requestWhenInUseAuthorization()
-      await withCheckedContinuation { continuation in
-        self.continuation = continuation
-      }
-      await updateCurrentLocation()
     case .denied, .restricted:
       // TODO: - 위치 권한 거부 시 토스트?
       break
@@ -55,19 +53,20 @@ public actor LocationService: NSObject, CLLocationManagerDelegate {
     }
   }
   
-  private func updateCurrentLocation() async {
-    locationManager.startUpdatingLocation()
-    
-    if let location = locationManager.location {
-      let lat: Double? = location.coordinate.latitude
-      let lng: Double? = location.coordinate.longitude
-      if let lat = lat, let lng = lng {
-        userLocation = (lat, lng)
-        userLocationContinuation?.yield(())
-      } else {
-        userLocation = nil
-      }
-      locationManager.stopUpdatingLocation()
+  private func setUserLocation(lat: Double, lng: Double) {
+    userLocation = (lat, lng)
+    userLocationContinuation?.yield(())
+    locationManager.stopUpdatingLocation()
+  }
+  
+  // MARK: - Delegate
+  
+  nonisolated public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    guard let location = locations.last else { return }
+    let lat = location.coordinate.latitude
+    let lng = location.coordinate.longitude
+    Task {
+      await setUserLocation(lat: lat, lng: lng)
     }
   }
   
@@ -75,13 +74,8 @@ public actor LocationService: NSObject, CLLocationManagerDelegate {
     let status = manager.authorizationStatus
     if status == .authorizedWhenInUse || status == .authorizedAlways {
       Task {
-        await self.resumeContinuation()
+        await locationManager.startUpdatingLocation()
       }
     }
-  }
-  
-  private func resumeContinuation() {
-    continuation?.resume()
-    continuation = nil
   }
 }

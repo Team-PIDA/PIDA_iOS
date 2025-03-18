@@ -42,7 +42,7 @@ public struct MapView: View {
       store.send(.fetchFlowers)
     }
     .task {
-      for await _ in await LocationService.shared.userLocationStream {
+      for await _ in LocationService.shared.userLocationStream {
         store.send(.moveUserLocation)
       }
     }

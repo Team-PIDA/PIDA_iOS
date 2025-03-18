@@ -16,7 +16,7 @@ extension MapReducer {
     switch action {
     case .fetchUserLocation:
       return .run { _ in
-        await LocationService.shared.requestUserLocation()
+        LocationService.shared.requestUserLocation()
       }
     case .moveUserLocation:
       return .run { send in
