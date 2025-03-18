@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MapDomainInterface
 import ComposableArchitecture
 
 @Reducer
@@ -19,15 +20,23 @@ public struct MapReducer {
   
   @ObservableState
   public struct State: Equatable {
-    public var text: String = ""
+    public var position: MapPoint? = nil
+    public var flowerPositions: [Int: FlowerPosition] = [:]
+    public var selectedPathLines: [MapPoint] = []
     public init() {}
   }
   
-  public enum Action: Equatable {
-    case events
+  public enum Action: BindableAction, Equatable {
+    case fetchUserLocation
+    case moveUserLocation
+    case moveLocation(MapPoint)
+    case fetchFlowers
+    case fetchPathLines(id: Int?)
+    case binding(BindingAction<State>)
   }
   
   public var body: some ReducerOf<Self> {
+    BindingReducer()
     reducer
   }
 }
