@@ -31,6 +31,7 @@ public enum InternalTarget: String {
     case designKit = "DesignKit"
     case utility = "Utility"
     case thirdParty = "ThirdParty"
+    case userDefault = "UserDefault"
     
     public var path: String {
         switch self {
@@ -44,6 +45,8 @@ public enum InternalTarget: String {
             return "./Projects/Shared/Utility"
         case .thirdParty:
             return "./Projects/Shared/ThirdParty"
+        case .userDefault:
+            return "./Projects/Shared/UserDefault"
         }
     }
 }
@@ -136,6 +139,7 @@ extension TargetDependency {
         public static let KeyChain = Self.internal(name: .keyChain)
         public static let Utility = Self.internal(name: .utility)
         public static let ThirdParty = Self.projectWithFramework(framework: .thirdParty)
+        public static let UserDefault = Self.internal(name: .userDefault)
     }
     
     public struct ThirdParty: PIDADependency {
