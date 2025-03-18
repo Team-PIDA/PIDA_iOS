@@ -7,3 +7,8 @@
 //
 
 import Foundation
+
+protocol DTO: Decodable {
+    associatedtype Entity
+    func toEntity() throws -> Entity
+}
