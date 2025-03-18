@@ -22,7 +22,7 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 지도에 보여줄 데이터
   @Binding var flowerPositions: [Int: FlowerPosition]
   /// 마커 탭 시 경로를 보여주기 위한 프로퍼티
-  @Binding var selectedPath: [MapPoint]
+  @Binding var newPath: [MapPoint]
   /// 마커 탭 시 이벤트를 전달하기 위한 publisher
   var markerTappedEvent: PassthroughSubject<Int?, Never>
   /// 지도 초기 위치 설정 - 석촌호수 근처
@@ -49,14 +49,14 @@ struct MapViewRepresentable: UIViewRepresentable {
   }
   
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    if let _ = userLocation {
-      moveUserLocation(uiView, context: context)
+    if let userLocation = userLocation {
+      moveUserLocation(uiView, to: userLocation, context: context)
     }
     if context.coordinator.markers.isEmpty {
-      presentMarkers(uiView, context: context)
+      presentMarkers(uiView, flowers: flowerPositions, context: context)
     }
     if let _ = context.coordinator.selectedPin {
-      drawPathLine(uiView, context: context)
+      drawPathLine(uiView, for: newPath, context: context)
     } else {
       context.coordinator.deletePathMarkers()
     }
@@ -72,7 +72,7 @@ struct MapViewRepresentable: UIViewRepresentable {
 extension MapViewRepresentable {
   
   /// 특정 위치로 이동하기 위한 메서드
-  private func moveUserLocation(_ view: NMFNaverMapView, context: Context) {
+  private func moveUserLocation(_ view: NMFNaverMapView, to userLocation: MapPoint, context: Context) {
     /// 카메라 위치의 변화가 있을 때만 설정
     let cameraPosition = view.mapView.cameraPosition.target
     let point = MapPoint(latitude: cameraPosition.lat, longitude: cameraPosition.lng)
@@ -81,7 +81,7 @@ extension MapViewRepresentable {
       moveCamera(view, to: userLocation)
       context.coordinator.lastCameraPoint = userLocation
     }
-    userLocation = nil
+    self.userLocation = nil
   }
   
   /// 카메라 이동 메서드
@@ -97,9 +97,8 @@ extension MapViewRepresentable {
   }
   
   /// 지도 위에 마커를 표시하기 위한 메서드
-  private func presentMarkers(_ view: NMFNaverMapView, context: Context) {
-    for pin in flowerPositions {
-      
+  private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerPosition], context: Context) {
+    for pin in flowers {
       let position = pin.value.currentPosition
       let point = NMGLatLng(lat: position.latitude, lng: position.longitude)
       let marker = drawMarker(view, to: point, icon: pin.value.state.inactiveImage)
@@ -127,13 +126,13 @@ extension MapViewRepresentable {
   }
   
   /// 경로 선을 그리기 위한 메서드
-  private func drawPathLine(_ view: NMFNaverMapView, context: Context) {
-    guard !selectedPath.isEmpty, let data = context.coordinator.selectedPin else {
+  private func drawPathLine(_ view: NMFNaverMapView, for newPath: [MapPoint], context: Context) {
+    guard !newPath.isEmpty, let data = context.coordinator.selectedPin else {
       context.coordinator.deletePathMarkers()
       return
     }
     
-    let lines = selectedPath.map {
+    let lines = newPath.map {
       NMGLatLng(lat: $0.latitude, lng: $0.longitude)
     }
     

@@ -29,7 +29,7 @@ public struct MapView: View {
       MapViewRepresentable(
         userLocation: $store.state.position,
         flowerPositions: $store.state.flowerPositions,
-        selectedPath: $store.state.selectedPathLines,
+        newPath: $store.state.selectedPathLines,
         markerTappedEvent: markerTappedEvent
       )
       .onReceive(markerTappedEvent) {
