@@ -14,6 +14,10 @@ import NMapsMap
 struct PIDAApp: App {
   @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
   
+  init() {
+    DependencyRegistry.registerDependencies()
+  }
+  
   var body: some Scene {
     WindowGroup {
       PIDAView()

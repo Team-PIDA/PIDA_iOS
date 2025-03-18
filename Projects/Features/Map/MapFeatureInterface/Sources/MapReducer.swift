@@ -31,6 +31,7 @@ public struct MapReducer {
     case moveUserLocation
     case moveLocation(MapPoint)
     case fetchFlowers
+    case storeFlowerData([FlowerPosition])
     case fetchPathLines(id: Int?)
     case binding(BindingAction<State>)
   }
