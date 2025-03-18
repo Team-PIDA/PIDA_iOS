@@ -9,5 +9,6 @@
 import Foundation
 
 public protocol MapUseCase {
-    func execute() async throws -> Void
+  func fetchFlowers() async throws -> [FlowerPosition]
 }
+
