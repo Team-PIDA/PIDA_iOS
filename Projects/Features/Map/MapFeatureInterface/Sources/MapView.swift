@@ -13,10 +13,6 @@ import DesignKit
 import Utility
 
 public struct MapView: View {
-  
-  private typealias Icons = DesignKitAsset.Icons
-  private typealias Colors = DesignKitAsset.ColorSet
-  
   @Bindable var store: StoreOf<MapReducer>
   private var markerTappedEvent = PassthroughSubject<Int?, Never>()
   
