@@ -1,14 +1,29 @@
 // swift-tools-version: 6.0
 import PackageDescription
-import ProjectDescriptionHelpers
+
 #if TUIST
     import struct ProjectDescription.PackageSettings
 let packageSettings = PackageSettings(
     productTypes: [
-        ExternalDependency.TCA.rawValue: .framework,
-        ExternalDependency.NMap.rawValue: .framework
+        "ComposableArchitecture": .framework,
+        "Dependencies": .framework,
+        "Clocks": .framework,
+        "ConcurrencyExtras": .framework,
+        "CombineSchedulers": .framework,
+        "IdentifiedCollections": .framework,
+        "OrderedCollections": .framework,
+        "_CollectionsUtilities": .framework,
+        "DependenciesMacros": .framework,
+        "SwiftUINavigationCore": .framework,
+        "Perception": .framework,
+        "IssueReporting": .framework,
+        "CasePaths": .framework,
+        "CustomDump": .framework,
+        "XCTestDynamicOverlay": .framework,
+        "PerceptionCore": .framework
     ]
 )
+
 #endif
 
 let package = Package(
