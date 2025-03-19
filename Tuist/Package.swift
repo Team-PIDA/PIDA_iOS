@@ -1,9 +1,14 @@
 // swift-tools-version: 6.0
 import PackageDescription
-
+import ProjectDescriptionHelpers
 #if TUIST
     import struct ProjectDescription.PackageSettings
-    let packageSettings = PackageSettings(productTypes: [:])
+let packageSettings = PackageSettings(
+    productTypes: [
+        ExternalDependency.TCA.rawValue: .framework,
+        ExternalDependency.NMap.rawValue: .framework
+    ]
+)
 #endif
 
 let package = Package(
