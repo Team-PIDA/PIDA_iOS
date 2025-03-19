@@ -17,7 +17,8 @@ public struct Sample1View: View {
   }
 
   public var body: some View {
-    EmptyView()
+    Color.brown.opacity(0.5)
+    
   }
 }
 

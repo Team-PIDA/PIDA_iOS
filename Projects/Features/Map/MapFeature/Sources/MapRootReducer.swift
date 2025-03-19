@@ -15,8 +15,11 @@ extension MapRootReducer {
   public init(sampleReducer: Sample1Reducer) {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
-      case .map(.delegate(.push)):
-        print("PUSH")
+      case .map(.delegate(.pushToSetting)):
+        state.path.append(.setting)
+        return .none
+      case .map(.delegate(.presentToDetail)):
+        state.isShowDetails = true
         return .none
       case .binding, .map:
         return .none

@@ -34,11 +34,15 @@ public struct MapView: View {
       .ignoresSafeArea()
       VStack {
         Button {
-          store.send(.push)
+          store.send(.pushToSetting)
         } label: {
-          Text("HELLO")
+          Text("PUSH")
         }
-
+        Button {
+          store.send(.presentToDetail)
+        } label: {
+          Text("Present")
+        }
         Spacer()
         currentButton
       }

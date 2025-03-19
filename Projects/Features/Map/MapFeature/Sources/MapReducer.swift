@@ -14,6 +14,7 @@ import Utility
 extension MapReducer {
   public init() {
     @Dependency(\.mapUseCase) var usecase
+    
     let mapReducer = Reduce<State, Action> { state, action in
       switch action {
       case .fetchUserLocation:
@@ -47,11 +48,12 @@ extension MapReducer {
           state.selectedPathLines = []
         }
         return .none
-      case .binding:
-        return .none
-      case .push:
-        return .send(.delegate(.push))
-      case .delegate:
+        
+      case .pushToSetting:
+        return .send(.delegate(.pushToSetting))
+      case .presentToDetail:
+        return .send(.delegate(.presentToDetail))
+      case .binding, .delegate:
         return .none
       }
     }

@@ -37,12 +37,14 @@ public struct MapReducer {
     case fetchPathLines(id: Int?)
     
     // delegate action
-    case push
     case delegate(Delegate)
+    case pushToSetting
+    case presentToDetail
   }
   
   public enum Delegate {
-    case push
+    case pushToSetting
+    case presentToDetail
   }
   
   public var body: some ReducerOf<Self> {

@@ -10,6 +10,11 @@ import Foundation
 import ComposableArchitecture
 import Sample1FeatureInterface
 
+public enum MapPath: Hashable {
+  case search
+  case setting
+}
+
 @Reducer
 public struct MapRootReducer {
   private let reducer: Reduce<State, Action>
@@ -28,15 +33,22 @@ public struct MapRootReducer {
   
   @ObservableState
   public struct State: Equatable {
-    var map = MapReducer.State()
-    var sample = Sample1Reducer.State()
+    public var map = MapReducer.State()
+    public var sample = Sample1Reducer.State()
+    
+    /// 네비게이션 이동 경로
+    public var path: [MapPath] = []
+    /// present 
+    public var isShowDetails: Bool = false
+    
     public init(){}
   }
   
   public enum Action: BindableAction {
+    case binding(BindingAction<State>)
+    
     case map(MapReducer.Action)
     case sample(Sample1Reducer.Action)
-    case binding(BindingAction<State>)
   }
   
   public var body: some ReducerOf<Self> {
