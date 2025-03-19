@@ -38,7 +38,7 @@ public struct MapRootReducer {
     
     /// 네비게이션 이동 경로
     public var path: [MapPath] = []
-    /// present 
+    /// present
     public var isShowDetails: Bool = false
     
     public init(){}
