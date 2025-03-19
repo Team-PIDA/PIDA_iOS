@@ -34,6 +34,13 @@ public struct MapReducer {
     case storeFlowerData([FlowerPosition])
     case fetchPathLines(id: Int?)
     case binding(BindingAction<State>)
+    case delegate(Delegate)
+    case push
+    
+  }
+  
+  public enum Delegate {
+    case push
   }
   
   public var body: some ReducerOf<Self> {

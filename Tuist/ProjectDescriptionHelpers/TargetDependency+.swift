@@ -17,6 +17,7 @@ public enum Layer: String {
 
 public enum Feature: String {
     case map = "Map"
+  case sample1 = "Sample1"
 }
 
 
@@ -106,12 +107,17 @@ extension TargetDependency {
     
     public struct Features: PIDADependency {
         public static let Map = Self.projectWithFeature(feature: .map)
+      public static let Sample1 = Self.projectWithFeature(feature: .sample1)
     }
     
     public struct Domain {
       public struct Map: PIDADependency {
           public static let Interface = Self.projectWithLayer(feature: .map, layer: .domain)
           public static let Implement = Self.projectWithLayer(feature: .map, layer: .domain, isInterface: false)
+      }
+      public struct Sample1: PIDADependency {
+          public static let Interface = Self.projectWithLayer(feature: .sample1, layer: .domain)
+        public static let Implement = Self.projectWithLayer(feature: .sample1, layer: .domain, isInterface: false)
       }
     }
     
@@ -120,6 +126,10 @@ extension TargetDependency {
             public static let Interface = Self.projectWithLayer(feature: .map, layer: .data)
             public static let Implement = Self.projectWithLayer(feature: .map, layer: .data, isInterface: false)
         }
+      public struct Sample1: PIDADependency {
+          public static let Interface = Self.projectWithLayer(feature: .sample1, layer: .data)
+        public static let Implement = Self.projectWithLayer(feature: .sample1, layer: .data, isInterface: false)
+      }
     }
     
     public struct InternalDependency: PIDADependency {

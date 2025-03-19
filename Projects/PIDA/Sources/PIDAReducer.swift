@@ -12,21 +12,32 @@ import MapFeatureInterface
 
 @Reducer
 struct PIDAReducer {
+  @ObservableState
   struct State: Equatable {
-    var mapView = MapReducer.State()
+    var path = StackState<PathReducer.State>()
+    var map = MapReducer.State()
   }
   
   enum Action {
-    case mapView(MapReducer.Action)
+    case path(StackActionOf<PathReducer>)
+    case moveFeature(FeatureType)
+    case map(MapReducer.Action)
   }
   
   var body: some ReducerOf<Self> {
-    Scope(state: \.mapView, action: \.mapView) {
+    Scope(state: \.map, action: \.map) {
       MapReducer()
     }
-    
     Reduce { state, action in
-      return .none
+      switch action {
+      case let .moveFeature(feature):
+        state.path.append(feature.toPathState())
+        return .none
+      case .path:
+        return .none
+      case .map:
+        return .none
+      }
     }
   }
 }

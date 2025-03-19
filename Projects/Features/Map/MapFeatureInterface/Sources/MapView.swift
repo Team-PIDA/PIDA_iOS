@@ -33,6 +33,12 @@ public struct MapView: View {
       }
       .ignoresSafeArea()
       VStack {
+        Button {
+          store.send(.push)
+        } label: {
+          Text("HELLO")
+        }
+
         Spacer()
         currentButton
       }

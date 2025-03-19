@@ -25,6 +25,9 @@ let project = Project.makePIDA(
   dependencies: [
     .Features.Map,
     .Data.Map.Implement,
-    .Domain.Map.Implement
+    .Domain.Map.Implement,
+    .Features.Sample1,
+    .Data.Sample1.Implement,
+    .Domain.Sample1.Implement
   ]
 )

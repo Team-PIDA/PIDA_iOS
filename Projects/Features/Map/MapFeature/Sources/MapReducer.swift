@@ -49,6 +49,10 @@ extension MapReducer {
         return .none
       case .binding:
         return .none
+      case .push:
+        return .send(.delegate(.push))
+      case .delegate:
+        return .none
       }
     }
     self.init(reducer: mapReducer)
