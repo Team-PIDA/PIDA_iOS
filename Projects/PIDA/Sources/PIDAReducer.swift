@@ -9,35 +9,25 @@
 import Foundation
 import ComposableArchitecture
 import MapFeatureInterface
+import Sample1Feature
 
 @Reducer
 struct PIDAReducer {
   @ObservableState
   struct State: Equatable {
-    var path = StackState<PathReducer.State>()
-    var map = MapReducer.State()
+    var mapRoot = MapRootReducer.State()
   }
   
   enum Action {
-    case path(StackActionOf<PathReducer>)
-    case moveFeature(FeatureType)
-    case map(MapReducer.Action)
+    case mapRoot(MapRootReducer.Action)
   }
   
   var body: some ReducerOf<Self> {
-    Scope(state: \.map, action: \.map) {
-      MapReducer()
+    Scope(state: \.mapRoot, action: \.mapRoot) {
+      MapRootReducer(sampleReducer: .init())
     }
     Reduce { state, action in
-      switch action {
-      case let .moveFeature(feature):
-        state.path.append(feature.toPathState())
-        return .none
-      case .path:
-        return .none
-      case .map:
-        return .none
-      }
+      return .none
     }
   }
 }
