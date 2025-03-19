@@ -12,14 +12,14 @@ import Dependencies
 /// UseCase DependencyKey 등록
 ///
 /// 실제 구현부를 여기서 등록하지 않고, 외부에서 주입할 수 있도록 한다.
-public enum MapUseCaseKey: DependencyKey {
-  public static var liveValue: MapUseCase { mapUseCaseProvider() }
-  public static var previewValue: MapUseCase { mapUseCaseProvider() }
-  public static var testValue: MapUseCase { mapUseCaseProvider() }
+public enum FetchFlowerUseCaseKey: DependencyKey {
+  public static var liveValue: FetchFlowerUseCase { fetchUseCaseProvider() }
+  public static var previewValue: FetchFlowerUseCase { fetchUseCaseProvider() }
+  public static var testValue: FetchFlowerUseCase { fetchUseCaseProvider() }
 }
 
 /// 외부에서 주입한 provider를 연결
-private var mapUseCaseProvider: () -> MapUseCase = {
+var fetchUseCaseProvider: () -> FetchFlowerUseCase = {
     fatalError("MapUseCase dependency not configured")
 }
 
@@ -33,15 +33,15 @@ private var mapUseCaseProvider: () -> MapUseCase = {
 ///   provider: { MapUseCaseImpl() }
 /// }
 /// ```
-public func mapUseCaseRegister(
-  provider: @escaping () -> MapUseCase
+public func fetchFlowerUseCaseRegister(
+  provider: @escaping () -> FetchFlowerUseCase
 ) {
-  mapUseCaseProvider = provider
+  fetchUseCaseProvider = provider
 }
 
 extension DependencyValues {
-  public var mapUseCase: MapUseCase {
-    get { self[MapUseCaseKey.self] }
-    set { self[MapUseCaseKey.self] = newValue }
+  public var fetchFlowersUseCase: FetchFlowerUseCase {
+    get { self[FetchFlowerUseCaseKey.self] }
+    set { self[FetchFlowerUseCaseKey.self] = newValue }
   }
 }

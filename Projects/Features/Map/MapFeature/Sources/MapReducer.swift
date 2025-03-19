@@ -13,7 +13,7 @@ import Utility
 
 extension MapReducer {
   public init() {
-    @Dependency(\.mapUseCase) var usecase
+    @Dependency(\.fetchFlowersUseCase) var fetchFlower
     
     let mapReducer = Reduce<State, Action> { state, action in
       switch action {
@@ -32,7 +32,7 @@ extension MapReducer {
         return .none
       case .fetchFlowers:
         return .run { send in
-          let data = try? await usecase.fetchFlowers()
+          let data = try? await fetchFlower.execute()
           await send(.storeFlowerData(data ?? []))
         }
       case let .storeFlowerData(data):

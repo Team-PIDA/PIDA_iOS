@@ -9,13 +9,13 @@
 import Foundation
 import MapDomainInterface
 
-public struct MapUseCaseImpl: MapUseCase {
+public struct FetchFlowerUseCaseImpl: FetchFlowerUseCase {
   
   public init() {
     
   }
   
-  public func fetchFlowers() async throws -> [FlowerPosition] {
+  public func execute() async throws -> [FlowerPosition] {
     return [
       FlowerPosition(
         id: 1,

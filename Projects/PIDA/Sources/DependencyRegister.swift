@@ -11,10 +11,10 @@ import Foundation
 import MapDomainInterface
 import MapDomain
 
-public enum DependencyRegistry {
-  public static func registerDependencies() {
-    mapUseCaseRegister(
-      provider: { MapUseCaseImpl() }
+enum DependencyRegistry {
+  static func registerDependencies() {
+    fetchFlowerUseCaseRegister(
+      provider: { FetchFlowerUseCaseImpl() }
     )
     // 다른 의존성도 여기서 등록
   }

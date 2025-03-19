@@ -8,7 +8,7 @@
 
 import Foundation
 
-public protocol MapUseCase {
-  func fetchFlowers() async throws -> [FlowerPosition]
+public protocol FetchFlowerUseCase {
+  func execute() async throws -> [FlowerPosition]
 }
 
