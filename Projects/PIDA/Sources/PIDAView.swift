@@ -11,9 +11,10 @@ import ComposableArchitecture
 import MapFeatureInterface
 
 struct PIDAView: View {
-  private let store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) { PIDAReducer() }
+  @Bindable var store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) { PIDAReducer()
+  }
   var body: some View {
-    MapView(store: store.scope(state: \.mapView, action: \.mapView))
+    MapRootView(store: store.scope(state: \.mapRoot, action: \.mapRoot))
   }
 }
 

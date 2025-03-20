@@ -27,12 +27,24 @@ public struct MapReducer {
   }
   
   public enum Action: BindableAction, Equatable {
+    case binding(BindingAction<State>)
+    
     case fetchUserLocation
     case moveUserLocation
     case moveLocation(MapPoint)
     case fetchFlowers
+    case storeFlowerData([FlowerPosition])
     case fetchPathLines(id: Int?)
-    case binding(BindingAction<State>)
+    
+    // delegate action
+    case delegate(Delegate)
+    case pushToSetting
+    case presentToDetail
+  }
+  
+  public enum Delegate {
+    case pushToSetting
+    case presentToDetail
   }
   
   public var body: some ReducerOf<Self> {

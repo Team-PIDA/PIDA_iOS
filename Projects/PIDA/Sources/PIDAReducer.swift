@@ -12,19 +12,19 @@ import MapFeatureInterface
 
 @Reducer
 struct PIDAReducer {
+  @ObservableState
   struct State: Equatable {
-    var mapView = MapReducer.State()
+    var mapRoot = MapRootReducer.State()
   }
   
   enum Action {
-    case mapView(MapReducer.Action)
+    case mapRoot(MapRootReducer.Action)
   }
   
   var body: some ReducerOf<Self> {
-    Scope(state: \.mapView, action: \.mapView) {
-      MapReducer()
+    Scope(state: \.mapRoot, action: \.mapRoot) {
+      MapRootReducer()
     }
-    
     Reduce { state, action in
       return .none
     }

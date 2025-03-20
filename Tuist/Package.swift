@@ -3,7 +3,27 @@ import PackageDescription
 
 #if TUIST
     import struct ProjectDescription.PackageSettings
-    let packageSettings = PackageSettings(productTypes: [:])
+let packageSettings = PackageSettings(
+    productTypes: [
+        "ComposableArchitecture": .framework,
+        "Dependencies": .framework,
+        "Clocks": .framework,
+        "ConcurrencyExtras": .framework,
+        "CombineSchedulers": .framework,
+        "IdentifiedCollections": .framework,
+        "OrderedCollections": .framework,
+        "_CollectionsUtilities": .framework,
+        "DependenciesMacros": .framework,
+        "SwiftUINavigationCore": .framework,
+        "Perception": .framework,
+        "IssueReporting": .framework,
+        "CasePaths": .framework,
+        "CustomDump": .framework,
+        "XCTestDynamicOverlay": .framework,
+        "PerceptionCore": .framework
+    ]
+)
+
 #endif
 
 let package = Package(
