@@ -12,7 +12,7 @@ public extension SearchBar {
   /// SearchBar를 탭했을 때의 동작을 설정
   func onTap(_ action: @escaping () -> Void) -> Self {
     var searchBar = self
-    searchBar.action = action
+    searchBar.onTap = action
     return searchBar
   }
   

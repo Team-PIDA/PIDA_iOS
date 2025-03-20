@@ -70,13 +70,10 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
   private var searchableModeView: some View {
     HStack {
       searchIconView
-      
-      TextField(placeholder, text: $text)
-        .submitLabel(.search)
+      PIDATextField(text: $text, placeholder: placeholder)
         .onSubmit {
           onSubmit?()
         }
-      
       trailingContent?()
     }
     .searchBarStyle()
@@ -119,7 +116,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
 
 
 #Preview {
-  VStack(spacing: 20) {
+  VStack(spacing: .Number20) {
     // 메인 화면의 검색바
     SearchBar(
       placeholder: "방문할 장소를 입력하세요",
@@ -136,7 +133,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
     .onTap {
       print("TOUCH")
     }
-    .padding(.horizontal, 16)
+    .padding(.horizontal, .Number16)
     
     // 검색 화면의 검색바
     SearchBar(
@@ -144,7 +141,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
       placeholder: "방문할 장소를 입력하세요",
       mode: .searchable
     )
-    .padding(.horizontal, 16)
+    .padding(.horizontal, .Number16)
     
     // 검색 결과 선택 후의 검색바
     SearchBar(
@@ -158,7 +155,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
           }
       }
     )
-    .padding(.horizontal, 16)
+    .padding(.horizontal, .Number16)
   }
   
 }
