@@ -23,8 +23,11 @@ public struct MapRootView: View {
         .navigationDestination(for: MapPath.self) { path in
           
         }
-        .fullScreenCover(isPresented: $store.isShowDetails) {
-          
+        .fullScreenCover(isPresented: $store.isShowSearch) {
+          EmptyView()
+        }
+        .transaction { transaction in
+          transaction.disablesAnimations = true
         }
     }
 

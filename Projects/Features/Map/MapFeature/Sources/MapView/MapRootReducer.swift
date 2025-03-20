@@ -6,7 +6,6 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
-import Foundation
 import ComposableArchitecture
 import MapFeatureInterface
 
@@ -14,12 +13,15 @@ extension MapRootReducer {
   public init() {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
+      // map -> search
+      case .map(.delegate(.presentToSearch)):
+        state.isShowSearch = true
+        return .none
+      // map -> setting
       case .map(.delegate(.pushToSetting)):
         state.path.append(.setting)
         return .none
-      case .map(.delegate(.presentToDetail)):
-        state.isShowDetails = true
-        return .none
+        
       case .binding, .map:
         return .none
       }

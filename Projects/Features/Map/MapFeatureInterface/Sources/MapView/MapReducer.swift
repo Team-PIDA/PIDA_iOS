@@ -38,13 +38,13 @@ public struct MapReducer {
     
     // delegate action
     case delegate(Delegate)
+    case presentToSearch
     case pushToSetting
-    case presentToDetail
   }
   
   public enum Delegate {
+    case presentToSearch
     case pushToSetting
-    case presentToDetail
   }
   
   public var body: some ReducerOf<Self> {

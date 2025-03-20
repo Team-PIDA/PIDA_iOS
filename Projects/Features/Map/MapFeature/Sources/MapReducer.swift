@@ -49,10 +49,10 @@ extension MapReducer {
         }
         return .none
         
+      case .presentToSearch:
+        return .send(.delegate(.presentToSearch))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
-      case .presentToDetail:
-        return .send(.delegate(.presentToDetail))
       case .binding, .delegate:
         return .none
       }
