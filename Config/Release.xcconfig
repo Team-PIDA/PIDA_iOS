@@ -1,5 +1,0 @@
-BASE_URL = https:/$()/api.pida.me
-EXCLUDE_RESOURCE = Resources/Dev/**
-OTHER_SWIFT_FLAGS[config=RELEASE][sdk=*] = $(inherited) -DRELEASE
-SWIFT_OPTIMIZATION_LEVEL = -Owholemodule
-NM_CLIENT_ID = q4p5qt4h5m
