@@ -14,6 +14,8 @@ import Utility
 
 public struct MapView: View {
   @Bindable var store: StoreOf<MapReducer>
+  
+  @State var searchText: String = ""
   private var markerTappedEvent = PassthroughSubject<Int?, Never>()
   
   public init(store: StoreOf<MapReducer>) {
@@ -33,6 +35,7 @@ public struct MapView: View {
       }
       .ignoresSafeArea()
       VStack {
+        searchView(text: $searchText)
         Spacer()
         currentButton
       }
@@ -45,6 +48,37 @@ public struct MapView: View {
       for await _ in LocationService.shared.userLocationStream {
         store.send(.moveUserLocation)
       }
+    }
+  }
+  
+  
+}
+
+
+extension MapView {
+  private func searchView(text: Binding<String>) -> some View {
+    SearchBar(
+      text: text,
+      placeholder: "방문할 장소를 입력하세요",
+      mode: .main,
+      trailingContent:  {
+        settingButton
+      }
+    )
+    .onTap {
+      print("TOUCH")
+    }
+    .padding(.horizontal, .Number16)
+    .padding(.vertical, .Number8)
+  }
+  
+  @ViewBuilder
+  private var settingButton: some View {
+    PIDIconButton {
+      Image(asset: ImageSet.avatar.swiftUIImage)
+        .resizable()
+        .scaledToFit()
+        .frame(width: .Number32, height: .Number32)
     }
   }
   
