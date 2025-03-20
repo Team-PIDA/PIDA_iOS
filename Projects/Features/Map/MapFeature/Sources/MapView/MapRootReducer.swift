@@ -9,10 +9,9 @@
 import Foundation
 import ComposableArchitecture
 import MapFeatureInterface
-import Sample1FeatureInterface
 
 extension MapRootReducer {
-  public init(sampleReducer: Sample1Reducer) {
+  public init() {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .map(.delegate(.pushToSetting)):
@@ -27,8 +26,7 @@ extension MapRootReducer {
     }
     self.init(
       reducer: reducer,
-      mapReducer: .init(),
-      sampleReducer: sampleReducer
+      mapReducer: .init()
     )
   }
 }
