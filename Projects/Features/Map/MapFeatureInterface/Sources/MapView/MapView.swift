@@ -54,7 +54,7 @@ public struct MapView: View {
       Spacer()
       PIDIconButton {
         Icon(image: .myLocation)
-          .size(.superLage)
+          .size(.superLarge)
       }
       .action {
         store.send(.fetchUserLocation)

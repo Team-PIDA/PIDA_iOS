@@ -9,11 +9,12 @@
 import Foundation
 
 public enum IconSize {
-  case superLage, large, medium, small
+  case superLarge, extraLarge, large, medium, small
   
   public var dimension: CGFloat {
     switch self {
-    case .superLage: return .Number32
+    case .superLarge: return .Number32
+    case .extraLarge: return .Number28
     case .large: return .Number20
     case .medium: return .Number18
     case .small: return .Number16

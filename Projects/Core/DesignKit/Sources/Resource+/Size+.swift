@@ -10,6 +10,7 @@ import Foundation
 
 public extension CGFloat {
   static let Number0: CGFloat = 0
+  static let Number1: CGFloat = 1
   static let Number2: CGFloat = 2
   static let Number4: CGFloat = 4
   static let Number6: CGFloat = 6
