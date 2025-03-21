@@ -17,9 +17,12 @@ extension MapRootReducer {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
         
+      // MARK: - Map <-> Search
+        
       case let .presentSearch(isShow):
         state.isShowSearch = isShow
         return .none
+        
       // map -> search
       case .map(.delegate(.presentToSearch)):
         return .run { send in
@@ -50,10 +53,15 @@ extension MapRootReducer {
             send(.presentSearch(false))
           }
         }
+        
+      // MARK: - Map <-> Setting
+        
       // map -> setting
       case .map(.delegate(.pushToSetting)):
         state.path.append(.setting)
         return .none
+        
+      // MARK: - None
         
       case .binding, .map, .search:
         return .none

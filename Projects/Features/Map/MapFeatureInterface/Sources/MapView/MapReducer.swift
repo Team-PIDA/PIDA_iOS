@@ -31,17 +31,23 @@ public struct MapReducer {
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     
+    // MARK: - Map
+    
     case fetchUserLocation
     case moveUserLocation
     case moveLocation(MapPoint)
     case fetchFlowers
     case storeFlowerData([FlowerPosition])
     case fetchPathLines(id: Int?)
+    
+    // MARK: - Search
+    
     case showSearchResult(String?) // TODO: - ItemType
     case setSearchBarText(String?)
     case resetSearchBar
     
-    // delegate action
+    // MARK: - Delegate
+    
     case delegate(Delegate)
     case presentToSearch
     case pushToSetting

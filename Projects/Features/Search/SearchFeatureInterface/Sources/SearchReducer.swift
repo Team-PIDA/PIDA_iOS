@@ -28,9 +28,14 @@ public struct SearchReducer {
     case binding(BindingAction<State>)
     
     case onAppear
+    
+    // MARK: - Search
+    
     case searchBarFocused(Bool)
     case searchWordDidChange(String)
     case initialSearchBar(String)
+    
+    // MARK: - Delegate
     
     case selectResult(String) // TODO: - 아이템 타입으로 변경
     case dismiss

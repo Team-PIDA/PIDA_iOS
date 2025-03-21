@@ -17,6 +17,9 @@ extension MapReducer {
     
     let mapReducer = Reduce<State, Action> { state, action in
       switch action {
+        
+      // MARK: - Map
+        
       case .fetchUserLocation:
         return .run { _ in
           await LocationService.shared.requestUserLocation()
@@ -72,6 +75,9 @@ extension MapReducer {
         return .send(.delegate(.presentToSearch))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
+        
+      // MARK: - None
+        
       case .binding, .delegate:
         return .none
       }

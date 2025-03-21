@@ -39,6 +39,7 @@ extension SearchReducer {
         return .none
         
       // MARK: - Delegate
+        
       case let .selectResult(result):
         return .run { send in
           await MainActor.run {
