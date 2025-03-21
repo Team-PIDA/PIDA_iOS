@@ -22,4 +22,10 @@ public extension SearchBar {
     searchBar.onSubmit = action
     return searchBar
   }
+  
+  func isFocused(_ isFocused: Bool) -> Self {
+    var searchBar = self
+    searchBar.isFocused = isFocused
+    return searchBar
+  }
 }

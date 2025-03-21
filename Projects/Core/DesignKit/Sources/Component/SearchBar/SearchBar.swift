@@ -17,12 +17,13 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
   private let trailingContent: (() -> TrailingContent)?
   public var onTap: (() -> Void)?
   public var onSubmit: (() -> Void)?
-  
+  @Binding var isFocused: Bool
   
   public init(
     text: Binding<String> = .constant(""),
     placeholder: String? = nil,
     mode: SearchBarMode = .main,
+    isFocused: Binding<Bool> = .constant(false),
     @ViewBuilder leadingContent: @escaping () -> LeadingContent = {  Spacer().frame(width: .Number48, height: .Number48)
     },
     @ViewBuilder trailingContent: @escaping () -> TrailingContent = { Spacer().frame(width: .Number48, height: .Number48)
@@ -31,6 +32,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
     self._text = text
     self.placeholder = placeholder ?? ""
     self.mode = mode
+    self._isFocused = isFocused
     self.leadingContent = leadingContent
     self.trailingContent = trailingContent
   }
@@ -69,8 +71,12 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
   @ViewBuilder
   private var searchableModeView: some View {
     HStack {
-      searchIconView
-      PIDATextField(text: $text, placeholder: placeholder)
+      leadingContent?()
+      PIDATextField(
+        text: $text,
+        placeholder: placeholder,
+        isFocused: $isFocused
+      )
         .onSubmit {
           onSubmit?()
         }

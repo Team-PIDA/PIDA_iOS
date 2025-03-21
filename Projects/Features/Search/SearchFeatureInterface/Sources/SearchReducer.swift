@@ -18,13 +18,18 @@ public struct SearchReducer {
   
   @ObservableState
   public struct State: Equatable {
-    
+    public var isFocused: Bool = false
+    public var searchWord: String = ""
+    public var previousWord: String = ""
     public init() {}
   }
 
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     
+    case onAppear
+    case searchBarFocused(Bool)
+    case searchWordDidChange(String)
   }
 
   public var body: some ReducerOf<Self> {
