@@ -74,6 +74,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
         placeholder: placeholder,
         isFocused: $isFocused
       )
+      .submitLabel(.go)
       .onSubmit {
         onSubmit?()
       }

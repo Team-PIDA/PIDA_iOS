@@ -39,7 +39,6 @@ public struct PIDATextField: View {
         .foregroundColor(ColorSet.Text.Primary)
         .font(FontSet.Body.body2)
         .tint(ColorSet.Component.Primary)
-        .submitLabel(.search)
         .onSubmit {
           onSubmit?()
         }
