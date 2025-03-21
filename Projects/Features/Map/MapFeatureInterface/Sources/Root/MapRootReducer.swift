@@ -45,6 +45,7 @@ public struct MapRootReducer {
   
   public enum Action: BindableAction {
     case binding(BindingAction<State>)
+    case presentSearch(Bool)
     
     case map(MapReducer.Action)
     case search(SearchReducer.Action)

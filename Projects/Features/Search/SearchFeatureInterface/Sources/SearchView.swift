@@ -49,7 +49,7 @@ extension SearchView {
       }
     )
     .onSubmit {
-      print("hello")
+      store.send(.selectResult(store.searchWord))
     }
     
     .padding(.horizontal, .Number16)

@@ -35,6 +35,9 @@ public struct MapView: View {
       .ignoresSafeArea()
       VStack {
         searchView()
+          .padding(.horizontal, .Number16)
+          .padding(.vertical, .Number8)
+        
         Spacer()
         currentButton
       }
@@ -56,19 +59,37 @@ public struct MapView: View {
 // MARK: - Views
 
 extension MapView {
+  @ViewBuilder
   private func searchView() -> some View {
-    SearchBar(
-      placeholder: "방문할 장소를 입력하세요",
-      mode: .main,
-      trailingContent:  {
-        settingButton
+    // TODO: - ontap 시 textfield에 텍스트 세팅
+    if let result = store.searchText { // 검색 결과
+      SearchBar(
+        text: .constant(result),
+        placeholder: "",
+        mode: .result,
+        leadingContent: {
+          TouchArea(image: .back)
+            .size(.extraLarge)
+            .action {
+              store.send(.resetSearchBar)
+            }
+        }
+      )
+      .onTap {
+        store.send(.presentToSearch)
       }
-    )
-    .onTap {
-      store.send(.presentToSearch)
+    } else { // 검색
+      SearchBar(
+        placeholder: "방문할 장소를 입력하세요",
+        mode: .main,
+        trailingContent: {
+          settingButton
+        }
+      )
+      .onTap {
+        store.send(.presentToSearch)
+      }
     }
-    .padding(.horizontal, .Number16)
-    .padding(.vertical, .Number8)
   }
   
   @ViewBuilder

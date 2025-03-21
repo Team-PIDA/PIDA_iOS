@@ -23,6 +23,8 @@ public struct MapReducer {
     public var position: MapPoint? = nil
     public var flowerPositions: [Int: FlowerPosition] = [:]
     public var selectedPathLines: [MapPoint] = []
+    public var searchResult: String? = nil
+    public var searchText: String? = nil
     public init() {}
   }
   
@@ -35,6 +37,9 @@ public struct MapReducer {
     case fetchFlowers
     case storeFlowerData([FlowerPosition])
     case fetchPathLines(id: Int?)
+    case showSearchResult(String?) // TODO: - ItemType
+    case setSearchBarText(String?)
+    case resetSearchBar
     
     // delegate action
     case delegate(Delegate)
@@ -42,9 +47,10 @@ public struct MapReducer {
     case pushToSetting
   }
   
-  public enum Delegate {
+  public enum Delegate: Equatable {
     case presentToSearch
     case pushToSetting
+    case resetSearchView
   }
   
   public var body: some ReducerOf<Self> {

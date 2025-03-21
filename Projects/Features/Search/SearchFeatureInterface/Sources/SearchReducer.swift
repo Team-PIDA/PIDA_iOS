@@ -30,14 +30,17 @@ public struct SearchReducer {
     case onAppear
     case searchBarFocused(Bool)
     case searchWordDidChange(String)
+    case initialSearchBar(String)
     
+    case selectResult(String) // TODO: - 아이템 타입으로 변경
     case dismiss
     case delegate(Delegate)
     
   }
   
-  public enum Delegate {
+  public enum Delegate: Equatable {
     case dismiss
+    case selectResult(String)
   }
 
   public var body: some ReducerOf<Self> {
