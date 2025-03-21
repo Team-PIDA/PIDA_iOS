@@ -8,6 +8,7 @@
 
 import SwiftUI
 import ComposableArchitecture
+import SearchFeatureInterface
 
 public struct MapRootView: View {
   @Bindable var store: StoreOf<MapRootReducer>
@@ -24,7 +25,7 @@ public struct MapRootView: View {
           
         }
         .fullScreenCover(isPresented: $store.isShowSearch) {
-          EmptyView()
+          SearchView(store: store.scope(state: \.search, action: \.search))
         }
         .transaction { transaction in
           transaction.disablesAnimations = true

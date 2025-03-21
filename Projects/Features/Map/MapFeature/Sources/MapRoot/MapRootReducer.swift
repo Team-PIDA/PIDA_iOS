@@ -8,9 +8,12 @@
 
 import ComposableArchitecture
 import MapFeatureInterface
+import SearchFeatureInterface
 
 extension MapRootReducer {
-  public init() {
+  public init(
+    searchReducer: SearchReducer
+  ) {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       // map -> search
@@ -22,13 +25,14 @@ extension MapRootReducer {
         state.path.append(.setting)
         return .none
         
-      case .binding, .map:
+      case .binding, .map, .search:
         return .none
       }
     }
     self.init(
       reducer: reducer,
-      mapReducer: .init()
+      mapReducer: .init(),
+      searchReducer: searchReducer
     )
   }
 }

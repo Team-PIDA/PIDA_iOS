@@ -9,6 +9,7 @@
 import Foundation
 import ComposableArchitecture
 import MapFeatureInterface
+import SearchFeature
 
 @Reducer
 struct PIDAReducer {
@@ -23,7 +24,7 @@ struct PIDAReducer {
   
   var body: some ReducerOf<Self> {
     Scope(state: \.mapRoot, action: \.mapRoot) {
-      MapRootReducer()
+      MapRootReducer(searchReducer: .init())
     }
     Reduce { state, action in
       return .none
