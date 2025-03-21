@@ -50,15 +50,12 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
   
   @ViewBuilder
   private var mainModeView: some View {
-    HStack {
+    HStack(spacing: 0) {
       searchIconView
-      
       Text(placeholder)
         .foregroundColor(ColorSet.Text.Tertiary)
         .font(FontSet.Body.body2)
-      
       Spacer()
-      
       trailingContent?()
     }
     .searchBarStyle()
@@ -70,16 +67,16 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
   
   @ViewBuilder
   private var searchableModeView: some View {
-    HStack {
+    HStack(spacing: 0) {
       leadingContent?()
       PIDATextField(
         text: $text,
         placeholder: placeholder,
         isFocused: $isFocused
       )
-        .onSubmit {
-          onSubmit?()
-        }
+      .onSubmit {
+        onSubmit?()
+      }
       trailingContent?()
     }
     .searchBarStyle()
@@ -95,15 +92,12 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
   
   @ViewBuilder
   private var resultModeView: some View {
-    HStack {
+    HStack(spacing: 0) {
       leadingContent?()
-      
       Text(text)
         .foregroundColor(ColorSet.Text.Primary)
         .font(FontSet.Body.body2)
-      
       Spacer()
-      
       trailingContent?()
     }
     .searchBarStyle()
@@ -145,7 +139,14 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
     SearchBar(
       text: .constant(""),
       placeholder: "방문할 장소를 입력하세요",
-      mode: .searchable
+      mode: .searchable,
+      leadingContent: {
+        TouchArea(image: .back)
+          .size(.extraLarge)
+          .action {
+            print("뒤로가기")
+          }
+      }
     )
     .padding(.horizontal, .Number16)
     
