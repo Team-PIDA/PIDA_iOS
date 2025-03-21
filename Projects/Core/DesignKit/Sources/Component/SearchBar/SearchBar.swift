@@ -16,7 +16,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
   private let leadingContent: (() -> LeadingContent)?
   private let trailingContent: (() -> TrailingContent)?
   public var onTap: (() -> Void)?
-  public var onSubmit: (() -> Void)?
+  public var onSubmit: (() async -> Void)?
   @Binding var isFocused: Bool
   
   public init(
@@ -61,7 +61,9 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
     .searchBarStyle()
     .elevation(cornerRadius: .Number10)
     .onTapGesture {
-      onTap?()
+      if let onTap = onTap {
+        onTap()
+      }
     }
   }
   
@@ -76,7 +78,11 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
       )
       .submitLabel(.go)
       .onSubmit {
-        onSubmit?()
+        if let onSubmit = onSubmit {
+          Task { @MainActor in
+            await onSubmit()
+          }
+        }
       }
       trailingContent?()
     }
