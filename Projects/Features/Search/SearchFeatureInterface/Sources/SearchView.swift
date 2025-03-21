@@ -24,7 +24,7 @@ public struct SearchView: View {
   public var body: some View {
     VStack {
       searchView()
-      Spacer()
+      searchList()
     }
     .onAppear {
       store.send(.onAppear)
@@ -34,6 +34,25 @@ public struct SearchView: View {
 }
 
 extension SearchView {
+  /// 검색 리스트
+  private func searchList() -> some View {
+    ScrollView {
+      LazyVStack {
+        ForEach(0..<10) { index in
+          SearchResultList(
+            id: index,
+            roadName: "석촌호수길",
+            address: "서울 송파구 잠실동",
+            subInfo: "10km",
+            onTap: { _ in
+              store.send(.selectResult("석촌호수길"))
+            }
+          )
+        }
+      }
+    }
+  }
+  
   private func searchView() -> some View {
     SearchBar(
       text: $store.searchWord,
