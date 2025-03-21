@@ -10,6 +10,6 @@ import Foundation
 
 public enum SearchBarMode {
   case main
-  case searchable
+  case search
   case result
 }

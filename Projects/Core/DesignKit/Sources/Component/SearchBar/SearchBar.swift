@@ -15,9 +15,13 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
   private var mode: SearchBarMode
   private let leadingContent: (() -> LeadingContent)?
   private let trailingContent: (() -> TrailingContent)?
+  
+  /// TextField 비활성화 시 SearchBar 이벤트 받기 위한 클로저
   public var onTap: (() -> Void)?
+  /// TextField 활성화 시 검색 완료 이벤트 받기 위한 클로저
   public var onSubmit: (() async -> Void)?
-  @Binding var isFocused: Bool
+  /// 키보드 활성화 여부
+  @Binding private var isFocused: Bool
   
   public init(
     text: Binding<String> = .constant(""),
@@ -41,12 +45,14 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
     switch mode {
     case .main:
       mainModeView
-    case .searchable:
-      searchableModeView
+    case .search:
+      searchModeView
     case .result:
       resultModeView
     }
   }
+  
+  // MARK: - Mode
   
   @ViewBuilder
   private var mainModeView: some View {
@@ -69,7 +75,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
   }
   
   @ViewBuilder
-  private var searchableModeView: some View {
+  private var searchModeView: some View {
     HStack(spacing: 0) {
       leadingContent?()
       PIDATextField(
@@ -153,7 +159,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
     SearchBar(
       text: .constant(""),
       placeholder: "방문할 장소를 입력하세요",
-      mode: .searchable,
+      mode: .search,
       leadingContent: {
         TouchArea(image: .back)
           .size(.extraLarge)

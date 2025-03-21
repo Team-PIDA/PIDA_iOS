@@ -9,6 +9,9 @@
 import SwiftUI
 import DesignKit
 
+/// 검색 결과 리스트 셀
+///
+/// `onTap`: 리스트 탭 시 리스트 값을 리턴하는 클로저
 public struct SearchResultList: View {
   private var id: Int
   private let roadName: String

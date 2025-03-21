@@ -10,17 +10,14 @@ import SwiftUI
 import DesignKit
 
 import ComposableArchitecture
-enum FocusField: Hashable {
-  case field
-}
+
 public struct SearchView: View {
   @Bindable var store: StoreOf<SearchReducer>
   
   public init(store: StoreOf<SearchReducer>) {
     self.store = store
-    
   }
-  @State var text: String = ""
+  
   public var body: some View {
     VStack {
       searchView()
@@ -29,11 +26,11 @@ public struct SearchView: View {
     .onAppear {
       store.send(.onAppear)
     }
-    
   }
 }
 
 extension SearchView {
+  // TODO: - 검색 데이터 확정 시 데이터에 맞춰 파라미터 추가
   /// 검색 리스트
   private func searchList() -> some View {
     ScrollView {
@@ -53,11 +50,12 @@ extension SearchView {
     }
   }
   
+  /// SearchBar
   private func searchView() -> some View {
     SearchBar(
       text: $store.searchWord,
       placeholder: "방문할 장소를 입력하세요",
-      mode: .searchable,
+      mode: .search,
       isFocused: $store.isFocused,
       leadingContent: {
         TouchArea(image: .back)
@@ -67,7 +65,7 @@ extension SearchView {
           }
       }
     )
-    .onSubmit {
+    .onSubmit { 
       store.send(.selectResult(store.searchWord))
     }
     
