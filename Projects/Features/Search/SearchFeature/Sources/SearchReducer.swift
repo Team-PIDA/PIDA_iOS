@@ -11,6 +11,7 @@ import ComposableArchitecture
 
 extension SearchReducer {
   public init() {
+    @Dependency(\.dismiss) var dismiss
     let searchReducer = Reduce<State, Action> { state, action in
       switch action {
       case .binding(\.searchWord):
@@ -30,7 +31,14 @@ extension SearchReducer {
       case let .searchWordDidChange(word):
         print(word)
         return .none
-      case .binding:
+      case .dismiss:
+        return .run { send in
+          await MainActor.run {
+            send(.searchBarFocused(false))
+            send(.delegate(.dismiss))
+          }
+        }
+      case .binding, .delegate:
         return .none
       }
     }

@@ -30,6 +30,14 @@ public struct SearchReducer {
     case onAppear
     case searchBarFocused(Bool)
     case searchWordDidChange(String)
+    
+    case dismiss
+    case delegate(Delegate)
+    
+  }
+  
+  public enum Delegate {
+    case dismiss
   }
 
   public var body: some ReducerOf<Self> {

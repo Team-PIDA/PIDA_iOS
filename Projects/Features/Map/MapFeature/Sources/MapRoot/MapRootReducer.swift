@@ -20,6 +20,10 @@ extension MapRootReducer {
       case .map(.delegate(.presentToSearch)):
         state.isShowSearch = true
         return .none
+      // search dismiss
+      case .search(.delegate(.dismiss)):
+        state.isShowSearch = false
+        return .none
       // map -> setting
       case .map(.delegate(.pushToSetting)):
         state.path.append(.setting)

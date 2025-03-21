@@ -44,7 +44,7 @@ extension SearchView {
         TouchArea(image: .back)
           .size(.extraLarge)
           .action {
-            print("뒤로가기")
+            store.send(.dismiss)
           }
       }
     )
