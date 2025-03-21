@@ -60,6 +60,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
     }
     .searchBarStyle()
     .elevation(cornerRadius: .Number10)
+    .contentShape(Rectangle())
     .onTapGesture {
       if let onTap = onTap {
         onTap()
@@ -106,6 +107,12 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
         .font(FontSet.Body.body2)
       Spacer()
       trailingContent?()
+    }
+    .contentShape(Rectangle())
+    .onTapGesture {
+      if let onTap = onTap {
+        onTap()
+      }
     }
     .searchBarStyle()
     .elevation(cornerRadius: .Number10)
