@@ -130,7 +130,6 @@ public extension Project {
       name: name,
       organizationName: organizationName,
       options: .options(
-        automaticSchemesOptions: .disabled,
         defaultKnownRegions: ["ko"],
         developmentRegion: "ko",
         textSettings: .textSettings(
