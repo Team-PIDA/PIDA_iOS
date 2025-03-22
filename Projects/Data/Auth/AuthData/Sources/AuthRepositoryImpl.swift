@@ -12,12 +12,10 @@ import AuthDomainInterface
 import Core
 
 public struct AuthRepositoryImpl: AuthRepository {
-  private let networker: PIDANetworkProtocol
+  
 
-  public init(
-    networker: PIDANetworkProtocol
-  ) {
-    self.networker = networker
+  public init() {
+    
   }
 
   public func fetchData() async throws -> Void { }
