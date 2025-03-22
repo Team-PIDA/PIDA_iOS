@@ -14,17 +14,17 @@ import Dependencies
 
 final class {{ name }}RepositoryTests: XCTestCase {
 
-    func testFetchData() async throws {
-        let networker = MockNetworker()
-        let repository = {{ name }}RepositoryImpl(networker: networker)
+  func testFetchData() async throws {
+    let networker = MockNetworker()
+    let repository = {{ name }}RepositoryImpl(networker: networker)
 
-        let result = try await repository.requestMockData()
-        XCTAssertEqual(result, "Mocked API Data")
-    }
+    let result = try await repository.requestMockData()
+    XCTAssertEqual(result, "Mocked API Data")
+  }
 }
 
 final class {{ name }}RepositoryImpl: {{ name }}Repository {
-    func requestMockData() async throws -> String {
-        return "Mocked API Data"
-    }
+  func requestMockData() async throws -> String {
+    return "Mocked API Data"
+  }
 }
