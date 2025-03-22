@@ -22,13 +22,19 @@ public struct AuthView: View {
       NavigationBar(
         closeContent:  {
         TouchArea(image: .close)
-          .size(.superLage)
+          .size(.superLarge)
           .action {
             
           }
         }
       )
       Spacer()
+      Button {
+        store.send(.appleLoginButtonTapped)
+      } label: {
+        Text("애플로그인")
+      }
+
     }
   }
 }

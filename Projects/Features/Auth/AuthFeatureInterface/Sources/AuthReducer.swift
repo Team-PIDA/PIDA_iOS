@@ -18,11 +18,14 @@ public struct AuthReducer {
   
   @ObservableState
   public struct State: Equatable {
-    
+    public var authCode: String? = nil
     public init() {}
   }
 
   public enum Action: Equatable {
+    case appleLoginButtonTapped
+    case appleLoginRespose(String?)
+    case appleLoginFailure
   }
 
   public var body: some ReducerOf<Self> {
