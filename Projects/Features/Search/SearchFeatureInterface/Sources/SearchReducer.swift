@@ -8,24 +8,24 @@
 
 import ComposableArchitecture
 
+@ObservableState
+public struct SearchState: Equatable {
+  public var isFocused: Bool = false
+  public var searchWord: String = ""
+  public var previousWord: String = ""
+  public init() {}
+}
+
 @Reducer
 public struct SearchReducer {
-  private let reducer: Reduce<State, Action>
+  private let reducer: Reduce<SearchState, Action>
   
-  public init(reducer: Reduce<State, Action>) {
+  public init(reducer: Reduce<SearchState, Action>) {
     self.reducer = reducer
   }
   
-  @ObservableState
-  public struct State: Equatable {
-    public var isFocused: Bool = false
-    public var searchWord: String = ""
-    public var previousWord: String = ""
-    public init() {}
-  }
-
   public enum Action: BindableAction, Equatable {
-    case binding(BindingAction<State>)
+    case binding(BindingAction<SearchState>)
     
     case onAppear
     
@@ -48,7 +48,7 @@ public struct SearchReducer {
     case selectResult(String)
   }
 
-  public var body: some ReducerOf<Self> {
+  public var body: some Reducer<SearchState, Action> {
     BindingReducer()
     reducer
   }

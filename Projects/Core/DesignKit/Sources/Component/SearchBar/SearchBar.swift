@@ -21,7 +21,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
   /// TextField 활성화 시 검색 완료 이벤트 받기 위한 클로저
   public var onSubmit: (() async -> Void)?
   /// 키보드 활성화 여부
-  @Binding private var isFocused: Bool
+  @Binding var isFocused: Bool
   
   public init(
     text: Binding<String> = .constant(""),

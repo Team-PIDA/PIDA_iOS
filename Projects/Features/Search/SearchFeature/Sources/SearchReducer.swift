@@ -12,7 +12,7 @@ import ComposableArchitecture
 extension SearchReducer {
   public init() {
     @Dependency(\.dismiss) var dismiss
-    let searchReducer = Reduce<State, Action> { state, action in
+    let searchReducer = Reduce<SearchState, Action> { state, action in
       switch action {
       case .binding(\.searchWord):
         if state.previousWord != state.searchWord {

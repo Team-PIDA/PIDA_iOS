@@ -24,7 +24,7 @@ public extension SearchBar {
   }
   
   func isFocused(_ isFocused: Bool) -> Self {
-    var searchBar = self
+    let searchBar = self
     searchBar.isFocused = isFocused
     return searchBar
   }
