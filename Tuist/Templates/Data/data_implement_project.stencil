@@ -10,10 +10,10 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeImplementProject(
-    name: "{{ name }}",
-    layer: .data,
-    implementDependency: [
-        .Data.{{ name }}.Interface
-    ]
+  name: "{{ name }}",
+  layer: .data,
+  implementDependency: [
+    .Data.{{ name }}.Interface
+  ]
 )
 

@@ -10,10 +10,10 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeInterfaceProject(
-    name: "{{ name }}",
-    layer: .domain,
-    interfaceDependency: [
-        .InternalDependency.Core
-    ]
+  name: "{{ name }}",
+  layer: .domain,
+  interfaceDependency: [
+    .InternalDependency.Core
+  ]
 )
 

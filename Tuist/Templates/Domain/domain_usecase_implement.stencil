@@ -10,15 +10,13 @@ import Foundation
 import {{ name }}DomainInterface
 
 public struct {{ name }}UseCaseImpl: {{ name }}UseCase {
-    private let repository: {{ name }}Repository
+  private let repository: {{ name }}Repository
 
-    public init(
-        repository: {{ name }}Repository
-    ) {
-        self.repository = repository
-    }
+  public init(
+    repository: {{ name }}Repository
+  ) {
+    self.repository = repository
+  }
 
-    public func execute() async throws -> Void {
-        
-    }
+  public func execute() async throws -> Void { }
 }

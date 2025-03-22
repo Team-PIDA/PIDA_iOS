@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol {{ name }}UseCase {
-    func execute() async throws -> Void
+  func execute() async throws -> Void
 }
