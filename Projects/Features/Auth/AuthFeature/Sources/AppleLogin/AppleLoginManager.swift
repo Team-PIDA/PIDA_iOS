@@ -9,10 +9,12 @@
 import Foundation
 import AuthenticationServices
 import SwiftUI
+import Utility
 
 final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
   private var continuation: CheckedContinuation<String?, Error>?
   private var window: UIWindow?
+  
   /// 비동기로 애플 로그인을 수행합니다.
   /// - Parameters:
   ///   - scope: 요청할 사용자 정보 (예: [.fullName, .email])
@@ -75,5 +77,6 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
     return window ?? UIWindow()
   }
 }
+
 
 
