@@ -107,53 +107,53 @@ extension PIDADependency {
 
 
 extension TargetDependency {
-    
-    public struct Features: PIDADependency {
-        public static let Map = Self.projectWithFeature(feature: .map)
-      public static let Search = Self.projectWithFeature(feature: .search)
-    }
-    
-    public struct Domain {
-      public struct Map: PIDADependency {
-          public static let Interface = Self.projectWithLayer(feature: .map, layer: .domain)
-          public static let Implement = Self.projectWithLayer(feature: .map, layer: .domain, isInterface: false)
-      }
-      public struct Search: PIDADependency {
-        public static let Interface = Self.projectWithLayer(feature: .search, layer: .domain)
-        public static let Implement = Self.projectWithLayer(feature: .search, layer: .domain, isInterface: false)
-      }
-    }
-    
-    public struct Data {
-        public struct Map: PIDADependency {
-            public static let Interface = Self.projectWithLayer(feature: .map, layer: .data)
-            public static let Implement = Self.projectWithLayer(feature: .map, layer: .data, isInterface: false)
-        }
-      public struct Search: PIDADependency {
-        public static let Interface = Self.projectWithLayer(feature: .search, layer: .data)
-        public static let Implement = Self.projectWithLayer(feature: .search, layer: .data, isInterface: false)
-      }
-    }
-    
-    public struct InternalDependency: PIDADependency {
-        public static let Core = Self.projectWithFramework(framework: .core)
-        public static let Shared = Self.projectWithFramework(framework: .shared)
-    }
-    
-    public struct CoreTarget: PIDADependency {
-        public static let Networker = Self.internal(name: .network)
-        public static let DesignKit = Self.internal(name: .designKit)
-    }
-    
-    public struct SharedTarget: PIDADependency {
-        public static let KeyChain = Self.internal(name: .keyChain)
-        public static let Utility = Self.internal(name: .utility)
-        public static let ThirdParty = Self.projectWithFramework(framework: .thirdParty)
-        public static let UserDefault = Self.internal(name: .userDefault)
-    }
-    
-   public struct ThirdParty: PIDADependency {
-     public static let TCA = Self.external(externalDependency: .TCA)
-     public static let NMaps = Self.external(externalDependency: .NMap)
+  
+  public struct Features: PIDADependency {
+    public static let Map = Self.projectWithFeature(feature: .map)
+    public static let Search = Self.projectWithFeature(feature: .search)
   }
- }
+  
+  public struct Domain {
+    public struct Map: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .map, layer: .domain)
+      public static let Implement = Self.projectWithLayer(feature: .map, layer: .domain, isInterface: false)
+    }
+    public struct Search: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .search, layer: .domain)
+      public static let Implement = Self.projectWithLayer(feature: .search, layer: .domain, isInterface: false)
+    }
+  }
+  
+  public struct Data {
+    public struct Map: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .map, layer: .data)
+      public static let Implement = Self.projectWithLayer(feature: .map, layer: .data, isInterface: false)
+    }
+    public struct Search: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .search, layer: .data)
+      public static let Implement = Self.projectWithLayer(feature: .search, layer: .data, isInterface: false)
+    }
+  }
+  
+  public struct InternalDependency: PIDADependency {
+    public static let Core = Self.projectWithFramework(framework: .core)
+    public static let Shared = Self.projectWithFramework(framework: .shared)
+  }
+  
+  public struct CoreTarget: PIDADependency {
+    public static let Networker = Self.internal(name: .network)
+    public static let DesignKit = Self.internal(name: .designKit)
+  }
+  
+  public struct SharedTarget: PIDADependency {
+    public static let KeyChain = Self.internal(name: .keyChain)
+    public static let Utility = Self.internal(name: .utility)
+    public static let ThirdParty = Self.projectWithFramework(framework: .thirdParty)
+    public static let UserDefault = Self.internal(name: .userDefault)
+  }
+  
+  public struct ThirdParty: PIDADependency {
+    public static let TCA = Self.external(externalDependency: .TCA)
+    public static let NMaps = Self.external(externalDependency: .NMap)
+  }
+}
