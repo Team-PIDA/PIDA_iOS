@@ -52,8 +52,12 @@ let featureTemplate = Template(
     ),
     // Feature의 Resources 파일 생성
     .file(
-      path: "Projects/Features/\(name)/\(name)Demo/Resources/Assets.xcassets",
-      templatePath: "feature_resources.stencil"
+      path: "Projects/Features/\(name)/\(name)Demo/Resources/Assets.xcassets/Contents.json",
+      templatePath: "feature_resources_contents.stencil"
+    ),
+    .file(
+      path: "Projects/Features/\(name)/\(name)Demo/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json",
+      templatePath: "feature_resources_appicon.stencil"
     )
   ]
 )
