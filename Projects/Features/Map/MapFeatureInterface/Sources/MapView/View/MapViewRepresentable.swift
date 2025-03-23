@@ -23,8 +23,14 @@ struct MapViewRepresentable: UIViewRepresentable {
   @Binding var flowerPositions: [Int: FlowerPosition]
   /// 마커 탭 시 경로를 보여주기 위한 프로퍼티
   @Binding var newPath: [MapPoint]
+  /// 지도 범위 요청 프로퍼티
+  @Binding var requestBounds: Bool
   /// 마커 탭 시 이벤트를 전달하기 위한 publisher
-  var markerTappedEvent: PassthroughSubject<Int?, Never>
+  var markerTappedEvent: PassthroughSubject<Int?, Never>? = nil
+  /// 지도 범위 좌표 값을 전달하기 위한 이벤트
+  var mapBounds: (([MapPoint]) -> Void)? = nil
+  
+  
   /// 지도 초기 위치 설정 - 석촌호수 근처
   private let defaultPoint: MapPoint = .init(latitude: 37.50545, longitude: 127.10143)
   
@@ -60,6 +66,10 @@ struct MapViewRepresentable: UIViewRepresentable {
     } else {
       context.coordinator.deletePathMarkers()
     }
+    if requestBounds {
+      currentVisibleBounds(on: uiView.mapView)
+      requestBounds = false
+    }
   }
   
   func makeCoordinator() -> Coordinator {
@@ -70,6 +80,21 @@ struct MapViewRepresentable: UIViewRepresentable {
 // MARK: - MapEvent
 
 extension MapViewRepresentable {
+  func onReceiveMapBounds(_ action: @escaping ([MapPoint]) -> Void) -> Self {
+    var map = self
+    map.mapBounds = action
+    return map
+  }
+  
+  /// 현재 지도에 보이는 좌표 범위를 반환하는 메서드
+  func currentVisibleBounds(on mapView: NMFMapView) {
+    let bounds = mapView.projection.latlngBounds(fromViewBounds: mapView.bounds)
+    let northEast = MapPoint(latitude: bounds.northEastLat, longitude: bounds.northEastLng)
+    let southWest = MapPoint(latitude: bounds.southWestLat, longitude: bounds.southWestLng)
+    if let mapBounds = mapBounds {
+      mapBounds([northEast, southWest])
+    }
+  }
   
   /// 특정 위치로 이동하기 위한 메서드
   private func moveUserLocation(_ view: NMFNaverMapView, to userLocation: MapPoint, context: Context) {

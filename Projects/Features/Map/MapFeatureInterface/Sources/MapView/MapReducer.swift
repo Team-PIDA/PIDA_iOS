@@ -26,6 +26,7 @@ public struct MapReducer {
     public var selectedPathLines: [MapPoint] = []
     public var searchResult: String? = nil
     public var searchText: String? = nil
+    public var requestMapBound: Bool = false
     public init() {}
   }
   
@@ -40,6 +41,7 @@ public struct MapReducer {
     case fetchFlowers
     case storeFlowerData([FlowerPosition])
     case fetchPathLines(id: Int?)
+    case requestMapBounds(Bool)
     
     // MARK: - Search
     

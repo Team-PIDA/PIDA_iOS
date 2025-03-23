@@ -42,6 +42,10 @@ extension MapViewRepresentable {
       parent.markerTappedEvent.send(nil)
     }
     
+    func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
+      
+    }
+    
     /// 마커 및 경로 비활성화 처리 메서드
     func deletePathMarkers() {
       if let paths = paths,

@@ -8,14 +8,18 @@
 
 import SwiftUI
 import Combine
-import ComposableArchitecture
+
+import MapDomainInterface
 import DesignKit
 import Utility
+
+import ComposableArchitecture
 
 public struct MapView: View {
   @Bindable var store: StoreOf<MapReducer>
   
   private var markerTappedEvent = PassthroughSubject<Int?, Never>()
+  private var requestMapBounds = PassthroughSubject<[MapPoint], Never>()
   
   public init(store: StoreOf<MapReducer>) {
     self.store = store
@@ -27,8 +31,12 @@ public struct MapView: View {
         userLocation: $store.state.position,
         flowerPositions: $store.state.flowerPositions,
         newPath: $store.state.selectedPathLines,
+        requestBounds: $store.requestMapBound,
         markerTappedEvent: markerTappedEvent
       )
+      .onReceiveMapBounds { bounds in
+        print(bounds)
+      }
       .onReceive(markerTappedEvent) {
         store.send(.fetchPathLines(id: $0))
       }
@@ -38,6 +46,10 @@ public struct MapView: View {
           .padding(.horizontal, .Number16)
           .padding(.vertical, .Number8)
         
+        PIDButton(title: "현위치", size: .large)
+          .action {
+            store.send(.requestMapBounds(true))
+          }
         Spacer()
         currentButton
       }
