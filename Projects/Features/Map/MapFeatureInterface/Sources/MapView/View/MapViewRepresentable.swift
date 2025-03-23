@@ -147,7 +147,9 @@ extension MapViewRepresentable {
     let tag = Int(marker.tag)
     context.coordinator.selectedPin = flowerPositions[tag]
     context.coordinator.activeMarker = marker
-    markerTappedEvent.send(tag)
+    if let markerTappedEvent = markerTappedEvent {
+      markerTappedEvent.send(tag)
+    }
   }
   
   /// 경로 선을 그리기 위한 메서드

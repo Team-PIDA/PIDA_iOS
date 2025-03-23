@@ -45,11 +45,11 @@ public struct MapView: View {
         searchView()
           .padding(.horizontal, .Number16)
           .padding(.vertical, .Number8)
-        
-        PIDButton(title: "현위치", size: .large)
-          .action {
+        ResearchButton(
+          action: {
             store.send(.requestMapBounds(true))
           }
+        )
         Spacer()
         currentButton
       }
