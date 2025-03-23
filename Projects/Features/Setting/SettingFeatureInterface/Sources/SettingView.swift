@@ -22,7 +22,9 @@ public struct SettingView: View {
     VStack {
       navigationBar
       profileView
-        
+      EmptyView()
+        .frame(height: 76)
+      settingList
       Spacer()
     }
     .navigationBarBackButtonHidden(true)
@@ -69,4 +71,26 @@ extension SettingView {
     .foregroundStyle(ColorSet.Text.Primary)
     .padding(.horizontal, .Number16)
   }
+  
+  @ViewBuilder
+  private var settingList: some View {
+    LazyVStack(alignment: .leading, spacing: .Number0) {
+      
+      SettingListItemView(
+        title: "최신버전 업데이트",
+        subtitle: "v2.0/v1.0",
+        trailingContent: {
+          Text("업데이트")
+            .font(FontSet.Label.label2)
+            .foregroundStyle(ColorSet.Text.Accent)
+            .onTapGesture {
+              print("tab")
+            }
+        })
+      SettingListItemView(title: "서비스 이용약관")
+      SettingListItemView(title: "개인정보 처리방침")
+    }
+    
+  }
+  
 }
