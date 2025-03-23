@@ -54,7 +54,7 @@ public struct SearchResultList: View {
       BorderView(size: .long)
     }
     .contentShape(Rectangle())
-    .padding(.horizontal, 16)
+    .padding(.horizontal, .Number16)
     .onTapGesture {
       if let onTap = onTap {
         Task { @MainActor in
