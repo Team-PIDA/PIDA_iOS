@@ -29,13 +29,29 @@ public struct AuthView: View {
         }
       )
       Spacer()
-      Button {
-        store.send(.appleLoginButtonTapped)
-      } label: {
-        Text("애플로그인")
+      VStack(spacing: .Number10) {
+        appleLogin
       }
-
+      .padding(.horizontal, .Number16)
     }
+  }
+  
+  @ViewBuilder
+  private var appleLogin: some View {
+    PIDButton(
+      title: "Apple로 로그인하기",
+      size: .large
+    ) {
+      Icon(image: .apple)
+        .size(.large)
+        .foregroundColor(ColorSet.Background.Primary)
+    }
+    .action {
+      store.send(.appleLoginButtonTapped)
+    }
+    .backgroundColor(ColorSet.Background.Inverse)
+    .foregroundStyle(ColorSet.Background.Primary)
+    .frame(height: .Number48)
   }
 }
 

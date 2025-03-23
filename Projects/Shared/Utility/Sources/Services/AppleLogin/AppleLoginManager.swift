@@ -1,15 +1,14 @@
 //
 //  AppleLoginManager.swift
-//  AuthFeature
+//  Utility
 //
-//  Created by Jiyeon on 3/22/25.
+//  Created by Jiyeon on 3/23/25.
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
 import Foundation
 import AuthenticationServices
-import SwiftUI
-import Utility
+import UIKit
 
 final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
   private var continuation: CheckedContinuation<String?, Error>?
