@@ -42,6 +42,7 @@ struct PIDAReducer {
   }
   
   var body: some ReducerOf<Self> {
+    BindingReducer()
     Scope(state: \.map, action: \.map) {
       MapReducer()
     }
