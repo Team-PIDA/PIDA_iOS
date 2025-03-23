@@ -10,6 +10,7 @@ import SwiftUI
 import ComposableArchitecture
 import MapFeatureInterface
 import SearchFeatureInterface
+import SettingFeatureInterface
 
 struct PIDAView: View {
   @Bindable var store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) { PIDAReducer()
@@ -18,7 +19,10 @@ struct PIDAView: View {
     NavigationStack(path: $store.path) {
       MapView(store: store.scope(state: \.map, action: \.map))
         .navigationDestination(for: Path.self) { path in
-          
+          switch path {
+          case .setting:
+            SettingView(store: store.scope(state: \.setting, action: \.setting))
+          }
         }
         .fullScreenCover(isPresented: $store.isShowSearch) {
           SearchView(store: store.scope(state: \.search, action: \.search))

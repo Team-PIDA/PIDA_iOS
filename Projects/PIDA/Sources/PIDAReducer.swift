@@ -12,10 +12,10 @@ import MapFeatureInterface
 import MapFeature
 import SearchFeature
 import SearchFeatureInterface
-
+import SettingFeature
+import SettingFeatureInterface
 
 enum Path: Hashable {
-  case search
   case setting
 }
 
@@ -26,6 +26,7 @@ struct PIDAReducer {
   struct State: Equatable {
     var map = MapReducer.State()
     var search = SearchReducer.State()
+    var setting = SettingReducer.State()
     
     /// 네비게이션 이동 경로
     var path: [Path] = []
@@ -36,6 +37,7 @@ struct PIDAReducer {
   enum Action: BindableAction {
     case map(MapReducer.Action)
     case search(SearchReducer.Action)
+    case setting(SettingReducer.Action)
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
@@ -48,6 +50,9 @@ struct PIDAReducer {
     }
     Scope(state: \.search, action: \.search) {
       SearchReducer()
+    }
+    Scope(state: \.setting, action: \.setting) {
+      SettingReducer()
     }
     Reduce { state, action in
       switch action {
@@ -95,9 +100,13 @@ struct PIDAReducer {
         state.path.append(.setting)
         return .none
         
+      case .setting(.delegate(.pop)):
+        state.path.removeLast()
+        return .none
+        
         // MARK: - None
         
-      case .binding, .map, .search:
+      case .binding, .map, .search, .setting:
         return .none
       }
     }

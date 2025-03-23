@@ -23,6 +23,12 @@ public struct SettingReducer {
   }
 
   public enum Action: Equatable {
+    case delegate(Delegate)
+    case pop
+  }
+  
+  public enum Delegate: Equatable {
+    case pop
   }
 
   public var body: some ReducerOf<Self> {

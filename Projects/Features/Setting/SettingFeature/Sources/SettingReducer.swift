@@ -10,10 +10,16 @@ import SettingFeatureInterface
 import ComposableArchitecture
 
 extension SettingReducer {
-  public static let SettingReducer = Reduce<State, Action> { state, action in
-    switch action {
-    default:
-      return .none
+  public init() {
+    let reducer = Reduce<State, Action> { state, action in
+      switch action {
+      case .pop:
+        return .send(.delegate(.pop))
+        
+      case .delegate:
+        return .none
+      }
     }
+    self.init(reducer: reducer)
   }
 }
