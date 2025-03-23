@@ -18,7 +18,8 @@ public struct SettingReducer {
   
   @ObservableState
   public struct State: Equatable {
-    
+    public var isLoggedIn: Bool = false
+    public var username: String? = nil
     public init() {}
   }
 
