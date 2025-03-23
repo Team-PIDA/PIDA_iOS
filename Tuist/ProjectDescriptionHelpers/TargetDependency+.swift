@@ -122,7 +122,7 @@ extension TargetDependency {
     }
     public struct Auth: PIDADependency {
       public static let Interface = Self.projectWithFeature(feature: .auth, inInterface: true)
-      public static let Implement = Self.projectWithFeature(feature: .searauthch)
+      public static let Implement = Self.projectWithFeature(feature: .auth)
     }
   }
   
