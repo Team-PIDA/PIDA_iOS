@@ -18,17 +18,7 @@ public struct PIDButton<IconContent: View>: View {
   public var action: (() async -> Void)? = nil
   public var iconContent: (() -> IconContent)?
   
-  public var backgroundColor: Color {
-    if isDisabled {
-      return ColorSet.Component.Disabled
-    } else if isError {
-      return ColorSet.Component.Error
-    } else if isSecondary {
-      return ColorSet.Background.Primary
-    } else {
-      return ColorSet.Component.Primary
-    }
-  }
+  public var backgroundColor: Color = ColorSet.Component.Primary
   
   @State private var isPressed: Bool = false
   
