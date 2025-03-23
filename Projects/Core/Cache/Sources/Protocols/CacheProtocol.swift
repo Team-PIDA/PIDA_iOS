@@ -12,15 +12,10 @@ import Foundation
 public protocol Cache<Key, Value> {
   associatedtype Key: Hashable
   associatedtype Value: Codable
-  
-  /// 값 저장
-  func insert(_ value: Value, forKey key: Key, ttl: TTLScale?) async throws
-  /// 값 조회
-  func value(forKey key: Key) async -> Value?
-  /// 항목 제거
-  func remove(forKey key: Key) async
-  /// 모든 항목 제거
-  func removeAll() async
-  /// 만료된 항목 제거 시작
-  func startExpirationTimer(interval: TimeInterval) async
+
+  func insert(_ value: Value, forKey key: Key, ttl: TTLScale?) async throws   /// 값 저장
+  func value(forKey key: Key) async -> Value?  /// 값 조회
+  func remove(forKey key: Key) async  /// 항목 제거
+  func removeAll() async  /// 모든 항목 제거
+  func startExpirationTimer(interval: TimeInterval) async /// 만료된 항목 제거 시작
 }
