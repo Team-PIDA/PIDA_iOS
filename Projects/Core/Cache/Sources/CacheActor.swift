@@ -13,20 +13,21 @@ import Foundation
 public actor CacheActor {
   public static let shared = CacheActor()
   
-  // 다양한 타입의 캐시를 저장할 dictionary
-  private var caches: [String: Any] = [:]
+  /// `CacheKey`에 대한 `TwoTierCache`(`MemoryCache` & `DiskCache`)를 관리하는 `Root Cache`입니다.
+  private var rootCache: [String: Any] = [:]
   
-  // 특정 타입의 캐시를 가져오거나 생성
-  public func cache<Namespace: CacheNamespace, Value: Codable>(
-    namespace: Namespace.Type,
-    valueType: Value.Type,
+  /// `TwoTierCache`를 생성하고, `rootCache`에 저장합니다.
+  /// - Parameters:
+  ///  - rootCacheKey(required): `rootCache`의 `Key`로 사용 할 `Namespace`입니다. 사용시에는 `.rawValue`로 `String`으로 변환하여 사용합니다.
+  ///  - ttl(optional): 캐시의 유지 시간입니다.(default: medium = 1시간)
+  ///  - eviction(optional): 캐시의 삭제 정책입니다.(default: lru = Least Recently Used)
+  private func cache<Namespace: CacheNamespace, Value: Codable & Sendable>(
+    rootCacheKey: Namespace,
     ttl: TTLScale = .medium,
-    eviction: EvictionPolicy = .lru(100),
-    cacheName: String = String(describing: Value.self)
+    eviction: EvictionPolicy = .lru(100)
   ) async throws -> TwoTierCache<Namespace, Value> {
-    let cacheKey = "\(cacheName)_\(String(describing: Value.self))_\(String(describing: Namespace.self))"
-    
-    if let existingCache = caches[cacheKey] as? TwoTierCache<Namespace, Value> {
+    let cacheName = rootCacheKey.rawValue
+    if let existingCache = rootCache[cacheName] as? TwoTierCache<Namespace, Value> {
       return existingCache
     }
     
@@ -36,35 +37,33 @@ public actor CacheActor {
       cacheName: cacheName
     )
     
-    caches[cacheKey] = newCache
+    rootCache[cacheName] = newCache
     return newCache
   }
 }
 
-/// 기본 캐시 타입들에 대한 편리한 접근 제공
 extension CacheActor {
-  // 검색 결과 캐시
-  public var searchResultCache: TwoTierCache<DefaultNamespace, SearchResultCacheModel> {
+  
+  /// 외부 모듈에서 `searchResults` 캐시에 접근할 수 있도록 제공하는 `public` extension
+  /// - Note: `TwoTierCache`를 사용하여 캐시를 저장하고 관리합니다.
+  public var searchResultCache: TwoTierCache<Search, SearchResultCacheModel> {
     get async throws {
       return try await cache(
-        namespace: DefaultNamespace.self,
-        valueType: SearchResultCacheModel.self,
+        rootCacheKey: .searchResult,
         ttl: .high,
-        eviction: .lru(50),
-        cacheName: "searchResults"
+        eviction: .lru(50)
       )
     }
   }
   
-  // 검색 기록 캐시
-  public var searchHistoryCache: TwoTierCache<DefaultNamespace, SearchHistoryCacheModel> {
+  /// 외부 모듈에서 `searchHistory` 캐시에 접근할 수 있도록 제공하는 `public` extension
+  /// - Note: `TwoTierCache`를 사용하여 캐시를 저장하고 관리합니다.
+  public var searchHistoryCache: TwoTierCache<Search, SearchHistoryCacheModel> {
     get async throws {
       return try await cache(
-        namespace: DefaultNamespace.self,
-        valueType: SearchHistoryCacheModel.self,
+        rootCacheKey: .searchHistory,
         ttl: .high,
-        eviction: .fifo(20),
-        cacheName: "searchHistory"
+        eviction: .fifo(20)
       )
     }
   }
