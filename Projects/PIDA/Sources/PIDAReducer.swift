@@ -8,12 +8,18 @@
 
 import Foundation
 import ComposableArchitecture
-import MapFeatureInterface
+
 import MapFeature
+import MapFeatureInterface
+
 import SearchFeature
 import SearchFeatureInterface
+
 import SettingFeature
 import SettingFeatureInterface
+
+import AuthFeature
+import AuthFeatureInterface
 
 enum Path: Hashable {
   case setting
@@ -29,11 +35,12 @@ struct PIDAReducer {
     var search = SearchReducer.State()
     var setting = SettingReducer.State()
     var policy = PolicyReducer.State()
+    var auth = AuthReducer.State()
     
     /// 네비게이션 이동 경로
     var path: [Path] = []
     var isShowSearch: Bool = false
-    var isShowSetting: Bool = false
+    var isPresentAuth: Bool = false
   }
   
   enum Action: BindableAction {
@@ -41,6 +48,7 @@ struct PIDAReducer {
     case search(SearchReducer.Action)
     case setting(SettingReducer.Action)
     case policy(PolicyReducer.Action)
+    case auth(AuthReducer.Action)
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
@@ -59,6 +67,9 @@ struct PIDAReducer {
     }
     Scope(state: \.policy, action: \.policy) {
       PolicyReducer()
+    }
+    Scope(state: \.auth, action: \.auth) {
+      AuthReducer()
     }
     
     Reduce { state, action in
@@ -104,7 +115,12 @@ struct PIDAReducer {
         
         // map -> setting
       case .map(.delegate(.pushToSetting)):
-        state.path.append(.setting)
+//        state.path.append(.setting)
+        state.isPresentAuth = true
+        return .none
+        
+      case .auth(.delegate(.dismiss)):
+        state.isPresentAuth = false
         return .none
         
       case .setting(.delegate(.pop)):
@@ -127,7 +143,7 @@ struct PIDAReducer {
         
         // MARK: - None
         
-      case .binding, .map, .search, .setting, .policy:
+      case .binding, .map, .search, .setting, .policy, .auth:
         return .none
       }
     }

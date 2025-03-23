@@ -26,7 +26,11 @@ extension AuthReducer {
       case let .appleLoginRespose(authCode):
         state.authCode = authCode
         return .none
-      case .appleLoginFailure:
+        
+      case .dismiss:
+        return .send(.delegate(.dismiss))
+      
+      case .appleLoginFailure, .delegate:
         return .none
       }
     }
