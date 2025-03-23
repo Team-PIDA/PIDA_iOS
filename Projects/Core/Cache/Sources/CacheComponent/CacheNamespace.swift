@@ -14,9 +14,7 @@ public protocol CacheNamespace: RawRepresentable, Codable, Hashable where RawVal
 /// 기본 캐시 네임스페이스 구현
 /// - searchList: 도로명 및 주소 검색 결과
 /// - searchHistory: 최근 검색 기록
-/// - imageCache: 이미지 캐시
-public enum DefaultNamespace: String, CacheNamespace {
-  case searchList
-  case searchHistory
-  case imageCache
+public enum Search: String, CacheNamespace {
+  case searchResult = "searchResult"
+  case searchHistory = "SearchHistory"
 }
