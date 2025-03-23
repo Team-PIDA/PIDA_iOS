@@ -9,15 +9,24 @@
 import SwiftUI
 import ComposableArchitecture
 import MapFeatureInterface
+import SearchFeatureInterface
 
 struct PIDAView: View {
   @Bindable var store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) { PIDAReducer()
   }
   var body: some View {
-    MapRootView(store: store.scope(state: \.mapRoot, action: \.mapRoot))
+    NavigationStack(path: $store.path) {
+      MapView(store: store.scope(state: \.map, action: \.map))
+        .navigationDestination(for: Path.self) { path in
+          
+        }
+        .fullScreenCover(isPresented: $store.isShowSearch) {
+          SearchView(store: store.scope(state: \.search, action: \.search))
+        }
+        .transaction { transaction in
+          transaction.disablesAnimations = true
+        }
+    }
   }
-}
 
-#Preview {
-  PIDAView()
 }

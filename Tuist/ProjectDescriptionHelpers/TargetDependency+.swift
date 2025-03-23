@@ -17,6 +17,7 @@ public enum Layer: String {
 
 public enum Feature: String {
   case map = "Map"
+  case search = "Search"
 }
 
 
@@ -61,7 +62,7 @@ public protocol PIDADependency {
   static func `internal`(name: InternalTarget) -> TargetDependency
   static func external(externalDependency: ExternalDependency) -> TargetDependency
   static func projectWithLayer(feature: Feature, layer: Layer, isInterface: Bool) -> TargetDependency
-  static func projectWithFeature(feature: Feature) -> TargetDependency
+  static func projectWithFeature(feature: Feature, inInterface: Bool) -> TargetDependency
   static func projectWithFramework(framework: InternalFramework) -> TargetDependency
 }
 
@@ -76,10 +77,11 @@ extension PIDADependency {
     )
   }
   
-  public static func projectWithFeature(feature: Feature) -> TargetDependency {
+  public static func projectWithFeature(feature: Feature, inInterface: Bool = false) -> TargetDependency {
     let featureName = feature.rawValue
+    let folderName = inInterface ? "Interface" : ""
     return .project(
-      target: feature.rawValue + "Feature",
+      target: feature.rawValue + "Feature" + folderName,
       path: .relativeToRoot("./Projects/Features/\(featureName)")
     )
   }
@@ -108,7 +110,14 @@ extension PIDADependency {
 extension TargetDependency {
   
   public struct Features: PIDADependency {
-    public static let Map = Self.projectWithFeature(feature: .map)
+    public struct Map: PIDADependency {
+      public static let Interface = Self.projectWithFeature(feature: .map, inInterface: true)
+      public static let Implement = Self.projectWithFeature(feature: .map)
+    }
+    public struct Search: PIDADependency {
+      public static let Interface = Self.projectWithFeature(feature: .search, inInterface: true)
+      public static let Implement = Self.projectWithFeature(feature: .search)
+    }
   }
   
   public struct Domain {
@@ -116,12 +125,20 @@ extension TargetDependency {
       public static let Interface = Self.projectWithLayer(feature: .map, layer: .domain)
       public static let Implement = Self.projectWithLayer(feature: .map, layer: .domain, isInterface: false)
     }
+    public struct Search: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .search, layer: .domain)
+      public static let Implement = Self.projectWithLayer(feature: .search, layer: .domain, isInterface: false)
+    }
   }
   
   public struct Data {
     public struct Map: PIDADependency {
       public static let Interface = Self.projectWithLayer(feature: .map, layer: .data)
       public static let Implement = Self.projectWithLayer(feature: .map, layer: .data, isInterface: false)
+    }
+    public struct Search: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .search, layer: .data)
+      public static let Implement = Self.projectWithLayer(feature: .search, layer: .data, isInterface: false)
     }
   }
   

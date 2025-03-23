@@ -50,12 +50,12 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
       NavigationBar(
         backContent: {
           TouchArea(image: .back)
-            .size(.superLage)
+            .size(.superLarge)
         },
         title: "text",
         closeContent: {
           TouchArea(image: .close)
-            .size(.superLage)
+            .size(.superLarge)
         }
       )
       .border(Color.red)
@@ -65,7 +65,7 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
       NavigationBar(
         backContent: {
           TouchArea(image: .back)
-            .size(.superLage)
+            .size(.superLarge)
             .action {
               print("뒤로가기 버튼")
             }
@@ -80,7 +80,7 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
         title: "text",
         closeContent: {
           TouchArea(image: .close)
-            .size(.superLage)
+            .size(.superLarge)
             .action {
               print("닫기 버튼")
             }

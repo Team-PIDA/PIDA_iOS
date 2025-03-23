@@ -17,6 +17,9 @@ extension MapReducer {
     
     let mapReducer = Reduce<State, Action> { state, action in
       switch action {
+        
+      // MARK: - Map
+        
       case .fetchUserLocation:
         return .run { _ in
           await LocationService.shared.requestUserLocation()
@@ -49,10 +52,32 @@ extension MapReducer {
         }
         return .none
         
+      // MARK: - Search
+        
+      case let .showSearchResult(result):
+        state.searchResult = result
+        return .send(.setSearchBarText(result))
+      case let .setSearchBarText(text):
+        state.searchText = text
+        return .none
+      case .resetSearchBar:
+        return .run { send in
+          await MainActor.run {
+            send(.showSearchResult(nil))
+            send(.setSearchBarText(nil))
+            send(.delegate(.resetSearchView))
+          }
+        }
+        
+      // MARK: - Delegate
+        
+      case .presentToSearch:
+        return .send(.delegate(.presentToSearch))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
-      case .presentToDetail:
-        return .send(.delegate(.presentToDetail))
+        
+      // MARK: - None
+        
       case .binding, .delegate:
         return .none
       }

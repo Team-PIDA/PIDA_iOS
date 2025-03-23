@@ -21,7 +21,7 @@ public struct Icon: View {
   }
   
   public var body: some View {
-    SwiftUI.Image(asset: image.swiftUIImage)
+    Image(asset: image.swiftUIImage)
       .renderingMode(.template)
       .resizable()
       .scaledToFit()
