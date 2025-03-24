@@ -26,14 +26,14 @@ extension DesignKitFontFamily {
     }
     
     public struct Body: Sendable {
-      public static let body1 = DesignKitFontFamily.Pretendard.semiBold.swiftUIFont(size: 18)
-      public static let body2 = DesignKitFontFamily.Pretendard.semiBold.swiftUIFont(size: 16)
-      public static let body3 = DesignKitFontFamily.Pretendard.semiBold.swiftUIFont(size: 14)
+      public static let body1 = DesignKitFontFamily.Pretendard.regular.swiftUIFont(size: 18)
+      public static let body2 = DesignKitFontFamily.Pretendard.regular.swiftUIFont(size: 16)
+      public static let body3 = DesignKitFontFamily.Pretendard.medium.swiftUIFont(size: 14)
     }
     
     public struct Caption: Sendable {
-      public static let caption1 = DesignKitFontFamily.Pretendard.semiBold.swiftUIFont(size: 12)
-      public static let caption2 = DesignKitFontFamily.Pretendard.semiBold.swiftUIFont(size: 8)
+      public static let caption1 = DesignKitFontFamily.Pretendard.medium.swiftUIFont(size: 12)
+      public static let caption2 = DesignKitFontFamily.Pretendard.medium.swiftUIFont(size: 8)
     }
     
     public struct Label: Sendable {
