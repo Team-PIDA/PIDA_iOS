@@ -19,13 +19,13 @@ public struct SettingView: View {
   }
   
   public var body: some View {
-    VStack {
+    VStack(spacing: .Number0) {
       navigationBar
       VStack(spacing: .Number0) {
         profileView
         
-        EmptyView()
-          .frame(height: 76)
+        feedBackView
+          .padding(.horizontal, .Number16)
         
         SettingItemListView(title: "서비스", items: serviceItems()) {
           store.send(.settingListTapped($0))
@@ -67,7 +67,7 @@ extension SettingView {
   
   @ViewBuilder
   private var profileView: some View {
-    HStack(spacing: .Number16) {
+    HStack(alignment: .center, spacing: .Number16) {
       Image(asset: ImageSet.avatarLarge.swiftUIImage)
         .resizable()
         .frame(width: .Number40, height: .Number40)
@@ -88,8 +88,34 @@ extension SettingView {
     .font(FontSet.Body.body2)
     .foregroundStyle(ColorSet.Text.Primary)
     .padding(.horizontal, .Number16)
+    .frame(height: .Number72)
   }
   
+  @ViewBuilder
+  private var feedBackView: some View {
+    HStack(spacing: .Number12) {
+      Image(asset: ImageSet.loveletter.swiftUIImage)
+        .resizable()
+        .frame(width: .Number40, height: .Number40)
+      
+      VStack(alignment: .leading, spacing: .Number2) {
+        Text("피드백 남기러 가기")
+          .font(FontSet.Title.title3)
+
+        Text("좋은 점, 개선할 점, 궁금한 점 의견을 들려주세요!")
+          .font(FontSet.Caption.caption1)
+          .foregroundStyle(ColorSet.Text.Secondary)
+      }
+      Spacer()
+    }
+    .padding(.vertical, .Number16)
+    .padding(.horizontal, .Number16)
+    .background(
+      RoundedRectangle(cornerRadius: .Number10)
+        .fill(ColorSet.Background.Accent)
+    )
+    .frame(height: .Number76)
+  }
   
 }
 
