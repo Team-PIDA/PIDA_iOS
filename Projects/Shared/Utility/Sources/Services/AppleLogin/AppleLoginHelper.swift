@@ -12,7 +12,7 @@ import UIKit
 ///
 /// 외부에서 애플로그인을 간단하게 요청하기 위한 헬퍼
 public enum AppleLoginHelper {
-  public static func requestAuthorization() async throws -> String? {
+  public static func requestAuthorization() async throws -> AppleLoginResult? {
     let window = await MainActor.run { UIApplication.shared.currentWindow }
     return try await AppleLoginManager().performAppleLogin(
       scope: [.fullName, .email],

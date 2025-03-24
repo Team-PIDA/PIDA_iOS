@@ -24,8 +24,9 @@ extension AuthReducer {
             await send(.appleLoginFailure)
           }
         }
-      case let .appleLoginRespose(authCode):
-        state.authCode = authCode
+      case let .appleLoginRespose(info):
+        state.loginInfo = info
+        print(info)
         return .none
         
       case .dismiss:

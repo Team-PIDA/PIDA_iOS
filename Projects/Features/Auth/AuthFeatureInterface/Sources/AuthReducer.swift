@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import Utility
 
 @Reducer
 public struct AuthReducer {
@@ -18,13 +19,13 @@ public struct AuthReducer {
   
   @ObservableState
   public struct State: Equatable {
-    public var authCode: String? = nil
+    public var loginInfo: AppleLoginResult? = nil
     public init() {}
   }
 
   public enum Action: Equatable {
     case appleLoginButtonTapped
-    case appleLoginRespose(String?)
+    case appleLoginRespose(AppleLoginResult?)
     case appleLoginFailure
     
     case delegate(Delegate)

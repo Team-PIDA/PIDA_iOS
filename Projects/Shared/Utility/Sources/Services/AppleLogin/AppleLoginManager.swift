@@ -11,7 +11,7 @@ import AuthenticationServices
 import UIKit
 
 final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-  private var continuation: CheckedContinuation<String?, Error>?
+  private var continuation: CheckedContinuation<AppleLoginResult?, Error>?
   private var window: UIWindow?
   
   /// 비동기로 애플 로그인을 수행합니다.
@@ -22,7 +22,7 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
   func performAppleLogin(
     scope: [ASAuthorization.Scope],
     window: UIWindow?
-  ) async throws -> String? {
+  ) async throws -> AppleLoginResult? {
     self.window = window
     
     let request = ASAuthorizationAppleIDProvider().createRequest()
@@ -43,12 +43,30 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
   func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
     if let appleCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
        let codeData = appleCredential.authorizationCode,
-       let authCode = String(data: codeData, encoding: .utf8) {
-      resume(value: authCode)
+       let token = appleCredential.identityToken,
+       let idToken = String(data: token, encoding: .utf8) {
+      
+      let name = fullNameFormat(appleCredential.fullName)
+      let email = appleCredential.email
+      
+      let userInfo = AppleLoginResult(idToken: idToken, fullName: name, email: email)
+      
+      resume(value: userInfo)
     } else {
       resume(value: nil)
     }
     
+  }
+  
+  private func fullNameFormat(_ name: PersonNameComponents?) -> String? {
+    if let fullName = name {
+        let formatter = PersonNameComponentsFormatter()
+        formatter.style = .long // .short, .long 등도 가능
+        return formatter.string(from: fullName)
+        
+    } else {
+      return nil
+    }
   }
   
   func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
@@ -57,7 +75,7 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
   
   // MARK: - Resume Continuation
   
-  private func resume(value: String?) {
+  private func resume(value: AppleLoginResult?) {
     guard let continuation = self.continuation else { return }
     self.continuation = nil
     continuation.resume(returning: value)
