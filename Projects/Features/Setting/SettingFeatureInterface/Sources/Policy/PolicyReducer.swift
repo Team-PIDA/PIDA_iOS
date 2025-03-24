@@ -1,41 +1,36 @@
 //
-//  SettingReducer.swift
+//  PolicyReducer.swift
+//  SettingFeatureInterface
 //
-//  Setting
-//
-//  Created by JiYeon
+//  Created by Jiyeon on 3/24/25.
+//  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
 import ComposableArchitecture
 
 @Reducer
-public struct SettingReducer {
+public struct PolicyReducer {
   private let reducer: Reduce<State, Action>
   
   public init(reducer: Reduce<State, Action>) {
     self.reducer = reducer
   }
-  
   @ObservableState
   public struct State: Equatable {
-    public var isLoggedIn: Bool = true
-    public var username: String? = nil
-    public init() {}
+    public var type: PolicyType? = nil
+    public init(){}
   }
-
+  
   public enum Action: Equatable {
-    case onAppear
-    case settingListTapped(SettingType)
-    
-    case delegate(Delegate)
     case pop
+    case delegate(Delegate)
+    case clearType
   }
   
   public enum Delegate: Equatable {
     case pop
-    case pushToPolicy(PolicyType)
   }
-
+  
   public var body: some ReducerOf<Self> {
     reducer
   }

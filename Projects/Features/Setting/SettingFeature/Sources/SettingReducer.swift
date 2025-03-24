@@ -15,13 +15,14 @@ extension SettingReducer {
       switch action {
       case .onAppear:
         return .none
-      case let .settingListTapped(type):
-        print(type)
-        return .none
+      case .settingListTapped(.terms):
+        return .send(.delegate(.pushToPolicy(.terms)))
+      case .settingListTapped(.privacy):
+        return .send(.delegate(.pushToPolicy(.privacy)))
       case .pop:
         return .send(.delegate(.pop))
         
-      case .delegate:
+      case .delegate, .settingListTapped:
         return .none
       }
     }

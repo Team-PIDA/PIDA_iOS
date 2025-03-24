@@ -22,6 +22,8 @@ struct PIDAView: View {
           switch path {
           case .setting:
             SettingView(store: store.scope(state: \.setting, action: \.setting))
+          case .policy:
+            PolicyView(store: store.scope(state: \.policy, action: \.policy))
           }
         }
         .fullScreenCover(isPresented: $store.isShowSearch) {
