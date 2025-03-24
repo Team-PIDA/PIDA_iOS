@@ -18,12 +18,15 @@ public struct SettingReducer {
   
   @ObservableState
   public struct State: Equatable {
-    public var isLoggedIn: Bool = false
+    public var isLoggedIn: Bool = true
     public var username: String? = nil
     public init() {}
   }
 
   public enum Action: Equatable {
+    case onAppear
+    case settingListTapped(SettingType)
+    
     case delegate(Delegate)
     case pop
   }

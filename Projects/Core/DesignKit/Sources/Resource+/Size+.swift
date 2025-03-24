@@ -23,6 +23,7 @@ public extension CGFloat {
   static let Number24: CGFloat = 24
   static let Number28: CGFloat = 28
   static let Number32: CGFloat = 32
+  static let Number33: CGFloat = 33
   static let Number40: CGFloat = 40
   static let Number48: CGFloat = 48
   static let Number56: CGFloat = 56

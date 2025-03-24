@@ -21,17 +21,35 @@ public struct SettingView: View {
   public var body: some View {
     VStack {
       navigationBar
-      profileView
-      EmptyView()
-        .frame(height: 76)
-      settingList
+      VStack(spacing: .Number0) {
+        profileView
+        
+        EmptyView()
+          .frame(height: 76)
+        
+        SettingItemListView(title: "서비스", items: serviceItems()) {
+          store.send(.settingListTapped($0))
+        }
+        
+        if store.isLoggedIn {
+          BorderView(size: .xlarge)
+          SettingItemListView(items: accountItems()) {
+            store.send(.settingListTapped($0))
+          }
+        }
+      }
+      
       Spacer()
     }
     .navigationBarBackButtonHidden(true)
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 }
 
 extension SettingView {
+  
   /// 네비게이션 바
   @ViewBuilder
   private var navigationBar: some View {
@@ -60,7 +78,7 @@ extension SettingView {
         HStack(spacing: .Number0) {
           Text("로그인 하기")
             .font(FontSet.Body.body2)
-            
+          
           Icon(image: .chevronRight)
             .size(.extraLarge)
         }
@@ -72,25 +90,24 @@ extension SettingView {
     .padding(.horizontal, .Number16)
   }
   
-  @ViewBuilder
-  private var settingList: some View {
-    LazyVStack(alignment: .leading, spacing: .Number0) {
-      
-      SettingListItemView(
-        title: "최신버전 업데이트",
-        subtitle: "v2.0/v1.0",
-        trailingContent: {
-          Text("업데이트")
-            .font(FontSet.Label.label2)
-            .foregroundStyle(ColorSet.Text.Accent)
-            .onTapGesture {
-              print("tab")
-            }
-        })
-      SettingListItemView(title: "서비스 이용약관")
-      SettingListItemView(title: "개인정보 처리방침")
-    }
-    
+  
+}
+
+// MARK: - Data
+
+extension SettingView {
+  private func serviceItems() -> [SettingItem] {
+    [
+      .init(type: .update, title: "최신버전 업데이트", subtitle: "v2.0/v1.0", trailing: "업데이트"),
+      .init(type: .terms, title: "서비스 이용약관"),
+      .init(type: .privacy, title: "개인정보 처리방침")
+    ]
   }
   
+  private func accountItems() -> [SettingItem] {
+    [
+      .init(type: .logout, title: "로그아웃"),
+      .init(type: .withdraw, title: "탈퇴하기")
+    ]
+  }
 }
