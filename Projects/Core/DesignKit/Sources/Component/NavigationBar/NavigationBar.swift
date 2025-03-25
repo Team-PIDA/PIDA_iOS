@@ -35,12 +35,17 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
         $0().padding(.leading, .Number4)
       }
       Spacer()
-      if let title = title { Text(title) }
+      if let title = title {
+        Text(title)
+          .font(FontSet.Title.title3)
+          .foregroundStyle(ColorSet.Text.Primary)
+      }
       Spacer()
       closeContent.map {
         $0().padding(.leading, .Number4)
       }
     }
+    .background(ColorSet.Background.Primary)
   }
 }
 

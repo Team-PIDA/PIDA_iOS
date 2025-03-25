@@ -27,8 +27,12 @@ let project = Project.makePIDA(
     .Data.Map.Implement,
     .Domain.Map.Implement,
     
-      .Features.Search.Implement,
+    .Features.Search.Implement,
     .Domain.Search.Implement,
-    .Data.Search.Implement
+    .Data.Search.Implement,
+    
+    .Features.Setting.Implement,
+    .Domain.Setting.Implement,
+    .Data.Setting.Implement
   ]
 )

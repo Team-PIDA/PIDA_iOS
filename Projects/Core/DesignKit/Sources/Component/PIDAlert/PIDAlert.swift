@@ -11,26 +11,40 @@ import SwiftUI
 public struct PIDAlert: View {
   public var title: String
   public var message: String?
+  public var cancelTitle: String
+  public var acceptTitle: String
   public var closeAction: () async -> Void
   public var acceptAction: () async -> Void
+  var isErrorType: Bool = true
   
   public init(
     title: String,
     message: String? = nil,
+    cancelTitle: String,
+    acceptTitle: String,
     closeAction: @escaping () async -> Void,
     acceptAction: @escaping () async -> Void
   ) {
     self.title = title
     self.message = message
+    self.cancelTitle = cancelTitle
+    self.acceptTitle = acceptTitle
     self.closeAction = closeAction
     self.acceptAction = acceptAction
   }
   
   public var body: some View {
-    content
-      .background(ColorSet.Background.Primary)
-      .fixedSize(horizontal: false, vertical: true)
-      .frame(width: .Number320)
+    ZStack {
+      ColorSet.SubColor.backdrop
+        .ignoresSafeArea()
+      content
+        .background(
+          RoundedRectangle(cornerRadius: .Number10)
+            .fill(ColorSet.Background.Primary)
+        )
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(width: .Number320)
+    }
   }
   
   @ViewBuilder
@@ -42,6 +56,7 @@ public struct PIDAlert: View {
     .padding(.horizontal, .Number16)
     .padding(.top, .Number20)
     .padding(.bottom, .Number16)
+    
   }
   
   @ViewBuilder
@@ -49,6 +64,7 @@ public struct PIDAlert: View {
     VStack(spacing: .Number8) {
       Text(title)
         .font(FontSet.Title.title2)
+        .foregroundStyle(ColorSet.Text.Primary)
         .multilineTextAlignment(.center)
       
       if let message = message {
@@ -64,7 +80,7 @@ public struct PIDAlert: View {
   private var buttonView: some View {
     HStack(spacing: .Number12) {
       PIDButton(
-        title: "닫기",
+        title: cancelTitle,
         size: .large
       )
       .isSecondary(true)
@@ -75,9 +91,10 @@ public struct PIDAlert: View {
       }
       
       PIDButton(
-        title: "확인",
+        title: acceptTitle,
         size: .large
       )
+      .isError(isErrorType)
       .action {
         Task { @MainActor in
           await acceptAction()
@@ -91,6 +108,8 @@ public struct PIDAlert: View {
   PIDAlert(
     title: "알림",
     message: "알림 메시지입니다.\n2줄 짜리임.",
+    cancelTitle: "닫기",
+    acceptTitle: "확인",
     closeAction: {
       print("닫기 버튼")
     },

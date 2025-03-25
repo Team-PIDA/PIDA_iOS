@@ -18,6 +18,7 @@ public enum Layer: String {
 public enum Feature: String {
   case map = "Map"
   case search = "Search"
+  case setting = "Setting"
 }
 
 
@@ -113,6 +114,10 @@ extension TargetDependency {
       public static let Interface = Self.projectWithFeature(feature: .search, inInterface: true)
       public static let Implement = Self.projectWithFeature(feature: .search)
     }
+    public struct Setting: PIDADependency {
+      public static let Interface = Self.projectWithFeature(feature: .setting, inInterface: true)
+      public static let Implement = Self.projectWithFeature(feature: .setting)
+    }
   }
   
   public struct Domain {
@@ -125,6 +130,10 @@ extension TargetDependency {
       public static let Interface = Self.projectWithLayer(feature: .search, layer: .domain)
       public static let Implement = Self.projectWithLayer(feature: .search, layer: .domain, isInterface: false)
     }
+    public struct Setting: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .setting, layer: .domain)
+      public static let Implement = Self.projectWithLayer(feature: .setting, layer: .domain, isInterface: false)
+    }
   }
   
   public struct Data {
@@ -135,6 +144,10 @@ extension TargetDependency {
     public struct Search: PIDADependency {
       public static let Interface = Self.projectWithLayer(feature: .search, layer: .data)
       public static let Implement = Self.projectWithLayer(feature: .search, layer: .data, isInterface: false)
+    }
+    public struct Setting: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .setting, layer: .data)
+      public static let Implement = Self.projectWithLayer(feature: .setting, layer: .data, isInterface: false)
     }
   }
   

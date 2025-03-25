@@ -7,3 +7,16 @@
 //
 
 import Foundation
+
+/// Alert Accept버튼 컬러 값 error 타입 여부 설정
+///
+/// - Default: false
+public extension PIDAlert {
+  func isErrorType(
+    _ isError: Bool
+  ) -> Self {
+    var alert = self
+    alert.isErrorType = isError
+    return alert
+  }
+}

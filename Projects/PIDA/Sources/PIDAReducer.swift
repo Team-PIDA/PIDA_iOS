@@ -12,11 +12,12 @@ import MapFeatureInterface
 import MapFeature
 import SearchFeature
 import SearchFeatureInterface
-
+import SettingFeature
+import SettingFeatureInterface
 
 enum Path: Hashable {
-  case search
   case setting
+  case policy
 }
 
 @Reducer
@@ -26,6 +27,8 @@ struct PIDAReducer {
   struct State: Equatable {
     var map = MapReducer.State()
     var search = SearchReducer.State()
+    var setting = SettingReducer.State()
+    var policy = PolicyReducer.State()
     
     /// 네비게이션 이동 경로
     var path: [Path] = []
@@ -36,6 +39,8 @@ struct PIDAReducer {
   enum Action: BindableAction {
     case map(MapReducer.Action)
     case search(SearchReducer.Action)
+    case setting(SettingReducer.Action)
+    case policy(PolicyReducer.Action)
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
@@ -49,6 +54,13 @@ struct PIDAReducer {
     Scope(state: \.search, action: \.search) {
       SearchReducer()
     }
+    Scope(state: \.setting, action: \.setting) {
+      SettingReducer()
+    }
+    Scope(state: \.policy, action: \.policy) {
+      PolicyReducer()
+    }
+    
     Reduce { state, action in
       switch action {
         // MARK: - Map <-> Search
@@ -95,9 +107,27 @@ struct PIDAReducer {
         state.path.append(.setting)
         return .none
         
+      case .setting(.delegate(.pop)):
+        state.path.removeLast()
+        return .none
+        
+      case let .setting(.delegate(.pushToPolicy(type))):
+        state.policy.type = type
+        state.path.append(.policy)
+        return .none
+        
+      case .policy(.delegate(.pop)):
+        state.path.removeLast()
+        return .none
+        
+      case .setting(.delegate(.presentToLogin)):
+        // TODO: - 로그인 페이지 연결
+        print("로그인")
+        return .none
+        
         // MARK: - None
         
-      case .binding, .map, .search:
+      case .binding, .map, .search, .setting, .policy:
         return .none
       }
     }
