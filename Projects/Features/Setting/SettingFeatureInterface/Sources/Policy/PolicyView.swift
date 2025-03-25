@@ -19,20 +19,23 @@ public struct PolicyView: View {
     self.store = store
   }
   public var body: some View {
-    
-    VStack(spacing: .Number0) {
-      NavigationBar(
-        backContent: {
-          TouchArea(image: .back)
-            .size(.superLarge)
-            .action {
-              store.send(.pop)
-            }
-        },
-        title: store.type?.title
-      )
-      if let type = store.type, let url = type.url {
-        WebView(url: url)
+    ZStack {
+      ColorSet.Background.Primary
+        .ignoresSafeArea()
+      VStack(spacing: .Number0) {
+        NavigationBar(
+          backContent: {
+            TouchArea(image: .back)
+              .size(.superLarge)
+              .action {
+                store.send(.pop)
+              }
+          },
+          title: store.type?.title
+        )
+        if let type = store.type, let url = type.url {
+          WebView(url: url)
+        }
       }
     }
     .navigationBarBackButtonHidden(true)
