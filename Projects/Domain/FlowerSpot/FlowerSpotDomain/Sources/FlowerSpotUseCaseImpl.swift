@@ -1,0 +1,22 @@
+//
+//  FlowerSpotUseCaseImpl.swift
+//
+//  FlowerSpot
+//
+//  Created by yongin
+//
+
+import Foundation
+import FlowerSpotDomainInterface
+
+public struct FlowerSpotUseCaseImpl: FlowerSpotUseCase {
+  private let repository: FlowerSpotRepository
+
+  public init(
+    repository: FlowerSpotRepository
+  ) {
+    self.repository = repository
+  }
+
+  public func execute() async throws -> Void { }
+}

@@ -1,18 +1,18 @@
 //
-//  MapDataInterfaceProject.swift
+//  FlowerSpotDataInterfaceProject.swift
 //
-//  Map
+//  FlowerSpot
 //
-//  Created by JiYeon
+//  Created by yongin
 //
 
 import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeInterfaceProject(
-  name: "Map",
+  name: "FlowerSpot",
   layer: .data,
   interfaceDependency: [
-    .Domain.Map.Interface
+    .Domain.FlowerSpot.Interface
   ]
 )

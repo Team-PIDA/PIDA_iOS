@@ -24,7 +24,6 @@ let project = Project.makePIDA(
   ],
   dependencies: [
     .Features.Map.Implement,
-    .Data.Map.Implement,
     .Domain.Map.Implement,
     
     .Features.Search.Implement,
@@ -33,6 +32,9 @@ let project = Project.makePIDA(
     
     .Features.Setting.Implement,
     .Domain.Setting.Implement,
-    .Data.Setting.Implement
+    .Data.Setting.Implement,
+    
+    .Data.FlowerSpot.Implement,
+    .Domain.FlowerSpot.Implement,
   ]
 )

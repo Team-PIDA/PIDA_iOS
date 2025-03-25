@@ -1,19 +1,19 @@
 //
-//  MapDataImplementProject.swift
+//  FlowerSpotDataImplementProject.swift
 //
-//  Map
+//  FlowerSpot
 //
-//  Created by JiYeon
+//  Created by yongin
 //
 
 import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeImplementProject(
-  name: "Map",
+  name: "FlowerSpot",
   layer: .data,
   implementDependency: [
-    .Data.Map.Interface
+    .Data.FlowerSpot.Interface
   ]
 )
 
