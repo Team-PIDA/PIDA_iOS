@@ -20,21 +20,29 @@ public struct SettingReducer {
   public struct State: Equatable {
     public var isLoggedIn: Bool = true
     public var username: String? = nil
+    public var isAlertShow: Bool = false
+    public var alertType: AlertType? = nil
     public init() {}
   }
 
-  public enum Action: Equatable {
+  public enum Action: BindableAction, Equatable {
+    case binding(BindingAction<State>)
     case onAppear
     case settingListTapped(SettingType)
+    case alertCancelTapped
+    case alertAcceptTapped
+    case clearAlertState
     
     case delegate(Delegate)
     case pop
   }
   
+  
   public enum Delegate: Equatable {
     case pop
     case pushToPolicy(PolicyType)
   }
+  
 
   public var body: some ReducerOf<Self> {
     reducer

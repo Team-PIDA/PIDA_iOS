@@ -12,34 +12,39 @@ import ComposableArchitecture
 import DesignKit
 
 public struct SettingView: View {
-  let store: StoreOf<SettingReducer>
+  @Bindable var store: StoreOf<SettingReducer>
   
   public init(store: StoreOf<SettingReducer>) {
     self.store = store
   }
   
   public var body: some View {
-    VStack(spacing: .Number0) {
-      navigationBar
+    ZStack {
       VStack(spacing: .Number0) {
-        profileView
-        
-        feedBackView
-          .padding(.horizontal, .Number16)
-        
-        SettingItemListView(title: "서비스", items: serviceItems()) {
-          store.send(.settingListTapped($0))
-        }
-        
-        if store.isLoggedIn {
-          BorderView(size: .xlarge)
-          SettingItemListView(items: accountItems()) {
+        navigationBar
+        VStack(spacing: .Number0) {
+          profileView
+          
+          feedBackView
+            .padding(.horizontal, .Number16)
+          
+          SettingItemListView(title: "서비스", items: serviceItems()) {
             store.send(.settingListTapped($0))
           }
+          
+          if store.isLoggedIn {
+            BorderView(size: .xlarge)
+            SettingItemListView(items: accountItems()) {
+              store.send(.settingListTapped($0))
+            }
+          }
         }
+        
+        Spacer()
       }
-      
-      Spacer()
+      if store.state.isAlertShow, let alertType = store.alertType {
+        alertView(type: alertType)
+      }
     }
     .navigationBarBackButtonHidden(true)
     .onAppear {
@@ -117,11 +122,23 @@ extension SettingView {
     .frame(height: .Number76)
   }
   
+  private func alertView(type: AlertType) -> some View {
+    PIDAlert(
+      title: type.title,
+      message: type.message,
+      cancelTitle: type.cancel,
+      acceptTitle: type.accept,
+      closeAction: { store.send(.alertCancelTapped) },
+      acceptAction: { store.send(.alertAcceptTapped) }
+    )
+    .isErrorType(true)
+  }
 }
 
 // MARK: - Data
 
 extension SettingView {
+  
   private func serviceItems() -> [SettingItem] {
     [
       .init(type: .update, title: "최신버전 업데이트", subtitle: "v2.0/v1.0", trailing: "업데이트"),
