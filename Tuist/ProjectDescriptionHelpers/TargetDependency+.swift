@@ -34,18 +34,16 @@ public enum InternalTarget: String {
   case thirdParty = "ThirdParty"
   case userDefault = "UserDefault"
   case cache = "Cache"
-      
-      
+  
   public var path: String {
     var root = "./Projects/"
     switch self {
     case .network, .designKit, .cache:
-        root += "Core/"
+      root += "Core/"
     case .keyChain, .utility, .thirdParty, .userDefault:
-        root += "Shared/"
+      root += "Shared/"
     }
-    return root + self.rawValue    
-    }
+    return root + self.rawValue
   }
 }
 
@@ -122,7 +120,7 @@ extension TargetDependency {
       public static let Interface = Self.projectWithLayer(feature: .map, layer: .domain)
       public static let Implement = Self.projectWithLayer(feature: .map, layer: .domain, isInterface: false)
     }
-
+    
     public struct Search: PIDADependency {
       public static let Interface = Self.projectWithLayer(feature: .search, layer: .domain)
       public static let Implement = Self.projectWithLayer(feature: .search, layer: .domain, isInterface: false)
