@@ -28,6 +28,8 @@ public struct SettingReducer {
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
+    case feedBackTapped
+    
     case settingListTapped(SettingType)
     case alertCancelTapped
     case alertAcceptTapped

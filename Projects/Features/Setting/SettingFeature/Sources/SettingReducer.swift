@@ -8,13 +8,22 @@
 
 import SettingFeatureInterface
 import ComposableArchitecture
+import Utility
 
 extension SettingReducer {
   public init() {
+    @Dependency(\.openURL) var openURL
+    
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .onAppear:
         return .none
+      case .feedBackTapped:
+        return .run { send in
+          if let url = ExternalURL.feedBack {
+            await openURL(url)
+          }
+        }
         
         // MARK: - SettingList Events
         

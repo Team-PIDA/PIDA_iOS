@@ -13,6 +13,7 @@ import DesignKit
 
 public struct SettingView: View {
   @Bindable var store: StoreOf<SettingReducer>
+  @Environment(\.openURL) var openURL
   
   public init(store: StoreOf<SettingReducer>) {
     self.store = store
@@ -24,9 +25,7 @@ public struct SettingView: View {
         navigationBar
         VStack(spacing: .Number0) {
           profileView
-          
           feedBackView
-            .padding(.horizontal, .Number16)
           
           SettingItemListView(title: "서비스", items: serviceItems()) {
             store.send(.settingListTapped($0))
@@ -120,6 +119,10 @@ extension SettingView {
         .fill(ColorSet.Background.Accent)
     )
     .frame(height: .Number76)
+    .padding(.horizontal, .Number16)
+    .onTapGesture {
+      store.send(.feedBackTapped)
+    }
   }
   
   private func alertView(type: AlertType) -> some View {
