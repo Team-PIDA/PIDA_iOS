@@ -56,6 +56,8 @@ extension SettingView {
   /// 네비게이션 바
   @ViewBuilder
   private var navigationBar: some View {
+    NavigationGestureSupportView()
+      .frame(width: .Number0, height: .Number0)
     NavigationBar(
       backContent: {
         TouchArea(image: .back)

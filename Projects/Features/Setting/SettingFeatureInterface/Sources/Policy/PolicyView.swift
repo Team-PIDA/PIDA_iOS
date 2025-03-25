@@ -21,6 +21,8 @@ public struct PolicyView: View {
   public var body: some View {
     
     VStack(spacing: .Number0) {
+      NavigationGestureSupportView()
+        .frame(width: .Number0, height: .Number0)
       NavigationBar(
         backContent: {
           TouchArea(image: .back)
