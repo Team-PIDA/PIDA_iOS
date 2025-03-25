@@ -10,9 +10,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeInterfaceProject(
-    name: "{{ name }}",
-    layer: .data,
-    interfaceDependency: [
-        .Domain.{{ name }}.Interface
-    ]
+  name: "{{ name }}",
+  layer: .data,
+  interfaceDependency: [
+    .Domain.{{ name }}.Interface
+  ]
 )

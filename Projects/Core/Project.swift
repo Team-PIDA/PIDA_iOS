@@ -9,9 +9,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeInternalFramework(
-    name: "Core",
-    dependencies: [
-        .CoreTarget.Networker,
-        .CoreTarget.DesignKit
-    ]
+  name: "Core",
+  dependencies: [
+    .CoreTarget.Networker,
+    .CoreTarget.DesignKit
+  ]
 )

@@ -12,7 +12,7 @@ public struct TouchArea: View {
   
   public var image: ImageSet
   public var action: (() async -> Void)? = nil
-  public var size: IconSize = .superLage
+  public var size: IconSize = .superLarge
   public var color: Color = ColorSet.Icon.Primary
   
   public init(
@@ -47,7 +47,7 @@ public struct TouchArea: View {
 #Preview {
   HStack {
     TouchArea(image: .close)
-      .size(.superLage)
+      .size(.superLarge)
       .action { print("Super Large") }
       .border(Color.red)
     

@@ -10,10 +10,10 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeInterfaceProject(
-    name: "Map",
-    layer: .domain,
-    interfaceDependency: [
-        .InternalDependency.Core
-    ]
+  name: "Map",
+  layer: .domain,
+  interfaceDependency: [
+    .InternalDependency.Core
+  ]
 )
 

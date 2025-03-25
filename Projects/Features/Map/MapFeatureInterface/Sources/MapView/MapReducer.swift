@@ -23,11 +23,15 @@ public struct MapReducer {
     public var position: MapPoint? = nil
     public var flowerPositions: [Int: FlowerPosition] = [:]
     public var selectedPathLines: [MapPoint] = []
+    public var searchResult: String? = nil
+    public var searchText: String? = nil
     public init() {}
   }
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
+    
+    // MARK: - Map
     
     case fetchUserLocation
     case moveUserLocation
@@ -36,15 +40,23 @@ public struct MapReducer {
     case storeFlowerData([FlowerPosition])
     case fetchPathLines(id: Int?)
     
-    // delegate action
+    // MARK: - Search
+    
+    case showSearchResult(String?) // TODO: - ItemType
+    case setSearchBarText(String?)
+    case resetSearchBar
+    
+    // MARK: - Delegate
+    
     case delegate(Delegate)
+    case presentToSearch
     case pushToSetting
-    case presentToDetail
   }
   
-  public enum Delegate {
+  public enum Delegate: Equatable {
+    case presentToSearch
     case pushToSetting
-    case presentToDetail
+    case resetSearchView
   }
   
   public var body: some ReducerOf<Self> {

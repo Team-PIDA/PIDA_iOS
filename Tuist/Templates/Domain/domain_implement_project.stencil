@@ -10,9 +10,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.makeImplementProject(
-    name: "{{ name }}",
-    layer: .domain,
-    implementDependency: [
-        .Domain.{{ name }}.Interface
-    ]
+  name: "{{ name }}",
+  layer: .domain,
+  implementDependency: [
+    .Domain.{{ name }}.Interface
+  ]
 )

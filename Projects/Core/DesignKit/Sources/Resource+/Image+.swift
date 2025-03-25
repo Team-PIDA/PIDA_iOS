@@ -11,7 +11,7 @@ import SwiftUI
 public enum ImageSet {
   case back, chevronRight, close, copy, distance,
        flower, location, myLocation, placeholder,
-       replay, search, sentimentDissatisfied, warning
+       replay, search, sentimentDissatisfied, warning, avatar
   
   public var swiftUIImage: DesignKitImages {
     switch self {
@@ -28,6 +28,7 @@ public enum ImageSet {
     case .search: return DesignKitAsset.Icons.search
     case .sentimentDissatisfied: return DesignKitAsset.Icons.sentimentDissatisfied
     case .warning: return DesignKitAsset.Icons.warning
+    case .avatar: return DesignKitAsset.Icons.avatarSmall
     }
   }
 }
