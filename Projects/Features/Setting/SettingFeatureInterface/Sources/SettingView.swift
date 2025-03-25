@@ -94,8 +94,7 @@ extension SettingView {
     }
     .font(FontSet.Body.body2)
     .foregroundStyle(ColorSet.Text.Primary)
-    .padding(.horizontal, .Number16)
-    .frame(height: .Number72)
+    .padding(.Number16)
     .onTapGesture {
       store.send(.profileTapped)
     }
@@ -125,7 +124,6 @@ extension SettingView {
       RoundedRectangle(cornerRadius: .Number10)
         .fill(ColorSet.Background.Accent)
     )
-    .frame(height: .Number76)
     .padding(.horizontal, .Number16)
     .onTapGesture {
       store.send(.feedBackTapped)

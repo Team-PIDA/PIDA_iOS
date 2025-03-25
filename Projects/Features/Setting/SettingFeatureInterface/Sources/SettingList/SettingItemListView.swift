@@ -39,7 +39,6 @@ struct SettingItemListView: View {
       .padding(.top, .Number8)
       .padding(.bottom, .Number4)
       .padding(.horizontal, .Number16)
-      .frame(height: .Number33)
     
   }
 }
