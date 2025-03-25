@@ -20,6 +20,8 @@ public struct SettingView: View {
   
   public var body: some View {
     ZStack {
+      ColorSet.Background.Primary
+        .ignoresSafeArea()
       VStack(spacing: .Number0) {
         navigationBar
         VStack(spacing: .Number0) {
@@ -109,6 +111,7 @@ extension SettingView {
       VStack(alignment: .leading, spacing: .Number2) {
         Text("피드백 남기러 가기")
           .font(FontSet.Title.title3)
+          .foregroundStyle(ColorSet.Text.Primary)
 
         Text("좋은 점, 개선할 점, 궁금한 점 의견을 들려주세요!")
           .font(FontSet.Caption.caption1)

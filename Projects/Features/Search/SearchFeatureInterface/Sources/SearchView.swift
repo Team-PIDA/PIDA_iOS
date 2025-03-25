@@ -19,9 +19,13 @@ public struct SearchView: View {
   }
   
   public var body: some View {
-    VStack {
-      searchView()
-      searchList()
+    ZStack {
+      ColorSet.Background.Primary
+        .ignoresSafeArea()
+      VStack {
+        searchView()
+        searchList()
+      }
     }
     .onAppear {
       store.send(.onAppear)

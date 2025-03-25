@@ -64,6 +64,7 @@ public struct PIDAlert: View {
     VStack(spacing: .Number8) {
       Text(title)
         .font(FontSet.Title.title2)
+        .foregroundStyle(ColorSet.Text.Primary)
         .multilineTextAlignment(.center)
       
       if let message = message {
