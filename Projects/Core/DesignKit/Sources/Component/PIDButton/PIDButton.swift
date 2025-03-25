@@ -79,7 +79,7 @@ public struct PIDButton<IconContent: View>: View {
           ? ColorSet.Text.Disabled
           : isSecondary ? ColorSet.Text.Primary : ColorSet.Text.Inverse
         )
-        .font(size.font)
+        .fontStyle(size.font)
     }
     .frame(maxWidth: .infinity)
     .padding(.vertical, size.padding.vertical)
