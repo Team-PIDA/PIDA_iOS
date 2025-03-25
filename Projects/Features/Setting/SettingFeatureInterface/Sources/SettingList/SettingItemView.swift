@@ -41,6 +41,7 @@ struct SettingItemView: View {
     .padding(.vertical, .Number12)
     .padding(.horizontal, .Number16)
     .frame(height: item.subtitle == nil ? .Number48 : .Number68)
+    .contentShape(Rectangle())
     .onTapGesture {
       if let action = action {
         Task { @MainActor in
