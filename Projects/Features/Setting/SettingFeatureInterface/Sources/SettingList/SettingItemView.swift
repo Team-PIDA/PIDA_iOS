@@ -21,26 +21,26 @@ struct SettingItemView: View {
   
   var body: some View {
     HStack {
-      VStack(alignment: .leading, spacing: item.subtitle == nil ? .Number0 : .Number4) {
+      VStack(alignment: .leading, spacing: .Number2) {
         Text(item.title)
-          .font(FontSet.Body.body2)
+          .fontStyle(FontStyle.Body.body2)
           .foregroundStyle(ColorSet.Text.Primary)
         if let subtitle = item.subtitle {
           Text(subtitle)
-            .font(FontSet.Caption.caption1)
+            .fontStyle(FontStyle.Caption.caption1)
+            .lineSpacing(20)
             .foregroundStyle(ColorSet.Text.Tertiary)
         }
       }
       Spacer()
       if let trailingText = item.trailing {
         Text(trailingText)
-          .font(FontSet.Label.label2)
+          .fontStyle(FontStyle.Label.label2)
           .foregroundStyle(ColorSet.Text.Accent)
       }
     }
     .padding(.vertical, .Number12)
     .padding(.horizontal, .Number16)
-    .frame(height: item.subtitle == nil ? .Number48 : .Number68)
     .contentShape(Rectangle())
     .onTapGesture {
       if let action = action {
