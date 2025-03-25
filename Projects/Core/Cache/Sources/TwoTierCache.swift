@@ -8,7 +8,13 @@
 
 import Foundation
 
-/// 메모리와 디스크를 함께 사용하는 2단계 캐시 구현
+/// `TwoTierCache`는 메모리와 디스크를 함께 사용하는 캐시 구현체입니다.
+/// - Description: 메모리와 디스크를 함께 사용하는 2단계 캐시 구현체로, 캐시 항목을 메모리에 저장하고, 디스크에도 저장합니다.
+///  - `memoryStorage`: 메모리 캐시 저장소
+///  - `diskStorage`: 디스크 캐시 저장소
+///  - `defaultTTL`: 기본 캐시 유지 시간(.low, .medium, .high)
+///  - `eviction`: 캐시 제거 정책 (LRU, FIFO, Size, None 등 등)
+///  - `expirationTimer`: 일정 시간마다 만료된 캐시 항목 제거를 위한 타이머
 public actor TwoTierCache<Namespace: CacheNamespace, Value: Codable & Sendable>: Cache {
   public typealias Key = CacheKey<Namespace>
   
@@ -33,6 +39,7 @@ public actor TwoTierCache<Namespace: CacheNamespace, Value: Codable & Sendable>:
     await startExpirationTimer(interval: 60.0)
   }
   
+  /// `TwoTierCache`가 `deinit`될 때, 즉 `TwoTierCache` 인스턴스가 사라질 때, `expirationTimer`도 같이 취소
   deinit { expirationTimer?.cancel() }
   
   /// 디스크에서 캐시 항목 로드

@@ -9,7 +9,11 @@
 import Foundation
 
 /// 캐시 항목을 정의하는 구조체
-public struct CacheEntry<Value: Codable>: Codable {
+/// - Value: 캐시할 값의 타입
+/// - expiration: 캐시 만료 시점
+/// - lastAccessed: 마지막 접근 시점
+/// - createdAt: 캐시 항목 생성 시점
+public struct CacheEntry<Value: Codable & Sendable>: Codable {
   public let value: Value
   public let expiration: Date
   public let lastAccessed: Date

@@ -8,7 +8,7 @@
 
 import Foundation
 
-/// 검색 기록 캐시 모델
+/// 검색 기록 캐시 모델(임시)
 /// - Searches: 검색 기록을 저장하는 문자열 배열입니다.
 public struct SearchHistoryCacheModel: Codable {
   public var searches: [String]
