@@ -33,22 +33,17 @@ public enum InternalTarget: String {
   case utility = "Utility"
   case thirdParty = "ThirdParty"
   case userDefault = "UserDefault"
+  case cache = "Cache"
   
   public var path: String {
+    var root = "./Projects/"
     switch self {
-    case .network:
-      return "./Projects/Core/Networker"
-    case .designKit:
-      return "./Projects/Core/DesignKit"
-    case .keyChain:
-      return "./Projects/Shared/KeyChain"
-    case .utility:
-      return "./Projects/Shared/Utility"
-    case .thirdParty:
-      return "./Projects/Shared/ThirdParty"
-    case .userDefault:
-      return "./Projects/Shared/UserDefault"
+    case .network, .designKit, .cache:
+      root += "Core/"
+    case .keyChain, .utility, .thirdParty, .userDefault:
+      root += "Shared/"
     }
+    return root + self.rawValue
   }
 }
 
@@ -125,6 +120,7 @@ extension TargetDependency {
       public static let Interface = Self.projectWithLayer(feature: .map, layer: .domain)
       public static let Implement = Self.projectWithLayer(feature: .map, layer: .domain, isInterface: false)
     }
+    
     public struct Search: PIDADependency {
       public static let Interface = Self.projectWithLayer(feature: .search, layer: .domain)
       public static let Implement = Self.projectWithLayer(feature: .search, layer: .domain, isInterface: false)
@@ -150,6 +146,7 @@ extension TargetDependency {
   public struct CoreTarget: PIDADependency {
     public static let Networker = Self.internal(name: .network)
     public static let DesignKit = Self.internal(name: .designKit)
+    public static let Cache = Self.internal(name: .cache)
   }
   
   public struct SharedTarget: PIDADependency {
