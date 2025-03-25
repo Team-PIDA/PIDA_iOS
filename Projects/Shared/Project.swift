@@ -13,6 +13,7 @@ let project = Project.makeInternalFramework(
   dependencies: [
     .SharedTarget.Utility,
     .SharedTarget.KeyChain,
-    .SharedTarget.ThirdParty
+    .SharedTarget.ThirdParty,
+    .SharedTarget.UserDefault
   ]
 )
