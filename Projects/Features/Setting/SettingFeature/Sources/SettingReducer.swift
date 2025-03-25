@@ -17,6 +17,12 @@ extension SettingReducer {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .onAppear:
+        // TODO: - 로그인 여부 체크 및 상태 변경 처리
+        return .none
+      case .profileTapped:
+        if !state.isLoggedIn {
+          return .send(.delegate(.presentToLogin))
+        }
         return .none
       case .feedBackTapped:
         return .run { send in

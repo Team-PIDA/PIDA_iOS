@@ -13,7 +13,6 @@ import DesignKit
 
 public struct SettingView: View {
   @Bindable var store: StoreOf<SettingReducer>
-  @Environment(\.openURL) var openURL
   
   public init(store: StoreOf<SettingReducer>) {
     self.store = store
@@ -93,6 +92,9 @@ extension SettingView {
     .foregroundStyle(ColorSet.Text.Primary)
     .padding(.horizontal, .Number16)
     .frame(height: .Number72)
+    .onTapGesture {
+      store.send(.profileTapped)
+    }
   }
   
   @ViewBuilder

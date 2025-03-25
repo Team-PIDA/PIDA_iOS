@@ -120,6 +120,11 @@ struct PIDAReducer {
         state.path.removeLast()
         return .none
         
+      case .setting(.delegate(.presentToLogin)):
+        // TODO: - 로그인 페이지 연결
+        print("로그인")
+        return .none
+        
         // MARK: - None
         
       case .binding, .map, .search, .setting, .policy:
