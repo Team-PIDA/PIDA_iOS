@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Utility
 
 public enum PolicyType {
   case terms
@@ -24,9 +25,9 @@ public enum PolicyType {
   public var url: URL? {
     switch self {
     case .terms:
-      URL(string: "https://wealthy-session-98c.notion.site/1b490c66759880b78f61f69e025ed10e?pvs=4")
+      return ExternalURL.serviceTerm
     case .privacy:
-      URL(string: "https://wealthy-session-98c.notion.site/1b490c66759880d19d11d78d1e4d1560?pvs=4")
+      return ExternalURL.privacyTerm
     }
   }
 }
