@@ -38,15 +38,15 @@ public struct SearchResultList: View {
       HStack {
         VStack(alignment: .leading, spacing: .Number0) {
           Text(roadName)
-            .fontStyle(FontStyle.Body.body2)
+            .fontStyle(FontSet.Body.body2)
             .foregroundStyle(ColorSet.Text.Primary)
           Text(address)
-            .fontStyle(FontStyle.Caption.caption1)
+            .fontStyle(FontSet.Caption.caption1)
             .foregroundStyle(ColorSet.Text.Tertiary)
         }
         Spacer()
         Text(subInfo)
-          .fontStyle(FontStyle.Caption.caption1)
+          .fontStyle(FontSet.Caption.caption1)
           .foregroundStyle(ColorSet.Text.Tertiary)
       }
       .padding(.vertical, .Number12)

@@ -8,6 +8,5 @@
 
 import Foundation
 
-public typealias FontSet = DesignKitFontFamily.FontSet
 public typealias ColorSet = DesignKitAsset.ColorSet
-public typealias FontStyle = DesignKitFontFamily.FontStyle
+public typealias FontSet = DesignKitFontFamily.FontSet

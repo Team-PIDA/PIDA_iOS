@@ -31,13 +31,13 @@ public struct PIDATextField: View {
       if text.isEmpty {
         Text(placeholder)
           .foregroundColor(ColorSet.Text.Tertiary)
-          .fontStyle(FontStyle.Body.body2)
+          .fontStyle(FontSet.Body.body2)
       }
       
       TextField("", text: $text)
         .focused($internalFocus)
         .foregroundColor(ColorSet.Text.Primary)
-        .fontStyle(FontStyle.Body.body2)
+        .fontStyle(FontSet.Body.body2)
         .tint(ColorSet.Component.Primary)
         .onSubmit {
           onSubmit?()

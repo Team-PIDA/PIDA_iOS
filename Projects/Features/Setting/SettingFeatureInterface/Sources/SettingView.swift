@@ -82,7 +82,7 @@ extension SettingView {
       } else {
         HStack(spacing: .Number0) {
           Text("로그인 하기")
-            .fontStyle(FontStyle.Body.body2)
+            .fontStyle(FontSet.Body.body2)
           
           Icon(image: .chevronRight)
             .size(.extraLarge)
@@ -90,7 +90,7 @@ extension SettingView {
       }
       Spacer()
     }
-    .fontStyle(FontStyle.Body.body2)
+    .fontStyle(FontSet.Body.body2)
     .foregroundStyle(ColorSet.Text.Primary)
     .padding(.Number16)
     .onTapGesture {
@@ -105,11 +105,11 @@ extension SettingView {
       
       VStack(alignment: .leading, spacing: .Number2) {
         Text("피드백 남기러 가기")
-          .fontStyle(FontStyle.Title.title3)
+          .fontStyle(FontSet.Title.title3)
           .foregroundStyle(ColorSet.Text.Primary)
 
         Text("좋은 점, 개선할 점, 궁금한 점 의견을 들려주세요!")
-          .fontStyle(FontStyle.Caption.caption1)
+          .fontStyle(FontSet.Caption.caption1)
           .foregroundStyle(ColorSet.Text.Secondary)
       }
       Spacer()

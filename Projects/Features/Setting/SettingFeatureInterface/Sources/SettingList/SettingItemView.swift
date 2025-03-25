@@ -23,11 +23,11 @@ struct SettingItemView: View {
     HStack {
       VStack(alignment: .leading, spacing: .Number2) {
         Text(item.title)
-          .fontStyle(FontStyle.Body.body2)
+          .fontStyle(FontSet.Body.body2)
           .foregroundStyle(ColorSet.Text.Primary)
         if let subtitle = item.subtitle {
           Text(subtitle)
-            .fontStyle(FontStyle.Caption.caption1)
+            .fontStyle(FontSet.Caption.caption1)
             .lineSpacing(20)
             .foregroundStyle(ColorSet.Text.Tertiary)
         }
@@ -35,7 +35,7 @@ struct SettingItemView: View {
       Spacer()
       if let trailingText = item.trailing {
         Text(trailingText)
-          .fontStyle(FontStyle.Label.label2)
+          .fontStyle(FontSet.Label.label2)
           .foregroundStyle(ColorSet.Text.Accent)
       }
     }
