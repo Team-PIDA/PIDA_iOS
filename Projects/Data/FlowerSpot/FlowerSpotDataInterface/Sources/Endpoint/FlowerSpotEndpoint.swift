@@ -11,7 +11,7 @@ import Networker
 
 public struct FlowerSpotEndpoint: Sendable {
   
-  static let baseURL = "https://api.pida.me/api/v1/flower-spot"
+  static let baseURL = "https://api.pida.me/api/v1"
   
   @discardableResult
   public static func getFlowerSpotWithArea(
@@ -20,7 +20,7 @@ public struct FlowerSpotEndpoint: Sendable {
     return Endpoint(
       method: .get,
       baseURL: baseURL,
-      path:"",
+      path:"/flower-spot",
       parameters: .query(getFlowerSpotParameter)
     )
   }
