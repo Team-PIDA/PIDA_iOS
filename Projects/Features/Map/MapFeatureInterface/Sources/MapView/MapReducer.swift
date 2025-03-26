@@ -38,7 +38,7 @@ public struct MapReducer {
     case fetchUserLocation
     case moveUserLocation
     case moveLocation(MapPoint)
-    case fetchFlowers
+    case fetchFlowers([MapPoint])
     case storeFlowerData([FlowerPosition])
     case fetchPathLines(id: Int?)
     case requestMapBounds(Bool)

@@ -9,6 +9,6 @@
 import Foundation
 
 public protocol FetchFlowerUseCase {
-  func execute() async throws -> [FlowerPosition]
+  func execute(southWest: MapPoint, northEast: MapPoint) async throws -> [FlowerPosition]
 }
 

@@ -36,7 +36,7 @@ extension MapReducer {
       case let .moveLocation(point):
         state.position = point
         return .none
-      case .fetchFlowers:
+      case let .fetchFlowers(positions):
         return .run { send in
           do {
             try await fetchAllFlowerPinUseCase.execute(
@@ -54,6 +54,8 @@ extension MapReducer {
           } catch {
             print(error.localizedDescription)
           }
+          // let data = try? await fetchFlower.execute(southWest: positions[0], northEast: positions[1])
+          // await send(.storeFlowerData(data ?? []))
         }
       case let .storeFlowerData(data):
         data.forEach {

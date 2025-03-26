@@ -92,7 +92,7 @@ extension MapViewRepresentable {
     let northEast = MapPoint(latitude: bounds.northEastLat, longitude: bounds.northEastLng)
     let southWest = MapPoint(latitude: bounds.southWestLat, longitude: bounds.southWestLng)
     if let mapBounds = mapBounds {
-      mapBounds([northEast, southWest])
+      mapBounds([southWest, northEast])
     }
   }
   

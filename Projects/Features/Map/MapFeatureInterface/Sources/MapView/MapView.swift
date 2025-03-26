@@ -34,8 +34,8 @@ public struct MapView: View {
         requestBounds: $store.requestMapBound,
         markerTappedEvent: markerTappedEvent
       )
-      .onReceiveMapBounds { bounds in
-        print(bounds)
+      .onReceiveMapBounds {
+        store.send(.fetchFlowers($0))
       }
       .onReceive(markerTappedEvent) {
         store.send(.fetchPathLines(id: $0))
@@ -56,7 +56,6 @@ public struct MapView: View {
     }
     .onAppear {
       store.send(.fetchUserLocation)
-      store.send(.fetchFlowers)
     }
     .task {
       for await _ in LocationService.shared.userLocationStream {
