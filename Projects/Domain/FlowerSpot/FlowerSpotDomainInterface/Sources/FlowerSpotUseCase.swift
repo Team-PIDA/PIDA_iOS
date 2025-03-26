@@ -9,5 +9,11 @@
 import Foundation
 
 public protocol FetchAllFlowerPinUseCase {
-  func execute() async throws -> Void
+  func execute(
+    region: String,
+    swLat: Double,
+    swLng: Double,
+    neLat: Double,
+    neLng: Double
+  ) async throws -> Void
 }

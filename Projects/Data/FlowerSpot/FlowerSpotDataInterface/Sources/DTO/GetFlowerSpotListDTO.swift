@@ -10,7 +10,7 @@ import Foundation
 import Networker
 import FlowerSpotDomainInterface
 
-public struct GetFlowerSpotListDTO: DTO & Sendable{
+public struct GetFlowerSpotListDTO: DTO {
   public typealias Entity = FlowerSpotListEntity
   
   public var list: [List]?
