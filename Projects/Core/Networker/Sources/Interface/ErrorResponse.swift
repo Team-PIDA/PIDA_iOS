@@ -9,6 +9,6 @@
 import Foundation
 
 public struct ErrorResponse: Decodable, Sendable {
-  public let errorClassName: String
+  public let code: String
   public let message: String
 }

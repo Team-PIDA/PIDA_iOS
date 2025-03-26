@@ -13,12 +13,14 @@ import Utility
 
 extension MapReducer {
   public init() {
-    @Dependency(\.fetchFlowersUseCase) var fetchFlower
+    @Dependency(\.fetchAllFlowerPinUseCase) var fetchAllFlowerPinUseCase
     
-    let mapReducer = Reduce<State, Action> { state, action in
+    let mapReducer = Reduce<State, Action> {
+      state,
+      action in
       switch action {
         
-      // MARK: - Map
+        // MARK: - Map
         
       case .fetchUserLocation:
         return .run { _ in
@@ -35,8 +37,22 @@ extension MapReducer {
         return .none
       case .fetchFlowers:
         return .run { send in
-          let data = try? await fetchFlower.execute()
-          await send(.storeFlowerData(data ?? []))
+          do {
+            try await fetchAllFlowerPinUseCase.execute(
+              region: "SEOUL",
+              swLat: 37.61471008922519,
+              swLng: 126.90354953438879,
+              neLat: 37.67207092899083,
+              neLng: 126.93702350279204
+            )
+            await send(.storeFlowerData([]))
+          } catch let error as NetworkError {
+            print(error.localizedDescription)
+          } catch let error as FoundationError {
+            print(error.localizedDescription)
+          } catch {
+            print(error.localizedDescription)
+          }
         }
       case let .storeFlowerData(data):
         data.forEach {
@@ -52,7 +68,7 @@ extension MapReducer {
         }
         return .none
         
-      // MARK: - Search
+        // MARK: - Search
         
       case let .showSearchResult(result):
         state.searchResult = result
@@ -69,16 +85,17 @@ extension MapReducer {
           }
         }
         
-      // MARK: - Delegate
+        // MARK: - Delegate
         
       case .presentToSearch:
         return .send(.delegate(.presentToSearch))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
         
-      // MARK: - None
+        // MARK: - None
         
-      case .binding, .delegate:
+      case .binding,
+          .delegate:
         return .none
       }
     }

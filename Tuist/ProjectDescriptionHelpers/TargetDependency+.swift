@@ -19,6 +19,7 @@ public enum Feature: String {
   case map = "Map"
   case search = "Search"
   case setting = "Setting"
+  case flowerSpot = "FlowerSpot"
 }
 
 
@@ -134,13 +135,13 @@ extension TargetDependency {
       public static let Interface = Self.projectWithLayer(feature: .setting, layer: .domain)
       public static let Implement = Self.projectWithLayer(feature: .setting, layer: .domain, isInterface: false)
     }
+    public struct FlowerSpot: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .flowerSpot, layer: .domain)
+      public static let Implement = Self.projectWithLayer(feature: .flowerSpot, layer: .domain, isInterface: false)
+    }
   }
   
   public struct Data {
-    public struct Map: PIDADependency {
-      public static let Interface = Self.projectWithLayer(feature: .map, layer: .data)
-      public static let Implement = Self.projectWithLayer(feature: .map, layer: .data, isInterface: false)
-    }
     public struct Search: PIDADependency {
       public static let Interface = Self.projectWithLayer(feature: .search, layer: .data)
       public static let Implement = Self.projectWithLayer(feature: .search, layer: .data, isInterface: false)
@@ -148,6 +149,10 @@ extension TargetDependency {
     public struct Setting: PIDADependency {
       public static let Interface = Self.projectWithLayer(feature: .setting, layer: .data)
       public static let Implement = Self.projectWithLayer(feature: .setting, layer: .data, isInterface: false)
+    }
+    public struct FlowerSpot: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .flowerSpot, layer: .data)
+      public static let Implement = Self.projectWithLayer(feature: .flowerSpot, layer: .data, isInterface: false)
     }
   }
   

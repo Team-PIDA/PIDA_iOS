@@ -12,6 +12,7 @@ let project = Project.makeInternalFramework(
   name: "Core",
   dependencies: [
     .CoreTarget.Networker,
-    .CoreTarget.DesignKit
+    .CoreTarget.DesignKit,
+    .CoreTarget.Cache
   ]
 )
