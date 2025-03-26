@@ -67,6 +67,7 @@ extension MapReducer {
           state.selectedPathLines = data.path
         } else {
           state.selectedPathLines = []
+          state.searchResult = nil
         }
         return .none
         
@@ -81,11 +82,23 @@ extension MapReducer {
         state.researchButtonEnable = false
         return .none
         
+      case let .selectedItem(item):
+        state.selectedItem = item
+        
+        return .send(.fetchPathLines(id: item.id))
+        
         // MARK: - Search
         
+      // 검색 결과
       case let .showSearchResult(result):
         state.searchResult = result
-        return .send(.setSearchBarText(result))
+        return .run { send in
+          if let result = result {
+            await send(.setSearchBarText(result.streetName))
+            await send(.moveLocation(result.pinPoint))
+            
+          }
+        }
       case let .setSearchBarText(text):
         state.searchText = text
         return .none

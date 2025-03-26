@@ -27,11 +27,13 @@ struct MapViewRepresentable: UIViewRepresentable {
   @Binding var requestBounds: Bool
   /// 지도를 움직일 경우 현 위치 재검색 버튼 활성화 하기 위한 트리거
   @Binding var isCameraMove: Bool
+  /// 지도에 특정 위치를 표시하기 위한 프로퍼티
+  @Binding var focusData: FlowerSpot?
+  
   /// 마커 탭 시 id값을 전달하기 위한 클로저
   var onMarkerTapped: ((Int?) -> Void)? = nil
   /// 지도 범위 좌표 값을 전달하기 위한 클로저
   var mapBounds: (([MapPoint]) -> Void)? = nil
-  
   
   /// 지도 초기 위치 설정 - 석촌호수 근처
   private let defaultPoint: MapPoint = .init(latitude: 37.50545, longitude: 127.10143)
@@ -59,14 +61,16 @@ struct MapViewRepresentable: UIViewRepresentable {
   }
   
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
+    
     if let userLocation = userLocation {
       moveUserLocation(uiView, to: userLocation, context: context)
     }
     if context.coordinator.markers.isEmpty, !flowerPositions.isEmpty {
       presentMarkers(uiView, flowers: flowerPositions, context: context)
     }
-    if let _ = context.coordinator.selectedPin {
-      drawPathLine(uiView, for: newPath, context: context)
+    // 마커 탭 이벤트 시
+    if let data = context.coordinator.selectedPin {
+      drawPathLine(uiView, data: data, for: newPath, context: context)
     } else {
       context.coordinator.deletePathMarkers()
     }
@@ -76,6 +80,16 @@ struct MapViewRepresentable: UIViewRepresentable {
       currentVisibleBounds(on: uiView.mapView)
       deleteDrawMarker(context: context)
       requestBounds = false
+    }
+    
+    // 특정 위치에 나타날 데이터가 있을 경우
+    if let focusData = focusData {
+      drawPathLine(uiView, data: focusData, for: focusData.path, context: context)
+      drawFocusMarker(uiView, result: focusData, context: context)
+      
+    } else if context.coordinator.focusData != .none {
+      // coordinator에 값이 남아있다면 모두 지움
+      context.coordinator.deleteSearchResult()
     }
   }
   
@@ -88,6 +102,16 @@ struct MapViewRepresentable: UIViewRepresentable {
 // MARK: - Action
 
 extension MapViewRepresentable {
+  
+  /// 특정 위치에 마커를 표시
+  func drawFocusMarker(_ view: NMFNaverMapView, result: FlowerSpot, context: Context) {
+    // 중복 그리기 방지
+    if context.coordinator.focusData == result { return }
+    context.coordinator.focusData = result
+    let coord = NMGLatLng(lat: result.pinPoint.latitude, lng: result.pinPoint.longitude)
+    let marker = drawMarker(view, to: coord, icon: result.bloomingStatus.activeImage)
+    context.coordinator.focusMarker = marker
+  }
   
   /// 현재 지도에 보이는 좌표 범위를 반환하는 메서드
   func currentVisibleBounds(on mapView: NMFMapView) {
@@ -133,14 +157,14 @@ extension MapViewRepresentable {
   }
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
-  private func markerTapEvent(to marker: NMFMarker, context: Context) {
+  private func markerTapEvent(to marker: NMFMarker, data: FlowerSpot, context: Context) {
     if marker == context.coordinator.activeMarker { return }
     context.coordinator.deletePathMarkers()
-    let tag = Int(marker.tag)
-    context.coordinator.selectedPin = flowerPositions[tag]
+    
+    context.coordinator.selectedPin = data
     context.coordinator.activeMarker = marker
     if let onMarkerTapped = onMarkerTapped {
-      onMarkerTapped(tag)
+      onMarkerTapped(data.id)
     }
   }
   
@@ -172,11 +196,13 @@ extension MapViewRepresentable {
   }
   
   /// 경로 선을 그리기 위한 메서드
-  private func drawPathLine(_ view: NMFNaverMapView, for newPath: [MapPoint], context: Context) {
-    guard !newPath.isEmpty, let data = context.coordinator.selectedPin else {
+  private func drawPathLine(_ view: NMFNaverMapView, data: FlowerSpot, for newPath: [MapPoint], context: Context) {
+    guard !newPath.isEmpty else {
       context.coordinator.deletePathMarkers()
       return
     }
+    // 이미 그려진 경로가 있다면 지우고 다시 그리기
+    if context.coordinator.paths != nil { context.coordinator.deletePathMarkers() }
     
     let lines = newPath.map {
       NMGLatLng(lat: $0.latitude, lng: $0.longitude)
@@ -187,6 +213,7 @@ extension MapViewRepresentable {
         existingPath.points as? [NMGLatLng] == lines { return }
     
     let flowerState = data.bloomingStatus
+    
     // 새로운 경로 그리기
     let path = NMFPath()
     path.width = 6
@@ -233,7 +260,7 @@ extension MapViewRepresentable {
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
           marker.iconImage = pin.value.bloomingStatus.activeImage
-          markerTapEvent(to: marker, context: context)
+          markerTapEvent(to: marker, data: pin.value, context: context)
           moveCamera(view, to: position)
         }
         return true

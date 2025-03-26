@@ -64,7 +64,8 @@ extension MapView {
       flowerPositions: $store.state.flowerSpots,
       newPath: $store.state.selectedPathLines,
       requestBounds: $store.requestMapBound,
-      isCameraMove: $store.researchButtonEnable
+      isCameraMove: $store.researchButtonEnable,
+      focusData: $store.searchResult
     )
     .onReceiveMapBounds {
       store.send(.fetchFlowers($0))
@@ -77,7 +78,7 @@ extension MapView {
   
   @ViewBuilder
   private func searchView() -> some View {
-    // TODO: - ontap 시 textfield에 텍스트 세팅
+    // TODO: - ontap 시 textfield에 텍스트 
     if let result = store.searchText { // 검색 결과
       SearchBar(
         text: .constant(result),

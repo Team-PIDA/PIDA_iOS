@@ -27,13 +27,15 @@ public struct MapReducer {
     /// 현재 그려져있는 경로
     public var selectedPathLines: [MapPoint] = []
     /// 검색 결과 데이터
-    public var searchResult: String? = nil
+    public var searchResult: FlowerSpot? = nil
     /// 검색 결과 텍스트
     public var searchText: String? = nil
     /// 지도 범위 요청 트리거
     public var requestMapBound: Bool = false
     /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
+    
+    public var selectedItem: FlowerSpot? = nil
     public init() {}
   }
   
@@ -50,10 +52,11 @@ public struct MapReducer {
     case fetchPathLines(id: Int?)
     case requestMapBounds(Bool)
     case mapSearchError(String?)
+    case selectedItem(FlowerSpot)
     
     // MARK: - Search
     
-    case showSearchResult(String?) // TODO: - ItemType
+    case showSearchResult(FlowerSpot?) // TODO: - ItemType
     case setSearchBarText(String?)
     case resetSearchBar
     

@@ -35,6 +35,11 @@ extension MapViewRepresentable {
     /// 초기 지도 범위 요청 여부
     var isInitialBounds: Bool = true
     
+    /// 특정 위치의 데이터
+    var focusData: FlowerSpot? = nil
+    /// 지도에 보여주기 위한 특정 위치 마커
+    var focusMarker: NMFMarker? = nil
+    
     init(_ parent: MapViewRepresentable) {
       self.parent = parent
     }
@@ -44,6 +49,19 @@ extension MapViewRepresentable {
       if let onMarkerTapped = parent.onMarkerTapped {
         onMarkerTapped(nil)
       }
+      if let _ = focusMarker {
+        deleteSearchResult()
+      }
+    }
+    
+    func deleteSearchResult() {
+      deletePathMarkers()
+      parent.focusData = nil
+      if let searchMarker = focusMarker {
+        searchMarker.mapView = nil
+      }
+      focusData = nil
+      focusMarker = nil
       
     }
     
@@ -58,7 +76,6 @@ extension MapViewRepresentable {
     func mapViewCameraIdle(_ mapView: NMFMapView) {
       // 앱 처음 진입 시 카메라 이동 완료 후 지도 범위 값 가져오도록 처리
       if isInitialBounds, parent.requestBounds {
-        print(#function)
         parent.currentVisibleBounds(on: mapView)
         parent.requestBounds = false
         isInitialBounds = false
