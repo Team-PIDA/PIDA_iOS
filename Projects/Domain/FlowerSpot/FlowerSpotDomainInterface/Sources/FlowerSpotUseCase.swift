@@ -15,5 +15,5 @@ public protocol FetchAllFlowerPinUseCase {
     swLng: Double,
     neLat: Double,
     neLng: Double
-  ) async throws -> Void
+  ) async throws -> [FlowerSpot]
 }

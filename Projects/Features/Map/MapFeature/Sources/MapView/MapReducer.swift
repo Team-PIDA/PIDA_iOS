@@ -39,13 +39,14 @@ extension MapReducer {
       case let .fetchFlowers(positions):
         return .run { send in
           do {
-            try await fetchAllFlowerPinUseCase.execute(
+            let result = try await fetchAllFlowerPinUseCase.execute(
               region: "SEOUL",
-              swLat: 37.61471008922519,
-              swLng: 126.90354953438879,
-              neLat: 37.67207092899083,
-              neLng: 126.93702350279204
+              swLat: positions[0].latitude,
+              swLng: positions[0].longitude,
+              neLat: positions[1].latitude,
+              neLng: positions[1].longitude
             )
+            print(result)
             await send(.storeFlowerData([]))
           } catch let error as NetworkError {
             print(error.localizedDescription)
@@ -54,6 +55,7 @@ extension MapReducer {
           } catch {
             print(error.localizedDescription)
           }
+          
           // let data = try? await fetchFlower.execute(southWest: positions[0], northEast: positions[1])
           // await send(.storeFlowerData(data ?? []))
         }
