@@ -62,6 +62,16 @@ extension MapViewRepresentable {
       }
     }
     
+    /// 지도에 올라와있는 마커 삭제
+    func deleteAllMarkers() {
+      if !markers.isEmpty {
+        markers.forEach {
+          $0.mapView = nil
+        }
+        self.markers.removeAll()
+      }
+    }
+    
     /// 마커 및 경로 비활성화 처리 메서드
     func deletePathMarkers() {
       if let paths = paths,

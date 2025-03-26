@@ -29,7 +29,7 @@ struct MapViewRepresentable: UIViewRepresentable {
   var markerTappedEvent: PassthroughSubject<Int?, Never>? = nil
   /// 지도 범위 좌표 값을 전달하기 위한 이벤트
   var mapBounds: (([MapPoint]) -> Void)? = nil
-  
+  /// 지도를 움직일 경우 현 위치 재검색 버튼 활성화 하기 위한 트리거
   @Binding var isCameraMove: Bool
   
   /// 지도 초기 위치 설정 - 석촌호수 근처
@@ -42,6 +42,8 @@ struct MapViewRepresentable: UIViewRepresentable {
     view.showZoomControls = false
     view.mapView.positionMode = .direction
     view.mapView.zoomLevel = 13
+    view.mapView.minZoomLevel = 12
+    
     return view
   }()
   
@@ -68,8 +70,10 @@ struct MapViewRepresentable: UIViewRepresentable {
       context.coordinator.deletePathMarkers()
     }
     
+    // 현 위치 재검색 액션
     if requestBounds, !context.coordinator.isInitialBounds {
       currentVisibleBounds(on: uiView.mapView)
+      deleteDrawMarker(context: context)
       requestBounds = false
     }
   }
@@ -77,15 +81,19 @@ struct MapViewRepresentable: UIViewRepresentable {
   func makeCoordinator() -> Coordinator {
     return Coordinator(self)
   }
+  
 }
 
 // MARK: - MapEvent
 
 extension MapViewRepresentable {
-  func onReceiveMapBounds(_ action: @escaping ([MapPoint]) -> Void) -> Self {
-    var map = self
-    map.mapBounds = action
-    return map
+  
+  /// 지도에 올라와있는 마커 삭제
+  func deleteDrawMarker(context: Context) {
+    if !context.coordinator.markers.isEmpty {
+      flowerPositions.removeAll()
+      context.coordinator.deleteAllMarkers()
+    }
   }
   
   /// 현재 지도에 보이는 좌표 범위를 반환하는 메서드
@@ -131,11 +139,17 @@ extension MapViewRepresentable {
   
   /// 지도 위에 마커를 표시하기 위한 메서드
   private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerSpot], context: Context) {
+    // 마커 중간지점으로 카메라 이동
+    let mid = averageCenter(of: flowers.values.map { $0.pinPoint })
+    moveCamera(view, to: mid)
+    
     for pin in flowers {
+      print(pin.value.streetName)
       let position = pin.value.pinPoint
       let point = NMGLatLng(lat: position.latitude, lng: position.longitude)
       let marker = drawMarker(view, to: point, icon: pin.value.bloomingStatus.inactiveImage)
       marker.tag = UInt(pin.key)
+      // 마커 탭 이벤트 헨들러
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
           marker.iconImage = pin.value.bloomingStatus.activeImage
@@ -208,4 +222,19 @@ extension MapViewRepresentable {
     return marker
   }
   
+  
+  /// 여러 마커의 중간지점 찾는 메서드
+  private func averageCenter(of points: [MapPoint]) -> MapPoint? {
+    guard !points.isEmpty else { return nil }
+
+    let total = points.reduce((lat: 0.0, lon: 0.0)) { result, point in
+      (result.lat + point.latitude, result.lon + point.longitude)
+    }
+
+    let count = Double(points.count)
+    return MapPoint(
+      latitude: total.lat / count,
+      longitude: total.lon / count
+    )
+  }
 }

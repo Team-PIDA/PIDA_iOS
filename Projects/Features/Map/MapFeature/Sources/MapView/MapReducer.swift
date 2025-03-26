@@ -44,7 +44,6 @@ extension MapReducer {
               neLat: positions[1].latitude,
               neLng: positions[1].longitude
             )
-            print("결과 개수: ", result.count)
             await send(.storeFlowerData(result))
           } catch let error as NetworkError {
             await send(.mapSearchError(error.localizedDescription))
@@ -55,6 +54,7 @@ extension MapReducer {
           }
         }
       case let .storeFlowerData(data):
+        state.flowerSpots.removeAll()
         data.forEach {
           state.flowerSpots[$0.id] = $0
         }
@@ -72,6 +72,11 @@ extension MapReducer {
         print("=============")
         print(error ?? "ERROR!")
         print("=============")
+        return .none
+        
+      case let .requestMapBounds(isRequest):
+        state.requestMapBound = isRequest
+        state.researchButtonEnable = false
         return .none
         
         // MARK: - Search
@@ -95,10 +100,6 @@ extension MapReducer {
         
       case .presentToSearch:
         return .send(.delegate(.presentToSearch))
-      case let .requestMapBounds(isRequest):
-        state.requestMapBound = isRequest
-        state.researchButtonEnable = false
-        return .none
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
         
