@@ -27,6 +27,7 @@ public struct MapReducer {
     public var searchResult: String? = nil
     public var searchText: String? = nil
     public var requestMapBound: Bool = false
+    public var researchButtonEnable: Bool = false
     public init() {}
   }
   

@@ -32,7 +32,8 @@ public struct MapView: View {
         flowerPositions: $store.state.flowerPositions,
         newPath: $store.state.selectedPathLines,
         requestBounds: $store.requestMapBound,
-        markerTappedEvent: markerTappedEvent
+        markerTappedEvent: markerTappedEvent,
+        isCameraMove: $store.researchButtonEnable
       )
       .onReceiveMapBounds {
         store.send(.fetchFlowers($0))
@@ -45,11 +46,13 @@ public struct MapView: View {
         searchView()
           .padding(.horizontal, .Number16)
           .padding(.vertical, .Number8)
-        ResearchButton(
-          action: {
-            store.send(.requestMapBounds(true))
-          }
-        )
+        if store.researchButtonEnable {
+          ResearchButton(
+            action: {
+              store.send(.requestMapBounds(true))
+            }
+          )
+        }
         Spacer()
         currentButton
       }

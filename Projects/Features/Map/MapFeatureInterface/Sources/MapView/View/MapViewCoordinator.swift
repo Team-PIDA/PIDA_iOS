@@ -48,7 +48,9 @@ extension MapViewRepresentable {
     }
     
     func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
-      
+      if !isInitialBounds {
+        parent.isCameraMove = true
+      }
     }
     
     func mapViewCameraIdle(_ mapView: NMFMapView) {

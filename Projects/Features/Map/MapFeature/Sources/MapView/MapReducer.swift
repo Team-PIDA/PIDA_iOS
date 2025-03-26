@@ -94,6 +94,7 @@ extension MapReducer {
         return .send(.delegate(.presentToSearch))
       case let .requestMapBounds(isRequest):
         state.requestMapBound = isRequest
+        state.researchButtonEnable = false
         return .none
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
