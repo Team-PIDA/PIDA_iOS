@@ -10,19 +10,19 @@ import Foundation
 import Dependencies
 
 public enum FetchAllFlowerPinUseCaseKey: DependencyKey {
-  public static var liveValue: FetchAllFlowerPinUseCase { fetchUsecaseProvider() }
-  public static var previewValue: FetchAllFlowerPinUseCase { fetchUsecaseProvider() } /// TODO: Add preview value
-  public static var testValue: FetchAllFlowerPinUseCase { fetchUsecaseProvider() } /// TODO: Add test value
+  public static var liveValue: FetchAllFlowerPinUseCase { fetchAllFlowerPinUsecaseProvider() }
+  public static var previewValue: FetchAllFlowerPinUseCase { fetchAllFlowerPinUsecaseProvider() } /// TODO: Add preview value
+  public static var testValue: FetchAllFlowerPinUseCase { fetchAllFlowerPinUsecaseProvider() } /// TODO: Add test value
 }
 
-var fetchUsecaseProvider: () -> FetchAllFlowerPinUseCase = {
+var fetchAllFlowerPinUsecaseProvider: () -> FetchAllFlowerPinUseCase = {
   fatalError("FetchAllFlowerPinUseCase Dependency not configured")
 }
 
 public func fetchAllFlowerPinUseCaseRegister(
   provider: @escaping () -> FetchAllFlowerPinUseCase
 ) {
-  fetchUsecaseProvider = provider
+  fetchAllFlowerPinUsecaseProvider = provider
 }
 
 extension DependencyValues {
