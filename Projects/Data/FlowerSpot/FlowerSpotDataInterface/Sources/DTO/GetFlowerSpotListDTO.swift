@@ -10,7 +10,7 @@ import Foundation
 import Networker
 import FlowerSpotDomainInterface
 
-public struct GetFlowerSpotListDTO: DTO {
+public struct GetFlowerSpotListDTO: DTO & Sendable{
   public typealias Entity = FlowerSpotListEntity
   
   public var list: [List]?
@@ -23,9 +23,10 @@ extension GetFlowerSpotListDTO {
   }
 }
 
-public struct List: Sendable {
+public struct List: Sendable & Decodable {
   public var id: Int
   public var address: String?
+  
   public var streetName: String?
   public var district: String?
   public var description: String?
@@ -35,7 +36,7 @@ public struct List: Sendable {
   public var deletedAt: String?
 }
 
-public struct Geom: Sendable {
+public struct Geom: Sendable & Decodable {
   public var type: String?
   public var coordinates: [Double]?
 }

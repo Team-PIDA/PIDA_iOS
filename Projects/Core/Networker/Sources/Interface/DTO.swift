@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol DTO: Decodable {
+public protocol DTO: Decodable {
   associatedtype Entity
   func toEntity() throws -> Entity
 }
