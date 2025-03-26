@@ -44,16 +44,15 @@ extension MapReducer {
               neLat: positions[1].latitude,
               neLng: positions[1].longitude
             )
-            print(result)
+            print("결과 개수: ", result.count)
             await send(.storeFlowerData(result))
           } catch let error as NetworkError {
-            print(error.localizedDescription)
+            await send(.mapSearchError(error.localizedDescription))
           } catch let error as FoundationError {
-            print(error.localizedDescription)
+            await send(.mapSearchError(error.localizedDescription))
           } catch {
-            print(error.localizedDescription)
+            await send(.mapSearchError(error.localizedDescription))
           }
-          
         }
       case let .storeFlowerData(data):
         data.forEach {
@@ -67,6 +66,12 @@ extension MapReducer {
         } else {
           state.selectedPathLines = []
         }
+        return .none
+        
+      case let .mapSearchError(error):
+        print("=============")
+        print(error ?? "ERROR!")
+        print("=============")
         return .none
         
         // MARK: - Search

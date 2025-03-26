@@ -43,6 +43,7 @@ public struct MapReducer {
     case storeFlowerData([FlowerSpot])
     case fetchPathLines(id: Int?)
     case requestMapBounds(Bool)
+    case mapSearchError(String?)
     
     // MARK: - Search
     
