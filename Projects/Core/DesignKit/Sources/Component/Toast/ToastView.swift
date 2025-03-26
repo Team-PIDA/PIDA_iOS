@@ -17,7 +17,7 @@ public struct ToastView: View {
   @State private var verticalPadding: CGFloat = 4
   @State private var boxOpacity: Double = 1
   
-  init(message: Binding<String?>) {
+  public init(message: Binding<String?>) {
     self._message = message
   }
   
@@ -60,7 +60,7 @@ public struct ToastView: View {
     isVisible = true
     
     // 박스가 위로 펼쳐짐
-    withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
+    withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
       height = 48
     }
     

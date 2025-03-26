@@ -37,6 +37,7 @@ public struct MapView: View {
           )
         }
         Spacer()
+        ToastView(message: $store.toastMessage)
         currentButton
       }
     }

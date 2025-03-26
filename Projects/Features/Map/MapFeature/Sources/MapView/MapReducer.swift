@@ -18,6 +18,10 @@ extension MapReducer {
     let mapReducer = Reduce<State, Action> { state, action in
       switch action {
         
+      case let .showToastView(message):
+        state.toastMessage = message
+        return .none
+        
         // MARK: - Map
         
       case .fetchUserLocation:
@@ -46,6 +50,9 @@ extension MapReducer {
               neLat: positions[1].latitude,
               neLng: positions[1].longitude
             )
+            if result.count == 0 {
+              await send(.showToastView(message: "이 근방에는 꽃길이 없어요."))
+            }
             await send(.storeFlowerData(result))
           } catch let error as NetworkError {
             await send(.mapSearchError(error.localizedDescription))

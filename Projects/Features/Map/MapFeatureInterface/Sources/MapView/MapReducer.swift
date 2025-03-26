@@ -35,12 +35,15 @@ public struct MapReducer {
     /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
     
+    public var toastMessage: String? = nil
+    
     public var selectedItem: FlowerSpot? = nil
     public init() {}
   }
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
+    case showToastView(message: String?)
     
     // MARK: - Map
     
