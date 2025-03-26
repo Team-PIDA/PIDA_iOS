@@ -100,14 +100,13 @@ extension Networker {
     }
     
     guard (200..<300).contains(httpResponse.statusCode) else {
-      do {
-        let error = try JSONDecoder().decode(APIResponse<ErrorResponse>.self, from: data)
-        switch httpResponse.statusCode {
-        case 400...599: throw NetworkError.serverError(message: error.data.message, code: error.status)
-        default: throw NetworkError.invalidStatusCode(httpResponse.statusCode)
-        }
-      } catch {
-        throw NetworkError.invalidStatusCode(httpResponse.statusCode)
+      let error = try JSONDecoder().decode(ErrorResponse.self, from: data)
+      switch httpResponse.statusCode {
+      case 400...599: throw NetworkError.serverError(
+        message: error.message,
+        code: httpResponse.statusCode
+      )
+      default: throw NetworkError.invalidStatusCode(httpResponse.statusCode)
       }
     }
     
