@@ -61,7 +61,7 @@ struct MapViewRepresentable: UIViewRepresentable {
     if let userLocation = userLocation {
       moveUserLocation(uiView, to: userLocation, context: context)
     }
-    if context.coordinator.markers.isEmpty {
+    if context.coordinator.markers.isEmpty, !flowerPositions.isEmpty {
       presentMarkers(uiView, flowers: flowerPositions, context: context)
     }
     if let _ = context.coordinator.selectedPin {
@@ -121,6 +121,7 @@ extension MapViewRepresentable {
       view.mapView.positionMode = .normal
       moveCamera(view, to: userLocation)
       context.coordinator.lastCameraPoint = userLocation
+      
     }
     self.userLocation = nil
   }
@@ -137,18 +138,19 @@ extension MapViewRepresentable {
     }
   }
   
-  /// 지도 위에 마커를 표시하기 위한 메서드
+  /// 지도 위에 비활성화 마커를 표시하기 위한 메서드
   private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerSpot], context: Context) {
     // 마커 중간지점으로 카메라 이동
     let mid = averageCenter(of: flowers.values.map { $0.pinPoint })
     moveCamera(view, to: mid)
     
     for pin in flowers {
-      print(pin.value.streetName)
       let position = pin.value.pinPoint
       let point = NMGLatLng(lat: position.latitude, lng: position.longitude)
+      
       let marker = drawMarker(view, to: point, icon: pin.value.bloomingStatus.inactiveImage)
       marker.tag = UInt(pin.key)
+      
       // 마커 탭 이벤트 헨들러
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
@@ -158,7 +160,9 @@ extension MapViewRepresentable {
         }
         return true
       }
+      
       context.coordinator.markers.append(marker)
+      
     }
   }
   
@@ -197,6 +201,7 @@ extension MapViewRepresentable {
     path.outlineColor = flowerState.color
     path.path = NMGLineString(points: lines)
     path.mapView = view.mapView
+    
     context.coordinator.paths = path
     
     // 양 끝 원 마커 추가
@@ -219,6 +224,7 @@ extension MapViewRepresentable {
     marker.iconImage = icon
     marker.anchor = anchor
     marker.mapView = view.mapView
+    
     return marker
   }
   

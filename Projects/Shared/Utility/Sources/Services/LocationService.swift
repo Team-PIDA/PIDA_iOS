@@ -46,6 +46,8 @@ public class LocationService: NSObject, CLLocationManagerDelegate {
     case .notDetermined:
       locationManager.requestWhenInUseAuthorization()
     case .denied, .restricted:
+      userLocation = nil
+      userLocationContinuation?.yield(())
       // TODO: - 위치 권한 거부 시 토스트?
       break
     @unknown default:

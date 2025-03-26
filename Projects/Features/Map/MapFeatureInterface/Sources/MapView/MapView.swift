@@ -27,21 +27,7 @@ public struct MapView: View {
   
   public var body: some View {
     ZStack {
-      MapViewRepresentable(
-        userLocation: $store.state.point,
-        flowerPositions: $store.state.flowerSpots,
-        newPath: $store.state.selectedPathLines,
-        requestBounds: $store.requestMapBound,
-        markerTappedEvent: markerTappedEvent,
-        isCameraMove: $store.researchButtonEnable
-      )
-      .onReceiveMapBounds {
-        store.send(.fetchFlowers($0))
-      }
-      .onReceive(markerTappedEvent) {
-        store.send(.fetchPathLines(id: $0))
-      }
-      .ignoresSafeArea()
+      mapView
       VStack {
         searchView()
           .padding(.horizontal, .Number16)
@@ -73,6 +59,26 @@ public struct MapView: View {
 // MARK: - Views
 
 extension MapView {
+  
+  @ViewBuilder
+  private var mapView: some View {
+    MapViewRepresentable(
+      userLocation: $store.state.point,
+      flowerPositions: $store.state.flowerSpots,
+      newPath: $store.state.selectedPathLines,
+      requestBounds: $store.requestMapBound,
+      markerTappedEvent: markerTappedEvent,
+      isCameraMove: $store.researchButtonEnable
+    )
+    .onReceiveMapBounds {
+      store.send(.fetchFlowers($0))
+    }
+    .onReceive(markerTappedEvent) {
+      store.send(.fetchPathLines(id: $0))
+    }
+    .ignoresSafeArea()
+  }
+  
   @ViewBuilder
   private func searchView() -> some View {
     // TODO: - ontap 시 textfield에 텍스트 세팅
