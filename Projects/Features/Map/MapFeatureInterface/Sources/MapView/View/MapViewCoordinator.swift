@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import MapDomainInterface
+import FlowerSpotDomainInterface
 
 import NMapsMap
 
@@ -23,7 +23,7 @@ extension MapViewRepresentable {
     /// 현재 표시되어있는 마커 배열
     var markers: [NMFMarker] = []
     /// 현재 선택 된 마커가 있는지 체크하기 위한 프로퍼티
-    var selectedPin: FlowerPosition?
+    var selectedPin: FlowerSpot?
     /// 현재 선택되어있는 NMFMarker
     var activeMarker: NMFMarker? = nil
     /// 현재 그려져있는 경로 데이터
@@ -76,7 +76,7 @@ extension MapViewRepresentable {
       }
       if let data = selectedPin,
          let activeMarker = activeMarker {
-        activeMarker.iconImage = data.state.inactiveImage
+        activeMarker.iconImage = data.bloomingStatus.inactiveImage
         self.activeMarker = nil
         self.selectedPin = nil
       }

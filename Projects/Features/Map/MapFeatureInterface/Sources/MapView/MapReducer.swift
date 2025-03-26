@@ -21,8 +21,8 @@ public struct MapReducer {
   
   @ObservableState
   public struct State: Equatable {
-    public var position: MapPoint? = nil
-    public var flowerPositions: [Int: FlowerPosition] = [:]
+    public var point: MapPoint? = nil
+    public var flowerSpots: [Int: FlowerSpot] = [:]
     public var selectedPathLines: [MapPoint] = []
     public var searchResult: String? = nil
     public var searchText: String? = nil
@@ -40,7 +40,7 @@ public struct MapReducer {
     case moveUserLocation
     case moveLocation(MapPoint)
     case fetchFlowers([MapPoint])
-    case storeFlowerData([FlowerPosition])
+    case storeFlowerData([FlowerSpot])
     case fetchPathLines(id: Int?)
     case requestMapBounds(Bool)
     

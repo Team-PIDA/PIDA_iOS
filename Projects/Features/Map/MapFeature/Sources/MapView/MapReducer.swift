@@ -7,7 +7,7 @@
 //
 
 import MapFeatureInterface
-import MapDomainInterface
+import FlowerSpotDomainInterface
 import ComposableArchitecture
 import Utility
 
@@ -15,9 +15,7 @@ extension MapReducer {
   public init() {
     @Dependency(\.fetchAllFlowerPinUseCase) var fetchAllFlowerPinUseCase
     
-    let mapReducer = Reduce<State, Action> {
-      state,
-      action in
+    let mapReducer = Reduce<State, Action> { state, action in
       switch action {
         
         // MARK: - Map
@@ -34,7 +32,7 @@ extension MapReducer {
           }
         }
       case let .moveLocation(point):
-        state.position = point
+        state.point = point
         return .none
       case let .fetchFlowers(positions):
         return .run { send in
@@ -47,7 +45,7 @@ extension MapReducer {
               neLng: positions[1].longitude
             )
             print(result)
-            await send(.storeFlowerData([]))
+            await send(.storeFlowerData(result))
           } catch let error as NetworkError {
             print(error.localizedDescription)
           } catch let error as FoundationError {
@@ -56,18 +54,16 @@ extension MapReducer {
             print(error.localizedDescription)
           }
           
-          // let data = try? await fetchFlower.execute(southWest: positions[0], northEast: positions[1])
-          // await send(.storeFlowerData(data ?? []))
         }
       case let .storeFlowerData(data):
         data.forEach {
-          state.flowerPositions[$0.id] = $0
+          state.flowerSpots[$0.id] = $0
         }
         return .none
       case let .fetchPathLines(id):
         if let id = id,
-           let data = state.flowerPositions[id] {
-          state.selectedPathLines = data.pathLines
+           let data = state.flowerSpots[id] {
+          state.selectedPathLines = data.path
         } else {
           state.selectedPathLines = []
         }
@@ -103,8 +99,7 @@ extension MapReducer {
         
         // MARK: - None
         
-      case .binding,
-          .delegate:
+      case .binding, .delegate:
         return .none
       }
     }

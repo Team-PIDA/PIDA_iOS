@@ -9,7 +9,6 @@
 import Foundation
 import Networker
 
-import MapDomainInterface
 import MapDomain
 import FlowerSpotDomainInterface
 import FlowerSpotDomain
@@ -22,9 +21,6 @@ enum DependencyRegistry {
     let networker = Networker()
     let flowerSpotRepository = FlowerSpotRepositoryImpl(networker: networker)
     
-    fetchFlowerUseCaseRegister(
-      provider: { FetchFlowerUseCaseImpl() }
-    )
     fetchAllFlowerPinUseCaseRegister {
       FetchAllFlowerPinUseCaseImpl(
         repository: flowerSpotRepository

@@ -9,7 +9,7 @@
 import UIKit
 import SwiftUI
 import Combine
-import MapDomainInterface
+import FlowerSpotDomainInterface
 
 import NMapsMap
 
@@ -20,7 +20,7 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// - 현 위치 이동 플래그 기능과 유사하게 동작
   @Binding var userLocation: MapPoint?
   /// 지도에 보여줄 데이터
-  @Binding var flowerPositions: [Int: FlowerPosition]
+  @Binding var flowerPositions: [Int: FlowerSpot]
   /// 마커 탭 시 경로를 보여주기 위한 프로퍼티
   @Binding var newPath: [MapPoint]
   /// 지도 범위 요청 프로퍼티
@@ -130,15 +130,15 @@ extension MapViewRepresentable {
   }
   
   /// 지도 위에 마커를 표시하기 위한 메서드
-  private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerPosition], context: Context) {
+  private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerSpot], context: Context) {
     for pin in flowers {
-      let position = pin.value.currentPosition
+      let position = pin.value.pinPoint
       let point = NMGLatLng(lat: position.latitude, lng: position.longitude)
-      let marker = drawMarker(view, to: point, icon: pin.value.state.inactiveImage)
+      let marker = drawMarker(view, to: point, icon: pin.value.bloomingStatus.inactiveImage)
       marker.tag = UInt(pin.key)
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
-          marker.iconImage = pin.value.state.activeImage
+          marker.iconImage = pin.value.bloomingStatus.activeImage
           markerTapEvent(to: marker, context: context)
           moveCamera(view, to: position)
         }
@@ -175,7 +175,7 @@ extension MapViewRepresentable {
     if let existingPath = context.coordinator.paths?.path,
         existingPath.points as? [NMGLatLng] == lines { return }
     
-    let flowerState = data.state
+    let flowerState = data.bloomingStatus
     // 새로운 경로 그리기
     let path = NMFPath()
     path.width = 6

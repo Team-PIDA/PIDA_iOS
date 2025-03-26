@@ -9,7 +9,7 @@
 import SwiftUI
 import Combine
 
-import MapDomainInterface
+import FlowerSpotDomainInterface
 import DesignKit
 import Utility
 
@@ -28,8 +28,8 @@ public struct MapView: View {
   public var body: some View {
     ZStack {
       MapViewRepresentable(
-        userLocation: $store.state.position,
-        flowerPositions: $store.state.flowerPositions,
+        userLocation: $store.state.point,
+        flowerPositions: $store.state.flowerSpots,
         newPath: $store.state.selectedPathLines,
         requestBounds: $store.requestMapBound,
         markerTappedEvent: markerTappedEvent,

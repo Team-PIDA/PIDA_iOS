@@ -24,11 +24,11 @@ public struct FlowerSpot: Equatable, Sendable {
   public var streetName: String
   public var district: String?
   public var description: String?
-  public var path: [MapPoints]
-  public var pinPoint: MapPoints
+  public var path: [MapPoint]
+  public var pinPoint: MapPoint
   public var region: String
   
-  public init(id: Int, address: String? = nil, recentlyVisitedCount: Int, bloomingStatus: FlowerStatus, streetName: String, district: String? = nil, description: String? = nil, path: [MapPoints], pinPoint: MapPoints, region: String) {
+  public init(id: Int, address: String? = nil, recentlyVisitedCount: Int, bloomingStatus: FlowerStatus, streetName: String, district: String? = nil, description: String? = nil, path: [MapPoint], pinPoint: MapPoint, region: String) {
     self.id = id
     self.address = address
     self.recentlyVisitedCount = recentlyVisitedCount
@@ -42,7 +42,7 @@ public struct FlowerSpot: Equatable, Sendable {
   }
 }
 
-public struct MapPoints: Equatable, Sendable {
+public struct MapPoint: Equatable, Sendable {
   public var latitude: Double
   public var longitude: Double
   

@@ -8,9 +8,9 @@
 
 import Foundation
 
-public enum FlowerState: String, Sendable {
-  case gone
-  case many
-  case few
-  case none
-}
+//public enum FlowerState: String, Sendable {
+//  case gone
+//  case many
+//  case few
+//  case none
+//}

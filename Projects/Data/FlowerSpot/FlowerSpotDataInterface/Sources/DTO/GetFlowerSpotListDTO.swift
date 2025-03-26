@@ -58,7 +58,7 @@ public struct List: DTO {
 }
 
 public struct PointGeom: DTO {
-  public typealias Entity = MapPoints?
+  public typealias Entity = MapPoint?
   public var type: String
   public var coordinates: [Double]
   
@@ -67,14 +67,14 @@ public struct PointGeom: DTO {
     self.coordinates = coordinates
   }
   
-  public func toEntity() throws -> MapPoints? {
+  public func toEntity() throws -> MapPoint? {
     if coordinates.count < 2 { return nil }
-    return MapPoints(latitude: coordinates[1], longitude: coordinates[0])
+    return MapPoint(latitude: coordinates[1], longitude: coordinates[0])
   }
 }
 
 public struct LineStringGeom: DTO {
-  public typealias Entity = [MapPoints]?
+  public typealias Entity = [MapPoint]?
   public var type: String
   public var coordinates: [[Double]]
   
@@ -82,10 +82,10 @@ public struct LineStringGeom: DTO {
     self.type = type
     self.coordinates = coordinates
   }
-  public func toEntity() throws -> [MapPoints]? {
-    let points = coordinates.compactMap { coord -> MapPoints? in
+  public func toEntity() throws -> [MapPoint]? {
+    let points = coordinates.compactMap { coord -> MapPoint? in
       guard coord.count == 2 else { return nil }
-      return MapPoints(latitude: coord[1], longitude: coord[0])
+      return MapPoint(latitude: coord[1], longitude: coord[0])
     }
     return points.isEmpty ? nil : points
   }
