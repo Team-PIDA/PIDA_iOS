@@ -25,12 +25,13 @@ struct MapViewRepresentable: UIViewRepresentable {
   @Binding var newPath: [MapPoint]
   /// 지도 범위 요청 프로퍼티
   @Binding var requestBounds: Bool
-  /// 마커 탭 시 이벤트를 전달하기 위한 publisher
-  var markerTappedEvent: PassthroughSubject<Int?, Never>? = nil
-  /// 지도 범위 좌표 값을 전달하기 위한 이벤트
-  var mapBounds: (([MapPoint]) -> Void)? = nil
   /// 지도를 움직일 경우 현 위치 재검색 버튼 활성화 하기 위한 트리거
   @Binding var isCameraMove: Bool
+  /// 마커 탭 시 id값을 전달하기 위한 클로저
+  var onMarkerTapped: ((Int?) -> Void)? = nil
+  /// 지도 범위 좌표 값을 전달하기 위한 클로저
+  var mapBounds: (([MapPoint]) -> Void)? = nil
+  
   
   /// 지도 초기 위치 설정 - 석촌호수 근처
   private let defaultPoint: MapPoint = .init(latitude: 37.50545, longitude: 127.10143)
@@ -84,17 +85,9 @@ struct MapViewRepresentable: UIViewRepresentable {
   
 }
 
-// MARK: - MapEvent
+// MARK: - Action
 
 extension MapViewRepresentable {
-  
-  /// 지도에 올라와있는 마커 삭제
-  func deleteDrawMarker(context: Context) {
-    if !context.coordinator.markers.isEmpty {
-      flowerPositions.removeAll()
-      context.coordinator.deleteAllMarkers()
-    }
-  }
   
   /// 현재 지도에 보이는 좌표 범위를 반환하는 메서드
   func currentVisibleBounds(on mapView: NMFMapView) {
@@ -117,6 +110,7 @@ extension MapViewRepresentable {
     /// 카메라 위치의 변화가 있을 때만 설정
     let cameraPosition = view.mapView.cameraPosition.target
     let point = MapPoint(latitude: cameraPosition.lat, longitude: cameraPosition.lng)
+    
     if point != context.coordinator.lastCameraPoint {
       view.mapView.positionMode = .normal
       moveCamera(view, to: userLocation)
@@ -138,34 +132,6 @@ extension MapViewRepresentable {
     }
   }
   
-  /// 지도 위에 비활성화 마커를 표시하기 위한 메서드
-  private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerSpot], context: Context) {
-    // 마커 중간지점으로 카메라 이동
-    let mid = averageCenter(of: flowers.values.map { $0.pinPoint })
-    moveCamera(view, to: mid)
-    
-    for pin in flowers {
-      let position = pin.value.pinPoint
-      let point = NMGLatLng(lat: position.latitude, lng: position.longitude)
-      
-      let marker = drawMarker(view, to: point, icon: pin.value.bloomingStatus.inactiveImage)
-      marker.tag = UInt(pin.key)
-      
-      // 마커 탭 이벤트 헨들러
-      marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
-        if let marker = overlay as? NMFMarker {
-          marker.iconImage = pin.value.bloomingStatus.activeImage
-          markerTapEvent(to: marker, context: context)
-          moveCamera(view, to: position)
-        }
-        return true
-      }
-      
-      context.coordinator.markers.append(marker)
-      
-    }
-  }
-  
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
   private func markerTapEvent(to marker: NMFMarker, context: Context) {
     if marker == context.coordinator.activeMarker { return }
@@ -173,8 +139,35 @@ extension MapViewRepresentable {
     let tag = Int(marker.tag)
     context.coordinator.selectedPin = flowerPositions[tag]
     context.coordinator.activeMarker = marker
-    if let markerTappedEvent = markerTappedEvent {
-      markerTappedEvent.send(tag)
+    if let onMarkerTapped = onMarkerTapped {
+      onMarkerTapped(tag)
+    }
+  }
+  
+  /// 여러 마커의 중간지점 찾는 메서드
+  private func averageCenter(of points: [MapPoint]) -> MapPoint? {
+    guard !points.isEmpty else { return nil }
+
+    let total = points.reduce((lat: 0.0, lon: 0.0)) { result, point in
+      (result.lat + point.latitude, result.lon + point.longitude)
+    }
+
+    let count = Double(points.count)
+    return MapPoint(
+      latitude: total.lat / count,
+      longitude: total.lon / count
+    )
+  }
+}
+
+// MARK: - Draw & Delete
+
+extension MapViewRepresentable {
+  /// 지도에 올라와있는 마커 삭제
+  func deleteDrawMarker(context: Context) {
+    if !context.coordinator.markers.isEmpty {
+      flowerPositions.removeAll()
+      context.coordinator.deleteAllMarkers()
     }
   }
   
@@ -205,11 +198,50 @@ extension MapViewRepresentable {
     context.coordinator.paths = path
     
     // 양 끝 원 마커 추가
-    guard let firstPoint = lines.first, let lastPoint = lines.last else { return }
-    let start = drawMarker(view, to: firstPoint, icon: flowerState.circleImage, anchor: CGPoint(x: 0.5, y: 0.5))
-    let end = drawMarker(view, to: lastPoint, icon: flowerState.circleImage, anchor: CGPoint(x: 0.5, y: 0.5))
+    guard let firstPoint = lines.first,
+            let lastPoint = lines.last else { return }
+    
+    let start = drawMarker(view,
+                           to: firstPoint,
+                           icon: flowerState.circleImage,
+                           anchor: CGPoint(x: 0.5, y: 0.5))
+    let end = drawMarker(view,
+                         to: lastPoint,
+                         icon: flowerState.circleImage,
+                         anchor: CGPoint(x: 0.5, y: 0.5))
+    
     context.coordinator.startMarker = start
     context.coordinator.endMarker = end
+  }
+  
+  /// 지도 위에 비활성화 마커를 표시하기 위한 메서드
+  private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerSpot], context: Context) {
+    // 마커 중간지점으로 카메라 이동
+    let mid = averageCenter(of: flowers.values.map { $0.pinPoint })
+    moveCamera(view, to: mid)
+    
+    for pin in flowers {
+      let position = pin.value.pinPoint
+      let point = NMGLatLng(lat: position.latitude, lng: position.longitude)
+      
+      let marker = drawMarker(view,
+                              to: point,
+                              icon: pin.value.bloomingStatus.inactiveImage)
+      marker.tag = UInt(pin.key)
+      
+      // 마커 탭 이벤트 헨들러
+      marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
+        if let marker = overlay as? NMFMarker {
+          marker.iconImage = pin.value.bloomingStatus.activeImage
+          markerTapEvent(to: marker, context: context)
+          moveCamera(view, to: position)
+        }
+        return true
+      }
+      
+      context.coordinator.markers.append(marker)
+      
+    }
   }
   
   /// 마커 기본 설정 메서드
@@ -228,19 +260,4 @@ extension MapViewRepresentable {
     return marker
   }
   
-  
-  /// 여러 마커의 중간지점 찾는 메서드
-  private func averageCenter(of points: [MapPoint]) -> MapPoint? {
-    guard !points.isEmpty else { return nil }
-
-    let total = points.reduce((lat: 0.0, lon: 0.0)) { result, point in
-      (result.lat + point.latitude, result.lon + point.longitude)
-    }
-
-    let count = Double(points.count)
-    return MapPoint(
-      latitude: total.lat / count,
-      longitude: total.lon / count
-    )
-  }
 }

@@ -41,8 +41,8 @@ extension MapViewRepresentable {
     
     /// 지도 탭 이벤트
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
-      if let markerTappedEvent = parent.markerTappedEvent {
-        markerTappedEvent.send(nil)
+      if let onMarkerTapped = parent.onMarkerTapped {
+        onMarkerTapped(nil)
       }
       
     }

@@ -18,9 +18,6 @@ import ComposableArchitecture
 public struct MapView: View {
   @Bindable var store: StoreOf<MapReducer>
   
-  private var markerTappedEvent = PassthroughSubject<Int?, Never>()
-  private var requestMapBounds = PassthroughSubject<[MapPoint], Never>()
-  
   public init(store: StoreOf<MapReducer>) {
     self.store = store
   }
@@ -67,13 +64,12 @@ extension MapView {
       flowerPositions: $store.state.flowerSpots,
       newPath: $store.state.selectedPathLines,
       requestBounds: $store.requestMapBound,
-      markerTappedEvent: markerTappedEvent,
       isCameraMove: $store.researchButtonEnable
     )
     .onReceiveMapBounds {
       store.send(.fetchFlowers($0))
     }
-    .onReceive(markerTappedEvent) {
+    .onMarkerTapped {
       store.send(.fetchPathLines(id: $0))
     }
     .ignoresSafeArea()
