@@ -10,11 +10,11 @@ import Foundation
 
 public protocol FlowerSpotRepository {
   func getFlowerSpotList(
-    지역: String,
-    남서쪽_위도: Double,
-    남서쪽_경도: Double,
-    북동쪽_위도: Double,
-    북동쪽_경도: Double
+    region: String,
+    swLat: Double,
+    swLng: Double,
+    neLat: Double,
+    neLng: Double
   ) async throws -> FlowerSpotListEntity
   
 }
