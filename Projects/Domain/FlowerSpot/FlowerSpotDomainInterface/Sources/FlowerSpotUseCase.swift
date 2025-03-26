@@ -8,6 +8,6 @@
 
 import Foundation
 
-public protocol FlowerSpotUseCase {
+public protocol FetchAllFlowerPinUseCase {
   func execute() async throws -> Void
 }

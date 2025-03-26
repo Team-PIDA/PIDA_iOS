@@ -9,7 +9,7 @@
 import Foundation
 import FlowerSpotDomainInterface
 
-public struct FlowerSpotUseCaseImpl: FlowerSpotUseCase {
+public struct FetchAllFlowerPinUseCaseImpl: FetchAllFlowerPinUseCase {
   private let repository: FlowerSpotRepository
 
   public init(
