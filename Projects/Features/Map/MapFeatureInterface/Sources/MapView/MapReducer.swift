@@ -20,12 +20,19 @@ public struct MapReducer {
   
   @ObservableState
   public struct State: Equatable {
+    /// 특정 좌표로 이동하기 위한 프로퍼티
     public var point: MapPoint? = nil
+    /// 현재 지도에 보여 줄 FlowerSpot 데이터
     public var flowerSpots: [Int: FlowerSpot] = [:]
+    /// 현재 그려져있는 경로
     public var selectedPathLines: [MapPoint] = []
+    /// 검색 결과 데이터
     public var searchResult: String? = nil
+    /// 검색 결과 텍스트
     public var searchText: String? = nil
+    /// 지도 범위 요청 트리거
     public var requestMapBound: Bool = false
+    /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
     public init() {}
   }
