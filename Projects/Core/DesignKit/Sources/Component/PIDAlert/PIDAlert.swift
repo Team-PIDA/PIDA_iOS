@@ -63,13 +63,13 @@ public struct PIDAlert: View {
   private var titleView: some View {
     VStack(spacing: .Number8) {
       Text(title)
-        .font(FontSet.Title.title2)
+        .fontStyle(FontSet.Title.title2)
         .foregroundStyle(ColorSet.Text.Primary)
         .multilineTextAlignment(.center)
       
       if let message = message {
         Text(message)
-          .font(FontSet.Body.body3)
+          .fontStyle(FontSet.Body.body3)
           .foregroundStyle(ColorSet.Text.Secondary)
           .multilineTextAlignment(.center)
       }

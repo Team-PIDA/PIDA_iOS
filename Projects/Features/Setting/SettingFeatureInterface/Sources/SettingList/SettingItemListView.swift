@@ -34,7 +34,7 @@ struct SettingItemListView: View {
   @ViewBuilder
   private func sectionTitle(_ title: String) -> some View {
     Text(title)
-      .font(FontSet.Body.body3)
+      .fontStyle(FontSet.Body.body3)
       .foregroundStyle(ColorSet.Text.Secondary)
       .padding(.top, .Number8)
       .padding(.bottom, .Number4)

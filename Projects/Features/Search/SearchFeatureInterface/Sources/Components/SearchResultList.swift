@@ -36,21 +36,20 @@ public struct SearchResultList: View {
   public var body: some View {
     VStack {
       HStack {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: .Number0) {
           Text(roadName)
-            .font(FontSet.Body.body2)
+            .fontStyle(FontSet.Body.body2)
             .foregroundStyle(ColorSet.Text.Primary)
           Text(address)
-            .font(FontSet.Caption.caption1)
+            .fontStyle(FontSet.Caption.caption1)
             .foregroundStyle(ColorSet.Text.Tertiary)
         }
         Spacer()
         Text(subInfo)
-          .font(FontSet.Caption.caption1)
+          .fontStyle(FontSet.Caption.caption1)
           .foregroundStyle(ColorSet.Text.Tertiary)
       }
-      .frame(height: .Number66)
-      
+      .padding(.vertical, .Number12)
       BorderView(size: .long)
     }
     .contentShape(Rectangle())

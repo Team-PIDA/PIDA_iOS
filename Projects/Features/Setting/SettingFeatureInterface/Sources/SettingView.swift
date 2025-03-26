@@ -76,15 +76,13 @@ extension SettingView {
   private var profileView: some View {
     HStack(alignment: .center, spacing: .Number16) {
       Image(asset: ImageSet.avatarLarge.swiftUIImage)
-        .resizable()
-        .frame(width: .Number40, height: .Number40)
       
       if store.isLoggedIn, let username = store.username {
         Text("환영해요! \(username)님")
       } else {
         HStack(spacing: .Number0) {
           Text("로그인 하기")
-            .font(FontSet.Body.body2)
+            .fontStyle(FontSet.Body.body2)
           
           Icon(image: .chevronRight)
             .size(.extraLarge)
@@ -92,7 +90,7 @@ extension SettingView {
       }
       Spacer()
     }
-    .font(FontSet.Body.body2)
+    .fontStyle(FontSet.Body.body2)
     .foregroundStyle(ColorSet.Text.Primary)
     .padding(.Number16)
     .onTapGesture {
@@ -104,16 +102,14 @@ extension SettingView {
   private var feedBackView: some View {
     HStack(spacing: .Number12) {
       Image(asset: ImageSet.loveletter.swiftUIImage)
-        .resizable()
-        .frame(width: .Number40, height: .Number40)
       
       VStack(alignment: .leading, spacing: .Number2) {
         Text("피드백 남기러 가기")
-          .font(FontSet.Title.title3)
+          .fontStyle(FontSet.Title.title3)
           .foregroundStyle(ColorSet.Text.Primary)
 
         Text("좋은 점, 개선할 점, 궁금한 점 의견을 들려주세요!")
-          .font(FontSet.Caption.caption1)
+          .fontStyle(FontSet.Caption.caption1)
           .foregroundStyle(ColorSet.Text.Secondary)
       }
       Spacer()

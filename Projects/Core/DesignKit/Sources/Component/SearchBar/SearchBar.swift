@@ -60,7 +60,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
       searchIconView
       Text(placeholder)
         .foregroundColor(ColorSet.Text.Tertiary)
-        .font(FontSet.Body.body2)
+        .fontStyle(FontSet.Body.body2)
       Spacer()
       trailingContent?()
     }
@@ -110,7 +110,7 @@ public struct SearchBar<LeadingContent: View, TrailingContent: View>: View {
       leadingContent?()
       Text(text)
         .foregroundColor(ColorSet.Text.Primary)
-        .font(FontSet.Body.body2)
+        .fontStyle(FontSet.Body.body2)
       Spacer()
       trailingContent?()
     }

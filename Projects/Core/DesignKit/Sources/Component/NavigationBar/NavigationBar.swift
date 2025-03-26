@@ -37,7 +37,7 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
       Spacer()
       if let title = title {
         Text(title)
-          .font(FontSet.Title.title3)
+          .fontStyle(FontSet.Title.title3)
           .foregroundStyle(ColorSet.Text.Primary)
       }
       Spacer()

@@ -27,7 +27,7 @@ public enum PIDButtonSize {
     }
   }
   
-  public var font: Font {
+  public var font: FontInfo {
     switch self {
     case .large: return FontSet.Label.label1
     case .medium: return FontSet.Label.label2
