@@ -9,7 +9,6 @@
 import Foundation
 import Networker
 
-import MapDomain
 import FlowerSpotDomainInterface
 import FlowerSpotDomain
 import FlowerSpotDataInterface

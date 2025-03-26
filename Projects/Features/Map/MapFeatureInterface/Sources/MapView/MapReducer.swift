@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import MapDomainInterface
 import FlowerSpotDomainInterface
 import ComposableArchitecture
 
