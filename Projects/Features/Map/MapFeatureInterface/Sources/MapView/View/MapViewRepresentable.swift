@@ -89,8 +89,14 @@ extension MapViewRepresentable {
   /// 현재 지도에 보이는 좌표 범위를 반환하는 메서드
   func currentVisibleBounds(on mapView: NMFMapView) {
     let bounds = mapView.projection.latlngBounds(fromViewBounds: mapView.bounds)
-    let northEast = MapPoint(latitude: bounds.northEastLat, longitude: bounds.northEastLng)
-    let southWest = MapPoint(latitude: bounds.southWestLat, longitude: bounds.southWestLng)
+    let northEast = MapPoint(
+      latitude: bounds.northEastLat.rounded(to: 6),
+      longitude: bounds.northEastLng.rounded(to: 6)
+    )
+    let southWest = MapPoint(
+      latitude: bounds.southWestLat.rounded(to: 6),
+      longitude: bounds.southWestLng.rounded(to: 6)
+    )
     if let mapBounds = mapBounds {
       mapBounds([southWest, northEast])
     }
