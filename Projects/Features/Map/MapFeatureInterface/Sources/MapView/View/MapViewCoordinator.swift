@@ -32,6 +32,8 @@ extension MapViewRepresentable {
     var startMarker: NMFMarker? = nil
     /// 경로선 끝 마커
     var endMarker: NMFMarker? = nil
+    /// 초기 지도 범위 요청 여부
+    var isInitialBounds: Bool = true
     
     init(_ parent: MapViewRepresentable) {
       self.parent = parent
@@ -47,6 +49,15 @@ extension MapViewRepresentable {
     
     func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
       
+    }
+    
+    func mapViewCameraIdle(_ mapView: NMFMapView) {
+      // 앱 처음 진입 시 카메라 이동 완료 후 지도 범위 값 가져오도록 처리
+      if isInitialBounds, parent.requestBounds {
+        parent.currentVisibleBounds(on: mapView)
+        parent.requestBounds = false
+        isInitialBounds = false
+      }
     }
     
     /// 마커 및 경로 비활성화 처리 메서드

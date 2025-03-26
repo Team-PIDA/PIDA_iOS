@@ -30,6 +30,7 @@ extension MapReducer {
         return .run { send in
           if let location = await LocationService.shared.userLocation {
             await send(.moveLocation(MapPoint(latitude: location.0, longitude: location.1)))
+            await send(.requestMapBounds(true))
           }
         }
       case let .moveLocation(point):

@@ -30,7 +30,6 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 지도 범위 좌표 값을 전달하기 위한 이벤트
   var mapBounds: (([MapPoint]) -> Void)? = nil
   
-  
   /// 지도 초기 위치 설정 - 석촌호수 근처
   private let defaultPoint: MapPoint = .init(latitude: 37.50545, longitude: 127.10143)
   
@@ -66,7 +65,8 @@ struct MapViewRepresentable: UIViewRepresentable {
     } else {
       context.coordinator.deletePathMarkers()
     }
-    if requestBounds {
+    
+    if requestBounds, !context.coordinator.isInitialBounds {
       currentVisibleBounds(on: uiView.mapView)
       requestBounds = false
     }
