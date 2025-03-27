@@ -9,13 +9,17 @@
 import SwiftUI
 
 public struct PIDATextField: View {
+  
   @Binding private var text: String
   private let placeholder: String
-  public var onSubmit: (() -> Void)?
-  @FocusState private var internalFocus: Bool
   
+  @FocusState private var internalFocus: Bool
   @Binding var isFocused: Bool
   @State var focused: Bool = true
+  
+  var borderStyle: BorderStyle = .none
+  var onSubmit: (() -> Void)?
+  
   public init(
     text: Binding<String>,
     placeholder: String,
@@ -51,5 +55,20 @@ public struct PIDATextField: View {
           }
         }
     }
+    .padding(borderStyle != .none ? .Number12 : 0)
+    .overlay {
+      if borderStyle != .none {
+        RoundedRectangle(cornerRadius: .Number10)
+          .stroke(borderStyle.color, lineWidth: .Number1)
+      }
+    }
   }
+}
+
+
+#Preview {
+  PIDATextField(text: .constant("하하"), placeholder: "placeholder", isFocused: .constant(false))
+    .borderStyle(.accent)
+  PIDATextField(text: .constant(""), placeholder: "placeholder", isFocused: .constant(false))
+    .borderStyle(.error)
 }
