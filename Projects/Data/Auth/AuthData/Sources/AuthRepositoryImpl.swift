@@ -9,14 +9,17 @@
 import Foundation
 import AuthDataInterface
 import AuthDomainInterface
-import Core
+import Networker
 
 public struct AuthRepositoryImpl: AuthRepository {
-  
+  private let network: NetworkProtocol
 
-  public init() {
-    
+  public init(network: NetworkProtocol) {
+    self.network = network
   }
 
-  public func fetchData() async throws -> Void { }
+  public func requestAppleLogin(token: String) async throws -> SocialLoginEntity {
+    let endpoint = AuthEndpoint.appleLogin(body: .init(token: token))
+    return try await network.execute(with: endpoint, timeout: 60).toEntity()
+  }
 }

@@ -1,13 +1,13 @@
 //
 //  AuthRepository.swift
-//  AuthDataInterface
+//  AuthDomain
 //
-//  Created by Jiyeon on 3/22/25.
+//  Created by Jiyeon on 3/27/25.
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
 import Foundation
 
 public protocol AuthRepository {
-  func fetchData() async throws -> Void
+  func requestAppleLogin(token: String) async throws -> SocialLoginEntity
 }

@@ -13,24 +13,36 @@ import UserDefault
 
 extension AuthReducer {
   public init() {
+    @Dependency(\.appleLoginUseCase) var appleLoginUseCase
     let authReducer = Reduce<State, Action> { state, action in
       switch action {
       case .appleLoginButtonTapped:
         return .run { send in
           do {
-            let result = try await AppleLoginHelper.requestAuthorization()
-            await send(.appleLoginResponse(result))
+            if let result = try await AppleLoginHelper.requestAuthorization() {
+              await send(.appleLoginResponse(result))
+            }
           } catch {
             print("[AppleLogin Failure] ", error.localizedDescription)
             await send(.appleLoginFailure)
           }
         }
       case let .appleLoginResponse(info):
-        if let email = info?.email {
-          UserDefault.email = email
+        return .run { send in
+          do {
+            let result = try await appleLoginUseCase.execute(token: info.idToken)
+            UserDefault.accessToken = result.accessToKen
+            if result.isTempToken {
+              await send(.presentToSignUp)
+            } else {
+              await send(.dismiss)
+            }
+          } catch let error as NetworkError {
+            print(error.localizedDescription)
+          } catch {
+            print(error.localizedDescription)
+          }
         }
-        // TODO: - 서버에 로그인 요청
-        return .send(.presentToSignUp)
         
       case .presentToSignUp:
         return .send(.delegate(.presentToSignUp))

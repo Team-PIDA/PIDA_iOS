@@ -112,8 +112,8 @@ extension Networker {
     
     do {
       let decoder = JSONDecoder()
-      let response = try decoder.decode(R.self, from: data)
-      return response
+      let response = try decoder.decode(APIResponse<R>.self, from: data)
+      return response.data
     } catch {
       throw FoundationError.failedToDecode(data)
     }
