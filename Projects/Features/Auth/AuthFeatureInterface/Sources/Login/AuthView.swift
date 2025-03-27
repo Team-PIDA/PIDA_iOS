@@ -57,7 +57,7 @@ public struct AuthView: View {
   @ViewBuilder
   private var appleLogin: some View {
     PIDButton(
-      title: "Apple로 로그인하기",
+      title: "Apple로 계속하기",
       size: .large
     ) {
       Icon(image: .apple)

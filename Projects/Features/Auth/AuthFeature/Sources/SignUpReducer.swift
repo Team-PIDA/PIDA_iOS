@@ -13,9 +13,23 @@ extension SignUpReducer {
   public init() {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
+      case .onAppear:
+        return .run { send in
+          await MainActor.run {
+            send(.showKeyboard(true))
+          }
+        }
+      case let .showKeyboard(isShow):
+        state.focusKeyboard = isShow
+        return .none
       case .dismiss:
-        return .send(.delegate(.dismiss))
-      case .delegate:
+        return .run { send in
+          await MainActor.run {
+            send(.showKeyboard(false))
+            send(.delegate(.dismiss))
+          }
+        }
+      case .delegate, .binding:
         return .none
       }
     }

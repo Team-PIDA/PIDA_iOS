@@ -19,11 +19,16 @@ public struct SignUpReducer {
   
   @ObservableState
   public struct State: Equatable {
-    
+    public var nickname: String = ""
+    public var focusKeyboard: Bool = false
     public init() {}
   }
   
-  public enum Action: Equatable {
+  public enum Action: BindableAction, Equatable {
+    case binding(BindingAction<State>)
+    case onAppear
+    case showKeyboard(Bool)
+    
     case dismiss
     case delegate(Delegate)
   }
@@ -33,6 +38,7 @@ public struct SignUpReducer {
   }
   
   public var body: some ReducerOf<Self> {
+    BindingReducer()
     reducer
   }
 }
