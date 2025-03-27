@@ -11,4 +11,5 @@ import Foundation
 public struct AppleLoginResult: Equatable {
   public let idToken: String
   public let email: String?
+  public let name: String?
 }

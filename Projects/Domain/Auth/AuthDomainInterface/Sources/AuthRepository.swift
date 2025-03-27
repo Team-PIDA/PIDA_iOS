@@ -10,4 +10,5 @@ import Foundation
 
 public protocol AuthRepository {
   func requestAppleLogin(token: String) async throws -> SocialLoginEntity
+  func signUp(email: String, nickname: String) async throws -> SignUpEntity
 }

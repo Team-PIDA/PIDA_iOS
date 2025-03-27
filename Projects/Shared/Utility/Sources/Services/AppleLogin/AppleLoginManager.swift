@@ -9,6 +9,7 @@
 import Foundation
 import AuthenticationServices
 import UIKit
+import UserDefault
 
 final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
   private var continuation: CheckedContinuation<AppleLoginResult?, Error>?
@@ -46,7 +47,9 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
        let idToken = String(data: token, encoding: .utf8) {
       
       let email = appleCredential.email
-      let userInfo = AppleLoginResult(idToken: idToken, email: email)
+      let name = fullNameFormat(appleCredential.fullName)
+      
+      let userInfo = AppleLoginResult(idToken: idToken, email: email, name: name)
       
       resume(value: userInfo)
     } else {
@@ -57,10 +60,10 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
   
   private func fullNameFormat(_ name: PersonNameComponents?) -> String? {
     if let fullName = name {
-        let formatter = PersonNameComponentsFormatter()
-        formatter.style = .long // .short, .long 등도 가능
-        return formatter.string(from: fullName)
-        
+      let formatter = PersonNameComponentsFormatter()
+      formatter.style = .long
+      return formatter.string(from: fullName)
+      
     } else {
       return nil
     }

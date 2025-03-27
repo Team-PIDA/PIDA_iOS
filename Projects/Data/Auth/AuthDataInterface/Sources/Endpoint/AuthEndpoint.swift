@@ -12,7 +12,6 @@ import Networker
 public struct AuthEndpoint: Sendable {
   static let baseURL = "https://api.pida.me/api/v1"
   
-  @discardableResult
   public static func appleLogin(body: SocialLoginBody) -> Endpoint<LoginDTO> {
     return Endpoint(
       method: .post,
@@ -21,4 +20,14 @@ public struct AuthEndpoint: Sendable {
       parameters: .body(body)
     )
   }
+  
+  public static func signUp(body: SignUpBody) -> Endpoint<SignUpDTO> {
+    return Endpoint(
+      method: .post,
+      baseURL: baseURL,
+      path: "/auth/social-signup",
+      parameters: .body(body)
+    )
+  }
+  
 }

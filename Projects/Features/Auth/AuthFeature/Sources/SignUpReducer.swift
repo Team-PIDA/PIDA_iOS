@@ -8,9 +8,11 @@
 
 import ComposableArchitecture
 import AuthFeatureInterface
+import UserDefault
 
 extension SignUpReducer {
   public init() {
+    @Dependency(\.signUpUseCase) var signUpUseCase
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .onAppear:
@@ -22,8 +24,10 @@ extension SignUpReducer {
       case let .showKeyboard(isShow):
         state.focusKeyboard = isShow
         return .none
+        
       case .confirmTapped:
         return .send(.checkValidNickName(state.nickname))
+        
       case let .checkValidNickName(nickname):
         if nickname.count < 2 {
           state.inputValid = .tooShort
@@ -34,15 +38,22 @@ extension SignUpReducer {
         } else {
           state.inputValid = .valid
           state.isValidInput = true
-          // TODO: - API 연결
-          return .send(.dismiss)
+          
+          return .send(.requestSignUp(nickname: nickname))
         }
         return .none
         
-      case let .receiveEmail(email):
-        print(email)
-        state.email = email
-        return .none
+      case let .requestSignUp(nickname):
+        return .run { send in
+          do {
+            if let email = UserDefault.email {
+              try await signUpUseCase.execute(email: email, nickname: nickname)
+              await send(.dismiss)
+            }
+          } catch {
+            print(error.localizedDescription)
+          }
+        }
       
       case .dismiss:
         return .run { send in

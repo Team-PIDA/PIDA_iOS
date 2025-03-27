@@ -22,6 +22,7 @@ extension AuthReducer {
           do {
             // 애플로그인 요청
             if let result = try await AppleLoginHelper.requestAuthorization() {
+              UserDefault.email = result.email
               await send(.appleLoginResponse(result))
             }
           } catch {
@@ -38,7 +39,7 @@ extension AuthReducer {
             let _ = KeyChainWrapper.save(result.refreshToken, forKey: .refreshToken)
             
             if result.isTempToken { // 최초 회원가입
-              await send(.presentToSignUp(email: info.email))
+              await send(.presentToSignUp)
             } else {
               await send(.dismiss)
             }
@@ -50,12 +51,12 @@ extension AuthReducer {
         }
         
         // 최초 로그인 시 회원가입(닉네임 입력)화면 이동
-      case let .presentToSignUp(email):
-        return .send(.delegate(.presentToSignUp(email: email)))
+      case .presentToSignUp:
+        return .send(.delegate(.presentToSignUp))
         
       case .dismiss:
         return .send(.delegate(.dismiss))
-      
+        
       case .appleLoginFailure, .delegate:
         return .none
       }

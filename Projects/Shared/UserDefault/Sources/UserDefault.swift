@@ -13,6 +13,8 @@ import Foundation
 public enum UserDefault: UserDefaultProtocol {
   
   case _accessToken
+  case _username
+  case _email
   
   /// _accessToken 값을 쉽게 가져오고 저장할 수 있는 정적 프로퍼티.
   ///
@@ -27,8 +29,26 @@ public enum UserDefault: UserDefaultProtocol {
     }
   }
   
+  public static var username: String? {
+    get { Self._username.load() }
+    set {
+      if newValue == nil { Self._username.delete() }
+      else { Self._username.save(newValue) }
+    }
+  }
+  
+  public static var email: String? {
+    get { Self._email.load() }
+    set {
+      if newValue == nil { Self._email.delete() }
+      else { Self._email.save(newValue) }
+    }
+  }
+  
   /// 특정 키의 값을 UserDefaults에서 삭제하는 편의 메서드
   /// 사용 예: UserDefault.delete(._accessToken)
   public static func delete(_ key: Self) { key.delete() }
+  
+  
   
 }

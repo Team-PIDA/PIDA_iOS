@@ -148,10 +148,10 @@ struct PIDAReducer {
         state.isPresentAuth = false
         return .none
         
-      case let .auth(.delegate(.presentToSignUp(email))):
+      case .auth(.delegate(.presentToSignUp)):
         state.isPresentSignUp = true
         state.isPresentAuth = false
-        return .send(.signUp(.receiveEmail(email: email)))
+        return .none
         
       case .signUp(.delegate(.dismiss)):
         state.isPresentSignUp = false

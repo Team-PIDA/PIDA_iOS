@@ -42,5 +42,10 @@ enum DependencyRegistry {
         AppleLoginUseCaseImpl(repository: authRepository)
       }
     )
+    
+    signUpUseCaseRegister(
+      provider: { SignUpUseCaseImpl(repository: authRepository) }
+    )
+    
   }
 }

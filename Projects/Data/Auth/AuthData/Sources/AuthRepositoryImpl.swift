@@ -22,4 +22,9 @@ public struct AuthRepositoryImpl: AuthRepository {
     let endpoint = AuthEndpoint.appleLogin(body: .init(token: token))
     return try await network.execute(with: endpoint, timeout: 60).toEntity()
   }
+  
+  public func signUp(email: String, nickname: String) async throws -> SignUpEntity {
+    let endpoint = AuthEndpoint.signUp(body: .init(email: email, name: nickname))
+    return try await network.execute(with: endpoint, timeout: 60).toEntity()
+  }
 }

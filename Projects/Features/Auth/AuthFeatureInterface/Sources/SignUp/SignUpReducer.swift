@@ -33,8 +33,8 @@ public struct SignUpReducer {
     case showKeyboard(Bool)
     case confirmTapped
     case checkValidNickName(String)
+    case requestSignUp(nickname: String)
     
-    case receiveEmail(email: String?)
     case dismiss
     case delegate(Delegate)
   }

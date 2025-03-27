@@ -30,12 +30,12 @@ public struct AuthReducer {
     
     case delegate(Delegate)
     case dismiss
-    case presentToSignUp(email: String?)
+    case presentToSignUp
   }
   
   public enum Delegate: Equatable {
     case dismiss
-    case presentToSignUp(email: String?)
+    case presentToSignUp
   }
 
   public var body: some ReducerOf<Self> {
