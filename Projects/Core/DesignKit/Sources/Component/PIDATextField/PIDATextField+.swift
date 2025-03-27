@@ -20,4 +20,10 @@ public extension PIDATextField {
     textField.borderStyle = style
     return textField
   }
+  
+  func message(_ message: String?) -> Self {
+    var textfield = self
+    textfield.message = message
+    return textfield
+  }
 }

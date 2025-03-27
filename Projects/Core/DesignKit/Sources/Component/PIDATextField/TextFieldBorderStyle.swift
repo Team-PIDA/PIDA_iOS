@@ -12,6 +12,7 @@ public enum BorderStyle {
   case accent
   case error
   case primary
+  case secondary
   case none
   
   var color: Color {
@@ -22,6 +23,8 @@ public enum BorderStyle {
       ColorSet.Border.Error
     case .primary:
       ColorSet.Border.Primary
+    case .secondary:
+      ColorSet.Border.Secondary
     case .none:
       Color.clear
     }
