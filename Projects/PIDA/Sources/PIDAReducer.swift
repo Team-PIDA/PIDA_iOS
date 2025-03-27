@@ -36,11 +36,13 @@ struct PIDAReducer {
     var setting = SettingReducer.State()
     var policy = PolicyReducer.State()
     var auth = AuthReducer.State()
+    var signUp = SignUpReducer.State()
     
     /// 네비게이션 이동 경로
     var path: [Path] = []
     var isShowSearch: Bool = false
     var isPresentAuth: Bool = false
+    var isPresentSignUp: Bool = false
   }
   
   enum Action: BindableAction {
@@ -49,6 +51,7 @@ struct PIDAReducer {
     case setting(SettingReducer.Action)
     case policy(PolicyReducer.Action)
     case auth(AuthReducer.Action)
+    case signUp(SignUpReducer.Action)
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
@@ -70,6 +73,9 @@ struct PIDAReducer {
     }
     Scope(state: \.auth, action: \.auth) {
       AuthReducer()
+    }
+    Scope(state: \.signUp, action: \.signUp) {
+      SignUpReducer()
     }
     
     Reduce { state, action in
@@ -143,10 +149,17 @@ struct PIDAReducer {
         return .none
         
       case .auth(.delegate(.presentToSignUp)):
+        state.isPresentSignUp = true
+        state.isPresentAuth = false
         return .none
+        
+      case .signUp(.delegate(.dismiss)):
+        state.isPresentSignUp = false
+        return .none
+        
         // MARK: - None
         
-      case .binding, .map, .search, .setting, .policy, .auth:
+      case .binding, .map, .search, .setting, .policy, .auth, .signUp:
         return .none
       }
     }

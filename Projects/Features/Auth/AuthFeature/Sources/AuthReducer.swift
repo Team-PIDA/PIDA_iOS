@@ -27,13 +27,13 @@ extension AuthReducer {
         }
       case let .appleLoginResponse(info):
         if let email = info?.email {
-          UserDefault.email = info?.email
+          UserDefault.email = email
         }
         // TODO: - 서버에 로그인 요청
         return .send(.presentToSignUp)
         
       case .presentToSignUp:
-        return .send(.presentToSignUp)
+        return .send(.delegate(.presentToSignUp))
         
       case .dismiss:
         return .send(.delegate(.dismiss))
