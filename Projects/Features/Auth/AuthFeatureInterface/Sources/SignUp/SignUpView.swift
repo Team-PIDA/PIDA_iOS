@@ -55,8 +55,8 @@ public struct SignUpView: View {
       placeholder: "닉네임",
       isFocused: $store.focusKeyboard
     )
-    .message("2~12자까지 입력할 수 있어요.")
-    .borderStyle(.accent)
+    .message(store.inputValid.text)
+    .borderStyle(store.isValidInput ? .accent : .error)
     .padding(.vertical, .Number24)
   }
   
@@ -64,7 +64,7 @@ public struct SignUpView: View {
   private var completeButton: some View {
     PIDButton(title: "완료", size: .large)
       .action {
-        store.send(.dismiss)
+        store.send(.confirmTapped)
       }
       .padding(.vertical, .Number16)
   }

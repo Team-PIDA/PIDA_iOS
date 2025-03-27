@@ -13,10 +13,6 @@ extension SignUpReducer {
   public init() {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
-      case .binding(\.nickname):
-        print(state.nickname)
-        return .none
-        
       case .onAppear:
         return .run { send in
           await MainActor.run {
@@ -26,6 +22,23 @@ extension SignUpReducer {
       case let .showKeyboard(isShow):
         state.focusKeyboard = isShow
         return .none
+      case .confirmTapped:
+        return .send(.checkValidNickName(state.nickname))
+      case let .checkValidNickName(nickname):
+        if nickname.count < 2 {
+          state.inputValid = .tooShort
+          state.isValidInput = false
+        } else if nickname.count > 12 {
+          state.inputValid = .tooLong
+          state.isValidInput = false
+        } else {
+          state.inputValid = .valid
+          state.isValidInput = true
+          // TODO: - API 연결
+          return .send(.dismiss)
+        }
+        return .none
+      
       case .dismiss:
         return .run { send in
           await MainActor.run {

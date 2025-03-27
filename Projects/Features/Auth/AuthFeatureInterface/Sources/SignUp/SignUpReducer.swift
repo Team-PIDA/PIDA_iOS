@@ -21,6 +21,8 @@ public struct SignUpReducer {
   public struct State: Equatable {
     public var nickname: String = ""
     public var focusKeyboard: Bool = false
+    public var isValidInput: Bool = true
+    public var inputValid: NickNameInputValid = .none
     public init() {}
   }
   
@@ -28,6 +30,8 @@ public struct SignUpReducer {
     case binding(BindingAction<State>)
     case onAppear
     case showKeyboard(Bool)
+    case confirmTapped
+    case checkValidNickName(String)
     
     case dismiss
     case delegate(Delegate)
@@ -41,5 +45,16 @@ public struct SignUpReducer {
     BindingReducer()
     reducer
   }
+  
+  public func nicknameMessage(nickname: String) -> NickNameInputValid {
+    if nickname.count < 2 {
+      return .tooShort
+    } else if nickname.count > 12 {
+      return .tooLong
+    } else {
+      return .valid
+    }
+  }
+  
 }
 
