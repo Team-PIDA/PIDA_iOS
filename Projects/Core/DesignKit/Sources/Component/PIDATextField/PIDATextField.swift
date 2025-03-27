@@ -15,7 +15,6 @@ public struct PIDATextField: View {
   
   @FocusState private var internalFocus: Bool
   @Binding var isFocused: Bool
-  @State var focused: Bool = true
   
   var message: String? = nil
   var borderStyle: BorderStyle = .none

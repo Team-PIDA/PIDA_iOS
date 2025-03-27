@@ -17,7 +17,13 @@ public extension PIDATextField {
   
   func borderStyle(_ style: BorderStyle) -> Self {
     var textField = self
-    textField.borderStyle = style
+    if style != .none {
+      if textField.isFocused {
+        textField.borderStyle = style
+      } else {
+        textField.borderStyle = .secondary
+      }
+    }
     return textField
   }
   
