@@ -12,7 +12,7 @@ public enum ImageSet {
   case back, chevronRight, close, copy, distance,
        flower, location, myLocation, placeholder,
        replay, search, sentimentDissatisfied, warning,
-       avatar, avatarLarge, loveletter, apple, kakao
+       avatar, avatarLarge, loveletter, apple, kakao, loginLogo
   
   public var swiftUIImage: DesignKitImages {
     switch self {
@@ -34,6 +34,7 @@ public enum ImageSet {
     case .loveletter: return DesignKitAsset.Icons.loveletter
     case .apple: return DesignKitAsset.Icons.apple
     case .kakao: return DesignKitAsset.Icons.kakao
+    case .loginLogo: return DesignKitAsset.Icons.loginLogo
     }
   }
 }

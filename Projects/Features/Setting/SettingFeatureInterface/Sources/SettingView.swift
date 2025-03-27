@@ -77,13 +77,11 @@ extension SettingView {
     HStack(alignment: .center, spacing: .Number16) {
       Image(asset: ImageSet.avatarLarge.swiftUIImage)
       
-      if store.isLoggedIn, let username = store.username {
-        Text("환영해요! \(username)님")
+      if store.isLoggedIn {
+        Text("환영해요! \(store.username)님")
       } else {
         HStack(spacing: .Number0) {
           Text("로그인 하기")
-            .fontStyle(FontSet.Body.body2)
-          
           Icon(image: .chevronRight)
             .size(.extraLarge)
         }

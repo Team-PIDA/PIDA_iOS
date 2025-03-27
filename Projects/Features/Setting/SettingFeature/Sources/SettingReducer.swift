@@ -22,8 +22,9 @@ extension SettingReducer {
       case .profileTapped:
         if !state.isLoggedIn {
           return .send(.delegate(.presentToLogin))
+        } else {
+          return .send(.delegate(.presentToUpdateProfile))
         }
-        return .none
       case .feedBackTapped:
         return .run { send in
           if let url = ExternalURL.feedBack {

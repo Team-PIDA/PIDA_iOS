@@ -115,12 +115,7 @@ struct PIDAReducer {
         
         // map -> setting
       case .map(.delegate(.pushToSetting)):
-//        state.path.append(.setting)
-        state.isPresentAuth = true
-        return .none
-        
-      case .auth(.delegate(.dismiss)):
-        state.isPresentAuth = false
+        state.path.append(.setting)
         return .none
         
       case .setting(.delegate(.pop)):
@@ -136,10 +131,17 @@ struct PIDAReducer {
         state.path.removeLast()
         return .none
         
+        // setting -> login
       case .setting(.delegate(.presentToLogin)):
-        // TODO: - 로그인 페이지 연결
-        print("로그인")
+        state.isPresentAuth = true
         return .none
+        
+        // MARK: - Auth
+        
+      case .auth(.delegate(.dismiss)):
+        state.isPresentAuth = false
+        return .none
+        
         
         // MARK: - None
         

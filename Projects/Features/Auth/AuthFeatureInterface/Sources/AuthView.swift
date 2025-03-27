@@ -18,22 +18,40 @@ public struct AuthView: View {
   }
 
   public var body: some View {
-    VStack {
-      NavigationBar(
-        closeContent:  {
-        TouchArea(image: .close)
-          .size(.superLarge)
-          .action {
-            store.send(.dismiss)
-          }
+    ZStack{
+      ColorSet.Background.Primary
+        .ignoresSafeArea()
+      VStack {
+        navigationBar
+        VStack(spacing: .Number16) {
+          Spacer()
+          Image(asset: ImageSet.loginLogo.swiftUIImage)
+          Text("이메일이나 비밀번호 없이 3초안에 로그인하세요")
+            .fontStyle(FontSet.Body.body3)
+            .foregroundStyle(ColorSet.Text.Secondary)
+          Spacer()
         }
-      )
-      Spacer()
-      VStack(spacing: .Number10) {
-        appleLogin
+        VStack(spacing: .Number10) {
+          Spacer()
+            .frame(height: 48)
+          appleLogin
+        }
+        .padding(.Number16)
       }
-      .padding(.horizontal, .Number16)
     }
+  }
+  
+  @ViewBuilder
+  private var navigationBar: some View {
+    NavigationBar(
+      closeContent:  {
+      TouchArea(image: .close)
+        .size(.superLarge)
+        .action {
+          store.send(.dismiss)
+        }
+      }
+    )
   }
   
   @ViewBuilder
