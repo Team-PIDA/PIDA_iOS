@@ -23,6 +23,7 @@ public struct SignUpReducer {
     public var focusKeyboard: Bool = false
     public var isValidInput: Bool = true
     public var inputValid: NickNameInputValid = .none
+    public var email: String? = nil
     public init() {}
   }
   
@@ -33,6 +34,7 @@ public struct SignUpReducer {
     case confirmTapped
     case checkValidNickName(String)
     
+    case receiveEmail(email: String?)
     case dismiss
     case delegate(Delegate)
   }

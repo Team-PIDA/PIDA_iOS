@@ -38,6 +38,11 @@ extension SignUpReducer {
           return .send(.dismiss)
         }
         return .none
+        
+      case let .receiveEmail(email):
+        print(email)
+        state.email = email
+        return .none
       
       case .dismiss:
         return .run { send in

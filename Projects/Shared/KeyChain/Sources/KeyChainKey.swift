@@ -10,5 +10,5 @@ import Foundation
 
 /// 키체인 키 설정
 public enum KeychainKey: String {
-  case accessToken
+  case refreshToken
 }
