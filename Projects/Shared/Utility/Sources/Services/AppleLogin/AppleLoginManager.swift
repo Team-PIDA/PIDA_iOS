@@ -42,14 +42,11 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
   
   func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
     if let appleCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
-       let codeData = appleCredential.authorizationCode,
        let token = appleCredential.identityToken,
        let idToken = String(data: token, encoding: .utf8) {
       
-      let name = fullNameFormat(appleCredential.fullName)
       let email = appleCredential.email
-      
-      let userInfo = AppleLoginResult(idToken: idToken, fullName: name, email: email)
+      let userInfo = AppleLoginResult(idToken: idToken, email: email)
       
       resume(value: userInfo)
     } else {

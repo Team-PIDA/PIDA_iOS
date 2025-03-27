@@ -142,7 +142,8 @@ struct PIDAReducer {
         state.isPresentAuth = false
         return .none
         
-        
+      case .auth(.delegate(.presentToSignUp)):
+        return .none
         // MARK: - None
         
       case .binding, .map, .search, .setting, .policy, .auth:

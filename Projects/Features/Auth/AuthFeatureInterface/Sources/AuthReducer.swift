@@ -25,15 +25,17 @@ public struct AuthReducer {
 
   public enum Action: Equatable {
     case appleLoginButtonTapped
-    case appleLoginRespose(AppleLoginResult?)
+    case appleLoginResponse(AppleLoginResult?)
     case appleLoginFailure
     
     case delegate(Delegate)
     case dismiss
+    case presentToSignUp
   }
   
   public enum Delegate: Equatable {
     case dismiss
+    case presentToSignUp
   }
 
   public var body: some ReducerOf<Self> {

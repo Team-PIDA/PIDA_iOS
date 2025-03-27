@@ -9,6 +9,7 @@
 import AuthFeatureInterface
 import ComposableArchitecture
 import Utility
+import UserDefault
 
 extension AuthReducer {
   public init() {
@@ -17,17 +18,22 @@ extension AuthReducer {
       case .appleLoginButtonTapped:
         return .run { send in
           do {
-            let authCode = try await AppleLoginHelper.requestAuthorization()
-            await send(.appleLoginRespose(authCode))
+            let result = try await AppleLoginHelper.requestAuthorization()
+            await send(.appleLoginResponse(result))
           } catch {
             print("[AppleLogin Failure] ", error.localizedDescription)
             await send(.appleLoginFailure)
           }
         }
-      case let .appleLoginRespose(info):
-        state.loginInfo = info
-        print(info)
-        return .none
+      case let .appleLoginResponse(info):
+        if let email = info?.email {
+          UserDefault.email = info?.email
+        }
+        // TODO: - 서버에 로그인 요청
+        return .send(.presentToSignUp)
+        
+      case .presentToSignUp:
+        return .send(.presentToSignUp)
         
       case .dismiss:
         return .send(.delegate(.dismiss))
