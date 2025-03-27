@@ -15,10 +15,8 @@ extension SearchReducer {
     let searchReducer = Reduce<State, Action> { state, action in
       switch action {
       case .binding(\.searchWord):
-        if state.previousWord != state.searchWord {
-          state.previousWord = state.searchWord
-          return .send(.searchWordDidChange(state.searchWord))
-        } else { return .none }
+        print(state.searchWord)
+        return .none
       case .onAppear:
         return .run { send in
           await MainActor.run {
@@ -30,9 +28,6 @@ extension SearchReducer {
         
       case let .searchBarFocused(isFocused):
         state.isFocused = isFocused
-        return .none
-      case let .searchWordDidChange(word):
-        print(word)
         return .none
       case let .initialSearchBar(text): // 서치바 초기화
         state.searchWord = text

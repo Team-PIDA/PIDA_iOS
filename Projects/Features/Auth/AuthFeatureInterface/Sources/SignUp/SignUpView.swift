@@ -9,6 +9,7 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignKit
+import Utility
 
 public struct SignUpView: View {
   @Bindable var store: StoreOf<SignUpReducer>
@@ -50,7 +51,7 @@ public struct SignUpView: View {
   @ViewBuilder
   private var nicknameTextField: some View {
     PIDATextField(
-      text: $store.nickname,
+      text: $store.nickname.removeDuplicates(),
       placeholder: "닉네임",
       isFocused: $store.focusKeyboard
     )

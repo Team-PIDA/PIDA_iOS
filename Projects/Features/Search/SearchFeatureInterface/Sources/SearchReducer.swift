@@ -21,8 +21,7 @@ public struct SearchReducer {
   @ObservableState
   public struct State: Equatable {
     public var isFocused: Bool = false
-     public var searchWord: String = ""
-    public var previousWord: String = ""
+    public var searchWord: String = ""
     public init() {}
   }
 
@@ -34,7 +33,6 @@ public struct SearchReducer {
     // MARK: - Search
     
     case searchBarFocused(Bool)
-    case searchWordDidChange(String)
     case initialSearchBar(String)
     
     // MARK: - Delegate

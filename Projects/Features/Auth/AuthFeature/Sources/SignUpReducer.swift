@@ -13,6 +13,10 @@ extension SignUpReducer {
   public init() {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
+      case .binding(\.nickname):
+        print(state.nickname)
+        return .none
+        
       case .onAppear:
         return .run { send in
           await MainActor.run {
