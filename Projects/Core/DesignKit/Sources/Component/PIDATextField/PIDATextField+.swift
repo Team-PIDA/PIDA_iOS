@@ -21,6 +21,7 @@ public extension PIDATextField {
     return textField
   }
   
+  /// TextField 하단의 메세지를 넣을 수 있는 메서드
   func message(_ message: String?) -> Self {
     var textfield = self
     textfield.message = message
