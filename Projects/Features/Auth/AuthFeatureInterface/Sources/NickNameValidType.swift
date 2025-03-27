@@ -23,4 +23,8 @@ public enum NickNameInputValid: Equatable {
     }
   }
   
+  var isValid: Bool {
+    self == .valid 
+  }
+  
 }

@@ -66,6 +66,7 @@ public struct SignUpView: View {
       .action {
         store.send(.confirmTapped)
       }
+      .isActive(store.inputValid.isValid)
       .padding(.vertical, .Number16)
   }
   

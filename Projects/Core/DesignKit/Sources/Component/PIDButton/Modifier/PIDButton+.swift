@@ -54,6 +54,13 @@ public extension PIDButton {
     return button
   }
   
+  func isActive(_ isActive: Bool) -> Self {
+    var button = self
+    button.isDisabled = !isActive
+    button.backgroundColor = isActive ? ColorSet.Component.Primary : ColorSet.Component.Disabled
+    return button
+  }
+  
   func backgroundColor(_ color: Color) -> Self {
     var button = self
     button.backgroundColor = color

@@ -15,6 +15,9 @@ extension SignUpReducer {
     @Dependency(\.signUpUseCase) var signUpUseCase
     let reducer = Reduce<State, Action> { state, action in
       switch action {
+        
+      case .binding(\.nickname):
+        return .send(.checkValidNickName(state.nickname))
       case .onAppear:
         return .run { send in
           await MainActor.run {

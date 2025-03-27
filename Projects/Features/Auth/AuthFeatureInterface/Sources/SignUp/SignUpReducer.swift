@@ -22,6 +22,7 @@ public struct SignUpReducer {
     public var nickname: String = ""
     public var focusKeyboard: Bool = false
     public var isValidInput: Bool = true
+    public var buttonValid: Bool = false
     public var inputValid: NickNameInputValid = .none
     public var email: String? = nil
     public init() {}
@@ -46,16 +47,6 @@ public struct SignUpReducer {
   public var body: some ReducerOf<Self> {
     BindingReducer()
     reducer
-  }
-  
-  public func nicknameMessage(nickname: String) -> NickNameInputValid {
-    if nickname.count < 2 {
-      return .tooShort
-    } else if nickname.count > 12 {
-      return .tooLong
-    } else {
-      return .valid
-    }
   }
   
 }
