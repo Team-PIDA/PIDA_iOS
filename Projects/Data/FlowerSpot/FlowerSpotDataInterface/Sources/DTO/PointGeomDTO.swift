@@ -22,7 +22,9 @@ public struct PointGeomDTO: DTO {
     self.type = type
     self.coordinates = coordinates
   }
-  
+}
+
+extension PointGeomDTO {
   public func toEntity() throws -> MapPoint? {
     if coordinates.count < 2 { return nil }
     return MapPoint(latitude: coordinates[1], longitude: coordinates[0])

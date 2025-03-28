@@ -22,11 +22,17 @@ public struct LineStringGeomDTO: DTO {
     self.type = type
     self.coordinates = coordinates
   }
+}
+
+extension LineStringGeomDTO {
+  
   public func toEntity() throws -> [MapPoint]? {
     let points = coordinates.compactMap { coord -> MapPoint? in
       guard coord.count == 2 else { return nil }
+      
       return MapPoint(latitude: coord[1], longitude: coord[0])
     }
     return points.isEmpty ? nil : points
   }
+  
 }

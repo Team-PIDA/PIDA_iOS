@@ -24,9 +24,14 @@ public struct FlowerSpotItem: DTO {
   public var region: String?
   public var deletedAt: String?
   
+}
+
+extension FlowerSpotItem {
   public func toEntity() throws -> FlowerSpot? {
     guard let pinPoint = self.pinPoint,
-            let pinPoint = try? pinPoint.toEntity() else { return nil }
+          let pinPoint = try? pinPoint.toEntity() else {
+      return nil
+    }
     let path = try? self.geom?.toEntity()
     return .init(
       id: self.id,
