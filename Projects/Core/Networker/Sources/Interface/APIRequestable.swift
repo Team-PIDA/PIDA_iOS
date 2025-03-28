@@ -12,6 +12,12 @@ import Utility
 public typealias HTTPHeaders = [String: String]
 public typealias HTTPParameters = [String: Any]
 
+
+public enum APIHeaderType {
+  case plain
+  case authorization(String)
+}
+
 public enum HTTPRequestParameter {
   case query(_ query: Encodable?)
   case body(_ parameter: Encodable?)
@@ -29,7 +35,7 @@ public protocol APIRequestable {
   
   var baseURL: URL? { get }
   var method: HTTPMethod { get }
-  var headers: HTTPHeaders { get }
+  var headers: APIHeaderType { get }
   var path: String { get }
   var parameters: HTTPRequestParameter? { get }
   
@@ -37,11 +43,13 @@ public protocol APIRequestable {
 }
 
 public extension APIRequestable {
+  var headers: APIHeaderType { .plain }
+  
   func toURLRequest() throws -> URLRequest {
     let url = try configureURL()
     var urlRequest = URLRequest(url: url)
       .setMethod(self.method.rawValue)
-      .appendingHeaders(self.headers)
+      .appendingHeaders(configureHeaders())
     if let parameters = self.parameters {
       switch parameters {
       case let .body(body): urlRequest = try urlRequest.setBody(body)
@@ -61,5 +69,17 @@ public extension APIRequestable {
       }
     }
     return url
+  }
+  
+  fileprivate func configureHeaders() -> HTTPHeaders {
+    switch headers {
+    case .plain:
+      return ["Content-Type": "application/json"]
+    case let .authorization(token):
+      return [
+        "Content-Type": "application/json",
+        "Authorization": "Bearer \(token)"
+      ]
+    }
   }
 }

@@ -13,14 +13,14 @@ struct EmptyResponse: Codable {}
 public struct Endpoint<R>: APIRequestable where R: Decodable & Sendable {
   public typealias Response = R
   
-  public let headers: HTTPHeaders
+  public let headers: APIHeaderType
   public let method: HTTPMethod
   public let baseURL: URL?
   public let path: String
   public let parameters: HTTPRequestParameter?
   
   public init(
-    headers: HTTPHeaders = ["Content-Type": "application/json"],
+    headers: APIHeaderType = .plain,
     method: HTTPMethod,
     baseURL: String,
     path: String,
