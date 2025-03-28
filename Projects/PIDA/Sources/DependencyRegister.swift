@@ -56,6 +56,9 @@ enum DependencyRegistry {
     tokenDeleteUseCaseRegister(
       provider: { TokenDeleteUseCaseImpl() }
     )
+    logoutUseCaseRegister(
+      provider: { LogoutUseCaseImpl(repository: authRepository) }
+    )
     
     // MARK: - User
     

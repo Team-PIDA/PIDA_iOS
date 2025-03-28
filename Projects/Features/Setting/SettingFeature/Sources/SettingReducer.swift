@@ -19,6 +19,8 @@ extension SettingReducer {
     @Dependency(\.openURL) var openURL
     @Dependency(\.tokenDeleteUseCase) var tokenDeleteUseCase
     @Dependency(\.withdrawUseCase) var withdrawUseCase
+    @Dependency(\.logoutUseCase) var logoutUseCase
+    
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .onAppear:
@@ -30,6 +32,7 @@ extension SettingReducer {
           return .send(.checkUserInfo)
         }
         return .none
+        
       case .checkUserInfo:
         if let username = UserDefault.username {
           state.username = username
@@ -46,6 +49,12 @@ extension SettingReducer {
           if let url = ExternalURL.feedBack {
             await openURL(url)
           }
+        }
+        
+      case .deleteToken:
+        return .run { send in
+          await tokenDeleteUseCase.execute()
+          await send(.checkLoggedIn)
         }
         
         // MARK: - SettingList Events
@@ -71,13 +80,22 @@ extension SettingReducer {
         return .run { send in
           do {
             try await withdrawUseCase.execute()
-            await tokenDeleteUseCase.execute()
+            await send(.deleteToken)
             await send(.clearAlertState)
-            await send(.checkLoggedIn)
-          } 
+          } catch {
+            await send(.deleteToken)
+          }
         }
       case .alertAcceptTapped(.logout):
-        return .none
+        return .run { send in
+          do {
+            try await logoutUseCase.execute()
+            await send(.deleteToken)
+            await send(.clearAlertState)
+          } catch {
+            await send(.deleteToken)
+          }
+        }
         
       case .clearAlertState:
         state.isAlertShow = false

@@ -30,4 +30,13 @@ public struct AuthEndpoint: Sendable {
     )
   }
   
+  public static func logout(body: LogoutBody) -> Endpoint<LogoutDTO> {
+    return Endpoint(
+      method: .post,
+      baseURL: baseURL,
+      path: "/auth/logout",
+      parameters: .body(body)
+    )
+  }
+  
 }
