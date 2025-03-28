@@ -9,6 +9,8 @@
 import SettingFeatureInterface
 import ComposableArchitecture
 import Utility
+import UserDefault
+import AuthDomainInterface
 
 extension SettingReducer {
   public init() {
@@ -18,7 +20,17 @@ extension SettingReducer {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .onAppear:
-        // TODO: - 로그인 여부 체크 및 상태 변경 처리
+        return .send(.checkLoggedIn)
+      case .checkLoggedIn:
+        let isLoggedIn = UserDefault.isLoggedIn ?? false
+        state.isLoggedIn = isLoggedIn
+        if isLoggedIn {
+          return .send(.checkUserInfo)
+        }
+        return .none
+      case .checkUserInfo:
+        // TODO: - 회원 조회 로직
+        state.username = "TEMP"
         return .none
       case .profileTapped:
         if !state.isLoggedIn {
