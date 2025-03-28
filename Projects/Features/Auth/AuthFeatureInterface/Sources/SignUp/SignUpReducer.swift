@@ -22,9 +22,8 @@ public struct SignUpReducer {
     public var nickname: String = ""
     public var focusKeyboard: Bool = false
     public var isValidInput: Bool = true
-    public var buttonValid: Bool = false
     public var inputValid: NickNameInputValid = .none
-    public var email: String? = nil
+    public var isLoading: Bool = false
     public init() {}
   }
   
@@ -35,6 +34,8 @@ public struct SignUpReducer {
     case confirmTapped
     case checkValidNickName(String)
     case requestSignUp(nickname: String)
+    case failSignUp
+    
     
     case dismiss
     case delegate(Delegate)
@@ -42,6 +43,10 @@ public struct SignUpReducer {
   
   public enum Delegate: Equatable {
     case dismiss
+  }
+  
+  public enum ID: Hashable {
+    case throttle
   }
   
   public var body: some ReducerOf<Self> {

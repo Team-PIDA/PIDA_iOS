@@ -68,6 +68,7 @@ public struct SignUpView: View {
       }
       .isActive(store.inputValid.isValid)
       .padding(.vertical, .Number16)
+      .disabled(store.isLoading)
   }
   
 }

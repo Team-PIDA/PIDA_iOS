@@ -14,7 +14,7 @@ public enum NickNameInputValid: Equatable {
   case tooLong
   case none
 
-  var text: String? {
+  public var text: String? {
     switch self {
     case .valid: return "2~12자까지 입력할 수 있어요."
     case .tooShort: return "닉네임은 2자 이상 입력해주세요."
@@ -23,8 +23,8 @@ public enum NickNameInputValid: Equatable {
     }
   }
   
-  var isValid: Bool {
-    self == .valid 
+  public var isValid: Bool {
+    self == .valid
   }
   
 }

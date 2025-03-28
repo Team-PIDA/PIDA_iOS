@@ -17,6 +17,7 @@ public struct SignUpUseCaseImpl: SignUpUseCase {
   }
   
   public func execute(email: String, nickname: String) async throws -> Void {
-    let _ = try await repository.signUp(email: email, nickname: nickname)
+    let result = try await repository.signUp(email: email, nickname: nickname)
+    print(result.message)
   }
 }

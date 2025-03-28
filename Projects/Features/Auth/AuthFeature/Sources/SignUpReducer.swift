@@ -13,6 +13,8 @@ import UserDefault
 extension SignUpReducer {
   public init() {
     @Dependency(\.signUpUseCase) var signUpUseCase
+    @Dependency(\.mainQueue) var mainQueue
+    
     let reducer = Reduce<State, Action> { state, action in
       switch action {
         
@@ -29,24 +31,22 @@ extension SignUpReducer {
         return .none
         
       case .confirmTapped:
-        return .send(.checkValidNickName(state.nickname))
+        return .send(.requestSignUp(nickname: state.nickname))
+          .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
         
       case let .checkValidNickName(nickname):
         if nickname.count < 2 {
           state.inputValid = .tooShort
-          state.isValidInput = false
         } else if nickname.count > 12 {
           state.inputValid = .tooLong
-          state.isValidInput = false
         } else {
           state.inputValid = .valid
-          state.isValidInput = true
-          
-          return .send(.requestSignUp(nickname: nickname))
         }
+        state.isValidInput = state.inputValid.isValid
         return .none
         
       case let .requestSignUp(nickname):
+        state.isLoading = true
         return .run { send in
           do {
             if let email = UserDefault.email {
@@ -57,7 +57,10 @@ extension SignUpReducer {
             print(error.localizedDescription)
           }
         }
-      
+      case .failSignUp:
+        state.isLoading = false
+        return .none
+        
       case .dismiss:
         return .run { send in
           await MainActor.run {

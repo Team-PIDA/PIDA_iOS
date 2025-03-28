@@ -15,9 +15,14 @@ extension AuthReducer {
   public init() {
     @Dependency(\.appleLoginUseCase) var appleLoginUseCase
     @Dependency(\.tokenSaveUseCase) var tokenSaveUseCase
+    @Dependency(\.mainQueue) var mainQueue
+    
     let authReducer = Reduce<State, Action> { state, action in
       switch action {
       case .appleLoginButtonTapped:
+        return .send(.appleLoginRequest)
+          .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
+      case .appleLoginRequest:
         return .run { send in
           do {
             // 애플로그인 요청
