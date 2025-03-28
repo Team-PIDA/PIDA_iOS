@@ -10,11 +10,11 @@ import AuthFeatureInterface
 import ComposableArchitecture
 import Utility
 import UserDefault
-import KeyChain
 
 extension AuthReducer {
   public init() {
     @Dependency(\.appleLoginUseCase) var appleLoginUseCase
+    @Dependency(\.tokenSaveUseCase) var tokenSaveUseCase
     let authReducer = Reduce<State, Action> { state, action in
       switch action {
       case .appleLoginButtonTapped:
@@ -35,8 +35,7 @@ extension AuthReducer {
           do {
             let result = try await appleLoginUseCase.execute(token: info.idToken)
             // 토큰 저장
-            UserDefault.accessToken = result.accessToKen
-            let _ = KeyChainWrapper.save(result.refreshToken, forKey: .refreshToken)
+            await tokenSaveUseCase.execute(tokenInfo: result)
             
             if result.isTempToken { // 최초 회원가입
               await send(.presentToSignUp)

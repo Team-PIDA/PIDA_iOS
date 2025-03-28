@@ -28,6 +28,8 @@ enum DependencyRegistry {
     let flowerSpotRepository = FlowerSpotRepositoryImpl(networker: networker)
     let authRepository = AuthRepositoryImpl(network: networker)
     
+    // MARK: - Flower
+    
     fetchFlowerUseCaseRegister(
       provider: { FetchFlowerUseCaseImpl() }
     )
@@ -37,15 +39,20 @@ enum DependencyRegistry {
       )
     }
     
+    // MARK: - Auth
+    
     appleLoginUseCaseRegister(
       provider: {
         AppleLoginUseCaseImpl(repository: authRepository)
       }
     )
-    
     signUpUseCaseRegister(
       provider: { SignUpUseCaseImpl(repository: authRepository) }
     )
+    tokenSaveUseCaseRegister(
+      provider: { TokenSaveUseCaseImpl() }
+    )
+    
     
   }
 }

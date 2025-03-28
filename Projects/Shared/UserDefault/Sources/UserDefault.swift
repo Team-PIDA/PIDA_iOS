@@ -15,6 +15,7 @@ public enum UserDefault: UserDefaultProtocol {
   case _accessToken
   case _username
   case _email
+  case _isLoggedIn
   
   /// _accessToken 값을 쉽게 가져오고 저장할 수 있는 정적 프로퍼티.
   ///
@@ -26,6 +27,14 @@ public enum UserDefault: UserDefaultProtocol {
     set {
       if newValue == nil { Self._accessToken.delete() }
       else { Self._accessToken.save(newValue) }
+    }
+  }
+  
+  public static var isLoggedIn: Bool? {
+    get { Self._isLoggedIn.load() }
+    set {
+      if newValue == nil { Self._isLoggedIn.delete() }
+      else { Self._isLoggedIn.save(newValue) }
     }
   }
   
