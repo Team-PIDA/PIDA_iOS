@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import AuthFeatureInterface
+import KeyChain
 import UserDefault
 
 extension SignUpReducer {
@@ -49,8 +50,9 @@ extension SignUpReducer {
         state.isLoading = true
         return .run { send in
           do {
-            if let email = UserDefault.email {
+            if let email: String = KeyChainWrapper.read(forKey: .email) {
               try await signUpUseCase.execute(email: email, nickname: nickname)
+              UserDefault.isLoggedIn = true
               await send(.dismiss)
             }
           } catch {
