@@ -1,5 +1,5 @@
 //
-//  FetchUserInfoUseCaseImpl.swift
+//  WithdrawUseCaseImpl.swift
 //  UserDomain
 //
 //  Created by Jiyeon on 3/29/25.
@@ -9,14 +9,13 @@
 import Foundation
 import UserDomainInterface
 
-public struct FetchUserInfoUseCaseImpl: FetchUserInfoUseCase {
+public struct WithdrawUseCaseImpl: WithdrawUseCase {
   private let repository: UserRepository
   
   public init(repository: UserRepository) {
     self.repository = repository
   }
-  
-  public func execute() async throws -> UserInfoEntity {
-    return try await repository.fetchUserInfo()
+  public func execute() async throws {
+    return try await repository.withdraw()
   }
 }

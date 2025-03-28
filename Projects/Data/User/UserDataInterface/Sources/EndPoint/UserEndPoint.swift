@@ -21,4 +21,13 @@ public struct UserEndPoint: Sendable {
       path: "/users/me"
     )
   }
+  
+  public static func withDraw() -> Endpoint<WithdrawDTO> {
+    return Endpoint(
+      headers: .authorization(UserDefault.accessToken ?? ""),
+      method: .delete,
+      baseURL: baseURL,
+      path: "/users"
+    )
+  }
 }

@@ -60,9 +60,11 @@ enum DependencyRegistry {
     // MARK: - User
     
     fetchUserInfoUseCaseRegister(
-      provider: { FetchUserInfoUseCaseImpl(reporsitory: userRepository) }
+      provider: { FetchUserInfoUseCaseImpl(repository: userRepository) }
     )
-    
+    withdrawUseCaseRegister(
+      provider: { WithdrawUseCaseImpl(repository: userRepository)}
+    )
     
   }
 }

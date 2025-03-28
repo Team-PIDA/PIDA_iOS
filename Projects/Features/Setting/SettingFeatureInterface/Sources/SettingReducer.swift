@@ -35,7 +35,7 @@ public struct SettingReducer {
     
     case settingListTapped(SettingType)
     case alertCancelTapped
-    case alertAcceptTapped
+    case alertAcceptTapped(AlertType)
     case clearAlertState
     
     case delegate(Delegate)

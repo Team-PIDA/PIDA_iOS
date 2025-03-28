@@ -16,7 +16,7 @@ public enum FetchUserInfoUseCaseKey: DependencyKey {
 }
 
 var fetchUserInfoUseCaseProvider: () -> FetchUserInfoUseCase = {
-  fatalError("FetchAllFlowerPinUseCase Dependency not configured")
+  fatalError("FetchUserInfoUseCase Dependency not configured")
 }
 
 public func fetchUserInfoUseCaseRegister(

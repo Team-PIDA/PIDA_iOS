@@ -22,4 +22,9 @@ public struct UserRepositoryImpl: UserRepository {
     let endpoint = UserEndPoint.fetchUserInfo()
     return try await network.execute(with: endpoint, timeout: 60).toEntity()
   }
+  
+  public func withdraw() async throws {
+    let endpoint = UserEndPoint.withDraw()
+    return try await network.execute(with: endpoint, timeout: 60).toEntity()
+  }
 }

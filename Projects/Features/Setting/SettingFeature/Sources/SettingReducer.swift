@@ -7,16 +7,18 @@
 //
 
 import SettingFeatureInterface
+import AuthDomainInterface
+import UserDomainInterface
+
 import ComposableArchitecture
 import Utility
 import UserDefault
-import AuthDomainInterface
 
 extension SettingReducer {
   public init() {
     @Dependency(\.openURL) var openURL
     @Dependency(\.tokenDeleteUseCase) var tokenDeleteUseCase
-    
+    @Dependency(\.withdrawUseCase) var withdrawUseCase
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .onAppear:
@@ -65,12 +67,17 @@ extension SettingReducer {
         
       case .alertCancelTapped:
         return .send(.clearAlertState)
-      case .alertAcceptTapped:
+      case .alertAcceptTapped(.withdraw):
         return .run { send in
-          await tokenDeleteUseCase.execute()
-          await send(.clearAlertState)
-          await send(.checkLoggedIn)
+          do {
+            try await withdrawUseCase.execute()
+            await tokenDeleteUseCase.execute()
+            await send(.clearAlertState)
+            await send(.checkLoggedIn)
+          } 
         }
+      case .alertAcceptTapped(.logout):
+        return .none
         
       case .clearAlertState:
         state.isAlertShow = false
@@ -84,7 +91,7 @@ extension SettingReducer {
         
         // MARK: - None
         
-      case .delegate, .settingListTapped, .binding:
+      case .delegate, .settingListTapped, .binding, .alertAcceptTapped:
         return .none
       }
     }

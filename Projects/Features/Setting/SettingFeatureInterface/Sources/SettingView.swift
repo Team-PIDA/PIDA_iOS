@@ -131,7 +131,7 @@ extension SettingView {
       cancelTitle: type.cancel,
       acceptTitle: type.accept,
       closeAction: { store.send(.alertCancelTapped) },
-      acceptAction: { store.send(.alertAcceptTapped) }
+      acceptAction: { store.send(.alertAcceptTapped(type)) }
     )
     .isErrorType(true)
   }
