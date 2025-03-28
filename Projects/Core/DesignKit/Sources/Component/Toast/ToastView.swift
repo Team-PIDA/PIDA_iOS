@@ -51,37 +51,36 @@ public struct ToastView: View {
   
   private func showToastIfNeeded() {
     guard let message = message, !message.isEmpty else { return }
-    
-    // 초기 상태: 얇은 박스 + 텍스트는 아래쪽에 살짝만
-    height = 4
-    textOpacity = 0
-    verticalPadding = 4
-    boxOpacity = 1
-    isVisible = true
-    
-    // 박스가 위로 펼쳐짐
-    withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
-      height = 48
-    }
-    
-    // 텍스트가 위로 올라오며 보임
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+    Task {
+      // 초기 상태: 얇은 박스 + 텍스트는 아래쪽에 살짝만
+      height = 4
+      textOpacity = 0
+      verticalPadding = 4
+      boxOpacity = 1
+      isVisible = true
+      
+      // 박스가 위로 펼쳐짐
+      withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+        height = 48
+      }
+      
+      // 텍스트가 위로 올라오며 보임
+      try? await Task.sleep(for: .seconds(0.05))
       withAnimation(.easeOut(duration: 0.1)) {
         textOpacity = 1.0
         verticalPadding = .Number12
       }
-    }
-    
-    // 사라질 때: 전체 박스와 텍스트 페이드아웃
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+      
+      // 사라질 때: 전체 박스와 텍스트 페이드아웃
+      try? await Task.sleep(for: .seconds(1.6))
       withAnimation(.easeInOut(duration: 0.2)) {
         boxOpacity = 0
       }
       
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-        isVisible = false
-        self.message = nil
-      }
+      try? await Task.sleep(for: .seconds(0.2))
+      isVisible = false
+      self.message = nil
+      
     }
   }
 }

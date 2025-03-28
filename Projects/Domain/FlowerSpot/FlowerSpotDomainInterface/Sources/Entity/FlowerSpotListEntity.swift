@@ -28,7 +28,18 @@ public struct FlowerSpot: Equatable, Sendable {
   public var pinPoint: MapPoint
   public var region: String
   
-  public init(id: Int, address: String? = nil, recentlyVisitedCount: Int, bloomingStatus: FlowerStatus, streetName: String, district: String? = nil, description: String? = nil, path: [MapPoint], pinPoint: MapPoint, region: String) {
+  public init(
+    id: Int,
+    address: String? = nil,
+    recentlyVisitedCount: Int,
+    bloomingStatus: FlowerStatus,
+    streetName: String,
+    district: String? = nil,
+    description: String? = nil,
+    path: [MapPoint],
+    pinPoint: MapPoint,
+    region: String
+  ) {
     self.id = id
     self.address = address
     self.recentlyVisitedCount = recentlyVisitedCount
