@@ -41,7 +41,6 @@ extension AuthReducer {
           do {
             let result = try await appleLoginUseCase.execute(token: info.idToken)
             // 토큰 저장
-            print(result)
             await tokenSaveUseCase.execute(tokenInfo: result)
             if result.isTempToken { // 최초 회원가입
               await send(.presentToSignUp)
@@ -49,7 +48,7 @@ extension AuthReducer {
               await send(.fetchUserInfo)
             }
           } catch let error as NetworkError {
-            print(error.localizedDescription)
+            print(error.errorDescription)
           } catch {
             print(error.localizedDescription)
           }
@@ -61,9 +60,9 @@ extension AuthReducer {
             UserDefault.username = result.nickname
             await send(.dismiss)
           } catch let error as NetworkError {
-            print(error.localizedDescription)
+            print(error.errorDescription)
           } catch let error as FoundationError {
-            print(error.localizedDescription)
+            print(error.errorDescription)
           } catch {
             print(error.localizedDescription)
           }
