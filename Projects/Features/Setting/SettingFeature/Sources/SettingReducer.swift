@@ -29,8 +29,9 @@ extension SettingReducer {
         }
         return .none
       case .checkUserInfo:
-        // TODO: - 회원 조회 로직
-        state.username = "TEMP"
+        if let username = UserDefault.username {
+          state.username = username
+        }
         return .none
       case .profileTapped:
         if !state.isLoggedIn {

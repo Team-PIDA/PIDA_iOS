@@ -146,7 +146,11 @@ struct PIDAReducer {
         
       case .auth(.delegate(.dismiss)):
         state.isPresentAuth = false
-        return .none
+        return .run { send in
+          await MainActor.run {
+            send(.setting(.checkLoggedIn))
+          }
+        }
         
       case .auth(.delegate(.presentToSignUp)):
         state.isPresentSignUp = true

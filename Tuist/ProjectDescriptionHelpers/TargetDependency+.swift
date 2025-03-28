@@ -21,6 +21,7 @@ public enum Feature: String {
   case setting = "Setting"
   case flowerSpot = "FlowerSpot"
   case auth = "Auth"
+  case user = "User"
 }
 
 
@@ -143,6 +144,10 @@ extension TargetDependency {
       public static let Interface = Self.projectWithLayer(feature: .auth, layer: .domain)
       public static let Implement = Self.projectWithLayer(feature: .auth, layer: .domain, isInterface: false)
     }
+    public struct User: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .user, layer: .domain)
+      public static let Implement = Self.projectWithLayer(feature: .user, layer: .domain, isInterface: false)
+    }
   }
   
   public struct Data {
@@ -161,6 +166,10 @@ extension TargetDependency {
     public struct Auth: PIDADependency {
       public static let Interface = Self.projectWithLayer(feature: .auth, layer: .data)
       public static let Implement = Self.projectWithLayer(feature: .auth, layer: .data, isInterface: false)
+    }
+    public struct User: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .user, layer: .data)
+      public static let Implement = Self.projectWithLayer(feature: .user, layer: .data, isInterface: false)
     }
   }
   

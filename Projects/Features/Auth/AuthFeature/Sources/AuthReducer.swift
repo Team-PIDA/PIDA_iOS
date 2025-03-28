@@ -7,11 +7,14 @@
 //
 
 import AuthFeatureInterface
+import UserDomainInterface
 import ComposableArchitecture
 import Utility
+import UserDefault
 
 extension AuthReducer {
   public init() {
+    @Dependency(\.fetchUserInfoUseCase) var userInfoUseCase
     @Dependency(\.appleLoginUseCase) var appleLoginUseCase
     @Dependency(\.tokenSaveUseCase) var tokenSaveUseCase
     @Dependency(\.mainQueue) var mainQueue
@@ -42,9 +45,23 @@ extension AuthReducer {
             if result.isTempToken { // 최초 회원가입
               await send(.presentToSignUp)
             } else {
-              await send(.dismiss)
+              await send(.fetchUserInfo)
             }
           } catch let error as NetworkError {
+            print(error.localizedDescription)
+          } catch {
+            print(error.localizedDescription)
+          }
+        }
+      case .fetchUserInfo:
+        return .run { send in
+          do {
+            let result = try await userInfoUseCase.execute()
+            UserDefault.username = result.nickname
+            await send(.dismiss)
+          } catch let error as NetworkError {
+            print(error.localizedDescription)
+          } catch let error as FoundationError {
             print(error.localizedDescription)
           } catch {
             print(error.localizedDescription)

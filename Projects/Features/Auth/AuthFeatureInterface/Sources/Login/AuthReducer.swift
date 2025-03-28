@@ -28,6 +28,7 @@ public struct AuthReducer {
     case appleLoginRequest
     case appleLoginResponse(AppleLoginResult)
     case appleLoginFailure
+    case fetchUserInfo
     
     case delegate(Delegate)
     case dismiss

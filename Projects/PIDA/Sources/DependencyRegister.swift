@@ -20,11 +20,17 @@ import AuthDomain
 import AuthDataInterface
 import AuthData
 
+import UserDomainInterface
+import UserDomain
+import UserDataInterface
+import UserData
+
 enum DependencyRegistry {
   static func registerDependencies() {
     let networker = Networker()
     let flowerSpotRepository = FlowerSpotRepositoryImpl(networker: networker)
     let authRepository = AuthRepositoryImpl(network: networker)
+    let userRepository = UserRepositoryImpl(network: networker)
     
     // MARK: - Flower
     
@@ -49,6 +55,12 @@ enum DependencyRegistry {
     )
     tokenDeleteUseCaseRegister(
       provider: { TokenDeleteUseCaseImpl() }
+    )
+    
+    // MARK: - User
+    
+    fetchUserInfoUseCaseRegister(
+      provider: { FetchUserInfoUseCaseImpl(reporsitory: userRepository) }
     )
     
     
