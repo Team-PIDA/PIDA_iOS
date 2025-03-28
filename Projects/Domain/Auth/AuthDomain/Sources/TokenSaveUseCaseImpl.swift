@@ -15,7 +15,7 @@ public struct TokenSaveUseCaseImpl: TokenSaveUseCase {
   public init() {}
   
   public func execute(tokenInfo: SocialLoginEntity) async {
-    UserDefault.isLoggedIn = tokenInfo.isTempToken
+    UserDefault.isLoggedIn = !tokenInfo.isTempToken
     UserDefault.accessToken = tokenInfo.accessToKen
     KeyChainWrapper.save(tokenInfo.refreshToken, forKey: .refreshToken)
   }

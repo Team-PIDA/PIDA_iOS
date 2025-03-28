@@ -13,6 +13,7 @@ import Utility
 extension SettingReducer {
   public init() {
     @Dependency(\.openURL) var openURL
+    @Dependency(\.tokenDeleteUseCase) var tokenDeleteUseCase
     
     let reducer = Reduce<State, Action> { state, action in
       switch action {
@@ -52,7 +53,12 @@ extension SettingReducer {
       case .alertCancelTapped:
         return .send(.clearAlertState)
       case .alertAcceptTapped:
-        return .send(.clearAlertState)
+        return .run { send in
+          await tokenDeleteUseCase.execute()
+          await send(.clearAlertState)
+          await send(.checkLoggedIn)
+        }
+        
       case .clearAlertState:
         state.isAlertShow = false
         state.alertType = nil

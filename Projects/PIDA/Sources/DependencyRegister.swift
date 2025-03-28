@@ -52,6 +52,9 @@ enum DependencyRegistry {
     tokenSaveUseCaseRegister(
       provider: { TokenSaveUseCaseImpl() }
     )
+    tokenDeleteUseCaseRegister(
+      provider: { TokenDeleteUseCaseImpl() }
+    )
     
     
   }
