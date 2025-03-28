@@ -18,6 +18,9 @@ public struct SignUpDTO: DTO {
     self.message = message
   }
   
+}
+
+extension SignUpDTO {
   public func toEntity() throws -> SignUpEntity {
     return .init(message: message)
   }

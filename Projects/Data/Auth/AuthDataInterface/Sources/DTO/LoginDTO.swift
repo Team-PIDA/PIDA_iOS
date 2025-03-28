@@ -17,7 +17,15 @@ public struct LoginDTO: DTO {
   public var accessToken: String
   public var refreshToken: String
   
+  
+}
+
+extension LoginDTO {
   public func toEntity() throws -> SocialLoginEntity {
-    return .init(isTempToken: isTemporaryToken, accessToKen: accessToken, refreshToken: refreshToken)
+    return .init(
+      isTempToken: isTemporaryToken,
+      accessToKen: accessToken,
+      refreshToken: refreshToken
+    )
   }
 }
