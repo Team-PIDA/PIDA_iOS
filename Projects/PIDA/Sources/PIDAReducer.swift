@@ -159,7 +159,11 @@ struct PIDAReducer {
         
       case .signUp(.delegate(.dismiss)):
         state.isPresentSignUp = false
-        return .none
+        return .run { send in
+          await MainActor.run {
+            send(.setting(.checkLoggedIn))
+          }
+        }
         
         // MARK: - None
         

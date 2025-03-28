@@ -8,14 +8,15 @@
 
 import ComposableArchitecture
 import AuthFeatureInterface
+import UserDomainInterface
 import KeyChain
 import UserDefault
 
 extension SignUpReducer {
   public init() {
+    @Dependency(\.fetchUserInfoUseCase) var userInfoUseCase
     @Dependency(\.signUpUseCase) var signUpUseCase
     @Dependency(\.mainQueue) var mainQueue
-    
     let reducer = Reduce<State, Action> { state, action in
       switch action {
         
@@ -24,13 +25,20 @@ extension SignUpReducer {
       case .onAppear:
         return .run { send in
           await MainActor.run {
+            send(.initState)
             send(.showKeyboard(true))
           }
         }
       case let .showKeyboard(isShow):
         state.focusKeyboard = isShow
         return .none
+      case .initState:
+        state.nickname = ""
+        state.isValidInput = true
+        state.inputValid = .none
+        state.isLoading = false
         
+        return .none
       case .confirmTapped:
         return .send(.requestSignUp(nickname: state.nickname))
           .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
@@ -53,7 +61,7 @@ extension SignUpReducer {
             if let email: String = KeyChainWrapper.read(forKey: .email) {
               try await signUpUseCase.execute(email: email, nickname: nickname)
               UserDefault.isLoggedIn = true
-              await send(.dismiss)
+              await send(.fetchUserInfo)
             }
           } catch {
             print(error.localizedDescription)
@@ -62,6 +70,17 @@ extension SignUpReducer {
       case .failSignUp:
         state.isLoading = false
         return .none
+        
+      case .fetchUserInfo:
+        return .run { send in
+          do {
+            let result = try await userInfoUseCase.execute()
+            UserDefault.username = result.nickname
+            await send(.dismiss)
+          } catch {
+            print(error.localizedDescription)
+          }
+        }
         
       case .dismiss:
         return .run { send in

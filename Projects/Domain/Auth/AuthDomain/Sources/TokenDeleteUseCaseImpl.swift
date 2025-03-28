@@ -18,5 +18,6 @@ public struct TokenDeleteUseCaseImpl: TokenDeleteUseCase {
     UserDefault.isLoggedIn = false
     UserDefault.accessToken = nil
     KeyChainWrapper.delete(forKey: .refreshToken)
+    UserDefault.username = nil
   }
 }

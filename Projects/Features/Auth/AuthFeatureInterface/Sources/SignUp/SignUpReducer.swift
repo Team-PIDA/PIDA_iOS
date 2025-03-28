@@ -30,12 +30,13 @@ public struct SignUpReducer {
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
+    case initState
     case showKeyboard(Bool)
     case confirmTapped
     case checkValidNickName(String)
     case requestSignUp(nickname: String)
     case failSignUp
-    
+    case fetchUserInfo
     
     case dismiss
     case delegate(Delegate)
