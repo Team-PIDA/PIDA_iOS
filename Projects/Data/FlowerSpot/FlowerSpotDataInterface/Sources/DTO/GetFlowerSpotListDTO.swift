@@ -13,30 +13,17 @@ import FlowerSpotDomainInterface
 public struct GetFlowerSpotListDTO: DTO {
   public typealias Entity = FlowerSpotListEntity
   
-  public var list: [List]?
+  public var list: [FlowerSpotItem]?
   
 }
 
 extension GetFlowerSpotListDTO {
   public func toEntity() throws -> FlowerSpotListEntity {
-    return FlowerSpotListEntity()
+    guard let list = list else { return FlowerSpotListEntity(itemList: []) }
+    let items = list.compactMap {
+      try? $0.toEntity()
+    }
+    return FlowerSpotListEntity(itemList: items)
   }
 }
 
-public struct List: Sendable & Decodable {
-  public var id: Int
-  public var address: String?
-  
-  public var streetName: String?
-  public var district: String?
-  public var description: String?
-  public var geom: Geom?
-  public var pinPoint: Geom?
-  public var region: String?
-  public var deletedAt: String?
-}
-
-public struct Geom: Sendable & Decodable {
-  public var type: String?
-  public var coordinates: [Double]?
-}

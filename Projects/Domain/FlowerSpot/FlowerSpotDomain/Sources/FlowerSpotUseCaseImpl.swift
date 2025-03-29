@@ -24,7 +24,7 @@ public struct FetchAllFlowerPinUseCaseImpl: FetchAllFlowerPinUseCase {
     swLng: Double,
     neLat: Double,
     neLng: Double
-  ) async throws -> Void {
+  ) async throws -> [FlowerSpot] {
     let list = try await repository.getFlowerSpotList(
       region: region,
       swLat: swLat,
@@ -32,6 +32,6 @@ public struct FetchAllFlowerPinUseCaseImpl: FetchAllFlowerPinUseCase {
       neLat: neLat,
       neLng: neLng
     )
-    print("호출 목록: ", list)
+    return list.itemList
   }
 }

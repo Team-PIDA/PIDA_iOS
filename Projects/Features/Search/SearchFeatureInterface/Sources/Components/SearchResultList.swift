@@ -8,28 +8,22 @@
 
 import SwiftUI
 import DesignKit
+import FlowerSpotDomainInterface
 
 /// 검색 결과 리스트 셀
 ///
 /// `onTap`: 리스트 탭 시 리스트 값을 리턴하는 클로저
 public struct SearchResultList: View {
-  private var id: Int
-  private let roadName: String
-  private let address: String
-  private let subInfo: String
-  private var onTap: ((Int) async -> Void)?
+  
+  private var item: FlowerSpot
+  private var onTap: ((FlowerSpot) async -> Void)?
   
   public init(
-    id: Int,
-    roadName: String,
-    address: String,
-    subInfo: String,
-    onTap: ((Int) async -> Void)? = nil
+    item: FlowerSpot,
+    onTap: ((FlowerSpot) async -> Void)? = nil
   ) {
-    self.id = id
-    self.roadName = roadName
-    self.address = address
-    self.subInfo = subInfo
+    self.item = item
+    
     self.onTap = onTap
     
   }
@@ -37,15 +31,15 @@ public struct SearchResultList: View {
     VStack {
       HStack {
         VStack(alignment: .leading, spacing: .Number0) {
-          Text(roadName)
+          Text(item.streetName)
             .fontStyle(FontSet.Body.body2)
             .foregroundStyle(ColorSet.Text.Primary)
-          Text(address)
+          Text(item.address ?? "")
             .fontStyle(FontSet.Caption.caption1)
             .foregroundStyle(ColorSet.Text.Tertiary)
         }
         Spacer()
-        Text(subInfo)
+        Text("10km")
           .fontStyle(FontSet.Caption.caption1)
           .foregroundStyle(ColorSet.Text.Tertiary)
       }
@@ -57,7 +51,7 @@ public struct SearchResultList: View {
     .onTapGesture {
       if let onTap = onTap {
         Task { @MainActor in
-          await onTap(id)
+          await onTap(item)
         }
       }
     }
