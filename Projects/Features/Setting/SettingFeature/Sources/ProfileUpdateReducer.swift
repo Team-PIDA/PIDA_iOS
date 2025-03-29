@@ -13,6 +13,9 @@ import UserDefault
 
 extension ProfileUpdateReducer {
   public init() {
+    @Dependency(\.changeNicknameUseCase) var changeNicknameUseCase
+    @Dependency(\.mainQueue) var mainQueue
+    
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .binding(\.changeName):
@@ -30,10 +33,8 @@ extension ProfileUpdateReducer {
         return .none
 
       case .saveTapped:
-        return .run { send in
-          await send(.showKeyboard(false))
-          await send(.pop)
-        }
+        return .send(.changeNickName(state.changeName))
+          .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
         
       case let .checkValidNickName(nickname):
         // 이전 이름과 같을 경우
@@ -52,10 +53,26 @@ extension ProfileUpdateReducer {
         state.isValidInput = state.inputValid.isValid
         return .none
         
+      case let .changeNickName(nickname):
+        return .run { send in
+          do {
+            let result = try await changeNicknameUseCase.execute(nickname: nickname)
+            UserDefault.username = result.nickname
+            await send(.pop)
+          } catch {
+            print(error.localizedDescription)
+          }
+        }
       case .pop:
         state.nickname = ""
         state.inputValid = .none
-        return .send(.delegate(.pop))
+        return .run { send in
+          await MainActor.run {
+            send(.showKeyboard(false))
+            send(.delegate(.pop))
+          }
+        }
+        
         
       case .binding, .delegate:
         return .none

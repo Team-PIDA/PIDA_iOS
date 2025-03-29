@@ -30,4 +30,14 @@ public struct UserEndPoint: Sendable {
       path: "/users"
     )
   }
+  
+  public static func changeNickname(body: ChangeNicknameBody) -> Endpoint<UserInfoDTO> {
+    return Endpoint(
+      headers: .authorization(UserDefault.accessToken ?? ""),
+      method: .put,
+      baseURL: baseURL,
+      path: "/users/nickname",
+      parameters: .body(body)
+    )
+  }
 }

@@ -68,6 +68,8 @@ enum DependencyRegistry {
     withdrawUseCaseRegister(
       provider: { WithdrawUseCaseImpl(repository: userRepository)}
     )
-    
+    changeNicknameUseCaseRegister(
+      provider: { ChangeNicknameUseCaseImpl(repository: userRepository) }
+    )
   }
 }

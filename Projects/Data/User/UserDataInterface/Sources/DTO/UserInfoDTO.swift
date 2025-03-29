@@ -30,6 +30,6 @@ public struct UserInfoDTO: DTO {
   }
   
   public func toEntity() throws -> UserInfoEntity {
-    return .init(userId: userId, nickname: name)
+    return .init(userId: userId, nickname: nickname)
   }
 }

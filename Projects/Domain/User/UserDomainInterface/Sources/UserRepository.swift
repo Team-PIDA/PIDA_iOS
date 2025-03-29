@@ -11,4 +11,5 @@ import Foundation
 public protocol UserRepository {
   func fetchUserInfo() async throws -> UserInfoEntity
   func withdraw() async throws
+  func changeNickname(nickname: String) async throws -> UserInfoEntity
 }

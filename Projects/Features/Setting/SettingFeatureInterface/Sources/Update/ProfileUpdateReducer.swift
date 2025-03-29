@@ -34,6 +34,7 @@ public struct ProfileUpdateReducer {
     case saveTapped
     case checkValidNickName(String)
     case showKeyboard(Bool)
+    case changeNickName(String)
     
     case delegate(Delegate)
     case pop
@@ -41,6 +42,10 @@ public struct ProfileUpdateReducer {
   
   public enum Delegate {
     case pop
+  }
+  
+  public enum ID: Hashable {
+    case throttle
   }
   
   public var body: some ReducerOf<Self> {

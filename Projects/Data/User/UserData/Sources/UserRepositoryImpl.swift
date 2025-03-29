@@ -27,4 +27,9 @@ public struct UserRepositoryImpl: UserRepository {
     let endpoint = UserEndPoint.withDraw()
     return try await network.execute(with: endpoint, timeout: 60).toEntity()
   }
+  
+  public func changeNickname(nickname: String) async throws -> UserInfoEntity {
+    let endpoint = UserEndPoint.changeNickname(body: .init(nickname: nickname))
+    return try await network.execute(with: endpoint, timeout: 60).toEntity()
+  }
 }

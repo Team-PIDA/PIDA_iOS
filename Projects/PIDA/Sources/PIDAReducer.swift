@@ -157,7 +157,11 @@ struct PIDAReducer {
         
       case .update(.delegate(.pop)):
         state.path.removeLast()
-        return .none
+        return .run { send in
+          await MainActor.run {
+            send(.setting(.checkLoggedIn))
+          }
+        }
         
         // MARK: - Auth
         
