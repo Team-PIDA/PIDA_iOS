@@ -30,12 +30,13 @@ public struct SettingReducer {
     case onAppear
     case checkLoggedIn
     case checkUserInfo
-    case profileTapped
-    case feedBackTapped
+    case deleteToken
     
+    case feedBackTapped
+    case profileTapped
     case settingListTapped(SettingType)
     case alertCancelTapped
-    case alertAcceptTapped
+    case alertAcceptTapped(AlertType)
     case clearAlertState
     
     case delegate(Delegate)

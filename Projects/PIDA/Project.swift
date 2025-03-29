@@ -38,7 +38,10 @@ let project = Project.makePIDA(
 
     .Features.Auth.Implement,
     .Domain.Auth.Implement,
-    .Data.Auth.Implement
+    .Data.Auth.Implement,
+    
+    .Data.User.Implement,
+    .Domain.User.Implement,
 
   ]
 )

@@ -76,16 +76,16 @@ extension SettingView {
   private var profileView: some View {
     HStack(alignment: .center, spacing: .Number16) {
       Image(asset: ImageSet.avatarLarge.swiftUIImage)
-      
-      if store.isLoggedIn {
-        Text("환영해요! \(store.username)님")
-      } else {
-        HStack(spacing: .Number0) {
+      HStack(spacing: .Number0) {
+        if store.isLoggedIn {
+          Text("환영해요! \(store.username)님")
+        } else {
           Text("로그인 하기")
-          Icon(image: .chevronRight)
-            .size(.extraLarge)
         }
+        Icon(image: .chevronRight)
+          .size(.extraLarge)
       }
+      
       Spacer()
     }
     .fontStyle(FontSet.Body.body2)
@@ -131,7 +131,7 @@ extension SettingView {
       cancelTitle: type.cancel,
       acceptTitle: type.accept,
       closeAction: { store.send(.alertCancelTapped) },
-      acceptAction: { store.send(.alertAcceptTapped) }
+      acceptAction: { store.send(.alertAcceptTapped(type)) }
     )
     .isErrorType(true)
   }

@@ -27,4 +27,9 @@ public struct AuthRepositoryImpl: AuthRepository {
     let endpoint = AuthEndpoint.signUp(body: .init(email: email, name: nickname))
     return try await network.execute(with: endpoint, timeout: 60).toEntity()
   }
+  
+  public func logout(token: String) async throws {
+    let endpoint = AuthEndpoint.logout(body: .init(token: token))
+    return try await network.execute(with: endpoint, timeout: 60).toEntity()
+  }
 }

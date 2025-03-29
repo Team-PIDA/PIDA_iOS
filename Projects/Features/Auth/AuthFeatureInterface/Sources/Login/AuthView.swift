@@ -67,7 +67,7 @@ public struct AuthView: View {
     .action {
       store.send(.appleLoginButtonTapped)
     }
-    .backgroundColor(ColorSet.Background.Inverse)
+    .backgroundColor(ColorSet.Gray._1000)
     .foregroundStyle(ColorSet.Background.Primary)
     .frame(height: .Number48)
   }

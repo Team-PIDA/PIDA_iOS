@@ -25,6 +25,8 @@ struct PIDAView: View {
             SettingView(store: store.scope(state: \.setting, action: \.setting))
           case .policy:
             PolicyView(store: store.scope(state: \.policy, action: \.policy))
+          case .update:
+            ProfileUpdateView(store: store.scope(state: \.update, action: \.update))
           }
         }
         .fullScreenCover(isPresented: $store.isPresentSignUp, content: {

@@ -7,15 +7,19 @@
 //
 
 import SettingFeatureInterface
+import AuthDomainInterface
+import UserDomainInterface
+
 import ComposableArchitecture
 import Utility
 import UserDefault
-import AuthDomainInterface
 
 extension SettingReducer {
   public init() {
     @Dependency(\.openURL) var openURL
     @Dependency(\.tokenDeleteUseCase) var tokenDeleteUseCase
+    @Dependency(\.withdrawUseCase) var withdrawUseCase
+    @Dependency(\.logoutUseCase) var logoutUseCase
     
     let reducer = Reduce<State, Action> { state, action in
       switch action {
@@ -28,9 +32,11 @@ extension SettingReducer {
           return .send(.checkUserInfo)
         }
         return .none
+        
       case .checkUserInfo:
-        // TODO: - 회원 조회 로직
-        state.username = "TEMP"
+        if let username = UserDefault.username {
+          state.username = username
+        }
         return .none
       case .profileTapped:
         if !state.isLoggedIn {
@@ -43,6 +49,12 @@ extension SettingReducer {
           if let url = ExternalURL.feedBack {
             await openURL(url)
           }
+        }
+        
+      case .deleteToken:
+        return .run { send in
+          await tokenDeleteUseCase.execute()
+          await send(.checkLoggedIn)
         }
         
         // MARK: - SettingList Events
@@ -64,11 +76,25 @@ extension SettingReducer {
         
       case .alertCancelTapped:
         return .send(.clearAlertState)
-      case .alertAcceptTapped:
+      case .alertAcceptTapped(.withdraw):
         return .run { send in
-          await tokenDeleteUseCase.execute()
-          await send(.clearAlertState)
-          await send(.checkLoggedIn)
+          do {
+            try await withdrawUseCase.execute()
+            await send(.deleteToken)
+            await send(.clearAlertState)
+          } catch {
+            await send(.deleteToken)
+          }
+        }
+      case .alertAcceptTapped(.logout):
+        return .run { send in
+          do {
+            try await logoutUseCase.execute()
+            await send(.deleteToken)
+            await send(.clearAlertState)
+          } catch {
+            await send(.deleteToken)
+          }
         }
         
       case .clearAlertState:
@@ -83,7 +109,7 @@ extension SettingReducer {
         
         // MARK: - None
         
-      case .delegate, .settingListTapped, .binding:
+      case .delegate, .settingListTapped, .binding, .alertAcceptTapped:
         return .none
       }
     }
