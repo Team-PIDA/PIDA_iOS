@@ -36,6 +36,12 @@ public struct MapView: View {
             }
           )
         }
+        Button {
+          store.send(.detail)
+        } label: {
+          Text("BUTTON")
+        }
+
         Spacer()
         ToastView(message: $store.toastMessage)
         currentButton

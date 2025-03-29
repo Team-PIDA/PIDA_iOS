@@ -124,7 +124,8 @@ extension MapReducer {
         return .send(.delegate(.presentToSearch))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
-        
+      case .detail:
+        return .send(.delegate(.detail))
         // MARK: - None
         
       case .binding, .delegate:

@@ -21,7 +21,7 @@ public extension BloomStatus {
     case .little:
       "아직이에요"
     case .bloomed:
-      "만개에요!"
+      "만개예요!"
     case .withered:
       "저물었어요.."
     case .notBloomed:

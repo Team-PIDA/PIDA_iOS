@@ -12,6 +12,7 @@ import MapFeatureInterface
 import SearchFeatureInterface
 import SettingFeatureInterface
 import AuthFeatureInterface
+import BloomingFeatureInterface
 
 struct PIDAView: View {
   @Bindable var store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) { PIDAReducer()
@@ -29,6 +30,9 @@ struct PIDAView: View {
             ProfileUpdateView(store: store.scope(state: \.update, action: \.update))
           }
         }
+        .fullScreenCover(isPresented: $store.isPresentBlooming, content: {
+          BloomingUpdateView(store: store.scope(state: \.blooming, action: \.blooming))
+        })
         .fullScreenCover(isPresented: $store.isPresentSignUp, content: {
           SignUpView(store: store.scope(state: \.signUp, action: \.signUp))
         })

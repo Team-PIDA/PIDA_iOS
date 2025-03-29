@@ -21,6 +21,9 @@ import SettingFeatureInterface
 import AuthFeature
 import AuthFeatureInterface
 
+import BloomingFeature
+import BloomingFeatureInterface
+
 enum Path: Hashable {
   case setting
   case policy
@@ -39,12 +42,14 @@ struct PIDAReducer {
     var auth = AuthReducer.State()
     var signUp = SignUpReducer.State()
     var update = ProfileUpdateReducer.State()
+    var blooming = BloomingUpdateReducer.State()
     
     /// 네비게이션 이동 경로
     var path: [Path] = []
     var isShowSearch: Bool = false
     var isPresentAuth: Bool = false
     var isPresentSignUp: Bool = false
+    var isPresentBlooming: Bool = false
   }
   
   enum Action: BindableAction {
@@ -55,9 +60,11 @@ struct PIDAReducer {
     case auth(AuthReducer.Action)
     case signUp(SignUpReducer.Action)
     case update(ProfileUpdateReducer.Action)
+    case blooming(BloomingUpdateReducer.Action)
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
+    case presentBlooming(Bool)
   }
   
   var body: some ReducerOf<Self> {
@@ -82,6 +89,9 @@ struct PIDAReducer {
     }
     Scope(state: \.update, action: \.update) {
       ProfileUpdateReducer()
+    }
+    Scope(state: \.blooming, action: \.blooming) {
+      BloomingUpdateReducer()
     }
     
     Reduce { state, action in
@@ -128,6 +138,16 @@ struct PIDAReducer {
         // map -> setting
       case .map(.delegate(.pushToSetting)):
         state.path.append(.setting)
+        return .none
+      case .map (.delegate(.detail)):
+        return .run { send in
+          await MainActor.run {
+            send(.presentBlooming(true))
+          }
+        }
+        
+      case let .presentBlooming(present):
+        state.isPresentBlooming = present
         return .none
         
         // MARK: - Setting
@@ -188,7 +208,7 @@ struct PIDAReducer {
         
         // MARK: - None
         
-      case .binding, .map, .search, .setting, .policy, .auth, .signUp, .update:
+      case .binding, .map, .search, .setting, .policy, .auth, .signUp, .update, .blooming:
         return .none
       }
     }

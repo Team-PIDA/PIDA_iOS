@@ -11,9 +11,11 @@ import Utility
 import DesignKit
 
 struct StateRadioButton: View {
-  @State private var selectedStatus: BloomStatus? = nil
+  @Binding private var selectedStatus: BloomStatus?
   
-  init() {}
+  init(status: Binding<BloomStatus?>) {
+    self._selectedStatus = status
+  }
   
   var body: some View {
     HStack(spacing: .Number12) {
@@ -56,12 +58,9 @@ extension BloomStatus {
       Image(asset: ImageSet.manyLargePin.swiftUIImage)
     case .withered:
       Image(asset: ImageSet.goneLargePin.swiftUIImage)
-    default: nil
+    default:
+      nil
     }
   }
 }
 
-
-#Preview {
-  StateRadioButton()
-}

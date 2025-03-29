@@ -68,12 +68,14 @@ public struct MapReducer {
     case delegate(Delegate)
     case presentToSearch
     case pushToSetting
+    case detail
   }
   
   public enum Delegate: Equatable {
     case presentToSearch
     case pushToSetting
     case resetSearchView
+    case detail
   }
   
   public var body: some ReducerOf<Self> {
