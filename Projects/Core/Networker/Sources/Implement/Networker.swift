@@ -12,11 +12,13 @@ import Utility
 public struct Networker: NetworkProtocol, Sendable {
   
   private let session: URLSession
-  
+  fileprivate let tokenRefresher: TokenRefresher?
   public init(
-    session: URLSession = .shared
+    session: URLSession = .shared,
+    tokenRefresher: TokenRefresher? = nil
   ) {
     self.session = session
+    self.tokenRefresher = tokenRefresher
   }
   
   public func execute<E: APIRequestable>(
@@ -27,7 +29,7 @@ public struct Networker: NetworkProtocol, Sendable {
       group.addTask { // 실제 네트워크 통신 Task
         let request = try endpoint.toURLRequest()
         let (data, response) = try await self.session.data(for: request)
-        return try self.handleResponse(data: data, response: response, endpoint: endpoint)
+        return try await self.handleResponse(data: data, response: response, endpoint: endpoint)
       }
       
       group.addTask { // 타임아웃 체크 전용 Task
@@ -70,7 +72,7 @@ public struct Networker: NetworkProtocol, Sendable {
           try Task.checkCancellation() // 요청 직전 취소 확인
           let (data, response) = try await self.session.data(for: request)
           try Task.checkCancellation() // 응답 후 취소 확인
-          return try self.handleResponse(data: data, response: response, endpoint: endpoint)
+          return try await self.handleResponse(data: data, response: response, endpoint: endpoint)
         }
         
         group.addTask { // 타임아웃 태스크
@@ -101,11 +103,13 @@ public struct Networker: NetworkProtocol, Sendable {
 }
 
 extension Networker {
+  
   fileprivate func handleResponse<R: Decodable & Sendable>(
     data: Data,
     response: URLResponse,
-    endpoint: any APIRequestable
-  ) throws -> R {
+    endpoint: any APIRequestable,
+    retry: Int = 1
+  ) async throws -> R {
     
     guard let httpResponse = response as? HTTPURLResponse else {
       throw throwError(
@@ -115,6 +119,10 @@ extension Networker {
         ),
         endpoint: endpoint
       )
+    }
+    
+    if httpResponse.statusCode == 401 && retry > 0 {
+      return try await refreshTokenAndRetry(for: endpoint, retry: retry)
     }
     
     guard (200..<300).contains(httpResponse.statusCode) else {
@@ -150,6 +158,32 @@ extension Networker {
       )
     }
   }
+  
+  private func refreshTokenAndRetry<R: Decodable & Sendable>(
+    for endpoint: any APIRequestable,
+    retry: Int
+  ) async throws -> R {
+    guard let refresher = tokenRefresher else {
+      throw throwError(TokenError.expiredToken, endpoint: endpoint)
+    }
+    do {
+      guard let newToken = try await refresher.refreshToken() else {
+        throw throwError(TokenError.expiredToken, endpoint: endpoint)
+      }
+      var newRequest = try endpoint.toURLRequest()
+      newRequest.setValue("Bearer \(newToken)", forHTTPHeaderField: "Authorization")
+      let (newData, newResponse) = try await self.session.data(for: newRequest)
+      return try await self.handleResponse(
+        data: newData,
+        response: newResponse,
+        endpoint: endpoint,
+        retry: retry - 1
+      )
+    } catch {
+      throw throwError(TokenError.expiredToken, endpoint: endpoint)
+    }
+  }
+  
 }
 
 extension Networker {
