@@ -23,15 +23,20 @@ public struct ProfileUpdateReducer {
     public var nickname: String = ""
     public var changeName: String = ""
     public var focusKeyboard: Bool = false
+    public var isLoading: Bool = false
     public var inputValid: NickNameInputValid = .none
     public var isValidInput: Bool = false
+    public var toastMessage: String? = nil
     public init(){}
   }
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
+    case showToastView(message: String?)
+    
     case saveTapped
+    case isLoading(Bool)
     case checkValidNickName(String)
     case showKeyboard(Bool)
     case changeNickName(String)

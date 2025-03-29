@@ -31,6 +31,13 @@ extension ProfileUpdateReducer {
       case let .showKeyboard(isShow):
         state.focusKeyboard = isShow
         return .none
+      case let .showToastView(message):
+        state.toastMessage = message
+        return .none
+        
+      case let .isLoading(isLoading):
+        state.isLoading = isLoading
+        return .none
 
       case .saveTapped:
         return .send(.changeNickName(state.changeName))
@@ -55,12 +62,14 @@ extension ProfileUpdateReducer {
         
       case let .changeNickName(nickname):
         return .run { send in
+          await send(.isLoading(true))
           do {
             let result = try await changeNicknameUseCase.execute(nickname: nickname)
             UserDefault.username = result.nickname
             await send(.pop)
           } catch {
-            print(error.localizedDescription)
+            await send(.isLoading(false))
+            await send(.showToastView(message: "닉네임 변경에 실패했어요."))
           }
         }
       case .pop:
@@ -68,6 +77,7 @@ extension ProfileUpdateReducer {
         state.inputValid = .none
         return .run { send in
           await MainActor.run {
+            send(.isLoading(false))
             send(.showKeyboard(false))
             send(.delegate(.pop))
           }

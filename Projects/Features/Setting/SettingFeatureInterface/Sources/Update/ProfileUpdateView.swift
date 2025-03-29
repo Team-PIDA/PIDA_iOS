@@ -24,6 +24,7 @@ public struct ProfileUpdateView: View {
         navigationBar
         nicknameTextField
         Spacer()
+        ToastView(message: $store.toastMessage)
         saveButton
       }
     }
@@ -68,6 +69,7 @@ public struct ProfileUpdateView: View {
         store.send(.saveTapped)
       }
       .isActive(store.inputValid.isValid)
+      .disabled(store.isLoading)
       .padding(.Number16)
   }
   
