@@ -21,7 +21,8 @@ public struct ProfileUpdateReducer {
   @ObservableState
   public struct State: Equatable {
     public var nickname: String = ""
-    public var isFocusKeyboard: Bool = false
+    public var changeName: String = ""
+    public var focusKeyboard: Bool = false
     public var inputValid: NickNameInputValid = .none
     public var isValidInput: Bool = false
     public init(){}
@@ -32,6 +33,7 @@ public struct ProfileUpdateReducer {
     case onAppear
     case saveTapped
     case checkValidNickName(String)
+    case showKeyboard(Bool)
     
     case delegate(Delegate)
     case pop

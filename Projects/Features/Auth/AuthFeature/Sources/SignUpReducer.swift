@@ -33,6 +33,7 @@ extension SignUpReducer {
       case let .showKeyboard(isShow):
         state.focusKeyboard = isShow
         return .none
+        
       case .initState:
         state.nickname = ""
         state.isValidInput = true

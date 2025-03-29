@@ -22,19 +22,10 @@ public struct ProfileUpdateView: View {
         .ignoresSafeArea()
       VStack {
         navigationBar
-        PIDATextField(
-          text: $store.nickname,
-          placeholder: "닉네임",
-          isFocused: $store.isFocusKeyboard
-        )
-        .message(store.inputValid.text)
-        .borderStyle(store.isValidInput ? .accent : .error)
-        .padding(.horizontal, .Number16)
+        nicknameTextField
         Spacer()
-        
         saveButton
       }
-      
     }
     .navigationBarBackButtonHidden(true)
     .onAppear {
@@ -58,6 +49,17 @@ public struct ProfileUpdateView: View {
     )
   }
   
+  @ViewBuilder
+  private var nicknameTextField: some View {
+    PIDATextField(
+      text: $store.changeName,
+      placeholder: "닉네임",
+      isFocused: $store.focusKeyboard
+    )
+    .message(store.inputValid.text)
+    .borderStyle(!store.isValidInput ? .error: .accent)
+    .padding(.horizontal, .Number16)
+  }
   
   @ViewBuilder
   private var saveButton: some View {
@@ -65,6 +67,7 @@ public struct ProfileUpdateView: View {
       .action {
         store.send(.saveTapped)
       }
+      .isActive(store.inputValid.isValid)
       .padding(.Number16)
   }
   
