@@ -1,17 +1,17 @@
 //
-//  SignUpReducer.swift
-//  AuthFeatureInterface
+//  ProfileUpdateReducer.swift
+//  SettingDemo
 //
-//  Created by Jiyeon on 3/27/25.
+//  Created by Jiyeon on 3/29/25.
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
+import Foundation
 import ComposableArchitecture
-import AuthDomainInterface
 import Utility
 
 @Reducer
-public struct SignUpReducer {
+public struct ProfileUpdateReducer {
   private let reducer: Reduce<State, Action>
   
   public init(reducer: Reduce<State, Action>) {
@@ -21,34 +21,24 @@ public struct SignUpReducer {
   @ObservableState
   public struct State: Equatable {
     public var nickname: String = ""
-    public var focusKeyboard: Bool = false
-    public var isValidInput: Bool = true
+    public var isFocusKeyboard: Bool = false
     public var inputValid: NickNameInputValid = .none
-    public var isLoading: Bool = false
-    public init() {}
+    public var isValidInput: Bool = false
+    public init(){}
   }
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
-    case initState
-    case showKeyboard(Bool)
-    case confirmTapped
+    case saveTapped
     case checkValidNickName(String)
-    case requestSignUp(nickname: String)
-    case failSignUp
-    case fetchUserInfo
     
-    case dismiss
     case delegate(Delegate)
+    case pop
   }
   
-  public enum Delegate: Equatable {
-    case dismiss
-  }
-  
-  public enum ID: Hashable {
-    case throttle
+  public enum Delegate {
+    case pop
   }
   
   public var body: some ReducerOf<Self> {
@@ -57,4 +47,3 @@ public struct SignUpReducer {
   }
   
 }
-

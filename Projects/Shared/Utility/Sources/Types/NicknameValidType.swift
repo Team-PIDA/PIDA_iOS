@@ -1,13 +1,12 @@
 //
-//  NickNameValidType.swift
-//  AuthFeatureInterface
+//  NicknameValidType.swift
+//  Utility
 //
-//  Created by Jiyeon on 3/27/25.
+//  Created by Jiyeon on 3/29/25.
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
 import Foundation
-
 public enum NickNameInputValid: Equatable {
   case valid
   case tooShort

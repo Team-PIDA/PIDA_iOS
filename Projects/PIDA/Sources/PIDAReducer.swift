@@ -24,6 +24,7 @@ import AuthFeatureInterface
 enum Path: Hashable {
   case setting
   case policy
+  case update
 }
 
 @Reducer
@@ -37,6 +38,7 @@ struct PIDAReducer {
     var policy = PolicyReducer.State()
     var auth = AuthReducer.State()
     var signUp = SignUpReducer.State()
+    var update = ProfileUpdateReducer.State()
     
     /// 네비게이션 이동 경로
     var path: [Path] = []
@@ -52,6 +54,7 @@ struct PIDAReducer {
     case policy(PolicyReducer.Action)
     case auth(AuthReducer.Action)
     case signUp(SignUpReducer.Action)
+    case update(ProfileUpdateReducer.Action)
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
@@ -76,6 +79,9 @@ struct PIDAReducer {
     }
     Scope(state: \.signUp, action: \.signUp) {
       SignUpReducer()
+    }
+    Scope(state: \.update, action: \.update) {
+      ProfileUpdateReducer()
     }
     
     Reduce { state, action in
@@ -117,13 +123,15 @@ struct PIDAReducer {
           }
         }
         
-        // MARK: - Map <-> Setting
+        // MARK: - Map
         
         // map -> setting
       case .map(.delegate(.pushToSetting)):
         state.path.append(.setting)
         return .none
         
+        // MARK: - Setting
+      
       case .setting(.delegate(.pop)):
         state.path.removeLast()
         return .none
@@ -133,13 +141,22 @@ struct PIDAReducer {
         state.path.append(.policy)
         return .none
         
+        // setting -> login
+        
+      case .setting(.delegate(.presentToLogin)):
+        state.isPresentAuth = true
+        return .none
+        
+      case .setting(.delegate(.presentToUpdateProfile)):
+        state.path.append(.update)
+        return .none
+        
       case .policy(.delegate(.pop)):
         state.path.removeLast()
         return .none
         
-        // setting -> login
-      case .setting(.delegate(.presentToLogin)):
-        state.isPresentAuth = true
+      case .update(.delegate(.pop)):
+        state.path.removeLast()
         return .none
         
         // MARK: - Auth
@@ -167,7 +184,7 @@ struct PIDAReducer {
         
         // MARK: - None
         
-      case .binding, .map, .search, .setting, .policy, .auth, .signUp:
+      case .binding, .map, .search, .setting, .policy, .auth, .signUp, .update:
         return .none
       }
     }
