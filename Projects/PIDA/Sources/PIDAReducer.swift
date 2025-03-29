@@ -64,7 +64,6 @@ struct PIDAReducer {
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
-    case presentBlooming(Bool)
   }
   
   var body: some ReducerOf<Self> {
@@ -133,35 +132,32 @@ struct PIDAReducer {
           }
         }
         
-        // MARK: - Map
+      case let .map(.delegate(.presentToDetail(id))):
+        // TODO: - 상세화면으로 변경, 상태 기록 화면은 상세화면이랑 연결
+        state.isPresentBlooming = true
+        return .send(.blooming(.configSpotData(id: id, streetName: "석촌호수로")))
+        
+      case .blooming(.delegate(.dismiss)):
+        state.isPresentBlooming = false
+        return .none
+        
+        // MARK: - Map <-> Setting
         
         // map -> setting
       case .map(.delegate(.pushToSetting)):
         state.path.append(.setting)
         return .none
-      case .map (.delegate(.detail)):
-        return .run { send in
-          await MainActor.run {
-            send(.presentBlooming(true))
-          }
-        }
         
-      case let .presentBlooming(present):
-        state.isPresentBlooming = present
-        return .none
+        case .setting(.delegate(.pop)):
+          state.path.removeLast()
+          return .none
         
         // MARK: - Setting
-      
-      case .setting(.delegate(.pop)):
-        state.path.removeLast()
-        return .none
         
       case let .setting(.delegate(.pushToPolicy(type))):
         state.policy.type = type
         state.path.append(.policy)
         return .none
-        
-        // setting -> login
         
       case .setting(.delegate(.presentToLogin)):
         state.isPresentAuth = true

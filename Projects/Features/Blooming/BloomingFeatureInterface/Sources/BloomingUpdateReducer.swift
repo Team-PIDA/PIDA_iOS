@@ -21,16 +21,16 @@ public struct BloomingUpdateReducer {
     public var streetName: String = ""
     public var spotId: Int? = nil
     public var isButtonEnable: Bool = false
-    public var buttonTittle: String = "개화상태를 선택해주세요"
+    public var buttonTittle: String = "개화 상태를 선택해주세요"
     public var selectedStatus: BloomStatus? = nil
     public init() {}
   }
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
+    case configSpotData(id: Int, streetName: String)
     case changeStatus
-    
-    
+    case initialState
     case delegate(Delegate)
     case dismiss
   }

@@ -46,7 +46,7 @@ public struct BloomingUpdateView: View {
       TouchArea(image: .close)
         .size(.superLarge)
         .action {
-          
+          store.send(.dismiss)
         }
       }
     )

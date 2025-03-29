@@ -17,6 +17,12 @@ extension BloomingUpdateReducer {
       switch action {
       case .binding(\.selectedStatus):
         return .send(.changeStatus)
+        
+      case let .configSpotData(id, streetName):
+        state.spotId = id
+        state.streetName = streetName
+        return .none
+        
       case .changeStatus:
         if let _ = state.selectedStatus,
             !state.isButtonEnable {
@@ -25,8 +31,17 @@ extension BloomingUpdateReducer {
         }
         return .none
         
+      case .initialState:
+        state.buttonTittle = "개화 상태를 선택해주세요"
+        state.selectedStatus = nil
+        state.isButtonEnable = false
+        return .none
+        
       case .dismiss:
-        return .send(.dismiss)
+        return .run { send in
+          await send(.delegate(.dismiss))
+          await send(.initialState)
+        }
       case .binding, .delegate:
         return .none
       }

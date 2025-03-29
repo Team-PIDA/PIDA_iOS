@@ -52,7 +52,8 @@ public struct MapReducer {
     case moveLocation(MapPoint)
     case fetchFlowers([MapPoint])
     case storeFlowerData([FlowerSpot])
-    case fetchPathLines(id: Int?)
+    case markerTapped(id: Int?)
+    case fetchPathLines(Int)
     case requestMapBounds(Bool)
     case mapSearchError(String?)
     case selectedItem(FlowerSpot)
@@ -68,14 +69,14 @@ public struct MapReducer {
     case delegate(Delegate)
     case presentToSearch
     case pushToSetting
-    case detail
+    case presentToDetail(id: Int)
   }
   
   public enum Delegate: Equatable {
     case presentToSearch
     case pushToSetting
     case resetSearchView
-    case detail
+    case presentToDetail(id: Int)
   }
   
   public var body: some ReducerOf<Self> {
