@@ -29,6 +29,7 @@ public extension PIDButton {
   ) -> Self {
     var button = self
     button.isDisabled = isDisabled
+    button.backgroundColor = ColorSet.Component.Disabled
     return button
   }
   
@@ -40,6 +41,7 @@ public extension PIDButton {
   ) -> Self {
     var button = self
     button.isError = isError
+    button.backgroundColor = ColorSet.Component.Error
     return button
   }
   
@@ -48,6 +50,20 @@ public extension PIDButton {
   ) -> Self {
     var button = self
     button.isSecondary = isSecondary
+    button.backgroundColor = ColorSet.Background.Primary
+    return button
+  }
+  
+  func isActive(_ isActive: Bool) -> Self {
+    var button = self
+    button.isDisabled = !isActive
+    button.backgroundColor = isActive ? ColorSet.Component.Primary : ColorSet.Component.Disabled
+    return button
+  }
+  
+  func backgroundColor(_ color: Color) -> Self {
+    var button = self
+    button.backgroundColor = color
     return button
   }
 }

@@ -55,7 +55,7 @@ extension SearchView {
   /// SearchBar
   private func searchView() -> some View {
     SearchBar(
-      text: $store.searchWord,
+      text: $store.searchWord.removeDuplicates(),
       placeholder: "방문할 장소를 입력하세요",
       mode: .search,
       isFocused: $store.isFocused,

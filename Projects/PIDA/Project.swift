@@ -35,5 +35,10 @@ let project = Project.makePIDA(
     
     .Data.FlowerSpot.Implement,
     .Domain.FlowerSpot.Implement,
+
+    .Features.Auth.Implement,
+    .Domain.Auth.Implement,
+    .Data.Auth.Implement
+
   ]
 )

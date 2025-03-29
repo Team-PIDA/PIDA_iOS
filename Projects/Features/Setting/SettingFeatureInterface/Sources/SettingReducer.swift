@@ -18,8 +18,8 @@ public struct SettingReducer {
   
   @ObservableState
   public struct State: Equatable {
-    public var isLoggedIn: Bool = true
-    public var username: String? = nil
+    public var isLoggedIn: Bool = false
+    public var username: String = ""
     public var isAlertShow: Bool = false
     public var alertType: AlertType? = nil
     public init() {}
@@ -28,6 +28,8 @@ public struct SettingReducer {
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
+    case checkLoggedIn
+    case checkUserInfo
     case profileTapped
     case feedBackTapped
     
@@ -45,6 +47,7 @@ public struct SettingReducer {
     case pop
     case pushToPolicy(PolicyType)
     case presentToLogin
+    case presentToUpdateProfile
   }
   
 

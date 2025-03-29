@@ -18,6 +18,7 @@ public struct KeyChainWrapper {
   /// ```swift
   /// KeychainWrapper.save("abcd1234", key: .accessToken)
   /// ```
+  @discardableResult
   public static func save<T: Codable>(_ value: T, forKey key: KeychainKey) -> Bool {
     do {
       let data = try JSONEncoder().encode(value)
@@ -95,6 +96,7 @@ public struct KeyChainWrapper {
   /// ```swift
   /// KeychainWrapper.update("def", key: .accessToken)
   /// ```
+  @discardableResult
   public static func update<T: Codable>(_ value: T, forKey key: KeychainKey) -> Bool {
     do {
       let data = try JSONEncoder().encode(value)
@@ -136,6 +138,7 @@ public struct KeyChainWrapper {
   /// ```swift
   /// KeychainWrapper.delete(key: .accessToken)
   /// ```
+  @discardableResult
   public static func delete(forKey key: KeychainKey) -> Bool {
     let query: [CFString: Any] = [
       kSecClass: kSecClassGenericPassword,

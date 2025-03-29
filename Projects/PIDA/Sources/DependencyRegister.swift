@@ -15,16 +15,42 @@ import FlowerSpotDataInterface
 import FlowerSpotData
 
 
+import AuthDomainInterface
+import AuthDomain
+import AuthDataInterface
+import AuthData
+
 enum DependencyRegistry {
   static func registerDependencies() {
     let networker = Networker()
     let flowerSpotRepository = FlowerSpotRepositoryImpl(networker: networker)
+    let authRepository = AuthRepositoryImpl(network: networker)
+    
+    // MARK: - Flower
     
     fetchAllFlowerPinUseCaseRegister {
       FetchAllFlowerPinUseCaseImpl(
         repository: flowerSpotRepository
       )
     }
-    // 다른 의존성도 여기서 등록
+    
+    // MARK: - Auth
+    
+    appleLoginUseCaseRegister(
+      provider: {
+        AppleLoginUseCaseImpl(repository: authRepository)
+      }
+    )
+    signUpUseCaseRegister(
+      provider: { SignUpUseCaseImpl(repository: authRepository) }
+    )
+    tokenSaveUseCaseRegister(
+      provider: { TokenSaveUseCaseImpl() }
+    )
+    tokenDeleteUseCaseRegister(
+      provider: { TokenDeleteUseCaseImpl() }
+    )
+    
+    
   }
 }

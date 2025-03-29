@@ -9,13 +9,17 @@
 import SwiftUI
 
 public struct PIDATextField: View {
+  
   @Binding private var text: String
   private let placeholder: String
-  public var onSubmit: (() -> Void)?
-  @FocusState private var internalFocus: Bool
   
+  @FocusState private var internalFocus: Bool
   @Binding var isFocused: Bool
-  @State var focused: Bool = true
+  
+  var message: String? = nil
+  var borderStyle: BorderStyle = .none
+  var onSubmit: (() -> Void)?
+  
   public init(
     text: Binding<String>,
     placeholder: String,
@@ -27,29 +31,67 @@ public struct PIDATextField: View {
   }
   
   public var body: some View {
-    ZStack(alignment: .leading) {
-      if text.isEmpty {
-        Text(placeholder)
-          .foregroundColor(ColorSet.Text.Tertiary)
-          .fontStyle(FontSet.Body.body2)
+    VStack(alignment: .leading, spacing: .Number6) {
+      ZStack(alignment: .leading) {
+        placeholderView
+        textField
+      }
+      .padding(borderStyle != .none ? .Number12 : 0)
+      .overlay {
+        if borderStyle != .none {
+          RoundedRectangle(cornerRadius: .Number10)
+            .stroke(borderStyle.color, lineWidth: .Number1)
+        }
+      }
+      if let message = message {
+        Text(message)
+          .fontStyle(FontSet.Body.body3)
+          .foregroundStyle(borderStyle == .error ? borderStyle.color : ColorSet.Text.Secondary)
       }
       
-      TextField("", text: $text)
-        .focused($internalFocus)
-        .foregroundColor(ColorSet.Text.Primary)
-        .fontStyle(FontSet.Body.body2)
-        .tint(ColorSet.Component.Primary)
-        .onSubmit {
-          onSubmit?()
-        }
-        .onChange(of: isFocused) { _, newValue in
-          internalFocus = newValue
-        }
-        .onChange(of: internalFocus) { _, newValue in
-          if isFocused != newValue {
-            isFocused = newValue
-          }
-        }
     }
   }
+  
+  @ViewBuilder
+  private var placeholderView: some View {
+    if text.isEmpty {
+      Text(placeholder)
+        .foregroundColor(ColorSet.Text.Tertiary)
+        .fontStyle(FontSet.Body.body2)
+    }
+  }
+  
+  @ViewBuilder
+  private var textField: some View {
+    
+    TextField("", text: $text)
+      .focused($internalFocus)
+      .foregroundColor(ColorSet.Text.Primary)
+      .fontStyle(FontSet.Body.body2)
+      .tint(ColorSet.Component.Primary)
+      .onSubmit {
+        onSubmit?()
+      }
+      .onChange(of: isFocused) { _, newValue in
+        internalFocus = newValue
+      }
+      .onChange(of: internalFocus) { _, newValue in
+        if isFocused != newValue {
+          isFocused = newValue
+        }
+      }
+  }
+}
+
+
+#Preview {
+  PIDATextField(text: .constant("하하"), placeholder: "placeholder", isFocused: .constant(false))
+    .borderStyle(.accent)
+    .message("12글자 이내로 작성해주세요")
+    .padding(.horizontal, .Number16)
+  
+  PIDATextField(text: .constant(""), placeholder: "placeholder", isFocused: .constant(false))
+    .borderStyle(.error)
+    .message("2글자 이상 작성해주세요")
+    .padding(.horizontal, .Number16)
 }

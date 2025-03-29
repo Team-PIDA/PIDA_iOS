@@ -34,7 +34,6 @@ public struct SearchReducer {
     // MARK: - Search
     
     case searchBarFocused(Bool)
-    case searchWordDidChange(String)
     case initialSearchBar(String)
     
     // MARK: - Delegate

@@ -11,6 +11,7 @@ import ComposableArchitecture
 import MapFeatureInterface
 import SearchFeatureInterface
 import SettingFeatureInterface
+import AuthFeatureInterface
 
 struct PIDAView: View {
   @Bindable var store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) { PIDAReducer()
@@ -26,6 +27,12 @@ struct PIDAView: View {
             PolicyView(store: store.scope(state: \.policy, action: \.policy))
           }
         }
+        .fullScreenCover(isPresented: $store.isPresentSignUp, content: {
+          SignUpView(store: store.scope(state: \.signUp, action: \.signUp))
+        })
+        .fullScreenCover(isPresented: $store.isPresentAuth, content: {
+          AuthView(store: store.scope(state: \.auth, action: \.auth))
+        })
         .fullScreenCover(isPresented: $store.isShowSearch) {
           SearchView(store: store.scope(state: \.search, action: \.search))
         }

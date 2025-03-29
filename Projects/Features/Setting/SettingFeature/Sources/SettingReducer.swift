@@ -9,21 +9,35 @@
 import SettingFeatureInterface
 import ComposableArchitecture
 import Utility
+import UserDefault
+import AuthDomainInterface
 
 extension SettingReducer {
   public init() {
     @Dependency(\.openURL) var openURL
+    @Dependency(\.tokenDeleteUseCase) var tokenDeleteUseCase
     
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .onAppear:
-        // TODO: - 로그인 여부 체크 및 상태 변경 처리
+        return .send(.checkLoggedIn)
+      case .checkLoggedIn:
+        let isLoggedIn = UserDefault.isLoggedIn ?? false
+        state.isLoggedIn = isLoggedIn
+        if isLoggedIn {
+          return .send(.checkUserInfo)
+        }
+        return .none
+      case .checkUserInfo:
+        // TODO: - 회원 조회 로직
+        state.username = "TEMP"
         return .none
       case .profileTapped:
         if !state.isLoggedIn {
           return .send(.delegate(.presentToLogin))
+        } else {
+          return .send(.delegate(.presentToUpdateProfile))
         }
-        return .none
       case .feedBackTapped:
         return .run { send in
           if let url = ExternalURL.feedBack {
@@ -51,7 +65,12 @@ extension SettingReducer {
       case .alertCancelTapped:
         return .send(.clearAlertState)
       case .alertAcceptTapped:
-        return .send(.clearAlertState)
+        return .run { send in
+          await tokenDeleteUseCase.execute()
+          await send(.clearAlertState)
+          await send(.checkLoggedIn)
+        }
+        
       case .clearAlertState:
         state.isAlertShow = false
         state.alertType = nil
