@@ -10,6 +10,7 @@ import SwiftUI
 import DesignKit
 
 import ComposableArchitecture
+import FlowerSpotDomainInterface
 
 public struct SearchView: View {
   @Bindable var store: StoreOf<SearchReducer>
@@ -39,14 +40,11 @@ extension SearchView {
   private func searchList() -> some View {
     ScrollView {
       LazyVStack {
-        ForEach(0..<10) { index in
+        ForEach(store.searchList, id: \.id) { data in
           SearchResultList(
-            id: index,
-            roadName: "석촌호수길",
-            address: "서울 송파구 잠실동",
-            subInfo: "10km",
-            onTap: { _ in
-              store.send(.selectResult("석촌호수길"))
+            item: data,
+            onTap: {
+              store.send(.selectResult($0))
             }
           )
         }
@@ -70,7 +68,7 @@ extension SearchView {
       }
     )
     .onSubmit { 
-      store.send(.selectResult(store.searchWord))
+//      store.send(.selectResult(store.searchWord))
     }
     
     .padding(.horizontal, .Number16)

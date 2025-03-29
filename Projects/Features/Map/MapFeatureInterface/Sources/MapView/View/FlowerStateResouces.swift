@@ -9,25 +9,25 @@
 import Foundation
 import UIKit
 import DesignKit
-import MapDomainInterface
+import FlowerSpotDomainInterface
 import NMapsMap
 
-extension FlowerState {
+extension FlowerStatus {
   private typealias Images = DesignKitAsset.Icons
   
-  private static let activeImages: [FlowerState: NMFOverlayImage] = [
+  private static let activeImages: [FlowerStatus: NMFOverlayImage] = [
     .gone: NMFOverlayImage(image: Images.goneActive.image),
     .many: NMFOverlayImage(image: Images.manyActive.image),
     .few: NMFOverlayImage(image: Images.fewActive.image),
     .none: NMFOverlayImage(image: Images.noneActive.image)
   ]
-  private static let inactiveImages: [FlowerState: NMFOverlayImage] = [
+  private static let inactiveImages: [FlowerStatus: NMFOverlayImage] = [
     .gone: NMFOverlayImage(image: Images.goneInactive.image),
     .many: NMFOverlayImage(image: Images.manyInactive.image),
     .few: NMFOverlayImage(image: Images.fewInactive.image),
     .none: NMFOverlayImage(image: Images.noneInactive.image)
   ]
-  private static let pathPointImages: [FlowerState: NMFOverlayImage] = [
+  private static let pathPointImages: [FlowerStatus: NMFOverlayImage] = [
     .gone: NMFOverlayImage(image: Images.gonePathpoint.image),
     .many: NMFOverlayImage(image: Images.manyPathpoint.image),
     .few: NMFOverlayImage(image: Images.fewPathpoint.image),

@@ -7,7 +7,7 @@
 //
 
 import MapFeatureInterface
-import MapDomainInterface
+import FlowerSpotDomainInterface
 import ComposableArchitecture
 import Utility
 
@@ -15,10 +15,12 @@ extension MapReducer {
   public init() {
     @Dependency(\.fetchAllFlowerPinUseCase) var fetchAllFlowerPinUseCase
     
-    let mapReducer = Reduce<State, Action> {
-      state,
-      action in
+    let mapReducer = Reduce<State, Action> { state, action in
       switch action {
+        
+      case let .showToastView(message):
+        state.toastMessage = message
+        return .none
         
         // MARK: - Map
         
@@ -30,49 +32,80 @@ extension MapReducer {
         return .run { send in
           if let location = await LocationService.shared.userLocation {
             await send(.moveLocation(MapPoint(latitude: location.0, longitude: location.1)))
+            await send(.requestMapBounds(true))
+          } else {
+            await send(.requestMapBounds(true))
           }
         }
       case let .moveLocation(point):
-        state.position = point
+        state.point = point
         return .none
-      case .fetchFlowers:
+      case let .fetchFlowers(positions):
         return .run { send in
           do {
-            try await fetchAllFlowerPinUseCase.execute(
+            let result = try await fetchAllFlowerPinUseCase.execute(
               region: "SEOUL",
-              swLat: 37.61471008922519,
-              swLng: 126.90354953438879,
-              neLat: 37.67207092899083,
-              neLng: 126.93702350279204
+              swLat: positions[0].latitude,
+              swLng: positions[0].longitude,
+              neLat: positions[1].latitude,
+              neLng: positions[1].longitude
             )
-            await send(.storeFlowerData([]))
+            if result.count == 0 {
+              await send(.showToastView(message: "이 근방에는 꽃길이 없어요."))
+            }
+            await send(.storeFlowerData(result))
           } catch let error as NetworkError {
-            print(error.localizedDescription)
+            await send(.mapSearchError(error.localizedDescription))
           } catch let error as FoundationError {
-            print(error.localizedDescription)
+            await send(.mapSearchError(error.localizedDescription))
           } catch {
-            print(error.localizedDescription)
+            await send(.mapSearchError(error.localizedDescription))
           }
         }
       case let .storeFlowerData(data):
+        state.flowerSpots.removeAll()
         data.forEach {
-          state.flowerPositions[$0.id] = $0
+          state.flowerSpots[$0.id] = $0
         }
         return .none
       case let .fetchPathLines(id):
         if let id = id,
-           let data = state.flowerPositions[id] {
-          state.selectedPathLines = data.pathLines
+           let data = state.flowerSpots[id] {
+          state.selectedPathLines = data.path
         } else {
           state.selectedPathLines = []
+          state.searchResult = nil
         }
         return .none
         
+      case let .mapSearchError(error):
+        print("=============")
+        print(error ?? "ERROR!")
+        print("=============")
+        return .none
+        
+      case let .requestMapBounds(isRequest):
+        state.requestMapBound = isRequest
+        state.researchButtonEnable = false
+        return .none
+        
+      case let .selectedItem(item):
+        state.selectedItem = item
+        
+        return .send(.fetchPathLines(id: item.id))
+        
         // MARK: - Search
         
+      // 검색 결과
       case let .showSearchResult(result):
         state.searchResult = result
-        return .send(.setSearchBarText(result))
+        return .run { send in
+          if let result = result {
+            await send(.setSearchBarText(result.streetName))
+            await send(.moveLocation(result.pinPoint))
+            
+          }
+        }
       case let .setSearchBarText(text):
         state.searchText = text
         return .none
@@ -94,8 +127,7 @@ extension MapReducer {
         
         // MARK: - None
         
-      case .binding,
-          .delegate:
+      case .binding, .delegate:
         return .none
       }
     }

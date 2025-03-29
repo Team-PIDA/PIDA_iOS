@@ -9,8 +9,6 @@
 import Foundation
 import Networker
 
-import MapDomainInterface
-import MapDomain
 import FlowerSpotDomainInterface
 import FlowerSpotDomain
 import FlowerSpotDataInterface
@@ -30,9 +28,6 @@ enum DependencyRegistry {
     
     // MARK: - Flower
     
-    fetchFlowerUseCaseRegister(
-      provider: { FetchFlowerUseCaseImpl() }
-    )
     fetchAllFlowerPinUseCaseRegister {
       FetchAllFlowerPinUseCaseImpl(
         repository: flowerSpotRepository

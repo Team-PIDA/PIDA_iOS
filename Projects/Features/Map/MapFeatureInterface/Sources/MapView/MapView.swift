@@ -8,14 +8,15 @@
 
 import SwiftUI
 import Combine
-import ComposableArchitecture
+
+import FlowerSpotDomainInterface
 import DesignKit
 import Utility
 
+import ComposableArchitecture
+
 public struct MapView: View {
   @Bindable var store: StoreOf<MapReducer>
-  
-  private var markerTappedEvent = PassthroughSubject<Int?, Never>()
   
   public init(store: StoreOf<MapReducer>) {
     self.store = store
@@ -23,28 +24,25 @@ public struct MapView: View {
   
   public var body: some View {
     ZStack {
-      MapViewRepresentable(
-        userLocation: $store.state.position,
-        flowerPositions: $store.state.flowerPositions,
-        newPath: $store.state.selectedPathLines,
-        markerTappedEvent: markerTappedEvent
-      )
-      .onReceive(markerTappedEvent) {
-        store.send(.fetchPathLines(id: $0))
-      }
-      .ignoresSafeArea()
+      mapView
       VStack {
         searchView()
           .padding(.horizontal, .Number16)
           .padding(.vertical, .Number8)
-        
+        if store.researchButtonEnable {
+          ResearchButton(
+            action: {
+              store.send(.requestMapBounds(true))
+            }
+          )
+        }
         Spacer()
+        ToastView(message: $store.toastMessage)
         currentButton
       }
     }
     .onAppear {
       store.send(.fetchUserLocation)
-      store.send(.fetchFlowers)
     }
     .task {
       for await _ in LocationService.shared.userLocationStream {
@@ -59,9 +57,29 @@ public struct MapView: View {
 // MARK: - Views
 
 extension MapView {
+  
+  @ViewBuilder
+  private var mapView: some View {
+    MapViewRepresentable(
+      userLocation: $store.state.point,
+      flowerPositions: $store.state.flowerSpots,
+      newPath: $store.state.selectedPathLines,
+      requestBounds: $store.requestMapBound,
+      isCameraMove: $store.researchButtonEnable,
+      focusData: $store.searchResult
+    )
+    .onReceiveMapBounds {
+      store.send(.fetchFlowers($0))
+    }
+    .onMarkerTapped {
+      store.send(.fetchPathLines(id: $0))
+    }
+    .ignoresSafeArea()
+  }
+  
   @ViewBuilder
   private func searchView() -> some View {
-    // TODO: - ontap 시 textfield에 텍스트 세팅
+    // TODO: - ontap 시 textfield에 텍스트 
     if let result = store.searchText { // 검색 결과
       SearchBar(
         text: .constant(result),

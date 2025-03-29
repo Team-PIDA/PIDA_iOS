@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import MapDomainInterface
+import FlowerSpotDomainInterface
 
 import NMapsMap
 
@@ -23,7 +23,7 @@ extension MapViewRepresentable {
     /// 현재 표시되어있는 마커 배열
     var markers: [NMFMarker] = []
     /// 현재 선택 된 마커가 있는지 체크하기 위한 프로퍼티
-    var selectedPin: FlowerPosition?
+    var selectedPin: FlowerSpot?
     /// 현재 선택되어있는 NMFMarker
     var activeMarker: NMFMarker? = nil
     /// 현재 그려져있는 경로 데이터
@@ -32,6 +32,13 @@ extension MapViewRepresentable {
     var startMarker: NMFMarker? = nil
     /// 경로선 끝 마커
     var endMarker: NMFMarker? = nil
+    /// 초기 지도 범위 요청 여부
+    var isInitialBounds: Bool = true
+    
+    /// 특정 위치의 데이터
+    var focusData: FlowerSpot? = nil
+    /// 지도에 보여주기 위한 특정 위치 마커
+    var focusMarker: NMFMarker? = nil
     
     init(_ parent: MapViewRepresentable) {
       self.parent = parent
@@ -39,7 +46,50 @@ extension MapViewRepresentable {
     
     /// 지도 탭 이벤트
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
-      parent.markerTappedEvent.send(nil)
+      if let onMarkerTapped = parent.onMarkerTapped {
+        onMarkerTapped(nil)
+      }
+      if let _ = focusMarker {
+        deleteSearchResult()
+      }
+    }
+    
+    func deleteSearchResult() {
+      deletePathMarkers()
+      parent.focusData = nil
+      if let searchMarker = focusMarker {
+        searchMarker.mapView = nil
+      }
+      focusData = nil
+      focusMarker = nil
+      
+    }
+    
+    func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
+      if reason == NMFMapChangedByGesture || reason == NMFMapChangedByControl {
+        if !isInitialBounds, !parent.isCameraMove {
+          parent.isCameraMove = true
+        }
+      }
+    }
+    
+    func mapViewCameraIdle(_ mapView: NMFMapView) {
+      // 앱 처음 진입 시 카메라 이동 완료 후 지도 범위 값 가져오도록 처리
+      if isInitialBounds, parent.requestBounds {
+        parent.currentVisibleBounds(on: mapView)
+        parent.requestBounds = false
+        isInitialBounds = false
+      }
+    }
+    
+    /// 지도에 올라와있는 마커 삭제
+    func deleteAllMarkers() {
+      if !markers.isEmpty {
+        markers.forEach {
+          $0.mapView = nil
+        }
+        self.markers.removeAll()
+      }
     }
     
     /// 마커 및 경로 비활성화 처리 메서드
@@ -56,7 +106,7 @@ extension MapViewRepresentable {
       }
       if let data = selectedPin,
          let activeMarker = activeMarker {
-        activeMarker.iconImage = data.state.inactiveImage
+        activeMarker.iconImage = data.bloomingStatus.inactiveImage
         self.activeMarker = nil
         self.selectedPin = nil
       }
