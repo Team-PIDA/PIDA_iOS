@@ -54,15 +54,15 @@ extension BloomingUpdateReducer {
         return .run { send in
           do {
             try await updateBloomingUseCase.execute(id: id, status: status.rawValue)
-            await send(.dismiss)
+            await send(.dismiss(didUpdate: true))
           } catch {
             await send(.sendToastMessage("기록에 실패했어요"))
           }
         }
         
-      case .dismiss:
+      case let .dismiss(update):
         return .run { send in
-          await send(.delegate(.dismiss))
+          await send(.delegate(.dismiss(didUpdate: update)))
           await send(.initialState)
         }
       case .binding, .delegate:

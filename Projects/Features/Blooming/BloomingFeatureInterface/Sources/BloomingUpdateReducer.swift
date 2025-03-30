@@ -39,11 +39,11 @@ public struct BloomingUpdateReducer {
     case updateBloomingRequest
     
     case delegate(Delegate)
-    case dismiss
+    case dismiss(didUpdate: Bool) // 상태 기록 완료 여부
   }
   
   public enum Delegate: Equatable {
-    case dismiss
+    case dismiss(didUpdate: Bool)
   }
   
   public enum ID: Hashable {
