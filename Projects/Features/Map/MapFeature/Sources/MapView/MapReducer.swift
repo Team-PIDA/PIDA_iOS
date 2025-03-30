@@ -14,6 +14,7 @@ import Utility
 extension MapReducer {
   public init() {
     @Dependency(\.fetchAllFlowerPinUseCase) var fetchAllFlowerPinUseCase
+    @Dependency(\.fetchAllFlowerAddressUseCase) var fetchAllFlowerAddressUseCase
     
     let mapReducer = Reduce<State, Action> { state, action in
       switch action {
@@ -102,6 +103,19 @@ extension MapReducer {
         state.selectedItem = item
         
         return .send(.fetchPathLines(item.id))
+        
+      case .viewDidAppear:
+        return .run { send in
+          do {
+            let result = try await fetchAllFlowerAddressUseCase.execute()
+          } catch let error as NetworkError {
+            await send(.mapSearchError(error.localizedDescription))
+          } catch let error as FoundationError {
+            await send(.mapSearchError(error.localizedDescription))
+          } catch {
+            await send(.mapSearchError(error.localizedDescription))
+          }
+        }
         
         // MARK: - Search
         

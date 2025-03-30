@@ -44,6 +44,7 @@ public struct MapView: View {
     }
     .onAppear {
       store.send(.fetchUserLocation)
+      store.send(.viewDidAppear)
     }
     .task {
       for await _ in LocationService.shared.userLocationStream {

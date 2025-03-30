@@ -12,9 +12,9 @@ import Foundation
 public protocol CacheNamespace: RawRepresentable, Codable, Hashable where RawValue == String {}
 
 /// 기본 캐시 네임스페이스 구현
-/// - searchList: 도로명 및 주소 검색 결과
+/// - allFlowerSpotListModel: 도로명 및 주소 검색 결과
 /// - searchHistory: 최근 검색 기록
 public enum Search: String, CacheNamespace {
-  case searchResult = "searchResult"
+  case allFlowerSpotListModel = "AllFlowerSpotListModel"
   case searchHistory = "SearchHistory"
 }

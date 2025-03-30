@@ -14,6 +14,10 @@ import FlowerSpotDomain
 import FlowerSpotDataInterface
 import FlowerSpotData
 
+import SearchDomainInterface
+import SearchDomain
+import SearchDataInterface
+import SearchData
 
 import AuthDomainInterface
 import AuthDomain
@@ -37,12 +41,37 @@ enum DependencyRegistry {
     let authRepository = AuthRepositoryImpl(network: networker)
     let userRepository = UserRepositoryImpl(network: networker)
     let bloomingRepository = BloomingRepositoryImpl(network: networker)
+    let searchRepository = SearchRepositoryImpl()
     
     // MARK: - Flower
     
     fetchAllFlowerPinUseCaseRegister {
       FetchAllFlowerPinUseCaseImpl(
         repository: flowerSpotRepository
+      )
+    }
+    
+    fetchAllFlowerAddressUseCaseRegister {
+      FetchAllFlowerAddressUseCaseImpl(
+        repository: flowerSpotRepository
+      )
+    }
+    
+    getFlowerSpotDetailUseCaseRegister {
+      GetFlowerSpotDetailUseCaseImpl(
+        repository: flowerSpotRepository
+      )
+    }
+    
+    // MARK: - Search
+    
+    calculateSimilarityScoreUseCaseRegister {
+      CalculateSimilarityScoreUseCaseImpl()
+    }
+    
+    getSearchListFromCacheUseCaseRegister {
+      GetSearchListFromCacheUseCaseImpl(
+        repository: searchRepository
       )
     }
     

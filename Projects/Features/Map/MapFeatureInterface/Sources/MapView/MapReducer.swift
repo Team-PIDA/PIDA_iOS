@@ -8,6 +8,7 @@
 
 import Foundation
 import FlowerSpotDomainInterface
+import SearchDomainInterface
 import ComposableArchitecture
 
 @Reducer
@@ -57,6 +58,9 @@ public struct MapReducer {
     case requestMapBounds(Bool)
     case mapSearchError(String?)
     case selectedItem(FlowerSpot)
+    
+    // MARK: - Life Cycle
+    case viewDidAppear
     
     // MARK: - Search
     

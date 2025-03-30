@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import FlowerSpotDomainInterface
+import SearchDomainInterface
 
 @Reducer
 public struct SearchReducer {
@@ -22,7 +23,7 @@ public struct SearchReducer {
     public var isFocused: Bool = false
     public var searchWord: String = ""
     public var previousWord: String = ""
-    public var searchList: [FlowerSpot] = [.init(id: 1, address: "서울특별시 강서구 곰달래로 51", recentlyVisitedCount: 0, bloomingStatus: .notBloomed, streetName: "곰달래로", path: [.init(latitude: 37.53011, longitude: 126.83845), .init(latitude: 37.53238, longitude: 126.86331)], pinPoint: .init(latitude: 37.53086, longitude: 126.8514), region: "SEOUL")]
+    public var searchList: [SearchListCellEntity] = []
     public init() {}
   }
   
@@ -35,10 +36,12 @@ public struct SearchReducer {
     
     case searchBarFocused(Bool)
     case initialSearchBar(String)
+    case updateSearchResults([SearchListCellEntity])
+    case fetchSearchResult(FlowerSpot)
     
     // MARK: - Delegate
     
-    case selectResult(FlowerSpot) // TODO: - 아이템 타입으로 변경
+    case selectResult(Int)
     case dismiss
     case delegate(Delegate)
   }
