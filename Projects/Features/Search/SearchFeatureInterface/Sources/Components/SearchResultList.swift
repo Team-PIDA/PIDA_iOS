@@ -9,18 +9,19 @@
 import SwiftUI
 import DesignKit
 import FlowerSpotDomainInterface
+import SearchDomainInterface
 
 /// 검색 결과 리스트 셀
 ///
 /// `onTap`: 리스트 탭 시 리스트 값을 리턴하는 클로저
 public struct SearchResultList: View {
   
-  private var item: FlowerSpot
-  private var onTap: ((FlowerSpot) async -> Void)?
+  private var item: SearchListCellEntity
+  private var onTap: ((Int) async -> Void)?
   
   public init(
-    item: FlowerSpot,
-    onTap: ((FlowerSpot) async -> Void)? = nil
+    item: SearchListCellEntity,
+    onTap: ((Int) async -> Void)? = nil
   ) {
     self.item = item
     
@@ -31,7 +32,7 @@ public struct SearchResultList: View {
     VStack {
       HStack {
         VStack(alignment: .leading, spacing: .Number0) {
-          Text(item.streetName)
+          Text(item.streetName ?? "")
             .fontStyle(FontSet.Body.body2)
             .foregroundStyle(ColorSet.Text.Primary)
           Text(item.address ?? "")
@@ -51,7 +52,7 @@ public struct SearchResultList: View {
     .onTapGesture {
       if let onTap = onTap {
         Task { @MainActor in
-          await onTap(item)
+          await onTap(item.id)
         }
       }
     }

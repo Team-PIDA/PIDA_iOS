@@ -8,6 +8,7 @@
 
 import Foundation
 import FlowerSpotDomainInterface
+import SearchDomainInterface
 import ComposableArchitecture
 
 @Reducer

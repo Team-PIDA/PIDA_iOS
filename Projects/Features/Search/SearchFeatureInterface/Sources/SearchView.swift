@@ -43,8 +43,10 @@ extension SearchView {
         ForEach(store.searchList, id: \.id) { data in
           SearchResultList(
             item: data,
-            onTap: {
-              store.send(.selectResult($0))
+            onTap: { _ in
+              // TODO: - id를 기준으로 API 호출 필요
+              print("버튼 누름! : \(data.id) - \(data.streetName)")
+//              store.send(.selectResult($0))
             }
           )
         }
