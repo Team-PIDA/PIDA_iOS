@@ -12,13 +12,10 @@ import Utility
 public struct Networker: NetworkProtocol, Sendable {
   
   private let session: URLSession
-  fileprivate let tokenRefresher: TokenRefresher?
   public init(
-    session: URLSession = .shared,
-    tokenRefresher: TokenRefresher? = nil
+    session: URLSession = .shared
   ) {
     self.session = session
-    self.tokenRefresher = tokenRefresher
   }
   
   public func execute<E: APIRequestable>(
@@ -107,8 +104,7 @@ extension Networker {
   fileprivate func handleResponse<R: Decodable & Sendable>(
     data: Data,
     response: URLResponse,
-    endpoint: any APIRequestable,
-    retry: Int = 1
+    endpoint: any APIRequestable
   ) async throws -> R {
     
     guard let httpResponse = response as? HTTPURLResponse else {
@@ -121,8 +117,9 @@ extension Networker {
       )
     }
     
-    if httpResponse.statusCode == 401 && retry > 0 {
-      return try await refreshTokenAndRetry(for: endpoint, retry: retry)
+    // 401에러면서 토큰 재발급 요청이 아닌 경우 재발급 요청 수행
+    if httpResponse.statusCode == 401 && !endpoint.isRefreshToken {
+      return try await refreshTokenAndRetry(for: endpoint)
     }
     
     guard (200..<300).contains(httpResponse.statusCode) else {
@@ -160,24 +157,21 @@ extension Networker {
   }
   
   private func refreshTokenAndRetry<R: Decodable & Sendable>(
-    for endpoint: any APIRequestable,
-    retry: Int
+    for endpoint: any APIRequestable
   ) async throws -> R {
-    guard let refresher = tokenRefresher else {
-      throw throwError(TokenError.expiredToken, endpoint: endpoint)
-    }
     do {
-      guard let newToken = try await refresher.refreshToken() else {
+      guard let newToken = try await DefaultTokenRefresher.refreshToken() else {
         throw throwError(TokenError.expiredToken, endpoint: endpoint)
       }
+      // 기존 작업 재요청
       var newRequest = try endpoint.toURLRequest()
       newRequest.setValue("Bearer \(newToken)", forHTTPHeaderField: "Authorization")
+      
       let (newData, newResponse) = try await self.session.data(for: newRequest)
       return try await self.handleResponse(
         data: newData,
         response: newResponse,
-        endpoint: endpoint,
-        retry: retry - 1
+        endpoint: endpoint
       )
     } catch {
       throw throwError(TokenError.expiredToken, endpoint: endpoint)
@@ -202,6 +196,8 @@ extension Networker {
     if let error = error as? NetworkError {
       description = error.errorDescription
     } else if let error = error as? FoundationError {
+      description = error.errorDescription
+    } else if let error = error as? TokenError {
       description = error.errorDescription
     }
     print("""

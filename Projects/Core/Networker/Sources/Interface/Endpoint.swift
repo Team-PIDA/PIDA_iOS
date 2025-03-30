@@ -18,18 +18,21 @@ public struct Endpoint<R>: APIRequestable where R: Decodable & Sendable {
   public let baseURL: URL?
   public let path: String
   public let parameters: HTTPRequestParameter?
+  public let isRefreshToken: Bool
   
   public init(
     headers: APIHeaderType = .plain,
     method: HTTPMethod,
     baseURL: String,
     path: String,
-    parameters: HTTPRequestParameter? = nil
+    parameters: HTTPRequestParameter? = nil,
+    isRefreshToken: Bool = false
   ) {
     self.headers = headers
     self.method = method
     self.baseURL = URL(string:baseURL)
     self.path = path
     self.parameters = parameters
+    self.isRefreshToken = isRefreshToken
   }
 }

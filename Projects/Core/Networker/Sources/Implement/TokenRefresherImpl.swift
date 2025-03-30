@@ -20,10 +20,10 @@ public struct DefaultTokenRefresher: TokenRefresher {
         headers: .plain,
         method: .post,
         baseURL: baseURL,
-        path: "/reissue",
-        parameters: .body(ReissueTokenBody(refreshToken: refreshToken))
+        path: "/auth/reissue",
+        parameters: .body(ReissueTokenBody(refreshToken: refreshToken)),
+        isRefreshToken: true
       )
-      
       do {
         let response = try await Networker().execute(with: refreshEndpoint)
         KeyChainWrapper.save(response.refreshToken, forKey: .refreshToken)
@@ -31,6 +31,8 @@ public struct DefaultTokenRefresher: TokenRefresher {
         return response.accessToken
       } catch {
         UserDefault.isLoggedIn = false
+        KeyChainWrapper.delete(forKey: .refreshToken)
+        UserDefault.accessToken = nil
         throw TokenError.expiredToken
       }
       
