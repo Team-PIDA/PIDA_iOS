@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Utility
 
 public struct FlowerSpotListEntity: Equatable, Sendable {
   public var itemList: [FlowerSpot]
@@ -20,7 +21,7 @@ public struct FlowerSpot: Equatable, Sendable {
   public var id: Int
   public var address: String?
   public var recentlyVisitedCount: Int
-  public var bloomingStatus: FlowerStatus
+  public var bloomingStatus: BloomStatus
   public var streetName: String
   public var district: String?
   public var description: String?
@@ -32,7 +33,7 @@ public struct FlowerSpot: Equatable, Sendable {
     id: Int,
     address: String? = nil,
     recentlyVisitedCount: Int,
-    bloomingStatus: FlowerStatus,
+    bloomingStatus: BloomStatus,
     streetName: String,
     district: String? = nil,
     description: String? = nil,
@@ -61,11 +62,4 @@ public struct MapPoint: Equatable, Sendable {
     self.latitude = latitude
     self.longitude = longitude
   }
-}
-
-public enum FlowerStatus: String, Sendable {
-  case gone = "WITHERED"
-  case many = "BLOOMED"
-  case few = "LITTLE"
-  case none = "NOT_BLOOMED"
 }

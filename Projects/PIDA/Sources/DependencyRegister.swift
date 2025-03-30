@@ -25,12 +25,18 @@ import UserDomain
 import UserDataInterface
 import UserData
 
+import BloomingDomainInterface
+import BloomingDomain
+import BloomingDataInterface
+import BloomingData
+
 enum DependencyRegistry {
   static func registerDependencies() {
     let networker = Networker()
     let flowerSpotRepository = FlowerSpotRepositoryImpl(networker: networker)
     let authRepository = AuthRepositoryImpl(network: networker)
     let userRepository = UserRepositoryImpl(network: networker)
+    let bloomingRepository = BloomingRepositoryImpl(network: networker)
     
     // MARK: - Flower
     
@@ -70,6 +76,12 @@ enum DependencyRegistry {
     )
     changeNicknameUseCaseRegister(
       provider: { ChangeNicknameUseCaseImpl(repository: userRepository) }
+    )
+    
+    // MARK: - Blooming
+    
+    updateBloomingUseCaseRegister(
+      provider: { UpdateBloomingUseCaseImpl(repository: bloomingRepository) }
     )
   }
 }

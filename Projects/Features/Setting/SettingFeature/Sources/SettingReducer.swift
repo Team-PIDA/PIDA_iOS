@@ -80,21 +80,17 @@ extension SettingReducer {
         return .run { send in
           do {
             try await withdrawUseCase.execute()
-            await send(.deleteToken)
-            await send(.clearAlertState)
-          } catch {
-            await send(.deleteToken)
-          }
+          } catch { }
+          await send(.deleteToken)
+          await send(.clearAlertState)
         }
       case .alertAcceptTapped(.logout):
         return .run { send in
           do {
             try await logoutUseCase.execute()
-            await send(.deleteToken)
-            await send(.clearAlertState)
-          } catch {
-            await send(.deleteToken)
-          }
+          } catch { }
+          await send(.deleteToken)
+          await send(.clearAlertState)
         }
         
       case .clearAlertState:

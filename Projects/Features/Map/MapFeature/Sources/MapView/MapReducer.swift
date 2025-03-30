@@ -68,9 +68,18 @@ extension MapReducer {
           state.flowerSpots[$0.id] = $0
         }
         return .none
+        
+      case let .markerTapped(id):
+        guard let id = id else { return .none }
+        return .run { send in
+          await MainActor.run {
+            send(.fetchPathLines(id))
+            send(.presentToDetail(id: id))
+          }
+        }
+        
       case let .fetchPathLines(id):
-        if let id = id,
-           let data = state.flowerSpots[id] {
+        if let data = state.flowerSpots[id] {
           state.selectedPathLines = data.path
         } else {
           state.selectedPathLines = []
@@ -92,7 +101,7 @@ extension MapReducer {
       case let .selectedItem(item):
         state.selectedItem = item
         
-        return .send(.fetchPathLines(id: item.id))
+        return .send(.fetchPathLines(item.id))
         
         // MARK: - Search
         
@@ -124,6 +133,8 @@ extension MapReducer {
         return .send(.delegate(.presentToSearch))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
+      case let .presentToDetail(id):
+        return .send(.delegate(.presentToDetail(id: id)))
         
         // MARK: - None
         
