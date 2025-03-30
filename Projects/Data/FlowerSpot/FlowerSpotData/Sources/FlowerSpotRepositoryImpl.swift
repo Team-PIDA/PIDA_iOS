@@ -40,12 +40,13 @@ public struct FlowerSpotRepositoryImpl: FlowerSpotRepository {
     return try await networker.execute(with: endpoint, timeout: 60).toEntity()
   }
   
+  public func getFlowerSpotDetail(id: Int) async throws -> FlowerSpot {
+    let endpoint = FlowerSpotEndpoint.getFlowerSpotDetail(id: id)
+    return try await networker.execute(with: endpoint, timeout: 60).toEntity()
+  }
+  
   public func saveAllFlowerSpotToCache(flowerSpotList: [FlowerSpot]) async throws -> Void {
     let cache = try await CacheActor.shared.allFlowerSpotListCache
-    if let cache = await cache.value(forKey: .init(.allFlowerSpotListModel, "all_flower_spots")) {
-      /// 캐시가 이미 존재하면 통과
-      return
-    }
     let allSpots = flowerSpotList.map {
       AllFlowerSpotListModel(
         id: $0.id,

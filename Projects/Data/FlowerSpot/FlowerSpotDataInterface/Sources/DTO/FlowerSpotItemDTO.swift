@@ -12,7 +12,7 @@ import FlowerSpotDomainInterface
 import Utility
 
 public struct FlowerSpotItem: DTO {
-  public typealias Entity = FlowerSpot?
+  public typealias Entity = FlowerSpot
   public var id: Int
   public var address: String?
   public var recentlyVisitedCount: Int?
@@ -28,14 +28,15 @@ public struct FlowerSpotItem: DTO {
 }
 
 extension FlowerSpotItem {
-  public func toEntity() throws -> FlowerSpot? {
+  public func toEntity() throws -> FlowerSpot {
     guard let pinPoint = self.pinPoint,
           let pinPoint = try? pinPoint.toEntity() else {
-      return nil
+      throw FoundationError.failedToDecode(PointGeomDTO.self)
     }
     let path = try? self.geom?.toEntity()
     return .init(
       id: self.id,
+      address: self.address ?? "",
       recentlyVisitedCount: self.recentlyVisitedCount ?? 0,
       bloomingStatus: BloomStatus(rawValue: self.bloomingStatus) ?? .notBloomed,
       streetName: self.streetName ?? "",

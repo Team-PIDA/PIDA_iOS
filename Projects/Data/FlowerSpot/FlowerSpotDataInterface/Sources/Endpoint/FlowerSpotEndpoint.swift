@@ -24,4 +24,13 @@ public struct FlowerSpotEndpoint: Sendable {
       parameters: .query(getFlowerSpotParameter)
     )
   }
+  
+  @discardableResult
+  public static func getFlowerSpotDetail(id: Int) -> Endpoint<FlowerSpotItem> {
+    return Endpoint(
+      method: .get,
+      baseURL: baseURL,
+      path:"/flower-spot/\(id)"
+    )
+  }
 }

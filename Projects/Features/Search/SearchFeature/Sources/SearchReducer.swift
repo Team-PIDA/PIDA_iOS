@@ -7,6 +7,7 @@
 //
 import Foundation
 import SearchFeatureInterface
+import FlowerSpotDomainInterface
 import ComposableArchitecture
 import SearchDomainInterface
 import Utility
@@ -15,6 +16,7 @@ extension SearchReducer {
   public init() {
     @Dependency(\.calculateSimilarityScoreUseCase) var calculateScoreUseCase
     @Dependency(\.getSearchListFromCacheUseCase) var getSearchListFromCacheUseCase
+    @Dependency(\.getFlowerSpotDetailUseCase) var getFlowerSpotDetailUseCase
     
     let searchReducer = Reduce<State, Action> { state, action in
       switch action {
@@ -63,14 +65,28 @@ extension SearchReducer {
       case let .updateSearchResults(results):
         state.searchList = results
         return .none
-        
-      // MARK: - Delegate
-        
-      case let .selectResult(result):
+      case let .fetchSearchResult(result):
         return .run { send in
           await MainActor.run {
-            send(.searchBarFocused(false))
             send(.delegate(.selectResult(result)))
+          }
+        }
+      // MARK: - Delegate
+        
+      case let .selectResult(id):
+        return .run { send in
+          do {
+            let detail = try await getFlowerSpotDetailUseCase.execute(id: id)
+            await MainActor.run {
+              send(.searchBarFocused(false))
+              send(.fetchSearchResult(detail))
+            }
+          } catch let error as NetworkError {
+            print(error.errorDescription)
+          } catch let error as FoundationError {
+            print(error.errorDescription)
+          } catch {
+            print(error.localizedDescription)
           }
         }
       case .dismiss:

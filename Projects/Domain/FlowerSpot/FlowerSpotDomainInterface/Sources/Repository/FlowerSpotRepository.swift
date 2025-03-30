@@ -17,5 +17,7 @@ public protocol FlowerSpotRepository {
     neLng: Double?
   ) async throws -> FlowerSpotListEntity
   
+  func getFlowerSpotDetail(id: Int) async throws -> FlowerSpot
+  
   func saveAllFlowerSpotToCache(flowerSpotList: [FlowerSpot]) async throws -> Void
 }

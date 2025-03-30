@@ -37,10 +37,11 @@ public struct SearchReducer {
     case searchBarFocused(Bool)
     case initialSearchBar(String)
     case updateSearchResults([SearchListCellEntity])
+    case fetchSearchResult(FlowerSpot)
     
     // MARK: - Delegate
     
-    case selectResult(FlowerSpot) // TODO: - 아이템 타입으로 변경
+    case selectResult(Int)
     case dismiss
     case delegate(Delegate)
   }

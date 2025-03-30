@@ -57,6 +57,12 @@ enum DependencyRegistry {
       )
     }
     
+    getFlowerSpotDetailUseCaseRegister {
+      GetFlowerSpotDetailUseCaseImpl(
+        repository: flowerSpotRepository
+      )
+    }
+    
     // MARK: - Search
     
     calculateSimilarityScoreUseCaseRegister {
