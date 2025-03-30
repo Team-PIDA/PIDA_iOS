@@ -9,6 +9,7 @@
 import Foundation
 import Networker
 import FlowerSpotDomainInterface
+import Utility
 
 public struct FlowerSpotItem: DTO {
   public typealias Entity = FlowerSpot?
@@ -36,7 +37,7 @@ extension FlowerSpotItem {
     return .init(
       id: self.id,
       recentlyVisitedCount: self.recentlyVisitedCount ?? 0,
-      bloomingStatus: FlowerStatus(rawValue: self.bloomingStatus) ?? .none,
+      bloomingStatus: BloomStatus(rawValue: self.bloomingStatus) ?? .notBloomed,
       streetName: self.streetName ?? "",
       path: path ?? [],
       pinPoint: pinPoint,

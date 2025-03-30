@@ -8,7 +8,7 @@
 
 import Foundation
 
-public enum BloomStatus: String {
+public enum BloomStatus: String, Sendable {
   case little = "LITTLE"
   case bloomed = "BLOOMED"
   case withered = "WITHERED"
