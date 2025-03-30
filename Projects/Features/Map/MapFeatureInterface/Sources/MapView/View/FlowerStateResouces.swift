@@ -11,27 +11,28 @@ import UIKit
 import DesignKit
 import FlowerSpotDomainInterface
 import NMapsMap
+import Utility
 
-extension FlowerStatus {
+extension BloomStatus {
   private typealias Images = DesignKitAsset.Icons
   
-  private static let activeImages: [FlowerStatus: NMFOverlayImage] = [
-    .gone: NMFOverlayImage(image: Images.goneActive.image),
-    .many: NMFOverlayImage(image: Images.manyActive.image),
-    .few: NMFOverlayImage(image: Images.fewActive.image),
-    .none: NMFOverlayImage(image: Images.noneActive.image)
+  private static let activeImages: [BloomStatus: NMFOverlayImage] = [
+    .withered: NMFOverlayImage(image: Images.goneActive.image),
+    .bloomed: NMFOverlayImage(image: Images.manyActive.image),
+    .little: NMFOverlayImage(image: Images.fewActive.image),
+    .notBloomed: NMFOverlayImage(image: Images.noneActive.image)
   ]
-  private static let inactiveImages: [FlowerStatus: NMFOverlayImage] = [
-    .gone: NMFOverlayImage(image: Images.goneInactive.image),
-    .many: NMFOverlayImage(image: Images.manyInactive.image),
-    .few: NMFOverlayImage(image: Images.fewInactive.image),
-    .none: NMFOverlayImage(image: Images.noneInactive.image)
+  private static let inactiveImages: [BloomStatus: NMFOverlayImage] = [
+    .withered: NMFOverlayImage(image: Images.goneInactive.image),
+    .bloomed: NMFOverlayImage(image: Images.manyInactive.image),
+    .little: NMFOverlayImage(image: Images.fewInactive.image),
+    .notBloomed: NMFOverlayImage(image: Images.noneInactive.image)
   ]
-  private static let pathPointImages: [FlowerStatus: NMFOverlayImage] = [
-    .gone: NMFOverlayImage(image: Images.gonePathpoint.image),
-    .many: NMFOverlayImage(image: Images.manyPathpoint.image),
-    .few: NMFOverlayImage(image: Images.fewPathpoint.image),
-    .none: NMFOverlayImage(image: Images.nonePathpoint.image)
+  private static let pathPointImages: [BloomStatus: NMFOverlayImage] = [
+    .withered: NMFOverlayImage(image: Images.gonePathpoint.image),
+    .bloomed: NMFOverlayImage(image: Images.manyPathpoint.image),
+    .little: NMFOverlayImage(image: Images.fewPathpoint.image),
+    .notBloomed: NMFOverlayImage(image: Images.nonePathpoint.image)
   ]
   
   var activeImage: NMFOverlayImage {
@@ -44,13 +45,13 @@ extension FlowerStatus {
   
   var color: UIColor {
     switch self {
-    case .gone:
+    case .withered:
       UIColor(ColorSet.Orange._300)
-    case .many:
+    case .bloomed:
       UIColor(ColorSet.Pink._300)
-    case .few:
+    case .little:
       UIColor(ColorSet.Mint._300)
-    case .none:
+    case .notBloomed:
       UIColor(ColorSet.Gray._400)
     }
   }

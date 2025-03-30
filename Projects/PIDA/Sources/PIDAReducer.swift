@@ -21,6 +21,9 @@ import SettingFeatureInterface
 import AuthFeature
 import AuthFeatureInterface
 
+import BloomingFeature
+import BloomingFeatureInterface
+
 enum Path: Hashable {
   case setting
   case policy
@@ -39,12 +42,14 @@ struct PIDAReducer {
     var auth = AuthReducer.State()
     var signUp = SignUpReducer.State()
     var update = ProfileUpdateReducer.State()
+    var blooming = BloomingUpdateReducer.State()
     
     /// 네비게이션 이동 경로
     var path: [Path] = []
     var isShowSearch: Bool = false
     var isPresentAuth: Bool = false
     var isPresentSignUp: Bool = false
+    var isPresentBlooming: Bool = false
   }
   
   enum Action: BindableAction {
@@ -55,6 +60,7 @@ struct PIDAReducer {
     case auth(AuthReducer.Action)
     case signUp(SignUpReducer.Action)
     case update(ProfileUpdateReducer.Action)
+    case blooming(BloomingUpdateReducer.Action)
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
@@ -82,6 +88,9 @@ struct PIDAReducer {
     }
     Scope(state: \.update, action: \.update) {
       ProfileUpdateReducer()
+    }
+    Scope(state: \.blooming, action: \.blooming) {
+      BloomingUpdateReducer()
     }
     
     Reduce { state, action in
@@ -123,25 +132,35 @@ struct PIDAReducer {
           }
         }
         
-        // MARK: - Map
+        // MARK: - Spot Detail
+        
+      case let .map(.delegate(.presentToDetail(id))):
+        // TODO: - 상세화면으로 변경, 상태 기록 화면은 상세화면이랑 연결
+        state.isPresentBlooming = true
+        return .send(.blooming(.configSpotData(id: id, streetName: "석촌호수로")))
+        
+      case let .blooming(.delegate(.dismiss(didUpdate))):
+        print("기록 완료 여부 ", didUpdate)
+        state.isPresentBlooming = false
+        return .none
+        
+        // MARK: - Map <-> Setting
         
         // map -> setting
       case .map(.delegate(.pushToSetting)):
         state.path.append(.setting)
         return .none
         
+        case .setting(.delegate(.pop)):
+          state.path.removeLast()
+          return .none
+        
         // MARK: - Setting
-      
-      case .setting(.delegate(.pop)):
-        state.path.removeLast()
-        return .none
         
       case let .setting(.delegate(.pushToPolicy(type))):
         state.policy.type = type
         state.path.append(.policy)
         return .none
-        
-        // setting -> login
         
       case .setting(.delegate(.presentToLogin)):
         state.isPresentAuth = true
@@ -188,7 +207,7 @@ struct PIDAReducer {
         
         // MARK: - None
         
-      case .binding, .map, .search, .setting, .policy, .auth, .signUp, .update:
+      case .binding, .map, .search, .setting, .policy, .auth, .signUp, .update, .blooming:
         return .none
       }
     }

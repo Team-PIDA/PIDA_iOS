@@ -22,6 +22,7 @@ public enum Feature: String {
   case flowerSpot = "FlowerSpot"
   case auth = "Auth"
   case user = "User"
+  case blooming = "Blooming"
 }
 
 
@@ -125,6 +126,10 @@ extension TargetDependency {
       public static let Interface = Self.projectWithFeature(feature: .auth, inInterface: true)
       public static let Implement = Self.projectWithFeature(feature: .auth)
     }
+    public struct Blooming: PIDADependency {
+      public static let Interface = Self.projectWithFeature(feature: .blooming, inInterface: true)
+      public static let Implement = Self.projectWithFeature(feature: .blooming)
+    }
   }
   
   public struct Domain {
@@ -148,6 +153,10 @@ extension TargetDependency {
       public static let Interface = Self.projectWithLayer(feature: .user, layer: .domain)
       public static let Implement = Self.projectWithLayer(feature: .user, layer: .domain, isInterface: false)
     }
+    public struct Blooming: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .blooming, layer: .domain)
+      public static let Implement = Self.projectWithLayer(feature: .blooming, layer: .domain, isInterface: false)
+    }
   }
   
   public struct Data {
@@ -170,6 +179,10 @@ extension TargetDependency {
     public struct User: PIDADependency {
       public static let Interface = Self.projectWithLayer(feature: .user, layer: .data)
       public static let Implement = Self.projectWithLayer(feature: .user, layer: .data, isInterface: false)
+    }
+    public struct Blooming: PIDADependency {
+      public static let Interface = Self.projectWithLayer(feature: .blooming, layer: .data)
+      public static let Implement = Self.projectWithLayer(feature: .blooming, layer: .data, isInterface: false)
     }
   }
   

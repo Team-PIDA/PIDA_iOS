@@ -36,6 +36,7 @@ public struct MapView: View {
             }
           )
         }
+        
         Spacer()
         ToastView(message: $store.toastMessage)
         currentButton
@@ -72,7 +73,7 @@ extension MapView {
       store.send(.fetchFlowers($0))
     }
     .onMarkerTapped {
-      store.send(.fetchPathLines(id: $0))
+      store.send(.markerTapped(id: $0))
     }
     .ignoresSafeArea()
   }
