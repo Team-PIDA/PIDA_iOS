@@ -58,6 +58,9 @@ public struct MapReducer {
     case mapSearchError(String?)
     case selectedItem(FlowerSpot)
     
+    // MARK: - Life Cycle
+    case viewDidAppear
+    
     // MARK: - Search
     
     case showSearchResult(FlowerSpot?) // TODO: - ItemType

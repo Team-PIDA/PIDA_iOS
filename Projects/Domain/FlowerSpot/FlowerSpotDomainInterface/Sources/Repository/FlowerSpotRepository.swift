@@ -10,11 +10,12 @@ import Foundation
 
 public protocol FlowerSpotRepository {
   func getFlowerSpotList(
-    region: String,
-    swLat: Double,
-    swLng: Double,
-    neLat: Double,
-    neLng: Double
+    region: String?,
+    swLat: Double?,
+    swLng: Double?,
+    neLat: Double?,
+    neLng: Double?
   ) async throws -> FlowerSpotListEntity
   
+  func saveAllFlowerSpotToCache(flowerSpotList: [FlowerSpot]) async throws -> Void
 }

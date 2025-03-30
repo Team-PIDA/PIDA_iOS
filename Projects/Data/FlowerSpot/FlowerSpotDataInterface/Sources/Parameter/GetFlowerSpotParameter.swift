@@ -9,18 +9,18 @@
 import Foundation
 
 public struct GetFlowerSpotParameter: Encodable {
-  let region: String
-  let swLat: Double
-  let swLng: Double
-  let neLat: Double
-  let neLng: Double
+  let region: String?
+  let swLat: Double?
+  let swLng: Double?
+  let neLat: Double?
+  let neLng: Double?
   
   public init(
-    region: String,
-    swLat: Double,
-    swLng: Double,
-    neLat: Double,
-    neLng: Double
+    region: String?,
+    swLat: Double?,
+    swLng: Double?,
+    neLat: Double?,
+    neLng: Double?
   ) {
     self.region = region
     self.swLat = swLat

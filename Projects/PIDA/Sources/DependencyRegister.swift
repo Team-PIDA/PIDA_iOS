@@ -46,6 +46,12 @@ enum DependencyRegistry {
       )
     }
     
+    fetchAllFlowerAddressUseCaseRegister {
+      FetchAllFlowerAddressUseCaseImpl(
+        repository: flowerSpotRepository
+      )
+    }
+    
     // MARK: - Auth
     
     appleLoginUseCaseRegister(

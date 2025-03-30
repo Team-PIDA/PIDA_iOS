@@ -44,14 +44,14 @@ public actor CacheActor {
 
 extension CacheActor {
   
-  /// 외부 모듈에서 `searchResults` 캐시에 접근할 수 있도록 제공하는 `public` extension
+  /// 외부 모듈에서 `allFlowerSpotListModel` 캐시에 접근할 수 있도록 제공하는 `public` extension
   /// - Note: `TwoTierCache`를 사용하여 캐시를 저장하고 관리합니다.
-  public var searchResultCache: TwoTierCache<Search, SearchResultCacheModel> {
+  public var allFlowerSpotListCache: TwoTierCache<Search, [AllFlowerSpotListModel]> {
     get async throws {
       return try await cache(
-        rootCacheKey: .searchResult,
+        rootCacheKey: .allFlowerSpotListModel,
         ttl: .high,
-        eviction: .lru(50)
+        eviction: .none
       )
     }
   }

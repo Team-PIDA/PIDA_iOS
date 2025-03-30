@@ -10,10 +10,10 @@ import Foundation
 
 public protocol FetchAllFlowerPinUseCase {
   func execute(
-    region: String,
-    swLat: Double,
-    swLng: Double,
-    neLat: Double,
-    neLng: Double
+    region: String?,
+    swLat: Double?,
+    swLng: Double?,
+    neLat: Double?,
+    neLng: Double?
   ) async throws -> [FlowerSpot]
 }

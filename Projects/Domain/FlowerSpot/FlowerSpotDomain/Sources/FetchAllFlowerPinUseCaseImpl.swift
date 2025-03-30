@@ -19,11 +19,11 @@ public struct FetchAllFlowerPinUseCaseImpl: FetchAllFlowerPinUseCase {
   }
 
   public func execute(
-    region: String,
-    swLat: Double,
-    swLng: Double,
-    neLat: Double,
-    neLng: Double
+    region: String?,
+    swLat: Double?,
+    swLng: Double?,
+    neLat: Double?,
+    neLng: Double?
   ) async throws -> [FlowerSpot] {
     let list = try await repository.getFlowerSpotList(
       region: region,
