@@ -8,11 +8,15 @@
 
 import Foundation
 import BloomingFeatureInterface
+import BloomingDomainInterface
 import ComposableArchitecture
 import Utility
 
 extension BloomingUpdateReducer {
   public init() {
+    @Dependency(\.updateBloomingUseCase) var updateBloomingUseCase
+    @Dependency(\.mainQueue) var mainQueue
+    
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .binding(\.selectedStatus):
@@ -36,6 +40,25 @@ extension BloomingUpdateReducer {
         state.selectedStatus = nil
         state.isButtonEnable = false
         return .none
+        
+      case let .sendToastMessage(message):
+        state.toastMessage = message
+        return .none
+        
+      case .updateButtonTapped:
+        return .send(.updateBloomingRequest)
+          .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
+        
+      case .updateBloomingRequest:
+        guard let id = state.spotId, let status = state.selectedStatus else { return .none }
+        return .run { send in
+          do {
+            try await updateBloomingUseCase.execute(id: id, status: status.rawValue)
+            await send(.dismiss)
+          } catch {
+            await send(.sendToastMessage("기록에 실패했어요"))
+          }
+        }
         
       case .dismiss:
         return .run { send in

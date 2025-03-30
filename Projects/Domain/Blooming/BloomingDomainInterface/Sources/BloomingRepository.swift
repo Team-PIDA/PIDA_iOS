@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol BloomingRepository {
-  func fetchData() async throws -> Void
+  func updateBlooming(id: Int, status: String) async throws
 }

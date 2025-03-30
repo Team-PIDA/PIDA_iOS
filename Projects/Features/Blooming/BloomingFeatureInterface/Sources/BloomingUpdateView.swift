@@ -23,16 +23,18 @@ public struct BloomingUpdateView: View {
     ZStack {
       ColorSet.Background.Primary
         .ignoresSafeArea()
-      VStack {
-        navigationBar
-        Spacer()
-        VStack(spacing: .Number48) {
-          mainTitle
-          StateRadioButton(status: $store.selectedStatus)
-          
+      ZStack {
+        VStack(spacing: .Number0) {
+          navigationBar
+          Spacer()
+          VStack(spacing: .Number48) {
+            mainTitle
+            StateRadioButton(status: $store.selectedStatus)
+          }
+          Spacer()
+          saveButton
         }
-        Spacer()
-        saveButton
+        ToastView(message: $store.toastMessage)
       }
       
     }
@@ -79,7 +81,7 @@ public struct BloomingUpdateView: View {
   private var saveButton: some View {
     PIDButton(title: store.buttonTittle, size: .large)
       .action {
-        
+        store.send(.updateButtonTapped)
       }
       .isActive(store.isButtonEnable)
       .padding(.Number16)

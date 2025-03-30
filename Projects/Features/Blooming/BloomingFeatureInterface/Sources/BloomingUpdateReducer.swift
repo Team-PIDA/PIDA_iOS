@@ -23,20 +23,31 @@ public struct BloomingUpdateReducer {
     public var isButtonEnable: Bool = false
     public var buttonTittle: String = "개화 상태를 선택해주세요"
     public var selectedStatus: BloomStatus? = nil
+    public var toastMessage: String? = nil
     public init() {}
   }
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
+    
     case configSpotData(id: Int, streetName: String)
     case changeStatus
     case initialState
+    case sendToastMessage(String)
+    
+    case updateButtonTapped
+    case updateBloomingRequest
+    
     case delegate(Delegate)
     case dismiss
   }
   
   public enum Delegate: Equatable {
     case dismiss
+  }
+  
+  public enum ID: Hashable {
+    case throttle
   }
   
   public var body: some ReducerOf<Self> {
