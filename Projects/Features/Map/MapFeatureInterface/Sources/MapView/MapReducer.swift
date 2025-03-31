@@ -70,6 +70,9 @@ public struct MapReducer {
     case selectedItem(FlowerSpot)
     case dismissBottomSheet
     
+    case requestDetailInfo(Int)
+    
+    
     // MARK: - Life Cycle
     case viewDidAppear
     

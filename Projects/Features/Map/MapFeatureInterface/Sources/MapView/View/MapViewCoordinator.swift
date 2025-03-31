@@ -40,6 +40,10 @@ extension MapViewRepresentable {
     /// 지도에 보여주기 위한 특정 위치 마커
     var focusMarker: NMFMarker? = nil
     
+    var isNeedDeleteMarkers: Bool = false
+    
+    var drawPathPoints: [MapPoint] = []
+    
     init(_ parent: MapViewRepresentable) {
       self.parent = parent
     }
@@ -48,6 +52,8 @@ extension MapViewRepresentable {
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
       if let onMarkerTapped = parent.onMarkerTapped {
         onMarkerTapped(nil)
+        isNeedDeleteMarkers = true
+        
       }
       if let _ = focusMarker {
         deleteSearchResult()
@@ -106,6 +112,7 @@ extension MapViewRepresentable {
       }
       if let data = selectedPin,
          let activeMarker = activeMarker {
+        print("DELETE")
         activeMarker.iconImage = data.bloomingStatus.inactiveImage
         self.activeMarker = nil
         self.selectedPin = nil
