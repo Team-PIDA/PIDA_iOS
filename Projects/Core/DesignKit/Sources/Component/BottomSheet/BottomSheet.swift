@@ -16,7 +16,7 @@ public struct CherryBlossomBottomSheet: View {
   public var onPullUp: (() async -> Void)?
   public var isLoading: Bool
   
-  @GestureState private var dragOffset: CGFloat = 0
+  @GestureState private var dragOffset: CGFloat = .Number0
   
   public init(
     title: String,
@@ -50,7 +50,7 @@ public struct CherryBlossomBottomSheet: View {
   }
   
   private var content: some View {
-    VStack(alignment: .leading, spacing: 0) {
+    VStack(alignment: .leading, spacing: .Number0) {
       homeIndicator
       
       if isLoading {
@@ -76,9 +76,9 @@ public struct CherryBlossomBottomSheet: View {
   
   @ViewBuilder
   private var mainInfoView: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      VStack(alignment: .leading, spacing: 2) {
-        HStack(spacing: 8) {
+    VStack(alignment: .leading, spacing: .Number8) {
+      VStack(alignment: .leading, spacing: .Number2) {
+        HStack(spacing: .Number8) {
           Text(title)
             .fontStyle(FontSet.Heading.heading2)
             .foregroundColor(ColorSet.Text.Primary)
@@ -98,14 +98,14 @@ public struct CherryBlossomBottomSheet: View {
           .foregroundColor(ColorSet.Text.Primary)
       }
       
-      HStack(spacing: 4) {
+      HStack(spacing: .Number4) {
         ForEach(tags, id: \.self) { tag in
           TagView(text: tag)
         }
       }
     }
-    .padding(.horizontal, 16)
-    .padding(.top, 20)
+    .padding(.horizontal, .Number16)
+    .padding(.top, .Number20)
   }
   
   @ViewBuilder
