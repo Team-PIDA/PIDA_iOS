@@ -25,8 +25,33 @@ extension SearchReducer {
       case .binding(\.searchWord):
         let searchQuery = state.searchWord
         if searchQuery.isEmpty {
+          state.showRecentList = true
           return .send(.updateSearchResults(state.recentList))
+        } else {
+          state.showRecentList = false
+          return .send(.searchItem(searchQuery))
         }
+        
+      case .onAppear:
+        return .run { send in
+          await MainActor.run {
+            send(.configureSearchList)
+            send(.searchBarFocused(true))
+          }
+        }
+        
+      case .configureSearchList:
+        if state.searchWord.isEmpty {
+          state.showRecentList = true
+          return .send(.fetchRecentResult)
+        } else {
+          state.showRecentList = false
+          return .send(.searchItem(state.searchWord))
+        }
+        
+      // MARK: - Search
+        
+      case let .searchItem(searchQuery):
         return .run { send in
           do {
             let cache = try await getSearchListFromCacheUseCase.execute()
@@ -52,32 +77,11 @@ extension SearchReducer {
             print(error.localizedDescription)
           }
         }
-      case .onAppear:
-        return .run { send in
-          await MainActor.run {
-            send(.searchBarFocused(true))
-            send(.fetchRecentResult)
-          }
-        }
         
-      // MARK: - Search
-        
-      case let .searchBarFocused(isFocused):
-        state.isFocused = isFocused
-        return .none
-      case let .initialSearchBar(text): // 서치바 초기화
-        state.searchList = []
-        state.searchWord = text
-        return .none
       case let .updateSearchResults(results):
         state.searchList = results
         return .none
-      case let .fetchSearchResult(result):
-        return .run { send in
-          await MainActor.run {
-            send(.delegate(.selectResult(result)))
-          }
-        }
+        
       case .fetchRecentResult:
         return .run { send in
           do {
@@ -86,8 +90,24 @@ extension SearchReducer {
             await send(.updateSearchResults(recent))
           }
         }
+        
       case let .storeRecentResult(item):
         state.recentList = item
+        return .none
+        
+      case let .fetchSearchResult(result):
+        return .run { send in
+          await MainActor.run {
+            send(.delegate(.selectResult(result)))
+          }
+        }
+        
+      case let .searchBarFocused(isFocused):
+        state.isFocused = isFocused
+        return .none
+      case let .initialSearchBar(text): // 서치바 초기화
+        state.searchList = []
+        state.searchWord = text
         return .none
         
       // MARK: - Delegate
