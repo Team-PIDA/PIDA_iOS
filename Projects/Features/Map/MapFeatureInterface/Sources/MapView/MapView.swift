@@ -43,8 +43,10 @@ public struct MapView: View {
       }
     }
     .onAppear {
-      store.send(.fetchUserLocation)
-      store.send(.viewDidAppear)
+      if !store.isViewAppeared {
+        store.send(.fetchUserLocation)
+        store.send(.viewDidAppear)
+      }
       
     }
     .task {
@@ -72,7 +74,9 @@ extension MapView {
       focusData: $store.searchResult
     )
     .onReceiveMapBounds {
-      store.send(.fetchFlowers($0))
+      if store.requestMapBound {
+        store.send(.fetchFlowers($0))
+      }
     }
     .onMarkerTapped {
       store.send(.markerTapped(id: $0))

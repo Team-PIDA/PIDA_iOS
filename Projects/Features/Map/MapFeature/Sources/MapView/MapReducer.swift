@@ -33,8 +33,6 @@ extension MapReducer {
         return .run { send in
           if let location = await LocationService.shared.userLocation {
             await send(.moveLocation(MapPoint(latitude: location.0, longitude: location.1)))
-          } else {
-            await send(.requestMapBounds(true))
           }
         }
       case let .moveLocation(point):
@@ -104,6 +102,7 @@ extension MapReducer {
         return .send(.fetchPathLines(item.id))
         
       case .viewDidAppear:
+        state.isViewAppeared = true
         return .run { send in
           do {
             let _ = try await fetchAllFlowerAddressUseCase.execute()

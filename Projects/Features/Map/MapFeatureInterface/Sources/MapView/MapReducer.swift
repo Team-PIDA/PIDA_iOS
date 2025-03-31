@@ -39,6 +39,8 @@ public struct MapReducer {
     public var toastMessage: String? = nil
     
     public var selectedItem: FlowerSpot? = nil
+    
+    public var isViewAppeared: Bool = false
     public init() {}
   }
   
