@@ -24,11 +24,11 @@ public class LocationService: NSObject, CLLocationManagerDelegate {
   }()
   
   private var userLocationContinuation: AsyncStream<Void>.Continuation?
-  public lazy var userLocationStream: AsyncStream<Void> = {
+  public var userLocationStream: AsyncStream<Void> {
     AsyncStream(bufferingPolicy: .bufferingNewest(1)) { continuation in
       self.userLocationContinuation = continuation
     }
-  }()
+  }
   
   // MARK: - Initialize
   
@@ -42,6 +42,7 @@ public class LocationService: NSObject, CLLocationManagerDelegate {
     let authorizationStatus = locationManager.authorizationStatus
     switch authorizationStatus {
     case .authorizedWhenInUse, .authorizedAlways:
+      userLocation = nil
       locationManager.startUpdatingLocation()
     case .notDetermined:
       locationManager.requestWhenInUseAuthorization()
@@ -56,6 +57,8 @@ public class LocationService: NSObject, CLLocationManagerDelegate {
   }
   
   private func setUserLocation(lat: Double, lng: Double) {
+    if userLocation != nil { return }
+    
     userLocation = (lat, lng)
     userLocationContinuation?.yield(())
     locationManager.stopUpdatingLocation()
