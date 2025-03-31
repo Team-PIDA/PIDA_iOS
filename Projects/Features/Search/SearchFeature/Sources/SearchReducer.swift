@@ -37,13 +37,14 @@ extension SearchReducer {
           await MainActor.run {
             send(.configureSearchList)
             send(.searchBarFocused(true))
+            send(.fetchRecentResult)
           }
         }
         
       case .configureSearchList:
         if state.searchWord.isEmpty {
           state.showRecentList = true
-          return .send(.fetchRecentResult)
+          return .none
         } else {
           state.showRecentList = false
           return .send(.searchItem(state.searchWord))
@@ -83,11 +84,14 @@ extension SearchReducer {
         return .none
         
       case .fetchRecentResult:
-        return .run { send in
+        return .run { [searchKeyword = state.searchWord] send in
           do {
             let recent = try await fetchRecentSearchItemUseCase.execute()
+            
             await send(.storeRecentResult(recent))
-            await send(.updateSearchResults(recent))
+            if searchKeyword.isEmpty {
+              await send(.updateSearchResults(recent))
+            }
           }
         }
         
