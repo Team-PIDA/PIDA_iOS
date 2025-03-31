@@ -132,6 +132,7 @@ extension MapReducer {
       case let .setSearchBarText(text):
         state.searchText = text
         return .none
+        
       case .resetSearchBar:
         return .run { send in
           await MainActor.run {
