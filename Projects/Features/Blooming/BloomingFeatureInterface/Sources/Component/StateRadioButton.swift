@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import Utility
 import DesignKit
 
 struct StateRadioButton: View {
@@ -37,7 +36,7 @@ struct StateRadioButton: View {
         }
       ),
       iconView: {
-        state.image?
+        state.pinImage?
           .resizable()
           .frame(width: .Number40, height: .Number40)
       }
@@ -48,19 +47,3 @@ struct StateRadioButton: View {
     }
   }
 }
-
-extension BloomStatus {
-  fileprivate var image: Image? {
-    switch self {
-    case .little:
-      Image(asset: ImageSet.fewLargePin.swiftUIImage)
-    case .bloomed:
-      Image(asset: ImageSet.manyLargePin.swiftUIImage)
-    case .withered:
-      Image(asset: ImageSet.goneLargePin.swiftUIImage)
-    default:
-      nil
-    }
-  }
-}
-

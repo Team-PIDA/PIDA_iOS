@@ -7,7 +7,7 @@
 //
 
 import ComposableArchitecture
-import Utility
+import DesignKit
 
 @Reducer
 public struct BloomingUpdateReducer {

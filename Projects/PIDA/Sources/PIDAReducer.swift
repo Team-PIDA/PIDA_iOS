@@ -136,8 +136,9 @@ struct PIDAReducer {
         
       case let .map(.delegate(.presentToDetail(id))):
         // TODO: - 상세화면으로 변경, 상태 기록 화면은 상세화면이랑 연결
-        state.isPresentBlooming = true
-        return .send(.blooming(.configSpotData(id: id, streetName: "석촌호수로")))
+        return .none
+//        state.isPresentBlooming = true
+//        return .send(.blooming(.configSpotData(id: id, streetName: "석촌호수로")))
         
       case let .blooming(.delegate(.dismiss(didUpdate))):
         print("기록 완료 여부 ", didUpdate)

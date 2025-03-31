@@ -39,8 +39,15 @@ public struct MapReducer {
     public var toastMessage: String? = nil
     
     public var selectedItem: FlowerSpot? = nil
+    /// 바텀시트 띄우기 트리거
+    public var selectedItemID: Int? = nil
+    /// 네트워크로 받아온 상세 데이터
+    public var selectedItemDetail: FlowerSpot? = nil
+    /// 로딩 여부
+    public var isDetailLoading: Bool = false
     
     public var isViewAppeared: Bool = false
+
     public init() {}
   }
   
@@ -56,10 +63,12 @@ public struct MapReducer {
     case fetchFlowers([MapPoint])
     case storeFlowerData([FlowerSpot])
     case markerTapped(id: Int?)
+    case detailResponse(FlowerSpot)
     case fetchPathLines(Int)
     case requestMapBounds(Bool)
     case mapSearchError(String?)
     case selectedItem(FlowerSpot)
+    case dismissBottomSheet
     
     // MARK: - Life Cycle
     case viewDidAppear

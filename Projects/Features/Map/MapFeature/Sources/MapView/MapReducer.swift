@@ -15,6 +15,7 @@ extension MapReducer {
   public init() {
     @Dependency(\.fetchAllFlowerPinUseCase) var fetchAllFlowerPinUseCase
     @Dependency(\.fetchAllFlowerAddressUseCase) var fetchAllFlowerAddressUseCase
+    @Dependency(\.getFlowerSpotDetailUseCase) var getFlowerSpotDetailUseCase
     
     let mapReducer = Reduce<State, Action> { state, action in
       switch action {
@@ -67,14 +68,29 @@ extension MapReducer {
         }
         return .none
         
+        // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
       case let .markerTapped(id):
         guard let id = id else { return .none }
+        state.selectedItemID = id
+        state.selectedItemDetail = nil
+        state.isDetailLoading = true
         return .run { send in
-          await MainActor.run {
-            send(.fetchPathLines(id))
-            send(.presentToDetail(id: id))
+          do {
+            let detail = try await getFlowerSpotDetailUseCase.execute(id: id)
+            await send(.detailResponse(detail))
+          } catch let error as NetworkError {
+            print(error.errorDescription)
+          } catch let error as FoundationError {
+            print(error.errorDescription)
+          } catch {
+            print(error.localizedDescription)
           }
         }
+        
+      case let .detailResponse(item):
+        state.selectedItemDetail = item
+        state.isDetailLoading = false
+        return .send(.fetchPathLines(item.id))
         
       case let .fetchPathLines(id):
         if let data = state.flowerSpots[id] {
@@ -98,8 +114,12 @@ extension MapReducer {
         
       case let .selectedItem(item):
         state.selectedItem = item
-        
         return .send(.fetchPathLines(item.id))
+
+      case .dismissBottomSheet:
+        print("바텀시트 닫기")
+        state.selectedItemDetail = nil
+        return .none
         
       case .viewDidAppear:
         state.isViewAppeared = true
@@ -121,11 +141,12 @@ extension MapReducer {
       // 검색 결과
       case let .showSearchResult(result):
         state.searchResult = result
+        // state.selectedItem = result -> 마커 이동 로직이랑 동일하게 구현하자
         return .run { send in
           if let result = result {
             await send(.setSearchBarText(result.streetName))
             await send(.moveLocation(result.pinPoint))
-            
+            await send(.markerTapped(id: result.id))
           }
         }
       case let .setSearchBarText(text):

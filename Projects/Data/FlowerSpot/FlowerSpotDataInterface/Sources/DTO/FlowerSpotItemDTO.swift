@@ -10,6 +10,7 @@ import Foundation
 import Networker
 import FlowerSpotDomainInterface
 import Utility
+import DesignKit
 
 public struct FlowerSpotItem: DTO {
   public typealias Entity = FlowerSpot

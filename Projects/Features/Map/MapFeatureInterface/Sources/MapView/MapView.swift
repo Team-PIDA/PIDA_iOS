@@ -23,7 +23,7 @@ public struct MapView: View {
   }
   
   public var body: some View {
-    ZStack {
+    ZStack(alignment: .bottom) {
       mapView
       VStack {
         searchView()
@@ -41,7 +41,23 @@ public struct MapView: View {
         ToastView(message: $store.toastMessage)
         currentButton
       }
+      
+      if let item = store.selectedItemDetail {
+        CherryBlossomBottomSheet(
+          title: item.streetName,
+          description: item.address ?? "",
+          tags: ["\(item.district ?? "")", "최근 방문 \(item.recentlyVisitedCount)회"],
+          blossomState: item.bloomingStatus,
+          onPullUp: {
+            // TODO: 당기면 상세보기.... 개빡셈
+            // store.send(.presentToDetail(id: item.id))
+          },
+          isLoading: store.isDetailLoading
+        )
+        .frame(height: 166)
+      }
     }
+    .ignoresSafeArea(edges: .bottom)
     .onAppear {
       if !store.isViewAppeared {
         store.send(.fetchUserLocation)
@@ -78,8 +94,12 @@ extension MapView {
         store.send(.fetchFlowers($0))
       }
     }
-    .onMarkerTapped {
-      store.send(.markerTapped(id: $0))
+    .onMarkerTapped { id in
+      if let id = id {
+        store.send(.markerTapped(id: id))
+      } else {
+        store.send(.dismissBottomSheet)
+      }
     }
     .ignoresSafeArea()
   }
@@ -144,5 +164,6 @@ extension MapView {
       .elevation(cornerRadius: .Number24)
     }
     .padding(.trailing, .Number16)
+    .padding(.bottom, store.selectedItemDetail != nil ? 180 : 40)
   }
 }
