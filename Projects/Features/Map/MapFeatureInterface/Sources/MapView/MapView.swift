@@ -89,8 +89,12 @@ extension MapView {
     .onReceiveMapBounds {
       store.send(.fetchFlowers($0))
     }
-    .onMarkerTapped {
-      store.send(.markerTapped(id: $0))
+    .onMarkerTapped { id in
+      if let id = id {
+        store.send(.markerTapped(id: id))
+      } else {
+        store.send(.dismissBottomSheet)
+      }
     }
     .ignoresSafeArea()
   }
@@ -155,5 +159,6 @@ extension MapView {
       .elevation(cornerRadius: .Number24)
     }
     .padding(.trailing, .Number16)
+    .padding(.bottom, store.selectedItemDetail != nil ? 180 : 40)
   }
 }

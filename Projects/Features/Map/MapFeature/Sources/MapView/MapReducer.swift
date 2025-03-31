@@ -118,14 +118,10 @@ extension MapReducer {
       case let .selectedItem(item):
         state.selectedItem = item
         return .send(.fetchPathLines(item.id))
-        
-      case let .showBottomSheet(item):
-        state.selectedItem = item
-        return .none
 
       case .dismissBottomSheet:
         print("바텀시트 닫기")
-        state.selectedItem = nil
+        state.selectedItemDetail = nil
         return .none
         
       case .viewDidAppear:

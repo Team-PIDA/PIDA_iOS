@@ -66,7 +66,6 @@ public struct MapReducer {
     case requestMapBounds(Bool)
     case mapSearchError(String?)
     case selectedItem(FlowerSpot)
-    case showBottomSheet(FlowerSpot)
     case dismissBottomSheet
     
     // MARK: - Life Cycle
