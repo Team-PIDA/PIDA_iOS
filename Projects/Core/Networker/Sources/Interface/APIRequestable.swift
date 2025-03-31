@@ -38,12 +38,14 @@ public protocol APIRequestable {
   var headers: APIHeaderType { get }
   var path: String { get }
   var parameters: HTTPRequestParameter? { get }
+  var isRefreshToken: Bool { get }
   
   func toURLRequest() throws -> URLRequest
 }
 
 public extension APIRequestable {
   var headers: APIHeaderType { .plain }
+  var isRefreshToken: Bool { return false }
   
   func toURLRequest() throws -> URLRequest {
     let url = try configureURL()

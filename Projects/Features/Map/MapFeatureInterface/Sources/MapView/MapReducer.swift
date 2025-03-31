@@ -46,6 +46,8 @@ public struct MapReducer {
     /// 로딩 여부
     public var isDetailLoading: Bool = false
     
+    public var isViewAppeared: Bool = false
+
     public init() {}
   }
   

@@ -13,8 +13,8 @@ public protocol CacheNamespace: RawRepresentable, Codable, Hashable where RawVal
 
 /// 기본 캐시 네임스페이스 구현
 /// - allFlowerSpotListModel: 도로명 및 주소 검색 결과
-/// - searchHistory: 최근 검색 기록
+/// - recentSearchList: 최근 검색 기록
 public enum Search: String, CacheNamespace {
   case allFlowerSpotListModel = "AllFlowerSpotListModel"
-  case searchHistory = "SearchHistory"
+  case recentSearchList = "RecentSearchList"
 }
