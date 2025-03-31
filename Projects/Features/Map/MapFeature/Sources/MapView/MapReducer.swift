@@ -149,12 +149,15 @@ extension MapReducer {
       // 검색 결과
       case let .showSearchResult(result):
         state.searchResult = result
-        // state.selectedItem = result -> 마커 이동 로직이랑 동일하게 구현하자
+        state.selectedItemID = result?.id
+        state.selectedItemDetail = nil
+        state.isDetailLoading = true
         return .run { send in
           if let result = result {
             await send(.setSearchBarText(result.streetName))
             await send(.moveLocation(result.pinPoint))
-            await send(.markerTapped(id: result.id))
+            await send(.fetchPathLines(result.id))
+            await send(.detailResponse(result))
           }
         }
         
