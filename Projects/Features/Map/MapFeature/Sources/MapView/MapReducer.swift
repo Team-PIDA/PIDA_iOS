@@ -33,7 +33,6 @@ extension MapReducer {
         return .run { send in
           if let location = await LocationService.shared.userLocation {
             await send(.moveLocation(MapPoint(latitude: location.0, longitude: location.1)))
-            await send(.requestMapBounds(true))
           } else {
             await send(.requestMapBounds(true))
           }
@@ -107,7 +106,7 @@ extension MapReducer {
       case .viewDidAppear:
         return .run { send in
           do {
-            let result = try await fetchAllFlowerAddressUseCase.execute()
+            let _ = try await fetchAllFlowerAddressUseCase.execute()
           } catch let error as NetworkError {
             await send(.mapSearchError(error.localizedDescription))
           } catch let error as FoundationError {
@@ -115,6 +114,7 @@ extension MapReducer {
           } catch {
             await send(.mapSearchError(error.localizedDescription))
           }
+          await send(.requestMapBounds(true))
         }
         
         // MARK: - Search
