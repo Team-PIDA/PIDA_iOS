@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Utility
+import DesignKit
 
 public struct FlowerSpotListEntity: Equatable, Sendable {
   public var itemList: [FlowerSpot]
