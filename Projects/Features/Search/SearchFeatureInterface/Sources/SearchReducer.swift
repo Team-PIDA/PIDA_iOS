@@ -41,7 +41,7 @@ public struct SearchReducer {
     
     // MARK: - Delegate
     
-    case selectResult(Int)
+    case selectResult(SearchListCellEntity)
     case dismiss
     case delegate(Delegate)
   }

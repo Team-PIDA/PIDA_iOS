@@ -17,6 +17,7 @@ extension SearchReducer {
     @Dependency(\.calculateSimilarityScoreUseCase) var calculateScoreUseCase
     @Dependency(\.getSearchListFromCacheUseCase) var getSearchListFromCacheUseCase
     @Dependency(\.getFlowerSpotDetailUseCase) var getFlowerSpotDetailUseCase
+    @Dependency(\.saveRecentSearchItemUseCase) var saveRecentSearchItemUseCase
     
     let searchReducer = Reduce<State, Action> { state, action in
       switch action {
@@ -73,10 +74,11 @@ extension SearchReducer {
         }
       // MARK: - Delegate
         
-      case let .selectResult(id):
+      case let .selectResult(item):
         return .run { send in
           do {
-            let detail = try await getFlowerSpotDetailUseCase.execute(id: id)
+            let detail = try await getFlowerSpotDetailUseCase.execute(id: item.id)
+            try await saveRecentSearchItemUseCase.execute(spot: item)
             await MainActor.run {
               send(.searchBarFocused(false))
               send(.fetchSearchResult(detail))

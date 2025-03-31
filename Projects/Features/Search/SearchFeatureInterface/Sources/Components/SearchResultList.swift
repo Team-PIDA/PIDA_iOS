@@ -17,11 +17,11 @@ import SearchDomainInterface
 public struct SearchResultList: View {
   
   private var item: SearchListCellEntity
-  private var onTap: ((Int) async -> Void)?
+  private var onTap: ((SearchListCellEntity) async -> Void)?
   
   public init(
     item: SearchListCellEntity,
-    onTap: ((Int) async -> Void)? = nil
+    onTap: ((SearchListCellEntity) async -> Void)? = nil
   ) {
     self.item = item
     
@@ -52,7 +52,7 @@ public struct SearchResultList: View {
     .onTapGesture {
       if let onTap = onTap {
         Task { @MainActor in
-          await onTap(item.id)
+          await onTap(item)
         }
       }
     }
