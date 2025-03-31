@@ -127,7 +127,7 @@ public struct CherryBlossomBottomSheet: View {
     GeometryReader { geometry in
       Rectangle()
         .fill(ColorSet.Background.Primary)
-        .frame(width: geometry.size.width, height: geometry.safeAreaInsets.bottom)
+        .frame(height: max(geometry.safeAreaInsets.bottom, 0))
         .ignoresSafeArea()
     }
   }
