@@ -44,6 +44,10 @@ public struct SearchRepositoryImpl: SearchRepository {
       recentList.remove(at: existIndex)
     }
     
+    if recentList.count > 20 {
+      recentList.removeLast()
+    }
+    
     recentList.insert(cacheItem, at: 0)
     
     try await cache.insert(recentList, forKey: .init(.recentSearchList, "recent_search"))
