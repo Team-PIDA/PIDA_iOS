@@ -46,7 +46,7 @@ struct MapViewRepresentable: UIViewRepresentable {
     view.mapView.positionMode = .direction
     view.mapView.zoomLevel = 13
     view.mapView.minZoomLevel = 12
-    
+  
     return view
   }()
   
@@ -113,6 +113,8 @@ extension MapViewRepresentable {
     context.coordinator.focusData = result
     let coord = NMGLatLng(lat: result.pinPoint.latitude, lng: result.pinPoint.longitude)
     let marker = drawMarker(view, to: coord, icon: result.bloomingStatus.activeImage)
+    marker.isHideCollidedMarkers = true
+    marker.zIndex = 100
     context.coordinator.focusMarker = marker
   }
   
