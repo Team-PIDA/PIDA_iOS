@@ -40,9 +40,11 @@ public struct SearchResultList: View {
             .foregroundStyle(ColorSet.Text.Tertiary)
         }
         Spacer()
-        Text("10km")
-          .fontStyle(FontSet.Caption.caption1)
-          .foregroundStyle(ColorSet.Text.Tertiary)
+        if let subInfo = item.subInfo {
+          Text(subInfo)
+            .fontStyle(FontSet.Caption.caption1)
+            .foregroundStyle(ColorSet.Text.Tertiary)
+        }
       }
       .padding(.vertical, .Number12)
       BorderView(size: .long)

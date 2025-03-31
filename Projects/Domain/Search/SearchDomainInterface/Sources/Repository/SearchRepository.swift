@@ -12,4 +12,5 @@ import Cache
 public protocol SearchRepository {
   func getSearchListFromCache() async throws -> [AllFlowerSpotListModel]
   func saveRecentSearchToCache(spotItem: SearchListCellEntity) async throws -> Void
+  func fetchRecentSearchListFromCache() async throws -> [RecentSearchItemModel]
 }

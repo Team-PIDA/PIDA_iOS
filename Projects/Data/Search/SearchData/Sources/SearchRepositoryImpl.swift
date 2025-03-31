@@ -49,4 +49,12 @@ public struct SearchRepositoryImpl: SearchRepository {
     try await cache.insert(recentList, forKey: .init(.recentSearchList, "recent_search"))
   }
   
+  public func fetchRecentSearchListFromCache() async throws -> [RecentSearchItemModel] {
+    let cache = try await CacheActor.shared.recentSerachCache
+    guard let item = await cache.value(forKey: .init(.recentSearchList, "recent_search")) else {
+      return []
+    }
+    return item
+  }
+  
 }

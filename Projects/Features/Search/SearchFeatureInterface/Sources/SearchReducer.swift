@@ -24,6 +24,7 @@ public struct SearchReducer {
     public var searchWord: String = ""
     public var previousWord: String = ""
     public var searchList: [SearchListCellEntity] = []
+    public var recentList: [SearchListCellEntity] = []
     public init() {}
   }
   
@@ -38,6 +39,8 @@ public struct SearchReducer {
     case initialSearchBar(String)
     case updateSearchResults([SearchListCellEntity])
     case fetchSearchResult(FlowerSpot)
+    case fetchRecentResult
+    case storeRecentResult([SearchListCellEntity])
     
     // MARK: - Delegate
     

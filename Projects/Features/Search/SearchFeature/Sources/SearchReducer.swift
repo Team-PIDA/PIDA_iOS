@@ -18,11 +18,15 @@ extension SearchReducer {
     @Dependency(\.getSearchListFromCacheUseCase) var getSearchListFromCacheUseCase
     @Dependency(\.getFlowerSpotDetailUseCase) var getFlowerSpotDetailUseCase
     @Dependency(\.saveRecentSearchItemUseCase) var saveRecentSearchItemUseCase
+    @Dependency(\.fetchRecentSearchItemUseCase) var fetchRecentSearchItemUseCase
     
     let searchReducer = Reduce<State, Action> { state, action in
       switch action {
       case .binding(\.searchWord):
         let searchQuery = state.searchWord
+        if searchQuery.isEmpty {
+          return .send(.updateSearchResults(state.recentList))
+        }
         return .run { send in
           do {
             let cache = try await getSearchListFromCacheUseCase.execute()
@@ -52,6 +56,7 @@ extension SearchReducer {
         return .run { send in
           await MainActor.run {
             send(.searchBarFocused(true))
+            send(.fetchRecentResult)
           }
         }
         
@@ -61,6 +66,7 @@ extension SearchReducer {
         state.isFocused = isFocused
         return .none
       case let .initialSearchBar(text): // 서치바 초기화
+        state.searchList = []
         state.searchWord = text
         return .none
       case let .updateSearchResults(results):
@@ -72,6 +78,18 @@ extension SearchReducer {
             send(.delegate(.selectResult(result)))
           }
         }
+      case .fetchRecentResult:
+        return .run { send in
+          do {
+            let recent = try await fetchRecentSearchItemUseCase.execute()
+            await send(.storeRecentResult(recent))
+            await send(.updateSearchResults(recent))
+          }
+        }
+      case let .storeRecentResult(item):
+        state.recentList = item
+        return .none
+        
       // MARK: - Delegate
         
       case let .selectResult(item):

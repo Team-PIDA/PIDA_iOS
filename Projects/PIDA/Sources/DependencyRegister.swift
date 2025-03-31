@@ -82,6 +82,14 @@ enum DependencyRegistry {
         )
       })
     
+    fetchRecentSearchItemUseCaseRegister(
+      provider: {
+        FetchRecentSearchUseCaseImpl(
+          repository: searchRepository
+        )
+      }
+    )
+    
     // MARK: - Auth
     
     appleLoginUseCaseRegister(

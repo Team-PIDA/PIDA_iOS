@@ -14,13 +14,13 @@ public struct RecentSearchItemModel: Codable {
   public let id: Int
   public let address: String?
   public let streetName: String?
-  public let date: Date?
+  public let date: Date
   
   public init(
     id: Int,
     address: String?,
     streetName: String?,
-    data: Date?
+    data: Date
   ) {
     self.id = id
     self.address = address

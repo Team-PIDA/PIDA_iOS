@@ -12,14 +12,17 @@ public struct SearchListCellEntity: Equatable, Sendable {
   public let id: Int
   public let address: String?
   public let streetName: String?
+  public let subInfo: String?
   
   public init(
     id: Int,
     address: String?,
-    streetName: String?
+    streetName: String?,
+    subInfo: String? = nil
   ) {
     self.id = id
     self.address = address
     self.streetName = streetName
+    self.subInfo = subInfo
   }
 }
