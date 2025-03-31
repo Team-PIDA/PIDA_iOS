@@ -38,15 +38,25 @@ extension SearchView {
   // TODO: - 검색 데이터 확정 시 데이터에 맞춰 파라미터 추가
   /// 검색 리스트
   private func searchList() -> some View {
-    ScrollView {
-      LazyVStack {
-        ForEach(store.searchList, id: \.id) { data in
-          SearchResultList(
-            item: data,
-            onTap: {
-              store.send(.selectResult($0))
-            }
-          )
+    VStack(alignment: .leading, spacing: .Number0) {
+      if store.showRecentList {
+        Text("최근검색")
+          .fontStyle(FontSet.Body.body3)
+          .foregroundStyle(ColorSet.Text.Secondary)
+          .padding(.horizontal, .Number16)
+          .padding(.top, .Number8)
+          .padding(.bottom, .Number4)
+      }
+      ScrollView {
+        LazyVStack {
+          ForEach(store.searchList, id: \.id) { data in
+            SearchResultList(
+              item: data,
+              onTap: {
+                store.send(.selectResult($0))
+              }
+            )
+          }
         }
       }
     }
@@ -67,9 +77,6 @@ extension SearchView {
           }
       }
     )
-    .onSubmit { 
-//      store.send(.selectResult(store.searchWord))
-    }
     
     .padding(.horizontal, .Number16)
     .padding(.vertical, .Number8)

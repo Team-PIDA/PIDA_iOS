@@ -58,10 +58,10 @@ extension CacheActor {
   
   /// 외부 모듈에서 `searchHistory` 캐시에 접근할 수 있도록 제공하는 `public` extension
   /// - Note: `TwoTierCache`를 사용하여 캐시를 저장하고 관리합니다.
-  public var searchHistoryCache: TwoTierCache<Search, SearchHistoryCacheModel> {
+  public var recentSerachCache: TwoTierCache<Search, [RecentSearchItemModel]> {
     get async throws {
       return try await cache(
-        rootCacheKey: .searchHistory,
+        rootCacheKey: .recentSearchList,
         ttl: .high,
         eviction: .fifo(20)
       )

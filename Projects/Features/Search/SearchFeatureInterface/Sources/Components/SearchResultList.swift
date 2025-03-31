@@ -17,11 +17,11 @@ import SearchDomainInterface
 public struct SearchResultList: View {
   
   private var item: SearchListCellEntity
-  private var onTap: ((Int) async -> Void)?
+  private var onTap: ((SearchListCellEntity) async -> Void)?
   
   public init(
     item: SearchListCellEntity,
-    onTap: ((Int) async -> Void)? = nil
+    onTap: ((SearchListCellEntity) async -> Void)? = nil
   ) {
     self.item = item
     
@@ -40,9 +40,11 @@ public struct SearchResultList: View {
             .foregroundStyle(ColorSet.Text.Tertiary)
         }
         Spacer()
-        Text("10km")
-          .fontStyle(FontSet.Caption.caption1)
-          .foregroundStyle(ColorSet.Text.Tertiary)
+        if let subInfo = item.subInfo {
+          Text(subInfo)
+            .fontStyle(FontSet.Caption.caption1)
+            .foregroundStyle(ColorSet.Text.Tertiary)
+        }
       }
       .padding(.vertical, .Number12)
       BorderView(size: .long)
@@ -52,7 +54,7 @@ public struct SearchResultList: View {
     .onTapGesture {
       if let onTap = onTap {
         Task { @MainActor in
-          await onTap(item.id)
+          await onTap(item)
         }
       }
     }
