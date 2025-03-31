@@ -71,31 +71,21 @@ extension MapReducer {
         // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
       case let .markerTapped(id):
         guard let id = id else { return .none }
-        return .concatenate(
-          .run { send in
-            await MainActor.run {
-              send(.fetchPathLines(id))
-            }
-          },
-          .run { send in
-            await MainActor.run {
-              send(.requestDetailInfo(id))
-            }
-          }
-        )
-      case let .requestDetailInfo(id):
+        return .run { send in
+          await send(.fetchPathLines(id))
+          await send(.requestDetailInfo(id))
+        }
         
+      case let .requestDetailInfo(id):
         state.selectedItemID = id
         state.selectedItemDetail = nil
         state.isDetailLoading = true
         return .run { send in
-          
           do {
             let detail = try await getFlowerSpotDetailUseCase.execute(id: id)
             await MainActor.run {
               send(.detailResponse(detail))
             }
-            await send(.detailResponse(detail))
           } catch let error as NetworkError {
             print(error.errorDescription)
           } catch let error as FoundationError {
@@ -167,6 +157,7 @@ extension MapReducer {
             await send(.markerTapped(id: result.id))
           }
         }
+        
       case let .setSearchBarText(text):
         state.searchText = text
         return .none

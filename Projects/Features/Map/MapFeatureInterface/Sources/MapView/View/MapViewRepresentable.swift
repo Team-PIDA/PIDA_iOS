@@ -84,7 +84,7 @@ struct MapViewRepresentable: UIViewRepresentable {
     }
     
     // 특정 위치에 나타날 데이터가 있을 경우
-    if let focusData = focusData, context.coordinator.focusData == nil {
+    if let focusData = focusData, context.coordinator.focusData != focusData {
       drawPathLine(uiView, data: focusData, for: focusData.path, context: context)
       drawFocusMarker(uiView, result: focusData, context: context)
     } else if focusData == nil, context.coordinator.focusData != nil {
