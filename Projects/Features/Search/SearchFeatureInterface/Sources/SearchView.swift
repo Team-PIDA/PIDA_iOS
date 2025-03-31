@@ -77,9 +77,6 @@ extension SearchView {
           }
       }
     )
-    .onSubmit { 
-//      store.send(.selectResult(store.searchWord))
-    }
     
     .padding(.horizontal, .Number16)
     .padding(.vertical, .Number8)

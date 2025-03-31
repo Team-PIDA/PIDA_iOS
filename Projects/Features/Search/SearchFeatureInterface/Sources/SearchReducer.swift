@@ -22,7 +22,6 @@ public struct SearchReducer {
   public struct State: Equatable {
     public var isFocused: Bool = false
     public var searchWord: String = ""
-    public var previousWord: String = ""
     public var searchList: [SearchListCellEntity] = []
     public var recentList: [SearchListCellEntity] = []
     public var showRecentList: Bool = true
