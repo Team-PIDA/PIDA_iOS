@@ -12,7 +12,6 @@ import Utility
 public struct Networker: NetworkProtocol, Sendable {
   
   private let session: URLSession
-  
   public init(
     session: URLSession = .shared
   ) {
@@ -27,7 +26,7 @@ public struct Networker: NetworkProtocol, Sendable {
       group.addTask { // 실제 네트워크 통신 Task
         let request = try endpoint.toURLRequest()
         let (data, response) = try await self.session.data(for: request)
-        return try self.handleResponse(data: data, response: response, endpoint: endpoint)
+        return try await self.handleResponse(data: data, response: response, endpoint: endpoint)
       }
       
       group.addTask { // 타임아웃 체크 전용 Task
@@ -70,7 +69,7 @@ public struct Networker: NetworkProtocol, Sendable {
           try Task.checkCancellation() // 요청 직전 취소 확인
           let (data, response) = try await self.session.data(for: request)
           try Task.checkCancellation() // 응답 후 취소 확인
-          return try self.handleResponse(data: data, response: response, endpoint: endpoint)
+          return try await self.handleResponse(data: data, response: response, endpoint: endpoint)
         }
         
         group.addTask { // 타임아웃 태스크
@@ -101,11 +100,12 @@ public struct Networker: NetworkProtocol, Sendable {
 }
 
 extension Networker {
+  
   fileprivate func handleResponse<R: Decodable & Sendable>(
     data: Data,
     response: URLResponse,
     endpoint: any APIRequestable
-  ) throws -> R {
+  ) async throws -> R {
     
     guard let httpResponse = response as? HTTPURLResponse else {
       throw throwError(
@@ -115,6 +115,11 @@ extension Networker {
         ),
         endpoint: endpoint
       )
+    }
+    
+    // 401에러면서 토큰 재발급 요청이 아닌 경우 재발급 요청 수행
+    if httpResponse.statusCode == 401 && !endpoint.isRefreshToken {
+      return try await refreshTokenAndRetry(for: endpoint)
     }
     
     guard (200..<300).contains(httpResponse.statusCode) else {
@@ -150,6 +155,29 @@ extension Networker {
       )
     }
   }
+  
+  private func refreshTokenAndRetry<R: Decodable & Sendable>(
+    for endpoint: any APIRequestable
+  ) async throws -> R {
+    do {
+      guard let newToken = try await DefaultTokenRefresher.refreshToken() else {
+        throw throwError(TokenError.expiredToken, endpoint: endpoint)
+      }
+      // 기존 작업 재요청
+      var newRequest = try endpoint.toURLRequest()
+      newRequest.setValue("Bearer \(newToken)", forHTTPHeaderField: "Authorization")
+      
+      let (newData, newResponse) = try await self.session.data(for: newRequest)
+      return try await self.handleResponse(
+        data: newData,
+        response: newResponse,
+        endpoint: endpoint
+      )
+    } catch {
+      throw throwError(TokenError.expiredToken, endpoint: endpoint)
+    }
+  }
+  
 }
 
 extension Networker {
@@ -168,6 +196,8 @@ extension Networker {
     if let error = error as? NetworkError {
       description = error.errorDescription
     } else if let error = error as? FoundationError {
+      description = error.errorDescription
+    } else if let error = error as? TokenError {
       description = error.errorDescription
     }
     print("""
