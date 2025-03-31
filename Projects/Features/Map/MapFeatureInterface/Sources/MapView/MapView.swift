@@ -116,6 +116,8 @@ extension MapView {
             .size(.extraLarge)
             .action {
               store.send(.resetSearchBar)
+              store.send(.dismissBottomSheet)
+              store.send(.markerTapped(id: nil))
             }
         }
       )

@@ -116,7 +116,6 @@ extension MapReducer {
           state.selectedPathLines = data.path
         } else {
           state.selectedPathLines = []
-          state.searchResult = nil
         }
         return .none
         
