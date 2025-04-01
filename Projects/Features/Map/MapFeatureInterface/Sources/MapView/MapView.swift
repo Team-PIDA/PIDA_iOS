@@ -55,7 +55,11 @@ public struct MapView: View {
                 print("상세로 이동")
               },
               onPullDown:  {
-                print("디스미스 되어라!")
+                return await MainActor.run {
+                  store.send(.resetSearchBar)
+                  store.send(.dismissBottomSheet)
+                  store.send(.markerTapped(id: nil))
+                }
               },
               onTap: {
                 print("상세로 이동")
