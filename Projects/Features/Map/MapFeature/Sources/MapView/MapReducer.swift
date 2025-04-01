@@ -77,7 +77,6 @@ extension MapReducer {
         }
         
       case let .requestDetailInfo(id):
-        state.selectedItemID = id
         state.selectedItemDetail = nil
         state.isDetailLoading = true
         return .run { send in
@@ -149,7 +148,6 @@ extension MapReducer {
       // 검색 결과
       case let .showSearchResult(result):
         state.searchResult = result
-        state.selectedItemID = result?.id
         state.selectedItemDetail = nil
         state.isDetailLoading = true
         return .run { send in
