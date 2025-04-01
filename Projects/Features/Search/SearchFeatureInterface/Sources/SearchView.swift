@@ -47,15 +47,22 @@ extension SearchView {
           .padding(.top, .Number8)
           .padding(.bottom, .Number4)
       }
-      ScrollView {
-        LazyVStack {
-          ForEach(store.searchList, id: \.id) { data in
-            SearchResultList(
-              item: data,
-              onTap: {
-                store.send(.selectResult($0))
-              }
-            )
+      
+      if store.searchList.isEmpty {
+        Spacer()
+        emptyResultView
+        Spacer()
+      } else {
+        ScrollView {
+          LazyVStack {
+            ForEach(store.searchList, id: \.id) { data in
+              SearchResultList(
+                item: data,
+                onTap: {
+                  store.send(.selectResult($0))
+                }
+              )
+            }
           }
         }
       }
@@ -80,5 +87,19 @@ extension SearchView {
     
     .padding(.horizontal, .Number16)
     .padding(.vertical, .Number8)
+  }
+  
+  private var emptyResultView: some View {
+    HStack {
+      Spacer()
+      VStack(alignment: .center, spacing: .Number8) {
+        Image(asset: ImageSet.emptyResult.swiftUIImage)
+        Text("최근 검색 결과가 없습니다.")
+          .fontStyle(FontSet.Body.body3)
+          .foregroundStyle(ColorSet.Text.Secondary)
+      }
+      Spacer()
+    }
+
   }
 }

@@ -71,12 +71,21 @@ extension MapReducer {
         // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
       case let .markerTapped(id):
         guard let id = id else { return .none }
+        return .run { send in
+          await send(.fetchPathLines(id))
+          await send(.requestDetailInfo(id))
+        }
+        
+      case let .requestDetailInfo(id):
+        state.selectedItemID = id
         state.selectedItemDetail = nil
         state.isDetailLoading = true
         return .run { send in
           do {
             let detail = try await getFlowerSpotDetailUseCase.execute(id: id)
-            await send(.detailResponse(detail))
+            await MainActor.run {
+              send(.detailResponse(detail))
+            }
           } catch let error as NetworkError {
             print(error.errorDescription)
           } catch let error as FoundationError {
@@ -89,14 +98,14 @@ extension MapReducer {
       case let .detailResponse(item):
         state.selectedItemDetail = item
         state.isDetailLoading = false
-        return .send(.fetchPathLines(item.id))
+        
+        return .none
         
       case let .fetchPathLines(id):
         if let data = state.flowerSpots[id] {
           state.selectedPathLines = data.path
         } else {
           state.selectedPathLines = []
-          state.searchResult = nil
         }
         return .none
         
@@ -140,14 +149,18 @@ extension MapReducer {
       // 검색 결과
       case let .showSearchResult(result):
         state.searchResult = result
-        // state.selectedItem = result -> 마커 이동 로직이랑 동일하게 구현하자
+        state.selectedItemID = result?.id
+        state.selectedItemDetail = nil
+        state.isDetailLoading = true
         return .run { send in
           if let result = result {
             await send(.setSearchBarText(result.streetName))
             await send(.moveLocation(result.pinPoint))
-            await send(.markerTapped(id: result.id))
+            await send(.fetchPathLines(result.id))
+            await send(.detailResponse(result))
           }
         }
+        
       case let .setSearchBarText(text):
         state.searchText = text
         return .none
@@ -164,7 +177,7 @@ extension MapReducer {
         // MARK: - Delegate
         
       case .presentToSearch:
-        return .send(.delegate(.presentToSearch))
+        return .send(.delegate(.presentToSearch(state.searchText)))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
       case let .presentToDetail(id):

@@ -70,6 +70,9 @@ public struct MapReducer {
     case selectedItem(FlowerSpot)
     case dismissBottomSheet
     
+    case requestDetailInfo(Int)
+    
+    
     // MARK: - Life Cycle
     case viewDidAppear
     
@@ -88,7 +91,7 @@ public struct MapReducer {
   }
   
   public enum Delegate: Equatable {
-    case presentToSearch
+    case presentToSearch(String?)
     case pushToSetting
     case resetSearchView
     case presentToDetail(id: Int)

@@ -61,7 +61,6 @@ struct MapViewRepresentable: UIViewRepresentable {
   }
   
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    
     if let userLocation = userLocation {
       moveUserLocation(uiView, to: userLocation, context: context)
     }
@@ -70,9 +69,11 @@ struct MapViewRepresentable: UIViewRepresentable {
     }
     // 마커 탭 이벤트 시
     if let data = context.coordinator.selectedPin {
-      drawPathLine(uiView, data: data, for: newPath, context: context)
-    } else {
-      context.coordinator.deletePathMarkers()
+      if newPath != context.coordinator.drawPathPoints {
+        drawPathLine(uiView, data: data, for: newPath, context: context)
+      } else if context.coordinator.isNeedDeleteMarkers {
+        context.coordinator.deletePathMarkers()
+      }
     }
     
     // 현 위치 재검색 액션
@@ -83,12 +84,10 @@ struct MapViewRepresentable: UIViewRepresentable {
     }
     
     // 특정 위치에 나타날 데이터가 있을 경우
-    if let focusData = focusData {
+    if let focusData = focusData, context.coordinator.focusData != focusData {
       drawPathLine(uiView, data: focusData, for: focusData.path, context: context)
       drawFocusMarker(uiView, result: focusData, context: context)
-      
-    } else if context.coordinator.focusData != .none {
-      // coordinator에 값이 남아있다면 모두 지움
+    } else if focusData == nil, context.coordinator.focusData != nil {
       context.coordinator.deleteSearchResult()
     }
   }
@@ -110,7 +109,9 @@ extension MapViewRepresentable {
     if let marker = context.coordinator.focusMarker {
       marker.mapView = nil
     }
+    context.coordinator.isNeedDeleteMarkers = false
     context.coordinator.focusData = result
+    
     let coord = NMGLatLng(lat: result.pinPoint.latitude, lng: result.pinPoint.longitude)
     let marker = drawMarker(view, to: coord, icon: result.bloomingStatus.activeImage)
     marker.isHideCollidedMarkers = true
@@ -164,10 +165,9 @@ extension MapViewRepresentable {
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
   private func markerTapEvent(to marker: NMFMarker, data: FlowerSpot, context: Context) {
     if marker == context.coordinator.activeMarker { return }
-    context.coordinator.deletePathMarkers()
     
-    context.coordinator.selectedPin = data
-    context.coordinator.activeMarker = marker
+    context.coordinator.markerTapEvent(marker: marker, data: data)
+    
     if let onMarkerTapped = onMarkerTapped {
       onMarkerTapped(data.id)
     }
@@ -202,13 +202,14 @@ extension MapViewRepresentable {
   
   /// 경로 선을 그리기 위한 메서드
   private func drawPathLine(_ view: NMFNaverMapView, data: FlowerSpot, for newPath: [MapPoint], context: Context) {
+    
     guard !newPath.isEmpty else {
       context.coordinator.deletePathMarkers()
       return
     }
     // 이미 그려진 경로가 있다면 지우고 다시 그리기
     if context.coordinator.paths != nil { context.coordinator.deletePathMarkers() }
-    
+    context.coordinator.drawPathPoints = newPath
     let lines = newPath.map {
       NMGLatLng(lat: $0.latitude, lng: $0.longitude)
     }
