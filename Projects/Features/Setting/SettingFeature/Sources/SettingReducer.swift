@@ -73,7 +73,6 @@ extension SettingReducer {
         // MARK: - SettingList Events
         
       case .settingListTapped(.update):
-        print("dd")
         if state.isNeedUpdate {
           return .run { _ in
             if let url = ExternalURL.appStore {
