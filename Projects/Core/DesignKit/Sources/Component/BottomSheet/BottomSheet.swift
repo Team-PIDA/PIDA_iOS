@@ -13,40 +13,24 @@ public struct CherryBlossomBottomSheet: View {
   public var description: String
   public var tags: [String]
   public var blossomState: BloomStatus
-  public var onPullUp: (() async -> Void)?
   public var isLoading: Bool
-  
-  @GestureState private var dragOffset: CGFloat = .Number0
   
   public init(
     title: String,
     description: String,
     tags: [String],
     blossomState: BloomStatus,
-    onPullUp: (() -> Void)? = nil,
     isLoading: Bool = false
   ) {
     self.title = title
     self.description = description
     self.tags = tags
     self.blossomState = blossomState
-    self.onPullUp = onPullUp
     self.isLoading = isLoading
   }
   
   public var body: some View {
     content
-      .gesture(
-        DragGesture(minimumDistance: 20)
-          .updating($dragOffset) { value, state, _ in
-            state = value.translation.height
-          }
-          .onEnded { value in
-            if value.translation.height < -80 {
-              Task { @MainActor in await onPullUp?() }
-            }
-          }
-      )
   }
   
   private var content: some View {
@@ -132,20 +116,3 @@ public struct CherryBlossomBottomSheet: View {
     }
   }
 }
-
-
-//#Preview {
-//  ZStack {
-//    Color.white
-//
-//    VStack {
-//      Spacer() // 상단 여백 확보
-//      CherryBlossomBottomSheet(
-//        title: "석촌호수길",
-//        description: "서울 송파구 송파나루길 256 문화공간 호수",
-//        tags: ["잠실동", "50m이내", "최근 방문 0회"],
-//        blossomState: "만개예요!"
-//      )
-//    }
-//  }
-//}

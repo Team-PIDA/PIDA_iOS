@@ -48,10 +48,6 @@ public struct MapView: View {
           description: item.address ?? "",
           tags: ["\(item.district ?? "")", "최근 방문 \(item.recentlyVisitedCount)회"],
           blossomState: item.bloomingStatus,
-          onPullUp: {
-            // TODO: 당기면 상세보기.... 개빡셈
-            // store.send(.presentToDetail(id: item.id))
-          },
           isLoading: store.isDetailLoading
         )
         .frame(height: 166)
