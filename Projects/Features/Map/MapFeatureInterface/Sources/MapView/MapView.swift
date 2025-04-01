@@ -41,18 +41,29 @@ public struct MapView: View {
         ToastView(message: $store.toastMessage)
         currentButton
       }
-      
-      if let item = store.selectedItemDetail {
-        CherryBlossomBottomSheet(
-          title: item.streetName,
-          description: item.address ?? "",
-          tags: ["\(item.district ?? "")", "최근 방문 \(item.recentlyVisitedCount)회"],
-          blossomState: item.bloomingStatus,
-          isLoading: store.isDetailLoading
-        )
-        .frame(height: 166)
-      }
     }
+    .overlay(
+        Group {
+          if let item = store.selectedItemDetail {
+            CherryBlossomBottomSheet(
+              title: item.streetName,
+              description: item.address ?? "",
+              tags: ["\(item.district ?? "")", "최근 방문 \(item.recentlyVisitedCount)회"],
+              blossomState: item.bloomingStatus,
+              isLoading: store.isDetailLoading,
+              onPullUp: {
+                print("상세로 이동")
+              },
+              onPullDown:  {
+                print("디스미스 되어라!")
+              },
+              onTap: {
+                print("상세로 이동")
+              })
+          }
+        },
+        alignment: .bottom
+      )
     .ignoresSafeArea(edges: .bottom)
     .onAppear {
       if !store.isViewAppeared {
