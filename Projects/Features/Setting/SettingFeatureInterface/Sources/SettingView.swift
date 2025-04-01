@@ -143,7 +143,7 @@ extension SettingView {
   
   private func serviceItems() -> [SettingItem] {
     [
-      .init(type: .update, title: "최신버전 업데이트", subtitle: "v2.0/v1.0", trailing: "업데이트"),
+      .init(type: .update, title: "최신버전 업데이트", subtitle: store.version, trailing: store.isNeedUpdate ? "업데이트" : "최신버전 사용 중"),
       .init(type: .terms, title: "서비스 이용약관"),
       .init(type: .privacy, title: "개인정보 처리방침")
     ]

@@ -11,6 +11,7 @@ import UserDomainInterface
 import ComposableArchitecture
 import Utility
 import UserDefault
+import KeyChain
 
 extension AuthReducer {
   public init() {
@@ -37,6 +38,9 @@ extension AuthReducer {
           }
         }
       case let .appleLoginResponse(info):
+        if let email = info.email {
+          KeyChainWrapper.save(email, forKey: .email)
+        }
         return .run { send in
           do {
             let result = try await appleLoginUseCase.execute(token: info.idToken)

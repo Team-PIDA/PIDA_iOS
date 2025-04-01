@@ -22,12 +22,16 @@ public struct SettingReducer {
     public var username: String = ""
     public var isAlertShow: Bool = false
     public var alertType: AlertType? = nil
+    public var isNeedUpdate: Bool = false
+    public var version: String = ""
     public init() {}
   }
 
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
+    case checkVersion
+    case configVersionInfo(String, Bool)
     case checkLoggedIn
     case checkUserInfo
     case deleteToken
