@@ -24,7 +24,20 @@ extension SettingReducer {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       case .onAppear:
-        return .send(.checkLoggedIn)
+        return .run { send in
+          await send(.checkLoggedIn)
+          await send(.checkVersion)
+        }
+      case .checkVersion:
+        return .run { send in
+          let versionInfo = await AppVersionManager.shared.getVersionInfo()
+          let version = "v\(versionInfo.appStore)/v\(versionInfo.current)"
+          await send(.configVersionInfo(version, versionInfo.updateNeeded))
+        }
+      case let .configVersionInfo(version, inNeedUpdate):
+        state.version = version
+        state.isNeedUpdate = inNeedUpdate
+        return .none
       case .checkLoggedIn:
         let isLoggedIn = UserDefault.isLoggedIn ?? false
         state.isLoggedIn = isLoggedIn
@@ -58,6 +71,19 @@ extension SettingReducer {
         }
         
         // MARK: - SettingList Events
+        
+      case .settingListTapped(.update):
+        print("dd")
+        if state.isNeedUpdate {
+          return .run { _ in
+            if let url = ExternalURL.appStore {
+              await openURL(url)
+            } else {
+              print("앱스토어 이동 실패")
+            }
+          }
+        }
+        return .none
         
       case .settingListTapped(.terms):
         return .send(.delegate(.pushToPolicy(.terms)))
