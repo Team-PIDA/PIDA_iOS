@@ -13,7 +13,7 @@ public final actor AppVersionManager {
   public static let shared = AppVersionManager()
   private init() {}
   
-  public var currentVersion: String {
+  private var currentVersion: String {
     Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
   }
   
@@ -36,9 +36,9 @@ public final actor AppVersionManager {
     guard let bundleId = Bundle.main.bundleIdentifier,
           let storeVersion = await fetchAppStoreVersion(bundleId: bundleId)
     else {
-      return (current: currentVersion, appStore: "0.0", updateNeeded: false)
+      return (current: currentVersion, appStore: "0", updateNeeded: false)
     }
-    // 단순 문자열 비교. 실제 버전 비교 로직은 필요에 따라 개선
+    
     let updateNeeded = storeVersion > currentVersion
     return (current: currentVersion, appStore: storeVersion, updateNeeded: updateNeeded)
   }
