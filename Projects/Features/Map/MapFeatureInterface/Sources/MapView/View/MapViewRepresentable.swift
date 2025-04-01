@@ -30,6 +30,7 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 지도에 특정 위치를 표시하기 위한 프로퍼티
   @Binding var focusData: FlowerSpot?
   
+  @Binding var isNeedDeleteMarker: Bool
   /// 마커 탭 시 id값을 전달하기 위한 클로저
   var onMarkerTapped: ((Int?) -> Void)? = nil
   /// 지도 범위 좌표 값을 전달하기 위한 클로저
@@ -62,22 +63,28 @@ struct MapViewRepresentable: UIViewRepresentable {
   
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
     if let userLocation = userLocation {
+      print("1")
       moveUserLocation(uiView, to: userLocation, context: context)
     }
     if context.coordinator.markers.isEmpty, !flowerPositions.isEmpty {
+      print("2")
       presentMarkers(uiView, flowers: flowerPositions, context: context)
     }
     // 마커 탭 이벤트 시
     if let data = context.coordinator.selectedPin {
+      print("3")
       if newPath != context.coordinator.drawPathPoints {
+        print("3-1")
         drawPathLine(uiView, data: data, for: newPath, context: context)
-      } else if context.coordinator.isNeedDeleteMarkers {
+      } else if isNeedDeleteMarker {
+        print("3-2")
         context.coordinator.deletePathMarkers()
       }
     }
     
     // 현 위치 재검색 액션
     if requestBounds, !context.coordinator.isInitialBounds {
+      print("4")
       currentVisibleBounds(on: uiView.mapView)
       deleteDrawMarker(context: context)
       requestBounds = false
@@ -85,9 +92,11 @@ struct MapViewRepresentable: UIViewRepresentable {
     
     // 특정 위치에 나타날 데이터가 있을 경우
     if let focusData = focusData, context.coordinator.focusData != focusData {
+      print("4-1")
       drawPathLine(uiView, data: focusData, for: focusData.path, context: context)
       drawFocusMarker(uiView, result: focusData, context: context)
     } else if focusData == nil, context.coordinator.focusData != nil {
+      print("4-2")
       context.coordinator.deleteSearchResult()
     }
   }
@@ -109,7 +118,7 @@ extension MapViewRepresentable {
     if let marker = context.coordinator.focusMarker {
       marker.mapView = nil
     }
-    context.coordinator.isNeedDeleteMarkers = false
+    isNeedDeleteMarker = false
     context.coordinator.focusData = result
     
     let coord = NMGLatLng(lat: result.pinPoint.latitude, lng: result.pinPoint.longitude)

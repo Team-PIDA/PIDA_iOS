@@ -70,7 +70,10 @@ extension MapReducer {
         
         // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
       case let .markerTapped(id):
-        guard let id = id else { return .none }
+        guard let id = id else {
+          state.isNeedDeleteMarker = true
+          return .none
+        }
         return .run { send in
           await send(.fetchPathLines(id))
           await send(.requestDetailInfo(id))

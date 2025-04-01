@@ -98,7 +98,8 @@ extension MapView {
       newPath: $store.state.selectedPathLines,
       requestBounds: $store.requestMapBound,
       isCameraMove: $store.researchButtonEnable,
-      focusData: $store.searchResult
+      focusData: $store.searchResult,
+      isNeedDeleteMarker: $store.isNeedDeleteMarker
     )
     .onReceiveMapBounds {
       if store.requestMapBound {

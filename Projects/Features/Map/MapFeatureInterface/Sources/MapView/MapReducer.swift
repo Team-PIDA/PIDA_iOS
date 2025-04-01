@@ -27,6 +27,7 @@ public struct MapReducer {
     public var flowerSpots: [Int: FlowerSpot] = [:]
     /// 현재 그려져있는 경로
     public var selectedPathLines: [MapPoint] = []
+    public var isNeedDeleteMarker: Bool = false
     /// 검색 결과 데이터
     public var searchResult: FlowerSpot? = nil
     /// 검색 결과 텍스트
@@ -47,6 +48,7 @@ public struct MapReducer {
     public var isViewAppeared: Bool = false
     /// 바텀시트 띄우기 트리거
     public var isBottomSheetPresented: Bool = false
+    
 
     public init() {}
   }
