@@ -6,6 +6,7 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
+import Utility
 import SwiftUI
 
 public struct CherryBlossomBottomSheet: View {
@@ -13,55 +14,81 @@ public struct CherryBlossomBottomSheet: View {
   public var description: String
   public var tags: [String]
   public var blossomState: BloomStatus
-  public var onPullUp: (() async -> Void)?
   public var isLoading: Bool
+  public var onPullUp: (() async -> Void)?
+  public var onPullDown: (() async -> Void)?
+  public var onTap: (() async -> Void)?
   
-  @GestureState private var dragOffset: CGFloat = .Number0
+  // MARK: Drag State
+  @State private var dragOffset: CGFloat = 0
+  private let sheetHeight: CGFloat = UIScreen.main.bounds.height
+  private let safeAreaTop: CGFloat = UIApplication.shared.safeAreaTopInset
+  private let collapsedHeight: CGFloat = 166 // sheet가 실제로 보여지는 높이
+  private let pullThreshold: CGFloat = 80 // drag의 음/양 값이 이 값을 넘으면 pull down/up
   
   public init(
     title: String,
     description: String,
     tags: [String],
     blossomState: BloomStatus,
-    onPullUp: (() -> Void)? = nil,
-    isLoading: Bool = false
+    isLoading: Bool = false,
+    onPullUp: (() async -> Void)? = nil,
+    onPullDown: (() async -> Void)? = nil,
+    onTap: (() async -> Void)? = nil
   ) {
     self.title = title
     self.description = description
     self.tags = tags
     self.blossomState = blossomState
-    self.onPullUp = onPullUp
     self.isLoading = isLoading
+    self.onPullUp = onPullUp
+    self.onPullDown = onPullDown
+    self.onTap = onTap
   }
   
   public var body: some View {
     content
-      .gesture(
-        DragGesture(minimumDistance: 20)
-          .updating($dragOffset) { value, state, _ in
-            state = value.translation.height
-          }
-          .onEnded { value in
-            if value.translation.height < -80 {
-              Task { @MainActor in await onPullUp?() }
-            }
-          }
-      )
   }
   
   private var content: some View {
     VStack(alignment: .leading, spacing: .Number0) {
       homeIndicator
-      
-      if isLoading {
-        loadingView
-      } else {
-        mainInfoView
-      }
+      if isLoading { loadingView }
+      else { mainInfoView }
       safeArea
     }
+    .frame(height: sheetHeight)
     .background(ColorSet.Background.Primary)
     .cornerRadius(.Number20, corners: [.topLeft, .topRight])
+    .offset(y: max(sheetHeight + dragOffset - collapsedHeight, safeAreaTop))
+    .simultaneousGesture(
+      TapGesture()
+        .onEnded {
+          Task { @MainActor in await onTap?() }
+        }
+    )
+    .gesture(
+      DragGesture()
+        .onChanged { value in
+          dragOffset = value.translation.height
+        }
+        .onEnded { value in
+          print("드래그 끝났을 때, 이동 높이: \(-value.translation.height)")
+          if -value.translation.height > pullThreshold {
+            Task {@MainActor in await onPullUp?() }
+          } else if value.translation.height > pullThreshold {
+            Task {@MainActor in await onPullDown?() }
+          }
+          
+          // 복귀 애니메이션
+          withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+            dragOffset = 0
+          }
+        }
+    )
+    .ignoresSafeArea(edges: .bottom)
+    .transition(.move(edge: .bottom).combined(with: .opacity))
+    .zIndex(1)
   }
   
   @ViewBuilder
@@ -132,20 +159,3 @@ public struct CherryBlossomBottomSheet: View {
     }
   }
 }
-
-
-//#Preview {
-//  ZStack {
-//    Color.white
-//
-//    VStack {
-//      Spacer() // 상단 여백 확보
-//      CherryBlossomBottomSheet(
-//        title: "석촌호수길",
-//        description: "서울 송파구 송파나루길 256 문화공간 호수",
-//        tags: ["잠실동", "50m이내", "최근 방문 0회"],
-//        blossomState: "만개예요!"
-//      )
-//    }
-//  }
-//}

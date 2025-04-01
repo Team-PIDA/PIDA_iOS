@@ -16,4 +16,20 @@ public extension UIApplication {
       .flatMap { $0.windows }
       .first { $0.isKeyWindow }
   }
+  
+  var safeAreaTopInset: CGFloat {
+    let window = connectedScenes
+      .compactMap { $0 as? UIWindowScene }
+      .flatMap { $0.windows }
+      .first { $0.isKeyWindow }
+    return window?.safeAreaInsets.top ?? 44
+  }
+  
+  var safeAreaBottomInset: CGFloat {
+    let window = connectedScenes
+      .compactMap { $0 as? UIWindowScene }
+      .flatMap { $0.windows }
+      .first { $0.isKeyWindow }
+    return window?.safeAreaInsets.bottom ?? 34
+  }
 }

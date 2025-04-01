@@ -41,6 +41,7 @@ extension FlowerSpotItem {
       recentlyVisitedCount: self.recentlyVisitedCount ?? 0,
       bloomingStatus: BloomStatus(rawValue: self.bloomingStatus) ?? .notBloomed,
       streetName: self.streetName ?? "",
+      district: self.district ?? "",
       path: path ?? [],
       pinPoint: pinPoint,
       region: self.region ?? ""
