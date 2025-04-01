@@ -95,11 +95,8 @@ extension MapView {
       }
     }
     .onMarkerTapped { id in
-      if let id = id {
-        store.send(.markerTapped(id: id))
-      } else {
-        store.send(.dismissBottomSheet)
-      }
+      if let id = id { store.send(.markerTapped(id: id)) }
+      else { store.send(.dismissBottomSheet) }
     }
     .ignoresSafeArea()
   }
