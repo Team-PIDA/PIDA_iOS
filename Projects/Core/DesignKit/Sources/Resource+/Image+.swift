@@ -13,7 +13,7 @@ public enum ImageSet {
        flower, location, myLocation, placeholder,
        replay, search, sentimentDissatisfied, warning,
        avatar, avatarLarge, loveletter, apple, kakao, loginLogo,
-       fewLargePin, goneLargePin, manyLargePin
+       fewLargePin, goneLargePin, manyLargePin, emptyResult
   
   public var swiftUIImage: DesignKitImages {
     switch self {
@@ -39,6 +39,7 @@ public enum ImageSet {
     case .fewLargePin: return DesignKitAsset.Icons.fewLarge
     case .manyLargePin: return DesignKitAsset.Icons.manyLarge
     case .goneLargePin: return DesignKitAsset.Icons.goneLarge
+    case .emptyResult: return DesignKitAsset.Icons.emptyResult
     }
   }
 }

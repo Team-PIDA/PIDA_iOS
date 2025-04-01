@@ -110,8 +110,7 @@ extension SearchReducer {
         state.isFocused = isFocused
         return .none
       case let .initialSearchBar(text): // 서치바 초기화
-        state.searchList = []
-        state.searchWord = text
+        state.searchWord = text ?? ""
         return .none
         
       // MARK: - Delegate

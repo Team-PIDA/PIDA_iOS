@@ -102,9 +102,11 @@ struct PIDAReducer {
         return .none
         
         // map -> search
-      case .map(.delegate(.presentToSearch)):
+      case let .map(.delegate(.presentToSearch(keyword))):
+        
         return .run { send in
           await MainActor.run {
+            send(.search(.initialSearchBar(keyword)))
             send(.presentSearch(true))
           }
         }

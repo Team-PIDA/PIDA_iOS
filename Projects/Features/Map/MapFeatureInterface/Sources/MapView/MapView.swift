@@ -95,9 +95,8 @@ extension MapView {
       }
     }
     .onMarkerTapped { id in
-      if let id = id {
-        store.send(.markerTapped(id: id))
-      } else {
+      store.send(.markerTapped(id: id))
+      if id == .none {
         store.send(.dismissBottomSheet)
       }
     }
@@ -117,6 +116,8 @@ extension MapView {
             .size(.extraLarge)
             .action {
               store.send(.resetSearchBar)
+              store.send(.dismissBottomSheet)
+              store.send(.markerTapped(id: nil))
             }
         }
       )
