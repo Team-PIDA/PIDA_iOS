@@ -74,6 +74,7 @@ extension MapReducer {
           state.isNeedDeleteMarker = true
           return .none
         }
+        
         return .run { send in
           await send(.fetchPathLines(id))
           await send(.requestDetailInfo(id))
@@ -106,6 +107,7 @@ extension MapReducer {
       case let .fetchPathLines(id):
         if let data = state.flowerSpots[id] {
           state.selectedPathLines = data.path
+          state.isNeedDrawMarker = true
         } else {
           state.selectedPathLines = []
         }

@@ -27,15 +27,20 @@ public struct MapReducer {
     public var flowerSpots: [Int: FlowerSpot] = [:]
     /// 현재 그려져있는 경로
     public var selectedPathLines: [MapPoint] = []
+    /// 지도에 마커 및 경로 비활성화 트리거
     public var isNeedDeleteMarker: Bool = false
-    /// 검색 결과 데이터
-    public var searchResult: FlowerSpot? = nil
-    /// 검색 결과 텍스트
-    public var searchText: String? = nil
+    /// 지도에 마커 및 경로 그리기 트리거
+    public var isNeedDrawMarker: Bool = false
     /// 지도 범위 요청 트리거
     public var requestMapBound: Bool = false
     /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
+    
+    
+    /// 검색 결과 데이터
+    public var searchResult: FlowerSpot? = nil
+    /// 검색 결과 텍스트
+    public var searchText: String? = nil
     
     public var toastMessage: String? = nil
     
