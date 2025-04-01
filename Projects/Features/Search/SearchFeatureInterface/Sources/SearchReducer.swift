@@ -44,7 +44,7 @@ public struct SearchReducer {
     case fetchRecentResult
     
     case storeRecentResult([SearchListCellEntity])
-    case initialSearchBar(String)
+    case initialSearchBar(String?)
    
     
     // MARK: - Delegate

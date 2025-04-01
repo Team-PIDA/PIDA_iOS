@@ -177,7 +177,7 @@ extension MapReducer {
         // MARK: - Delegate
         
       case .presentToSearch:
-        return .send(.delegate(.presentToSearch))
+        return .send(.delegate(.presentToSearch(state.searchText)))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
       case let .presentToDetail(id):
