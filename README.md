@@ -13,7 +13,9 @@
 <br>
 
 ## 🗺️ Feature
-<img src = "https://github.com/user-attachments/assets/8605f071-dbb8-416e-85c9-fa889f4361fe" width="300"><img src="https://github.com/user-attachments/assets/68b918ae-396b-4f1d-b52d-5aaa30e67ec9" width="300"><img src="https://github.com/user-attachments/assets/e9df1a20-d723-4129-ab94-2a822aa811e1" width="300">
+
+|<img src = "https://github.com/user-attachments/assets/8605f071-dbb8-416e-85c9-fa889f4361fe" width="300">|<img src="https://github.com/user-attachments/assets/68b918ae-396b-4f1d-b52d-5aaa30e67ec9" width="300">|<img src="https://github.com/user-attachments/assets/e9df1a20-d723-4129-ab94-2a822aa811e1" width="300">|
+|:----:|:----:|:----:
 
 <br>
 
