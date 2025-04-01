@@ -9,7 +9,7 @@
 import Foundation
 import AuthenticationServices
 import UIKit
-import KeyChain
+
 
 final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
   private var continuation: CheckedContinuation<AppleLoginResult?, Error>?
@@ -48,9 +48,6 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
       
       let email = appleCredential.email
       let name = fullNameFormat(appleCredential.fullName)
-      if let email = email {
-        KeyChainWrapper.save(email, forKey: .email)
-      }
       let userInfo = AppleLoginResult(idToken: idToken, email: email, name: name)
       
       resume(value: userInfo)
