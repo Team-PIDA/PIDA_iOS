@@ -20,6 +20,7 @@ public enum Feature: String {
   case search = "Search"
   case setting = "Setting"
   case flowerSpot = "FlowerSpot"
+  case flowerSpotDetail = "FlowerSpotDetail"
   case auth = "Auth"
   case user = "User"
   case blooming = "Blooming"
@@ -129,6 +130,10 @@ extension TargetDependency {
     public struct Blooming: PIDADependency {
       public static let Interface = Self.projectWithFeature(feature: .blooming, inInterface: true)
       public static let Implement = Self.projectWithFeature(feature: .blooming)
+    }
+    public struct FlowerSpotDetail: PIDADependency {
+      public static let Interface = Self.projectWithFeature(feature: .flowerSpotDetail, inInterface: true)
+      public static let Implement = Self.projectWithFeature(feature: .flowerSpotDetail)
     }
   }
   
