@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import FlowerSpotDomainInterface
 
 @Reducer
 public struct FlowerSpotDetailReducer {
@@ -18,6 +19,7 @@ public struct FlowerSpotDetailReducer {
   
   @ObservableState
   public struct State: Equatable {
+    public var flowerSpotData: FlowerSpot?
     public init() {}
   }
 
