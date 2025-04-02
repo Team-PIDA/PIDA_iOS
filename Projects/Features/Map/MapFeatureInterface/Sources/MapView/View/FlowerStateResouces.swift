@@ -44,16 +44,7 @@ extension BloomStatus {
   }
   
   var color: UIColor {
-    switch self {
-    case .withered:
-      UIColor(ColorSet.Orange._300)
-    case .bloomed:
-      UIColor(ColorSet.Pink._300)
-    case .little:
-      UIColor(ColorSet.Mint._300)
-    case .notBloomed:
-      UIColor(ColorSet.Gray._400)
-    }
+    UIColor(activeColor)
   }
   
   var circleImage: NMFOverlayImage {
