@@ -68,4 +68,31 @@ public extension BloomStatus {
       ColorSet.Text.Secondary
     }
   }
+  
+  var activeColor: Color {
+    switch self {
+    case .little:
+      ColorSet.Mint._300
+    case .bloomed:
+      ColorSet.Pink._300
+    case .withered:
+      ColorSet.Orange._300
+    case .notBloomed:
+      ColorSet.Gray._400
+    }
+  }
+  
+  var inactiveColor: Color {
+    switch self {
+    case .little:
+      ColorSet.Mint._50
+    case .bloomed:
+      ColorSet.Pink._50
+    case .withered:
+      ColorSet.Orange._50
+    default:
+      ColorSet.Background.Tertiary
+    }
+  }
+  
 }
