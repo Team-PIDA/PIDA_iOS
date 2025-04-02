@@ -10,10 +10,16 @@ import FlowerSpotDetailFeatureInterface
 import ComposableArchitecture
 
 extension FlowerSpotDetailReducer {
-  public static let FlowerSpotDetailReducer = Reduce<State, Action> { state, action in
-    switch action {
-    default:
-      return .none
+  public init() {
+    let reducer = Reduce<State, Action> { state, action in
+      switch action {
+      // MARK: - Delegate
+      case .dismiss:
+        return .send(.delegate(.dismiss))
+        
+      case .delegate, .binding: return .none
+      }
     }
+    self.init(reducer: reducer)
   }
 }

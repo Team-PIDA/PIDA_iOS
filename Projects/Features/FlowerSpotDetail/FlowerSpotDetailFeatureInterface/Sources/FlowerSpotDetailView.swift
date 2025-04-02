@@ -17,7 +17,7 @@ public struct FlowerSpotDetailView: View {
   }
 
   public var body: some View {
-    EmptyView()
+    VStack { }
   }
 }
 

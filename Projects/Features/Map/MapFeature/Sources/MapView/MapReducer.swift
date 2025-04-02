@@ -183,8 +183,8 @@ extension MapReducer {
         return .send(.delegate(.presentToSearch(state.searchText)))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
-      case let .presentToDetail(id):
-        return .send(.delegate(.presentToDetail(id: id)))
+      case let .presentToDetail(flowerSpot):
+        return .send(.delegate(.presentToDetail(flowerSpotData: flowerSpot)))
         
         // MARK: - None
         

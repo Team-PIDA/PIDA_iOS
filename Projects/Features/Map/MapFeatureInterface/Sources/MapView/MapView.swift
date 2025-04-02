@@ -53,6 +53,9 @@ public struct MapView: View {
               isLoading: store.isDetailLoading,
               onPullUp: {
                 print("상세로 이동")
+                return await MainActor.run {
+                  store.send(.presentToDetail(flowerSpotData: item))
+                }
               },
               onPullDown:  {
                 return await MainActor.run {
