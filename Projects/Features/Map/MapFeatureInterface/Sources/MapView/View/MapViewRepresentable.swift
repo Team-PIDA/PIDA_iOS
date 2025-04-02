@@ -21,14 +21,24 @@ struct MapViewRepresentable: UIViewRepresentable {
   @Binding var userLocation: MapPoint?
   /// 지도에 보여줄 데이터
   @Binding var flowerPositions: [Int: FlowerSpot]
+  
   /// 마커 탭 시 경로를 보여주기 위한 프로퍼티
   @Binding var newPath: [MapPoint]
+  
   /// 지도 범위 요청 프로퍼티
   @Binding var requestBounds: Bool
+  
   /// 지도를 움직일 경우 현 위치 재검색 버튼 활성화 하기 위한 트리거
   @Binding var isCameraMove: Bool
+  
   /// 지도에 특정 위치를 표시하기 위한 프로퍼티
   @Binding var focusData: FlowerSpot?
+  
+  /// 마커 삭제 트리거
+  @Binding var isNeedDeleteMarker: Bool
+  
+  /// 마커 그리기 트리거
+  @Binding var isNeedDrawMarker: Bool
   
   /// 마커 탭 시 id값을 전달하기 위한 클로저
   var onMarkerTapped: ((Int?) -> Void)? = nil
@@ -64,15 +74,19 @@ struct MapViewRepresentable: UIViewRepresentable {
     if let userLocation = userLocation {
       moveUserLocation(uiView, to: userLocation, context: context)
     }
+    
     if context.coordinator.markers.isEmpty, !flowerPositions.isEmpty {
       presentMarkers(uiView, flowers: flowerPositions, context: context)
     }
+    
     // 마커 탭 이벤트 시
     if let data = context.coordinator.selectedPin {
-      if newPath != context.coordinator.drawPathPoints {
+      if isNeedDrawMarker, newPath != context.coordinator.drawPathPoints {
         drawPathLine(uiView, data: data, for: newPath, context: context)
-      } else if context.coordinator.isNeedDeleteMarkers {
-        context.coordinator.deletePathMarkers()
+        
+      } else if isNeedDeleteMarker { // 그려져있는 마커 및 경로 삭제
+        context.coordinator.deletePath()
+        context.coordinator.deleteMarker()
       }
     }
     
@@ -109,7 +123,7 @@ extension MapViewRepresentable {
     if let marker = context.coordinator.focusMarker {
       marker.mapView = nil
     }
-    context.coordinator.isNeedDeleteMarkers = false
+    isNeedDeleteMarker = false
     context.coordinator.focusData = result
     
     let coord = NMGLatLng(lat: result.pinPoint.latitude, lng: result.pinPoint.longitude)
@@ -164,6 +178,7 @@ extension MapViewRepresentable {
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
   private func markerTapEvent(to marker: NMFMarker, data: FlowerSpot, context: Context) {
+    // 같은 마커를 탭 하면 무시
     if marker == context.coordinator.activeMarker { return }
     
     context.coordinator.markerTapEvent(marker: marker, data: data)
@@ -203,20 +218,30 @@ extension MapViewRepresentable {
   /// 경로 선을 그리기 위한 메서드
   private func drawPathLine(_ view: NMFNaverMapView, data: FlowerSpot, for newPath: [MapPoint], context: Context) {
     
-    guard !newPath.isEmpty else {
-      context.coordinator.deletePathMarkers()
-      return
+    // 그릴 경로가 없으면 종료
+    guard !newPath.isEmpty else { return }
+    
+    
+    // 이미 그려진 경로가 있다면 지우기
+    if context.coordinator.drawPathPoints.count > 0 {
+      context.coordinator.deletePath()
+      // 마커도 지워야 한다면 지우기
+      if context.coordinator.selectedPin != data {
+        context.coordinator.deleteMarker()
+      }
     }
-    // 이미 그려진 경로가 있다면 지우고 다시 그리기
-    if context.coordinator.paths != nil { context.coordinator.deletePathMarkers() }
-    context.coordinator.drawPathPoints = newPath
+    
     let lines = newPath.map {
       NMGLatLng(lat: $0.latitude, lng: $0.longitude)
     }
     
     // 기존 경로와 동일하면 다시 그리지 않음
     if let existingPath = context.coordinator.paths?.path,
-        existingPath.points as? [NMGLatLng] == lines { return }
+       existingPath.points as? [NMGLatLng] == lines {
+      return
+    }
+    
+    context.coordinator.drawPathPoints = newPath
     
     let flowerState = data.bloomingStatus
     
@@ -245,6 +270,7 @@ extension MapViewRepresentable {
     
     context.coordinator.startMarker = start
     context.coordinator.endMarker = end
+    isNeedDrawMarker = false
   }
   
   /// 지도 위에 비활성화 마커를 표시하기 위한 메서드

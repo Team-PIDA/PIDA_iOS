@@ -39,8 +39,7 @@ extension MapViewRepresentable {
     var focusData: FlowerSpot? = nil
     /// 지도에 보여주기 위한 특정 위치 마커
     var focusMarker: NMFMarker? = nil
-    /// 지도 상에 있는 마커 비활성화 여부 (검색 마커x)
-    var isNeedDeleteMarkers: Bool = false
+    
     /// 지도에 그려진 경로의 좌표 데이터
     var drawPathPoints: [MapPoint] = []
     
@@ -52,8 +51,7 @@ extension MapViewRepresentable {
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
       if let onMarkerTapped = parent.onMarkerTapped {
         onMarkerTapped(nil)
-        isNeedDeleteMarkers = true
-        
+        parent.isNeedDeleteMarker = true
       }
       if let _ = focusMarker {
         deleteSearchResult()
@@ -61,7 +59,7 @@ extension MapViewRepresentable {
     }
     
     func deleteSearchResult() {
-      deletePathMarkers()
+      deletePath()
       parent.focusData = nil
       if let searchMarker = focusMarker {
         searchMarker.mapView = nil
@@ -98,8 +96,8 @@ extension MapViewRepresentable {
       }
     }
     
-    /// 마커 및 경로 비활성화 처리 메서드
-    func deletePathMarkers() {
+    /// 경로 비활성화 처리 메서드
+    func deletePath() {
       if let paths = paths,
          let startMarker = startMarker,
          let endMarker = endMarker {
@@ -109,7 +107,13 @@ extension MapViewRepresentable {
         self.paths = nil
         self.startMarker = nil
         self.endMarker = nil
+        self.drawPathPoints = []
       }
+    
+    }
+    
+    /// 마커 비활성화 메서드
+    func deleteMarker() {
       if let data = selectedPin,
          let activeMarker = activeMarker {
         activeMarker.iconImage = data.bloomingStatus.inactiveImage
@@ -125,9 +129,9 @@ extension MapViewRepresentable {
       if focusData != nil {
         deleteSearchResult()
       }
-      deletePathMarkers()
-      
-      isNeedDeleteMarkers = false
+      deletePath()
+      deleteMarker()
+      parent.isNeedDeleteMarker = false
       selectedPin = data
       activeMarker = marker
       
