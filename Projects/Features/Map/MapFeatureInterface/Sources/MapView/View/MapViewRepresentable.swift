@@ -49,26 +49,24 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 지도 초기 위치 설정 - 석촌호수 근처
   private let defaultPoint: MapPoint = .init(latitude: 37.50545, longitude: 127.10143)
   
-  // MARK: - UI
+  // MARK: - UIViewRepresentable Method
   
-  private let mapView: NMFNaverMapView = {
+  func makeUIView(context: Context) -> NMFNaverMapView {
     let view = NMFNaverMapView()
     view.showZoomControls = false
     view.mapView.positionMode = .direction
     view.mapView.zoomLevel = 13
-    view.mapView.minZoomLevel = 12
-  
+    view.mapView.minZoomLevel = 12.5
+    view.mapView.maxZoomLevel = 16.5
+    view.mapView.isIndoorMapEnabled = false
+    view.showIndoorLevelPicker = false
+    view.mapView.liteModeEnabled = true
+    view.mapView.isTiltGestureEnabled = false
+    view.mapView.touchDelegate = context.coordinator
+    view.mapView.addCameraDelegate(delegate: context.coordinator)
+    view.mapView.symbolScale = 0.8
+    moveCamera(view, to: defaultPoint)
     return view
-  }()
-  
-  // MARK: - UIViewRepresentable Method
-  
-  func makeUIView(context: Context) -> NMFNaverMapView {
-    mapView.mapView.isTiltGestureEnabled = false
-    mapView.mapView.touchDelegate = context.coordinator
-    mapView.mapView.addCameraDelegate(delegate: context.coordinator)
-    moveCamera(mapView, to: defaultPoint)
-    return mapView
   }
   
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
