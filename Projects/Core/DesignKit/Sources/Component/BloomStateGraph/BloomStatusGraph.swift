@@ -14,6 +14,7 @@ public struct BloomStatusGraph: View {
   private let isTie: Bool
   private let maxRatioValue: Int
   private let maxVoteCount: Int
+  private let date: String
   
   private var state: BloomStatus? {
     if maxRatioValue == 0 {
@@ -26,11 +27,13 @@ public struct BloomStatusGraph: View {
   }
   
   public init(
+    date: String,
     little: Int = 0,
     bloomed: Int = 0,
     withered: Int = 0,
     maxVoteCount: Int = 0
   ) {
+    self.date = date
     self.maxVoteCount = maxVoteCount
     self.ratios = [
       .little: CGFloat(little),
@@ -46,6 +49,20 @@ public struct BloomStatusGraph: View {
   }
   
   public var body: some View {
+    HStack(spacing: .Number4) {
+      Text(date.relativeText())
+        .fontStyle(FontSet.Body.body3)
+        .foregroundStyle(ColorSet.Text.Secondary)
+        .frame(width: .Number40, alignment: .leading)
+      bloomStateView
+    }
+  }
+}
+
+extension BloomStatusGraph {
+  
+  @ViewBuilder
+  private var bloomStateView: some View {
     VStack(spacing: .Number8) {
       voteState
       RatioBarView(ratios: ratios, maxRatios: maxRatioStatus, isTie: isTie)
@@ -61,10 +78,6 @@ public struct BloomStatusGraph: View {
         )
     )
   }
-  
-}
-
-extension BloomStatusGraph {
   
   @ViewBuilder
   private var voteState: some View {
@@ -100,14 +113,14 @@ extension BloomStatusGraph {
 }
 
 #Preview {
-  BloomStatusGraph(little: 10, bloomed: 20, withered: 70, maxVoteCount: 10)
+  BloomStatusGraph(date: "2025-04-02", little: 10, bloomed: 20, withered: 70, maxVoteCount: 10)
     .padding(.horizontal)
-  BloomStatusGraph(little: 60, bloomed: 10, withered: 30, maxVoteCount: 10)
+  BloomStatusGraph(date: "2025-04-01", little: 60, bloomed: 10, withered: 30, maxVoteCount: 10)
     .padding(.horizontal)
-  BloomStatusGraph(little: 20, bloomed: 60, withered: 20, maxVoteCount: 10)
+  BloomStatusGraph(date: "2025-03-31", little: 20, bloomed: 60, withered: 20, maxVoteCount: 10)
     .padding(.horizontal)
-  BloomStatusGraph(little: 20, bloomed: 40, withered: 40, maxVoteCount: 10)
+  BloomStatusGraph(date: "2025-03-30", little: 20, bloomed: 40, withered: 40, maxVoteCount: 10)
     .padding(.horizontal)
-  BloomStatusGraph(little: 0, bloomed: 0, withered: 0, maxVoteCount: 0)
+  BloomStatusGraph(date: "2025-03-29", little: 0, bloomed: 0, withered: 0, maxVoteCount: 0)
     .padding(.horizontal)
 }
