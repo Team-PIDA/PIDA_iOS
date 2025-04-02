@@ -8,6 +8,13 @@
 
 import SwiftUI
 
+
+/// - Parameters: date
+///   - date: 데이터의 날짜
+///   - little: 아직이에요 투표 비율
+///   - bloomed: 만개예요 투표 비율
+///   - withered: 저물었어요 투표 비율
+///   - maxVoteCount: 세 데이터의 투표 수 중 최대 값
 public struct BloomStatusGraph: View {
   private let ratios: [BloomStatus: CGFloat]
   private let maxRatioStatus: [BloomStatus]
