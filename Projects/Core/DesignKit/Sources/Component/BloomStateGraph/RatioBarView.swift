@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-public struct RatioBarView: View {
+struct RatioBarView: View {
 
   /// 개화 상태 별 비율
   private let ratios: [BloomStatus: CGFloat]
@@ -36,23 +36,17 @@ public struct RatioBarView: View {
   
   // MARK: -  Initialize
   
-  public init(little: Int, bloomed: Int, withered: Int) {
-
-    self.ratios = [
-      .little: CGFloat(little),
-      .bloomed: CGFloat(bloomed),
-      .withered: CGFloat(withered)
-    ]
-    
+  init(
+    ratios: [BloomStatus: CGFloat],
+    maxRatios: [BloomStatus],
+    isTie: Bool
+  ) {
+    self.ratios = ratios
+    self.maxRatios = maxRatios
+    self.isTie = isTie
     self.total = ratios.values.reduce(0, +)
-
-    let maxValue = ratios.values.max() ?? 0
-    self.maxRatios = ratios.filter {
-      $0.value == maxValue && maxValue > 0
-    }.map { $0.key }
-    
-    self.isTie = maxRatios.count >= 2
   }
+  
 
   public var body: some View {
     GeometryReader { geometry in
@@ -86,14 +80,4 @@ public struct RatioBarView: View {
     }
     .frame(height: .Number8)
   }
-}
-
-
-#Preview {
-  RatioBarView(little: 0, bloomed: 0, withered: 0)
-  RatioBarView(little: 10, bloomed: 20, withered: 70)
-  RatioBarView(little: 33, bloomed: 33, withered: 33)
-  RatioBarView(little: 20, bloomed: 40, withered: 40)
-  RatioBarView(little: 20, bloomed: 60, withered: 20)
-  RatioBarView(little: 100, bloomed: 0, withered: 0)
 }
