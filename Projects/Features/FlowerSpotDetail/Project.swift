@@ -12,6 +12,7 @@ import ProjectDescriptionHelpers
 let project = Project.makeFeature(
   name: "FlowerSpotDetail",
   featureInterfaceDependencies: [
+    .InternalDependency.Core
     // 필요 시, Domain Interface Dependency 추가
   ]
 )
