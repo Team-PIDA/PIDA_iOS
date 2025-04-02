@@ -20,12 +20,14 @@ public struct FlowerSpotDetailReducer {
   @ObservableState
   public struct State: Equatable {
     public var flowerSpotData: FlowerSpot?
+    public var isNeedDrawPath: Bool = false
+    public var isNeedDeletePath: Bool = false
     public init() {}
   }
 
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
-    
+    case onAppear
     case delegate(Delegate)
     case dismiss
   }
@@ -35,6 +37,7 @@ public struct FlowerSpotDetailReducer {
   }
 
   public var body: some ReducerOf<Self> {
+    BindingReducer()
     reducer
   }
 }

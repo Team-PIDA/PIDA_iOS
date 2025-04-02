@@ -12,9 +12,9 @@ import NMapsMap
 
 @main
 struct PIDAApp: App {
-  @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
   
   init() {
+    NMFAuthManager.shared().clientId = Bundle.main.infoDictionary?["NMCLIENTID"] as? String
     DependencyRegistry.registerDependencies()
   }
   
