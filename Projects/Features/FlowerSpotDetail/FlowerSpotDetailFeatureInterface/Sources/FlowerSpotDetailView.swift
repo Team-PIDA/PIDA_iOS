@@ -9,9 +9,11 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignKit
+import FlowerSpotDomainInterface
 
 public struct FlowerSpotDetailView: View {
-  let store: StoreOf<FlowerSpotDetailReducer>
+  @Bindable var store: StoreOf<FlowerSpotDetailReducer>
+  @State private var offsetY: CGPoint = .zero
   
   public init(store: StoreOf<FlowerSpotDetailReducer>) {
     self.store = store
@@ -20,11 +22,19 @@ public struct FlowerSpotDetailView: View {
   public var body: some View {
     ContentView()
   }
+
 }
 
 public struct ContentView: View {
   
   @State private var offsetY: CGPoint = .zero
+  @State var isNeedDrawPath: Bool = true
+  @State var isNeedDeletePath: Bool = false
+  private var location: MapPoint = .init(latitude: 37.5464, longitude: 126.91923)
+  private var coord: [MapPoint] = [
+    .init(latitude: 37.54542, longitude: 126.91869),
+    .init(latitude: 37.54783, longitude: 126.91993)
+  ]
   
   public var body: some View {
     VStack(spacing: .Number0) {
@@ -35,6 +45,7 @@ public struct ContentView: View {
             .size(.superLarge)
             .action {
               print("닫기 버튼")
+//              store.send(.dismiss)
             }
         },
         title: offsetY.y > 36 ? "석촌호수길" : ""
@@ -129,10 +140,27 @@ public struct ContentView: View {
             }
             
             // TODO: 실제 지도 영역
-            Rectangle()
-              .fill(ColorSet.Text.Primary)
-              .frame(height: 160)
-              .cornerRadius(10)
+            // reducer의 데이터와 연결해야 함!
+//            if let data = store.flowerSpotData {
+//              DetailMapViewRepresentable(
+//                location: data.pinPoint,
+//                pathMarkers: data.path,
+//                state: data.bloomingStatus,
+//                isNeedDrawPath: $store.isNeedDrawPath,
+//                isNeedDeletePath: $store.isNeedDeletePath
+//              )
+//              .frame(height: 160)
+//              .cornerRadius(10)
+//            }
+            DetailMapViewRepresentable(
+              location: location,
+              pathMarkers: coord,
+              state: .little,
+              isNeedDrawPath: $isNeedDrawPath,
+              isNeedDeletePath: $isNeedDeletePath
+            )
+            .frame(height: 160)
+            .cornerRadius(10)
           }
           .padding(.Number16)
           Rectangle()
@@ -193,6 +221,9 @@ public struct ContentView: View {
       .frame(height: 80)
       .background(Color.white)
     }
+//    .onAppear {
+//      store.send(.onAppear)
+//    }
   }
 }
 
