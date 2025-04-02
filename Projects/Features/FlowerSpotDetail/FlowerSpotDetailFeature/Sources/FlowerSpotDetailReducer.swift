@@ -14,7 +14,11 @@ extension FlowerSpotDetailReducer {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       // MARK: - Delegate
+      case .onAppear:
+        state.isNeedDrawPath = true
+        return .none
       case .dismiss:
+        state.isNeedDeletePath = true
         return .send(.delegate(.dismiss))
         
       case .delegate, .binding: return .none
