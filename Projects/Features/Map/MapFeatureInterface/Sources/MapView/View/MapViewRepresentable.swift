@@ -10,6 +10,7 @@ import UIKit
 import SwiftUI
 import Combine
 import FlowerSpotDomainInterface
+import DesignKit
 
 import NMapsMap
 
