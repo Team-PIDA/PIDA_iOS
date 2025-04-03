@@ -28,10 +28,14 @@ public struct FlowerSpotDetailView: View {
   }
   
   public var body: some View {
-    VStack(spacing: .Number0) {
-      navigationBar
-      mainScrollContent
-      floatingButton
+    ZStack {
+      VStack(spacing: .Number0) {
+        navigationBar
+        mainScrollContent
+        floatingButton
+      }
+      ToastView(message: $store.toastMessage)
+        .padding(.bottom, .Number80)
     }
   }
   
@@ -138,7 +142,8 @@ public struct FlowerSpotDetailView: View {
               .foregroundColor(ColorSet.Text.Accent)
           }
           .onTapGesture {
-            print("주소 복사")
+            UIPasteboard.general.string = store.flowerSpotData.address
+            store.send(.showToastView(message: "주소가 복사되었습니다."))
           }
         }
         Text("현재 위치에서 걸어서 5분 ({}km)")

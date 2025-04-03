@@ -14,6 +14,9 @@ extension FlowerSpotDetailReducer {
     let reducer = Reduce<State, Action> { state, action in
       switch action {
       // MARK: - Delegate
+      case let .showToastView(message):
+        state.toastMessage = message
+        return .none
       case .onAppear:
         state.isNeedDrawPath = true
         return .none

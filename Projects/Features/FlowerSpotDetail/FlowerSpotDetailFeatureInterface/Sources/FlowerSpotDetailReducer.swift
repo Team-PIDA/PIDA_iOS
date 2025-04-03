@@ -28,6 +28,7 @@ public struct FlowerSpotDetailReducer {
       pinPoint: .init(latitude: 0, longitude: 0),
       region: ""
     )
+    public var toastMessage: String? = nil
     public var isNeedDrawPath: Bool = false
     public var isNeedDeletePath: Bool = false
     public init() {}
@@ -35,6 +36,7 @@ public struct FlowerSpotDetailReducer {
 
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
+    case showToastView(message: String?)
     case onAppear
     case delegate(Delegate)
     case dismiss
