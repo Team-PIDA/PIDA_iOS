@@ -19,7 +19,15 @@ public struct FlowerSpotDetailReducer {
   
   @ObservableState
   public struct State: Equatable {
-    public var flowerSpotData: FlowerSpot?
+    public var flowerSpotData: FlowerSpot = .init(
+      id: 0,
+      recentlyVisitedCount: 0,
+      bloomingStatus: .notBloomed,
+      streetName: "",
+      path: [],
+      pinPoint: .init(latitude: 0, longitude: 0),
+      region: ""
+    )
     public var isNeedDrawPath: Bool = false
     public var isNeedDeletePath: Bool = false
     public init() {}

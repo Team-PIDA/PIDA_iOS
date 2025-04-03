@@ -24,7 +24,7 @@ public struct FlowerSpot: Equatable, Sendable {
   public var bloomingStatus: BloomStatus
   public var streetName: String
   public var district: String?
-  public var description: String?
+  public var description: String
   public var path: [MapPoint]
   public var pinPoint: MapPoint
   public var region: String
@@ -47,7 +47,7 @@ public struct FlowerSpot: Equatable, Sendable {
     self.bloomingStatus = bloomingStatus
     self.streetName = streetName
     self.district = district
-    self.description = description
+    self.description = description ?? "꽃 정보 없음"
     self.path = path
     self.pinPoint = pinPoint
     self.region = region

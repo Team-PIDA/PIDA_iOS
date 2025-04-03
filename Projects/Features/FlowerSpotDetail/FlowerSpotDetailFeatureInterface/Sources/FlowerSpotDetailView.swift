@@ -47,7 +47,7 @@ public struct FlowerSpotDetailView: View {
             }
           }
       },
-      title: offsetY.y > 36 ? "석촌호수길" : ""
+      title: offsetY.y > 36 ? store.flowerSpotData.streetName : ""
     )
   }
   
@@ -73,11 +73,11 @@ public struct FlowerSpotDetailView: View {
   private var mainInfoSection: some View {
     VStack(alignment: .leading, spacing: .Number14) {
       VStack(alignment: .leading, spacing: .Number6) {
-        Text("석촌호수길")
+        Text(store.flowerSpotData.streetName)
           .fontStyle(FontSet.Heading.heading1)
           .foregroundColor(ColorSet.Text.Primary)
         HStack(spacing: .Number4) {
-          Text("최근 방문 0회")
+          Text("최근 방문 \(store.flowerSpotData.recentlyVisitedCount)회")
             .fontStyle(FontSet.Label.label2)
             .foregroundColor(ColorSet.Text.Primary)
           Text("·")
@@ -86,10 +86,10 @@ public struct FlowerSpotDetailView: View {
           HStack(spacing: .Number4) {
             GradiantIcon(image: .flower)
               .size(.large)
-              .foregroundStyle(ColorSet.GradiantSet.gra1)
-            Text("만개에요!")
+              .foregroundStyle(store.flowerSpotData.bloomingStatus.gradiant)
+            Text(store.flowerSpotData.bloomingStatus.text)
               .fontStyle(FontSet.Label.label2)
-              .foregroundColor(ColorSet.Pink._400)
+              .foregroundColor(store.flowerSpotData.bloomingStatus.textColor)
           }
         }
       }
@@ -100,7 +100,7 @@ public struct FlowerSpotDetailView: View {
           Icon(image: .distance)
             .size(.small)
             .foregroundColor(ColorSet.Icon.Secondary)
-          Text("내 위치로부터 50m이내")
+          Text("내 위치로부터 {INT}km")
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }
@@ -108,7 +108,7 @@ public struct FlowerSpotDetailView: View {
           Icon(image: .location)
             .size(.small)
             .foregroundColor(ColorSet.Icon.Secondary)
-          Text("최근 방문 0회")
+          Text("최근 방문 \(store.flowerSpotData.recentlyVisitedCount)회")
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }
@@ -126,7 +126,7 @@ public struct FlowerSpotDetailView: View {
           .fontStyle(FontSet.Heading.heading2)
           .foregroundColor(ColorSet.Text.Primary)
         HStack(spacing: .Number4) {
-          Text("서울 송파구 송파나루길 256 문화공간 호수")
+          Text(store.flowerSpotData.address ?? "주소 없음")
             .fontStyle(FontSet.Body.body2)
             .foregroundColor(ColorSet.Text.Primary)
           HStack(spacing: .Number0) {
@@ -141,29 +141,16 @@ public struct FlowerSpotDetailView: View {
             print("주소 복사")
           }
         }
-        Text("현재 위치에서 걸어서 5분 (50m 이내)")
+        Text("현재 위치에서 걸어서 5분 ({}km)")
           .fontStyle(FontSet.Title.title4)
           .foregroundColor(ColorSet.Text.Accent)
       }
-      // TODO: 실제 지도 영역
-      // reducer의 데이터와 연결해야 함!
-//            if let data = store.flowerSpotData {
-//              DetailMapViewRepresentable(
-//                location: data.pinPoint,
-//                pathMarkers: data.path,
-//                state: data.bloomingStatus,
-//                isNeedDrawPath: $store.isNeedDrawPath,
-//                isNeedDeletePath: $store.isNeedDeletePath
-//              )
-//              .frame(height: 160)
-//              .cornerRadius(10)
-//            }
       DetailMapViewRepresentable(
-        location: location,
-        pathMarkers: coord,
-        state: .little,
-        isNeedDrawPath: $isNeedDrawPath,
-        isNeedDeletePath: $isNeedDeletePath
+        location: store.flowerSpotData.pinPoint,
+        pathMarkers: store.flowerSpotData.path,
+        state: store.flowerSpotData.bloomingStatus,
+        isNeedDrawPath: $store.isNeedDrawPath,
+        isNeedDeletePath: $store.isNeedDeletePath
       )
       .frame(height: 160)
       .cornerRadius(10)
@@ -179,7 +166,7 @@ public struct FlowerSpotDetailView: View {
           .fontStyle(FontSet.Heading.heading3)
           .foregroundColor(ColorSet.Text.Primary)
         
-        Text("겹벚꽃")
+        Text(store.flowerSpotData.description)
           .fontStyle(FontSet.Body.body2)
           .foregroundColor(ColorSet.Text.Primary)
       }
@@ -222,8 +209,8 @@ public struct FlowerSpotDetailView: View {
     }
     .frame(height: 80)
     .background(Color.white)
-//    .onAppear {
-//      store.send(.onAppear)
-//    }
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 }
