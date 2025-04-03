@@ -10,6 +10,7 @@ import SwiftUI
 import Combine
 
 import FlowerSpotDomainInterface
+import BloomingDomainInterface
 import DesignKit
 import Utility
 
@@ -47,47 +48,7 @@ public struct MapView: View {
           if store.isBottomSheetPresented {
             let item = store.selectedItemDetail
             let bloomingStatus = store.selectedItemBlooming
-            CherryBlossomBottomSheet(
-              title: item?.streetName,
-              description: item?.address,
-              tags: [item?.district, "\(store.distance) km", item?.recentlyVisitedCountString],
-              blossomState: item?.bloomingStatus,
-              isLoading: store.isDetailLoading,
-              onPullUp: {
-                return await MainActor.run {
-                  if let item = item,
-                     let bloomingStatus = bloomingStatus {
-                    store.send(
-                      .presentToDetail(
-                        flowerSpotData: item,
-                        bloomingStatus: bloomingStatus,
-                        distance: store.distance
-                      )
-                    )
-                  }
-                }
-              },
-              onPullDown:  {
-                return await MainActor.run {
-                  store.send(.resetSearchBar)
-                  store.send(.dismissBottomSheet)
-                  store.send(.markerTapped(id: nil))
-                }
-              },
-              onTap: {
-                return await MainActor.run {
-                  if let item = item,
-                     let bloomingStatus = bloomingStatus {
-                    store.send(
-                      .presentToDetail(
-                        flowerSpotData: item,
-                        bloomingStatus: bloomingStatus,
-                        distance: store.distance
-                      )
-                    )
-                  }
-                }
-              })
+            BottomSheet(item: item, bloomingStatus: bloomingStatus)
           }
         },
         alignment: .bottom
@@ -117,7 +78,7 @@ extension MapView {
   @ViewBuilder
   private var mapView: some View {
     MapViewRepresentable(
-      userLocation: $store.state.tempUserLocation,
+      userLocation: $store.state.point,
       flowerPositions: $store.state.flowerSpots,
       newPath: $store.state.selectedPathLines,
       requestBounds: $store.requestMapBound,
@@ -173,6 +134,55 @@ extension MapView {
         store.send(.presentToSearch)
       }
     }
+  }
+  
+  @ViewBuilder
+  private func BottomSheet(
+    item: FlowerSpot?,
+    bloomingStatus: BloomStatusEntity?
+  ) -> some View {
+    CherryBlossomBottomSheet(
+      title: item?.streetName,
+      description: item?.address,
+      tags: [item?.district, "\(store.distance) km", item?.recentlyVisitedCountString],
+      blossomState: item?.bloomingStatus,
+      isLoading: store.isDetailLoading,
+      onPullUp: {
+        return await MainActor.run {
+          if let item = item,
+             let bloomingStatus = bloomingStatus {
+            store.send(
+              .presentToDetail(
+                flowerSpotData: item,
+                bloomingStatus: bloomingStatus,
+                distance: store.distance
+              )
+            )
+          }
+        }
+      },
+      onPullDown:  {
+        return await MainActor.run {
+          store.send(.resetSearchBar)
+          store.send(.dismissBottomSheet)
+          store.send(.markerTapped(id: nil))
+        }
+      },
+      onTap: {
+        return await MainActor.run {
+          if let item = item,
+             let bloomingStatus = bloomingStatus {
+            store.send(
+              .presentToDetail(
+                flowerSpotData: item,
+                bloomingStatus: bloomingStatus,
+                distance: store.distance
+              )
+            )
+          }
+        }
+      }
+    )
   }
   
   @ViewBuilder
