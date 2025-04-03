@@ -19,8 +19,8 @@ public struct TagView: View {
     Text(text)
       .fontStyle(FontSet.Caption.caption1)
       .foregroundColor(ColorSet.Text.Secondary)
-      .padding(.horizontal, .Number2)
-      .padding(.vertical, .Number6)
+      .padding(.horizontal, .Number6)
+      .padding(.vertical, .Number2)
       .background(ColorSet.Background.Tertiary)
       .cornerRadius(.Number4)
   }
