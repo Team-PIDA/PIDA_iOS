@@ -30,13 +30,15 @@ public struct BloomingUpdateReducer {
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     
-    case configSpotData(id: Int, streetName: String)
     case changeStatus
     case initialState
     case sendToastMessage(String)
     
     case updateButtonTapped
     case updateBloomingRequest
+    
+    case setSpodtId(Int)
+    case setStreetName(String)
     
     case delegate(Delegate)
     case dismiss(didUpdate: Bool) // 상태 기록 완료 여부

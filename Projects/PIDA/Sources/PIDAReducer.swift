@@ -71,6 +71,7 @@ struct PIDAReducer {
     case binding(BindingAction<State>)
     case presentSearch(Bool)
     case presentFlowerSpotDetail(Bool)
+    case presentBloomingUpdate(Bool)
   }
   
   var body: some ReducerOf<Self> {
@@ -103,16 +104,20 @@ struct PIDAReducer {
       FlowerSpotDetailReducer()
     }
     
-    Reduce { state, action in
+    Reduce {
+      state,
+      action in
       switch action {
         // MARK: - Map <-> Search
         
       case let .presentSearch(isShow):
         state.isShowSearch = isShow
         return .none
-        
       case let .presentFlowerSpotDetail(isPresent):
         state.isPresentFlowerSpotDetail = isPresent
+        return .none
+      case let .presentBloomingUpdate(isPresent):
+        state.isPresentBlooming = isPresent
         return .none
         
         // map -> search
@@ -163,17 +168,25 @@ struct PIDAReducer {
       case .flowerSpotDetail(.delegate(.dismiss)):
         return .send(.presentFlowerSpotDetail(false))
       case let .flowerSpotDetail(.delegate(.presentToBlooming(id, streetName))):
-        state.blooming.spotId = id
-        state.blooming.streetName = streetName
-        state.isPresentBlooming = true
-        return .none
+        return .run { send in
+          await MainActor.run {
+            send(.blooming(.setSpodtId(id)))
+            send(.blooming(.setStreetName(streetName)))
+            send(.presentBloomingUpdate(true))
+          }
+        }
       case .flowerSpotDetail(.delegate(.presentToLogin)):
         state.isPresentAuth = true
         return .none
       case let .blooming(.delegate(.dismiss(didUpdate))):
         print("기록 완료 여부 ", didUpdate)
-        state.isPresentBlooming = false
-        return .none
+        return .run { send in
+          await send(.presentBloomingUpdate(false))
+          if didUpdate {
+            try? await Task.sleep(for: .seconds(0.3))
+            await send(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다.")))
+          }
+        }
         
         // MARK: - Map <-> Setting
         
@@ -182,9 +195,9 @@ struct PIDAReducer {
         state.path.append(.setting)
         return .none
         
-        case .setting(.delegate(.pop)):
-          state.path.removeLast()
-          return .none
+      case .setting(.delegate(.pop)):
+        state.path.removeLast()
+        return .none
         
         // MARK: - Setting
         

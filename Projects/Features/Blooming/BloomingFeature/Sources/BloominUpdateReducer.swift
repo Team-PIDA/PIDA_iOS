@@ -21,12 +21,6 @@ extension BloomingUpdateReducer {
       switch action {
       case .binding(\.selectedStatus):
         return .send(.changeStatus)
-        
-      case let .configSpotData(id, streetName):
-        state.spotId = id
-        state.streetName = streetName
-        return .none
-        
       case .changeStatus:
         if let _ = state.selectedStatus,
             !state.isButtonEnable {
@@ -45,6 +39,12 @@ extension BloomingUpdateReducer {
         state.toastMessage = message
         return .none
         
+      case let .setSpodtId(id):
+        state.spotId = id
+        return .none
+      case let .setStreetName(streetName):
+        state.streetName = streetName
+        return .none
       case .updateButtonTapped:
         return .send(.updateBloomingRequest)
           .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
