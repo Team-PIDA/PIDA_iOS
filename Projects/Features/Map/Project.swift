@@ -12,7 +12,8 @@ import ProjectDescriptionHelpers
 let project = Project.makeFeature(
   name: "Map",
   featureInterfaceDependencies: [
-    .Domain.FlowerSpot.Interface
+    .Domain.FlowerSpot.Interface,
+    .Domain.Blooming.Interface
     // 필요 시, Domain Interface Dependency 추가
   ]
 )
