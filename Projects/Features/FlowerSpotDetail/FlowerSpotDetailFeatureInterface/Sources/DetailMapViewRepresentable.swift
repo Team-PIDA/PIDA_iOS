@@ -55,16 +55,17 @@ struct DetailMapViewRepresentable: UIViewRepresentable {
   
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
     
-    if isNeedDrawPath {
+    if isNeedDrawPath && context.coordinator.path == nil {
       presentMarker(uiView, location: location, context: context)
       drawPathLine(uiView, for: pathMarkers, context: context)
       moveCamera(uiView, to: location)
+      Task { @MainActor in isNeedDrawPath = false }
     }
     
     if isNeedDeletePath {
       context.coordinator.deletePath()
       context.coordinator.deleteMarker()
-      isNeedDeletePath = false
+      Task { @MainActor in isNeedDeletePath = false }
     }
   }
   
@@ -122,14 +123,15 @@ fileprivate extension DetailMapViewRepresentable {
                          anchor: CGPoint(x: 0.5, y: 0.5))
     context.coordinator.startMarker = start
     context.coordinator.endMarker = end
-    isNeedDrawPath = false
   }
   
   /// 마커 그리기
   private func presentMarker(_ view: NMFNaverMapView, location: MapPoint, context: Context) {
     let point = NMGLatLng(lat: location.latitude, lng: location.longitude)
     let marker = drawMarker(view, to: point, icon: state.activeImage)
-    context.coordinator.activeMarker = marker
+    if context.coordinator.activeMarker == nil {
+      context.coordinator.activeMarker = marker
+    }
   }
   
   /// 마커 기본 설정 메서드
