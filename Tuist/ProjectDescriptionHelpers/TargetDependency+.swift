@@ -30,6 +30,7 @@ public enum Feature: String {
 public enum ExternalDependency: String {
   case TCA = "ComposableArchitecture"
   case NMap = "NMapsMap"
+  case Lottie = "Lottie"
 }
 
 public enum InternalTarget: String {
@@ -212,5 +213,6 @@ extension TargetDependency {
   public struct ThirdParty: PIDADependency {
     public static let TCA = Self.external(externalDependency: .TCA)
     public static let NMaps = Self.external(externalDependency: .NMap)
+    public static let Lottie = Self.external(externalDependency: .Lottie)
   }
 }

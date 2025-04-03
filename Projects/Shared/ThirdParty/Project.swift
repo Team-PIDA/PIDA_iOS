@@ -26,7 +26,8 @@ let project = Project(
       sources: ["Sources/**"],
       dependencies: [
         .ThirdParty.TCA,
-        .ThirdParty.NMaps
+        .ThirdParty.NMaps,
+        .ThirdParty.Lottie
       ]
     )
   ]
