@@ -23,6 +23,8 @@ extension FlowerSpotDetailReducer {
       case .dismiss:
         state.isNeedDeletePath = true
         return .send(.delegate(.dismiss))
+      case let .presentToBlooming(streetName):
+        return .send(.delegate(.presentToBlooming(streetName: streetName)))
         
       case .delegate, .binding: return .none
       }

@@ -38,12 +38,16 @@ public struct FlowerSpotDetailReducer {
     case binding(BindingAction<State>)
     case showToastView(message: String?)
     case onAppear
+    
+    // MARK: - Delegate
     case delegate(Delegate)
     case dismiss
+    case presentToBlooming(streetName: String)
   }
   
   public enum Delegate: Equatable {
     case dismiss
+    case presentToBlooming(streetName: String)
   }
 
   public var body: some ReducerOf<Self> {

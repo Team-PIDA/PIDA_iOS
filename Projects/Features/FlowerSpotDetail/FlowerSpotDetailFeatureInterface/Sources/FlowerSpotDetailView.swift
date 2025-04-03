@@ -204,6 +204,7 @@ public struct FlowerSpotDetailView: View {
       )
       .action {
         print("오늘의 개화 상태 기록하기")
+        store.send(.presentToBlooming(streetName: store.flowerSpotData.streetName))
       }
       .padding(.Number16)
     }
