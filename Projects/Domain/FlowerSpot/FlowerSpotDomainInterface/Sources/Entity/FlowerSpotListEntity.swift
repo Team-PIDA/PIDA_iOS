@@ -19,11 +19,11 @@ public struct FlowerSpotListEntity: Equatable, Sendable {
 
 public struct FlowerSpot: Equatable, Sendable {
   public var id: Int
-  public var address: String?
+  public var address: String
   public var recentlyVisitedCount: Int
   public var bloomingStatus: BloomStatus
   public var streetName: String
-  public var district: String?
+  public var district: String
   public var description: String
   public var path: [MapPoint]
   public var pinPoint: MapPoint
@@ -42,11 +42,11 @@ public struct FlowerSpot: Equatable, Sendable {
     region: String
   ) {
     self.id = id
-    self.address = address
+    self.address = address ?? "주소 정보 없음"
     self.recentlyVisitedCount = recentlyVisitedCount
     self.bloomingStatus = bloomingStatus
     self.streetName = streetName
-    self.district = district
+    self.district = district ?? "구 정보 없음"
     self.description = description ?? "꽃 정보 없음"
     self.path = path
     self.pinPoint = pinPoint

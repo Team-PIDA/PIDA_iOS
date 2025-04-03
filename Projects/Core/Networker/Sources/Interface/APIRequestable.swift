@@ -15,7 +15,7 @@ public typealias HTTPParameters = [String: Any]
 
 public enum APIHeaderType {
   case plain
-  case authorization(String)
+  case authorization(String?)
 }
 
 public enum HTTPRequestParameter {
@@ -78,6 +78,7 @@ public extension APIRequestable {
     case .plain:
       return ["Content-Type": "application/json"]
     case let .authorization(token):
+      guard let token = token else { return ["Content-Type": "application/json"] }
       return [
         "Content-Type": "application/json",
         "Authorization": "Bearer \(token)"

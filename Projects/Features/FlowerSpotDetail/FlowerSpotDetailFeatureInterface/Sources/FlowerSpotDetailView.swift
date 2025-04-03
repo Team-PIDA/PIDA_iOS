@@ -125,7 +125,7 @@ public struct FlowerSpotDetailView: View {
           .fontStyle(FontSet.Heading.heading2)
           .foregroundColor(ColorSet.Text.Primary)
         HStack(spacing: .Number4) {
-          Text(store.flowerSpotData.address ?? "주소 없음")
+          Text(store.flowerSpotData.address)
             .fontStyle(FontSet.Body.body2)
             .foregroundColor(ColorSet.Text.Primary)
           HStack(spacing: .Number0) {
@@ -175,16 +175,20 @@ public struct FlowerSpotDetailView: View {
           Text("개화 상태")
             .fontStyle(FontSet.Heading.heading3)
             .foregroundColor(ColorSet.Text.Primary)
-          Text("최근 5일 동안 {N}명이 기록했어요")
+          Text("최근 5일 동안 \(store.bloomingStatus.totalCount)명이 기록했어요")
             .fontStyle(FontSet.Body.body2)
             .foregroundColor(ColorSet.Text.Primary)
         }
-        VStack(alignment: .leading, spacing: 6) {
-          BloomStatusGraph(date: "2025-04-02", little: 10, bloomed: 20, withered: 70, maxVoteCount: 10)
-          BloomStatusGraph(date: "2025-04-01", little: 60, bloomed: 10, withered: 30, maxVoteCount: 10)
-          BloomStatusGraph(date: "2025-03-31", little: 20, bloomed: 60, withered: 20, maxVoteCount: 10)
-          BloomStatusGraph(date: "2025-03-30", little: 20, bloomed: 40, withered: 40, maxVoteCount: 10)
-          BloomStatusGraph(date: "2025-03-29", little: 0, bloomed: 0, withered: 0, maxVoteCount: 0)
+        LazyVStack(alignment: .leading, spacing: 6) {
+          ForEach(store.bloomingStatus.dayStatuses, id: \.id) { status in
+            BloomStatusGraph(
+              date: status.date,
+              little: status.little.percentage,
+              bloomed: status.bloomed.percentage,
+              withered: status.bloomed.percentage,
+              maxVoteCount: status.maxValue
+            )
+          }
         }
       }
     }

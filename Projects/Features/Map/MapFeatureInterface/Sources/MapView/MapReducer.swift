@@ -8,6 +8,7 @@
 
 import Foundation
 import FlowerSpotDomainInterface
+import BloomingDomainInterface
 import SearchDomainInterface
 import ComposableArchitecture
 
@@ -47,6 +48,8 @@ public struct MapReducer {
     public var selectedItem: FlowerSpot? = nil
     /// 네트워크로 받아온 상세 데이터
     public var selectedItemDetail: FlowerSpot? = nil
+    /// 네트워크로 받아온 개화 상태 데이터
+    public var selectedItemBlooming: BloomStatusEntity? = nil
     /// 로딩 여부
     public var isDetailLoading: Bool = false
     
@@ -71,6 +74,7 @@ public struct MapReducer {
     case storeFlowerData([FlowerSpot])
     case markerTapped(id: Int?)
     case detailResponse(FlowerSpot)
+    case bloomingResponse(BloomStatusEntity)
     case fetchPathLines(Int)
     case requestMapBounds(Bool)
     case mapSearchError(String?)
@@ -94,14 +98,14 @@ public struct MapReducer {
     case delegate(Delegate)
     case presentToSearch
     case pushToSetting
-    case presentToDetail(flowerSpotData: FlowerSpot)
+    case presentToDetail(flowerSpotData: FlowerSpot, bloomingStatus: BloomStatusEntity)
   }
   
   public enum Delegate: Equatable {
     case presentToSearch(String?)
     case pushToSetting
     case resetSearchView
-    case presentToDetail(flowerSpotData: FlowerSpot)
+    case presentToDetail(flowerSpotData: FlowerSpot, bloomingStatus: BloomStatusEntity)
   }
   
   public var body: some ReducerOf<Self> {

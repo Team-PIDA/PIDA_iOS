@@ -44,17 +44,22 @@ public struct MapView: View {
     }
     .overlay(
         Group {
-          if let item = store.selectedItemDetail {
+          if let item = store.selectedItemDetail,
+             let bloomingStatus = store.selectedItemBlooming {
             CherryBlossomBottomSheet(
               title: item.streetName,
-              description: item.address ?? "",
-              tags: ["\(item.district ?? "")", "최근 방문 \(item.recentlyVisitedCount)회"],
+              description: item.address,
+              tags: ["\(item.district)", "최근 방문 \(item.recentlyVisitedCount)회"],
               blossomState: item.bloomingStatus,
               isLoading: store.isDetailLoading,
               onPullUp: {
-                print("상세로 이동")
                 return await MainActor.run {
-                  store.send(.presentToDetail(flowerSpotData: item))
+                  store.send(
+                    .presentToDetail(
+                      flowerSpotData: item,
+                      bloomingStatus: bloomingStatus
+                    )
+                  )
                 }
               },
               onPullDown:  {
@@ -65,7 +70,14 @@ public struct MapView: View {
                 }
               },
               onTap: {
-                print("상세로 이동")
+                return await MainActor.run {
+                  store.send(
+                    .presentToDetail(
+                      flowerSpotData: item,
+                      bloomingStatus: bloomingStatus
+                    )
+                  )
+                }
               })
           }
         },

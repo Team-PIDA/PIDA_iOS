@@ -8,6 +8,7 @@
 
 import ComposableArchitecture
 import FlowerSpotDomainInterface
+import BloomingDomainInterface
 
 @Reducer
 public struct FlowerSpotDetailReducer {
@@ -28,6 +29,7 @@ public struct FlowerSpotDetailReducer {
       pinPoint: .init(latitude: 0, longitude: 0),
       region: ""
     )
+    public var bloomingStatus: BloomStatusEntity = .init(totalCount: 0, dayStatuses: [])
     public var toastMessage: String? = nil
     public var isNeedDrawPath: Bool = false
     public var isNeedDeletePath: Bool = false
