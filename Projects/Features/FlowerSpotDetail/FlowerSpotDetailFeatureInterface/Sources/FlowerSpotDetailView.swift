@@ -108,7 +108,7 @@ public struct FlowerSpotDetailView: View {
           Icon(image: .distance)
             .size(.small)
             .foregroundColor(ColorSet.Icon.Secondary)
-          Text("내 위치로부터 {INT}km")
+          Text("내 위치로부터 " + "\(store.distance) km")
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }
@@ -150,7 +150,8 @@ public struct FlowerSpotDetailView: View {
             store.send(.showToastView(message: "주소가 복사되었습니다."))
           }
         }
-        Text("현재 위치에서 걸어서 5분 ({}km)")
+        let walkingMinutes = Int((store.distance / 5.0) * 60)
+        Text("현재 위치에서 걸어서 약 \(walkingMinutes)분 (\(String(format: "%.1f", store.distance))km)")
           .fontStyle(FontSet.Title.title4)
           .foregroundColor(ColorSet.Text.Accent)
       }

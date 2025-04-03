@@ -145,10 +145,11 @@ struct PIDAReducer {
         
         // MARK: - Spot Detail
         
-      case let .map(.delegate(.presentToDetail(flowerSpotData, bloomingData))):
+      case let .map(.delegate(.presentToDetail(flowerSpotData, bloomingData, distance))):
         // TODO: - 상세화면연결 및 flowerSpotData 전달
         state.flowerSpotDetail.flowerSpotData = flowerSpotData
         state.flowerSpotDetail.bloomingStatus = bloomingData
+        state.flowerSpotDetail.distance = distance
         state.isPresentFlowerSpotDetail = true
         return .none
       case .flowerSpotDetail(.delegate(.dismiss)):

@@ -22,8 +22,10 @@ public struct MapReducer {
   
   @ObservableState
   public struct State: Equatable {
-    /// 특정 좌표로 이동하기 위한 프로퍼티
+    /// 사용자의 실제 위치 정보
     public var point: MapPoint? = nil
+    /// 지도 이동을 위한 임시 위치 정보
+    public var tempUserLocation: MapPoint? = nil
     /// 현재 지도에 보여 줄 FlowerSpot 데이터
     public var flowerSpots: [Int: FlowerSpot] = [:]
     /// 현재 그려져있는 경로
@@ -36,7 +38,8 @@ public struct MapReducer {
     public var requestMapBound: Bool = false
     /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
-    
+    /// 현재 위치에서 특정 지점까지의 거리 (단위: 킬로미터)
+    public var distance: Double = .zero
     
     /// 검색 결과 데이터
     public var searchResult: FlowerSpot? = nil
@@ -82,7 +85,7 @@ public struct MapReducer {
     case dismissBottomSheet
     case requestDetailInfo(Int)
     
-    
+    case calculateDistance(MapPoint)
     
     // MARK: - Life Cycle
     case viewDidAppear
@@ -98,14 +101,22 @@ public struct MapReducer {
     case delegate(Delegate)
     case presentToSearch
     case pushToSetting
-    case presentToDetail(flowerSpotData: FlowerSpot, bloomingStatus: BloomStatusEntity)
+    case presentToDetail(
+      flowerSpotData: FlowerSpot,
+      bloomingStatus: BloomStatusEntity,
+      distance: Double
+    )
   }
   
   public enum Delegate: Equatable {
     case presentToSearch(String?)
     case pushToSetting
     case resetSearchView
-    case presentToDetail(flowerSpotData: FlowerSpot, bloomingStatus: BloomStatusEntity)
+    case presentToDetail(
+      flowerSpotData: FlowerSpot,
+      bloomingStatus: BloomStatusEntity,
+      distance: Double
+    )
   }
   
   public var body: some ReducerOf<Self> {

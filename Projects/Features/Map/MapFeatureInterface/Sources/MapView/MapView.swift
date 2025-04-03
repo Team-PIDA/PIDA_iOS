@@ -50,7 +50,7 @@ public struct MapView: View {
             CherryBlossomBottomSheet(
               title: item?.streetName,
               description: item?.address,
-              tags: [item?.district, item?.recentlyVisitedCountString],
+              tags: [item?.district, "\(store.distance) km", item?.recentlyVisitedCountString],
               blossomState: item?.bloomingStatus,
               isLoading: store.isDetailLoading,
               onPullUp: {
@@ -60,7 +60,8 @@ public struct MapView: View {
                     store.send(
                       .presentToDetail(
                         flowerSpotData: item,
-                        bloomingStatus: bloomingStatus
+                        bloomingStatus: bloomingStatus,
+                        distance: store.distance
                       )
                     )
                   }
@@ -80,7 +81,8 @@ public struct MapView: View {
                     store.send(
                       .presentToDetail(
                         flowerSpotData: item,
-                        bloomingStatus: bloomingStatus
+                        bloomingStatus: bloomingStatus,
+                        distance: store.distance
                       )
                     )
                   }
@@ -115,7 +117,7 @@ extension MapView {
   @ViewBuilder
   private var mapView: some View {
     MapViewRepresentable(
-      userLocation: $store.state.point,
+      userLocation: $store.state.tempUserLocation,
       flowerPositions: $store.state.flowerSpots,
       newPath: $store.state.selectedPathLines,
       requestBounds: $store.requestMapBound,
@@ -140,7 +142,7 @@ extension MapView {
   
   @ViewBuilder
   private func searchView() -> some View {
-    // TODO: - ontap 시 textfield에 텍스트 
+    // TODO: - ontap 시 textfield에 텍스트
     if let result = store.searchText { // 검색 결과
       SearchBar(
         text: .constant(result),

@@ -31,8 +31,12 @@ extension MapReducer {
         // MARK: - Map
         
       case .fetchUserLocation:
-        return .run { _ in
+        let point = state.point
+        return .run { send in
           await LocationService.shared.requestUserLocation()
+          if let point = point {
+            await send(.moveLocation(point))  // 현재 저장된 위치로 이동
+          }
         }
       case .moveUserLocation:
         return .run { send in
@@ -42,6 +46,7 @@ extension MapReducer {
         }
       case let .moveLocation(point):
         state.point = point
+        state.tempUserLocation = point
         return .none
       case let .fetchFlowers(positions):
         return .run { send in
@@ -78,7 +83,6 @@ extension MapReducer {
           state.isNeedDeleteMarker = true
           return .none
         }
-        
         return .run { send in
           await send(.fetchPathLines(id))
           await send(.requestDetailInfo(id))
@@ -111,12 +115,19 @@ extension MapReducer {
         if state.selectedItemBlooming != nil {
           state.isDetailLoading = false
         }
-        return .none
+        return .send(.calculateDistance(item.pinPoint))
       case let .bloomingResponse(item):
         state.selectedItemBlooming = item
         if state.selectedItemDetail != nil {
           state.isDetailLoading = false
         }
+        return .none
+      case let .calculateDistance(pinPoint):
+        guard let userPoint = state.point else {
+          state.distance = .zero
+          return .none
+        }
+        state.distance = pinPoint.distance(from: userPoint)
         return .none
       case let .fetchPathLines(id):
         if let data = state.flowerSpots[id] {
@@ -146,6 +157,7 @@ extension MapReducer {
         state.isBottomSheetPresented = false
         state.selectedItemDetail = nil
         state.selectedItemBlooming = nil
+        state.distance = .zero
         return .none
         
       case .viewDidAppear:
@@ -198,12 +210,13 @@ extension MapReducer {
         return .send(.delegate(.presentToSearch(state.searchText)))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
-      case let .presentToDetail(flowerSpot, bloomingStatus):
+      case let .presentToDetail(flowerSpot, bloomingStatus, distance):
         return .send(
           .delegate(
             .presentToDetail(
               flowerSpotData: flowerSpot,
-              bloomingStatus: bloomingStatus
+              bloomingStatus: bloomingStatus,
+              distance: distance
             )
           )
         )

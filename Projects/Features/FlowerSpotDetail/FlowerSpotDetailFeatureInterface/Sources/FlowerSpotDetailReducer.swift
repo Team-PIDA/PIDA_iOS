@@ -30,6 +30,7 @@ public struct FlowerSpotDetailReducer {
       region: ""
     )
     public var bloomingStatus: BloomStatusEntity = .init(totalCount: 0, dayStatuses: [])
+    public var distance: Double = .zero
     public var toastMessage: String? = nil
     public var isNeedDrawPath: Bool = false
     public var isNeedDeletePath: Bool = false
