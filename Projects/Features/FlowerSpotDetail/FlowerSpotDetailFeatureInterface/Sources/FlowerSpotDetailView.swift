@@ -17,11 +17,6 @@ public struct FlowerSpotDetailView: View {
   
   @State var isNeedDrawPath: Bool = true
   @State var isNeedDeletePath: Bool = false
-  private var location: MapPoint = .init(latitude: 37.5464, longitude: 126.91923)
-  private var coord: [MapPoint] = [
-    .init(latitude: 37.54542, longitude: 126.91869),
-    .init(latitude: 37.54783, longitude: 126.91993)
-  ]
   
   public init(store: StoreOf<FlowerSpotDetailReducer>) {
     self.store = store
