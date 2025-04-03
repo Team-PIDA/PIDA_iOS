@@ -45,6 +45,10 @@ public struct FlowerSpotDetailReducer {
     case chechAuth
     case onAppear
     
+    case setFlowerSpotData(FlowerSpot)
+    case setBloomingStatus(BloomStatusEntity)
+    case setDistance(Double)
+    
     case alertCancelTapped
     case alertAcceptTapped
     

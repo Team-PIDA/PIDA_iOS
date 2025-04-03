@@ -29,6 +29,16 @@ extension FlowerSpotDetailReducer {
         } else {
           return .send(.showLoginAlert)
         }
+        
+      case let .setFlowerSpotData(flowerSpotData):
+        state.flowerSpotData = flowerSpotData
+        return .none
+      case let .setBloomingStatus(bloomingStatus):
+        state.bloomingStatus = bloomingStatus
+        return .none
+      case let .setDistance(distance):
+        state.distance = distance
+        return .none
       case .alertCancelTapped:
         state.isShowLoginAlert = false
         return .none

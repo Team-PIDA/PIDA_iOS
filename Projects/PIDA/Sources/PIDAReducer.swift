@@ -70,6 +70,7 @@ struct PIDAReducer {
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
+    case presentFlowerSpotDetail(Bool)
   }
   
   var body: some ReducerOf<Self> {
@@ -110,6 +111,10 @@ struct PIDAReducer {
         state.isShowSearch = isShow
         return .none
         
+      case let .presentFlowerSpotDetail(isPresent):
+        state.isPresentFlowerSpotDetail = isPresent
+        return .none
+        
         // map -> search
       case let .map(.delegate(.presentToSearch(keyword))):
         
@@ -147,14 +152,16 @@ struct PIDAReducer {
         
       case let .map(.delegate(.presentToDetail(flowerSpotData, bloomingData, distance))):
         // TODO: - 상세화면연결 및 flowerSpotData 전달
-        state.flowerSpotDetail.flowerSpotData = flowerSpotData
-        state.flowerSpotDetail.bloomingStatus = bloomingData
-        state.flowerSpotDetail.distance = distance
-        state.isPresentFlowerSpotDetail = true
-        return .none
+        return .run { send in
+          await MainActor.run {
+            send(.flowerSpotDetail(.setFlowerSpotData(flowerSpotData)))
+            send(.flowerSpotDetail(.setBloomingStatus(bloomingData)))
+            send(.flowerSpotDetail(.setDistance(distance)))
+            send(.presentFlowerSpotDetail(true))
+          }
+        }
       case .flowerSpotDetail(.delegate(.dismiss)):
-        state.isPresentFlowerSpotDetail = false
-        return .none
+        return .send(.presentFlowerSpotDetail(false))
       case let .flowerSpotDetail(.delegate(.presentToBlooming(id, streetName))):
         state.blooming.spotId = id
         state.blooming.streetName = streetName
