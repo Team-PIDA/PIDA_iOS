@@ -31,6 +31,7 @@ public enum ExternalDependency: String {
   case TCA = "ComposableArchitecture"
   case NMap = "NMapsMap"
   case Lottie = "Lottie"
+  case DotLottie = "DotLottie"
 }
 
 public enum InternalTarget: String {
@@ -214,5 +215,6 @@ extension TargetDependency {
     public static let TCA = Self.external(externalDependency: .TCA)
     public static let NMaps = Self.external(externalDependency: .NMap)
     public static let Lottie = Self.external(externalDependency: .Lottie)
+    public static let DotLottie = Self.external(externalDependency: .DotLottie)
   }
 }

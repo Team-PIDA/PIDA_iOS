@@ -32,5 +32,6 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.18.0"),
     .package(url: "https://github.com/navermaps/SPM-NMapsMap.git", exact: "3.20.0"),
     .package(url: "https://github.com/airbnb/lottie-ios.git", exact: "4.5.0"),
+    .package(url: "https://github.com/LottieFiles/dotlottie-ios", exact: "0.8.0")
   ]
 )

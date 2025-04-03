@@ -27,7 +27,8 @@ let project = Project(
       dependencies: [
         .ThirdParty.TCA,
         .ThirdParty.NMaps,
-        .ThirdParty.Lottie
+        .ThirdParty.Lottie,
+        .ThirdParty.DotLottie,
       ]
     )
   ]
