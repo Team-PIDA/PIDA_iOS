@@ -18,17 +18,14 @@ public struct PIDAlert: View {
   var isErrorType: Bool = true
   
   public init(
-    title: String,
-    message: String? = nil,
-    cancelTitle: String,
-    acceptTitle: String,
+    type: AlertType,
     closeAction: @escaping () async -> Void,
     acceptAction: @escaping () async -> Void
   ) {
-    self.title = title
-    self.message = message
-    self.cancelTitle = cancelTitle
-    self.acceptTitle = acceptTitle
+    self.title = type.title
+    self.message = type.message
+    self.cancelTitle = type.cancel
+    self.acceptTitle = type.accept
     self.closeAction = closeAction
     self.acceptAction = acceptAction
   }
@@ -106,10 +103,7 @@ public struct PIDAlert: View {
 
 #Preview {
   PIDAlert(
-    title: "알림",
-    message: "알림 메시지입니다.\n2줄 짜리임.",
-    cancelTitle: "닫기",
-    acceptTitle: "확인",
+    type: .logout,
     closeAction: {
       print("닫기 버튼")
     },

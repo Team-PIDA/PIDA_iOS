@@ -33,13 +33,19 @@ public struct FlowerSpotDetailReducer {
     public var toastMessage: String? = nil
     public var isNeedDrawPath: Bool = false
     public var isNeedDeletePath: Bool = false
+    public var isShowLoginAlert: Bool = false
     public init() {}
   }
 
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case showToastView(message: String?)
+    case showLoginAlert
+    case chechAuth
     case onAppear
+    
+    case alertCancelTapped
+    case alertAcceptTapped
     
     // MARK: - Delegate
     case delegate(Delegate)
@@ -50,6 +56,7 @@ public struct FlowerSpotDetailReducer {
   public enum Delegate: Equatable {
     case dismiss
     case presentToBlooming(streetName: String)
+    case presentToLogin
   }
 
   public var body: some ReducerOf<Self> {

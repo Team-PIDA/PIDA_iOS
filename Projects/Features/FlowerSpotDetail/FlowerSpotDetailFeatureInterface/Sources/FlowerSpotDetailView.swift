@@ -9,6 +9,7 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignKit
+import Utility
 import FlowerSpotDomainInterface
 
 public struct FlowerSpotDetailView: View {
@@ -31,6 +32,14 @@ public struct FlowerSpotDetailView: View {
       }
       ToastView(message: $store.toastMessage)
         .padding(.bottom, .Number80)
+      if store.isShowLoginAlert {
+        PIDAlert(
+          type: .login,
+          closeAction: { store.send(.alertCancelTapped) },
+          acceptAction: { store.send(.alertAcceptTapped) }
+        )
+        .isErrorType(false)
+      }
     }
   }
   
@@ -208,7 +217,7 @@ public struct FlowerSpotDetailView: View {
       )
       .action {
         print("오늘의 개화 상태 기록하기")
-        store.send(.presentToBlooming(streetName: store.flowerSpotData.streetName))
+        store.send(.chechAuth)
       }
       .padding(.Number16)
     }

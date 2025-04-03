@@ -158,6 +158,9 @@ struct PIDAReducer {
         state.blooming.streetName = streetName
         state.isPresentBlooming = true
         return .none
+      case .flowerSpotDetail(.delegate(.presentToLogin)):
+        state.isPresentAuth = true
+        return .none
       case let .blooming(.delegate(.dismiss(didUpdate))):
         print("기록 완료 여부 ", didUpdate)
         state.isPresentBlooming = false
