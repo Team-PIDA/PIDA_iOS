@@ -42,6 +42,7 @@ public struct ResearchButton: View {
         .frame(width: .Number16, height: .Number16)
       Text("현 위치에서 재검색")
         .foregroundColor(ColorSet.Text.Accent)
+        .fontStyle(FontSet.Body.body3)
     }
     .background(
       RoundedRectangle(cornerRadius: .Number100)
