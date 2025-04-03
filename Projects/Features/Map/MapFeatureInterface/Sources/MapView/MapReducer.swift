@@ -22,10 +22,11 @@ public struct MapReducer {
   
   @ObservableState
   public struct State: Equatable {
-    /// 사용자의 실제 위치 정보
+    
+    /// 특정 지점으로 이동하기 위한 위치정보
     public var point: MapPoint? = nil
-    /// 지도 이동을 위한 임시 위치 정보
-    public var tempUserLocation: MapPoint? = nil
+    /// 유저의 현재 위치
+    public var userLocation: MapPoint? = nil
     /// 현재 지도에 보여 줄 FlowerSpot 데이터
     public var flowerSpots: [Int: FlowerSpot] = [:]
     /// 현재 그려져있는 경로
@@ -72,6 +73,7 @@ public struct MapReducer {
     
     case fetchUserLocation
     case moveUserLocation
+    case saveUserLocation(MapPoint)
     case moveLocation(MapPoint)
     case fetchFlowers([MapPoint])
     case storeFlowerData([FlowerSpot])

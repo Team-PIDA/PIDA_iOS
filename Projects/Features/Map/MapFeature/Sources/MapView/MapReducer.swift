@@ -41,12 +41,16 @@ extension MapReducer {
       case .moveUserLocation:
         return .run { send in
           if let location = await LocationService.shared.userLocation {
-            await send(.moveLocation(MapPoint(latitude: location.0, longitude: location.1)))
+            let userLocation = MapPoint(latitude: location.0, longitude: location.1)
+            await send(.saveUserLocation(userLocation))
+            await send(.moveLocation(userLocation))
           }
         }
+      case let .saveUserLocation(location):
+        state.userLocation = location
+        return .none
       case let .moveLocation(point):
         state.point = point
-        state.tempUserLocation = point
         return .none
       case let .fetchFlowers(positions):
         return .run { send in
@@ -123,7 +127,7 @@ extension MapReducer {
         }
         return .none
       case let .calculateDistance(pinPoint):
-        guard let userPoint = state.point else {
+        guard let userPoint = state.userLocation else {
           state.distance = .zero
           return .none
         }
