@@ -27,19 +27,19 @@ public struct CherryBlossomBottomSheet: View {
   private let pullThreshold: CGFloat = 80 // drag의 음/양 값이 이 값을 넘으면 pull down/up
   
   public init(
-    title: String,
-    description: String,
-    tags: [String],
-    blossomState: BloomStatus,
+    title: String? = "",
+    description: String? = "",
+    tags: [String?] = [],
+    blossomState: BloomStatus? = nil,
     isLoading: Bool = false,
     onPullUp: (() async -> Void)? = nil,
     onPullDown: (() async -> Void)? = nil,
     onTap: (() async -> Void)? = nil
   ) {
-    self.title = title
-    self.description = description
-    self.tags = tags
-    self.blossomState = blossomState
+    self.title = title ?? ""
+    self.description = description ?? ""
+    self.tags = tags.compactMap { $0 }
+    self.blossomState = blossomState ?? .notBloomed
     self.isLoading = isLoading
     self.onPullUp = onPullUp
     self.onPullDown = onPullDown

@@ -80,8 +80,8 @@ public struct MapReducer {
     case mapSearchError(String?)
     case selectedItem(FlowerSpot)
     case dismissBottomSheet
-    
     case requestDetailInfo(Int)
+    
     
     
     // MARK: - Life Cycle

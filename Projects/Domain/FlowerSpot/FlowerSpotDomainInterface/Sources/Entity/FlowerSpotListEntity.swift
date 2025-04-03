@@ -21,6 +21,7 @@ public struct FlowerSpot: Equatable, Sendable {
   public var id: Int
   public var address: String
   public var recentlyVisitedCount: Int
+  public var recentlyVisitedCountString: String
   public var bloomingStatus: BloomStatus
   public var streetName: String
   public var district: String
@@ -44,6 +45,7 @@ public struct FlowerSpot: Equatable, Sendable {
     self.id = id
     self.address = address ?? "주소 정보 없음"
     self.recentlyVisitedCount = recentlyVisitedCount
+    self.recentlyVisitedCountString = "최근 방문 \(self.recentlyVisitedCount)회"
     self.bloomingStatus = bloomingStatus
     self.streetName = streetName
     self.district = district ?? "구 정보 없음"

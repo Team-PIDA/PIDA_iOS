@@ -87,6 +87,7 @@ extension MapReducer {
       case let .requestDetailInfo(id):
         state.selectedItemDetail = nil
         state.isDetailLoading = true
+        state.isBottomSheetPresented = true
         return .run { send in
           do {
             async let detailResult = try await getFlowerSpotDetailUseCase.execute(id: id)
@@ -142,8 +143,9 @@ extension MapReducer {
         return .send(.fetchPathLines(item.id))
         
       case .dismissBottomSheet:
-        print("바텀시트 닫기")
+        state.isBottomSheetPresented = false
         state.selectedItemDetail = nil
+        state.selectedItemBlooming = nil
         return .none
         
       case .viewDidAppear:

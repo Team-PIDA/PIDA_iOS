@@ -44,22 +44,26 @@ public struct MapView: View {
     }
     .overlay(
         Group {
-          if let item = store.selectedItemDetail,
-             let bloomingStatus = store.selectedItemBlooming {
+          if store.isBottomSheetPresented {
+            let item = store.selectedItemDetail
+            let bloomingStatus = store.selectedItemBlooming
             CherryBlossomBottomSheet(
-              title: item.streetName,
-              description: item.address,
-              tags: ["\(item.district)", "최근 방문 \(item.recentlyVisitedCount)회"],
-              blossomState: item.bloomingStatus,
+              title: item?.streetName,
+              description: item?.address,
+              tags: [item?.district, item?.recentlyVisitedCountString],
+              blossomState: item?.bloomingStatus,
               isLoading: store.isDetailLoading,
               onPullUp: {
                 return await MainActor.run {
-                  store.send(
-                    .presentToDetail(
-                      flowerSpotData: item,
-                      bloomingStatus: bloomingStatus
+                  if let item = item,
+                     let bloomingStatus = bloomingStatus {
+                    store.send(
+                      .presentToDetail(
+                        flowerSpotData: item,
+                        bloomingStatus: bloomingStatus
+                      )
                     )
-                  )
+                  }
                 }
               },
               onPullDown:  {
@@ -71,12 +75,15 @@ public struct MapView: View {
               },
               onTap: {
                 return await MainActor.run {
-                  store.send(
-                    .presentToDetail(
-                      flowerSpotData: item,
-                      bloomingStatus: bloomingStatus
+                  if let item = item,
+                     let bloomingStatus = bloomingStatus {
+                    store.send(
+                      .presentToDetail(
+                        flowerSpotData: item,
+                        bloomingStatus: bloomingStatus
+                      )
                     )
-                  )
+                  }
                 }
               })
           }

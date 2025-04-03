@@ -76,7 +76,7 @@ public struct FlowerSpotDetailView: View {
           .fontStyle(FontSet.Heading.heading1)
           .foregroundColor(ColorSet.Text.Primary)
         HStack(spacing: .Number4) {
-          Text("최근 방문 \(store.flowerSpotData.recentlyVisitedCount)회")
+          Text(store.flowerSpotData.recentlyVisitedCountString)
             .fontStyle(FontSet.Label.label2)
             .foregroundColor(ColorSet.Text.Primary)
           Text("·")
@@ -107,7 +107,7 @@ public struct FlowerSpotDetailView: View {
           Icon(image: .location)
             .size(.small)
             .foregroundColor(ColorSet.Icon.Secondary)
-          Text("최근 방문 \(store.flowerSpotData.recentlyVisitedCount)회")
+          Text(store.flowerSpotData.recentlyVisitedCountString)
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }
