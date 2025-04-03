@@ -42,7 +42,9 @@ public struct FlowerSpotDetailView: View {
         TouchArea(image: .pullDown)
           .size(.superLarge)
           .action {
-            print("닫기 버튼")
+            return await MainActor.run {
+              store.send(.dismiss)
+            }
           }
       },
       title: offsetY.y > 36 ? "석촌호수길" : ""
