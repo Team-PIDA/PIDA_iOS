@@ -24,7 +24,8 @@ extension FlowerSpotDetailReducer {
       case .chechAuth:
         if UserDefault.isLoggedIn == true {
           let streetName = state.flowerSpotData.streetName
-          return .send(.presentToBlooming(streetName: streetName))
+          let id = state.flowerSpotData.id
+          return .send(.presentToBlooming(id: id, streetName: streetName))
         } else {
           return .send(.showLoginAlert)
         }
@@ -39,8 +40,8 @@ extension FlowerSpotDetailReducer {
       case .dismiss:
         state.isNeedDeletePath = true
         return .send(.delegate(.dismiss))
-      case let .presentToBlooming(streetName):
-        return .send(.delegate(.presentToBlooming(streetName: streetName)))
+      case let .presentToBlooming(id, streetName):
+        return .send(.delegate(.presentToBlooming(id: id, streetName: streetName)))
       case .showLoginAlert:
         state.isShowLoginAlert = true
         return .none

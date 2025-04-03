@@ -155,7 +155,8 @@ struct PIDAReducer {
       case .flowerSpotDetail(.delegate(.dismiss)):
         state.isPresentFlowerSpotDetail = false
         return .none
-      case let .flowerSpotDetail(.delegate(.presentToBlooming(streetName))):
+      case let .flowerSpotDetail(.delegate(.presentToBlooming(id, streetName))):
+        state.blooming.spotId = id
         state.blooming.streetName = streetName
         state.isPresentBlooming = true
         return .none

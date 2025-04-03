@@ -51,12 +51,12 @@ public struct FlowerSpotDetailReducer {
     // MARK: - Delegate
     case delegate(Delegate)
     case dismiss
-    case presentToBlooming(streetName: String)
+    case presentToBlooming(id: Int, streetName: String)
   }
   
   public enum Delegate: Equatable {
     case dismiss
-    case presentToBlooming(streetName: String)
+    case presentToBlooming(id: Int, streetName: String)
     case presentToLogin
   }
 
