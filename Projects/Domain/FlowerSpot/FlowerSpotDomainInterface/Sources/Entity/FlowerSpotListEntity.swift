@@ -50,7 +50,7 @@ public struct FlowerSpot: Equatable, Sendable {
     self.bloomingStatus = bloomingStatus
     self.streetName = streetName
     self.district = district ?? "구 정보 없음"
-    self.description = description ?? "꽃 정보 없음"
+    self.description = description ?? "나무 정보 없음"
     self.path = path
     self.pinPoint = pinPoint
     self.region = region

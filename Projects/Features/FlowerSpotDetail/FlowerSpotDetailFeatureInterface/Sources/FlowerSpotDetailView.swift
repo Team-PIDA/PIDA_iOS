@@ -113,10 +113,10 @@ public struct FlowerSpotDetailView: View {
             .foregroundColor(ColorSet.Text.Primary)
         }
         HStack(spacing: 4) {
-          Icon(image: .location)
+          Icon(image: .forest)
             .size(.small)
             .foregroundColor(ColorSet.Icon.Secondary)
-          Text(store.flowerSpotData.recentlyVisitedCountString)
+          Text(store.flowerSpotData.description)
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }
@@ -172,7 +172,7 @@ public struct FlowerSpotDetailView: View {
   private var flowerInfoSection: some View {
     VStack(alignment: .leading, spacing: .Number28) {
       VStack(alignment: .leading, spacing: .Number8) {
-        Text("꽃 정보")
+        Text("나무 종류")
           .fontStyle(FontSet.Heading.heading3)
           .foregroundColor(ColorSet.Text.Primary)
         
@@ -189,7 +189,7 @@ public struct FlowerSpotDetailView: View {
             .fontStyle(FontSet.Body.body2)
             .foregroundColor(ColorSet.Text.Primary)
         }
-        LazyVStack(alignment: .leading, spacing: 6) {
+        LazyVStack(alignment: .leading, spacing: .Number6) {
           ForEach(store.bloomingStatus.dayStatuses, id: \.id) { status in
             BloomStatusGraph(
               date: status.date,
