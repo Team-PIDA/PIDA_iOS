@@ -47,7 +47,8 @@ public struct BloomingUpdateView: View {
       TouchArea(image: .close)
         .size(.superLarge)
         .action {
-          store.send(.dismiss(didUpdate: false))
+          guard let spotId = store.spotId else { return }
+          store.send(.dismiss(didUpdate: false, spotId: spotId))
         }
       }
     )

@@ -116,11 +116,31 @@ extension MapReducer {
             print(error.localizedDescription)
           }
         }
-        
+      case let .fetchDetailInfo(id):
+        state.selectedItemDetail = nil
+        state.isNeedFetchDetail = true
+        return .run { send in
+          do {
+            async let detailResult = try await getFlowerSpotDetailUseCase.execute(id: id)
+            async let bloomingResult = try await getBloomingStateUseCase.execute(id: id)
+            let (detail, blooming) = try await (detailResult, bloomingResult)
+            await MainActor.run {
+              send(.detailResponse(detail))
+              send(.bloomingResponse(blooming))
+            }
+          } catch let error as NetworkError {
+            print(error.errorDescription)
+          } catch let error as FoundationError {
+            print(error.errorDescription)
+          } catch {
+            print(error.localizedDescription)
+          }
+        }
       case let .detailResponse(item):
         state.selectedItemDetail = item
         if state.selectedItemBlooming != nil && state.selectedItemVote != nil {
           state.isDetailLoading = false
+          return .send(.allDataUpdated)
         }
         return .send(.calculateDistance(item.pinPoint))
       case let .bloomingResponse(item):
@@ -133,6 +153,22 @@ extension MapReducer {
         state.selectedItemVote = item
         if state.selectedItemDetail != nil && state.selectedItemBlooming != nil {
           state.isDetailLoading = false
+          return .send(.allDataUpdated)
+        }
+        return .none
+      case .allDataUpdated:
+        if state.isNeedFetchDetail {
+          if let item = state.selectedItemDetail,
+             let bloomingStatus = state.selectedItemBlooming {
+            return .send(
+              .presentToDetail(
+                flowerSpotData: item,
+                bloomingStatus: bloomingStatus,
+                distance: state.distance
+              )
+            )
+          }
+          state.isNeedFetchDetail = false
         }
         return .none
       case let .calculateDistance(pinPoint):
