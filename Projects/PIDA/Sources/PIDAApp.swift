@@ -9,12 +9,13 @@
 import SwiftUI
 import MapFeature
 import NMapsMap
+import Utility
 
 @main
 struct PIDAApp: App {
   
   init() {
-    NMFAuthManager.shared().clientId = Bundle.main.infoDictionary?["NMCLIENTID"] as? String
+    NMFAuthManager.shared().clientId = Constant.naver_map_client_id
     DependencyRegistry.registerDependencies()
   }
   

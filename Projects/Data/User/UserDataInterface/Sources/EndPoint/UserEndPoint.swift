@@ -11,13 +11,10 @@ import Networker
 import UserDefault
 
 public struct UserEndPoint: Sendable {
-  static let baseURL = "https://api.pida.me/api/v1"
-  
   public static func fetchUserInfo() -> Endpoint<UserInfoDTO> {
     return Endpoint(
       headers: .authorization(UserDefault.accessToken ?? ""),
       method: .get,
-      baseURL: baseURL,
       path: "/users/me"
     )
   }
@@ -26,7 +23,6 @@ public struct UserEndPoint: Sendable {
     return Endpoint(
       headers: .authorization(UserDefault.accessToken ?? ""),
       method: .delete,
-      baseURL: baseURL,
       path: "/users"
     )
   }
@@ -35,7 +31,6 @@ public struct UserEndPoint: Sendable {
     return Endpoint(
       headers: .authorization(UserDefault.accessToken ?? ""),
       method: .put,
-      baseURL: baseURL,
       path: "/users/nickname",
       parameters: .body(body)
     )

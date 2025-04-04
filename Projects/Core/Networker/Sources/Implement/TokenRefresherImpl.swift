@@ -12,14 +12,12 @@ import UserDefault
 import Utility
 
 public struct DefaultTokenRefresher: TokenRefresher {
-  static let baseURL = "https://api.pida.me/api/v1"
   
   public static func refreshToken() async throws -> String? {
     if let refreshToken: String = KeyChainWrapper.read(forKey: .refreshToken) {
       let refreshEndpoint = Endpoint<TokenRefreshDTO>(
         headers: .plain,
         method: .post,
-        baseURL: baseURL,
         path: "/auth/reissue",
         parameters: .body(ReissueTokenBody(refreshToken: refreshToken)),
         isRefreshToken: true

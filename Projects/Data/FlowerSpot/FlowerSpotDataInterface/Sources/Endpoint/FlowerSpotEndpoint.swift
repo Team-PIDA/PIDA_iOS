@@ -10,16 +10,12 @@ import Foundation
 import Networker
 
 public struct FlowerSpotEndpoint: Sendable {
-  
-  static let baseURL = "https://api.pida.me/api/v1"
-  
   @discardableResult
   public static func getFlowerSpotWithArea(
     getFlowerSpotParameter: GetFlowerSpotParameter
   ) -> Endpoint<GetFlowerSpotListDTO> {
     return Endpoint(
       method: .get,
-      baseURL: baseURL,
       path:"/flower-spot",
       parameters: .query(getFlowerSpotParameter)
     )
@@ -29,7 +25,6 @@ public struct FlowerSpotEndpoint: Sendable {
   public static func getFlowerSpotDetail(id: Int) -> Endpoint<FlowerSpotItem> {
     return Endpoint(
       method: .get,
-      baseURL: baseURL,
       path:"/flower-spot/\(id)"
     )
   }

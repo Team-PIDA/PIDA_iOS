@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Utility
 
 struct EmptyResponse: Codable {}
 
@@ -23,7 +24,7 @@ public struct Endpoint<R>: APIRequestable where R: Decodable & Sendable {
   public init(
     headers: APIHeaderType = .plain,
     method: HTTPMethod,
-    baseURL: String,
+    baseURL: String = Constant.base_url ?? "",
     path: String,
     parameters: HTTPRequestParameter? = nil,
     isRefreshToken: Bool = false
