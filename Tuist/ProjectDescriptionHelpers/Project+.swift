@@ -190,7 +190,7 @@ public extension Project {
       ]),
       targets: [
         .makeApp(
-          name: "PIDA",
+          name: "pida",
           env: .production,
           infoPlist: infoPlist,
           dependencies: dependencies

@@ -23,7 +23,7 @@ let workspace = Workspace(
     ),
     .scheme(
       name: "PROD-PIDA",
-      buildAction: .buildAction(targets: [.project(path: "./Projects/PIDA", target: "PIDA")]),
+      buildAction: .buildAction(targets: [.project(path: "./Projects/PIDA", target: "pida")]),
       runAction: .runAction(configuration: .release),
       archiveAction: .archiveAction(configuration: .release),
       profileAction: .profileAction(configuration: .release),
