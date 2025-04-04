@@ -58,11 +58,16 @@ extension AuthReducer {
           }
         }
       case .fetchUserInfo:
+        let spotId = state.spotId
         return .run { send in
           do {
             let result = try await userInfoUseCase.execute()
             UserDefault.username = result.nickname
-            await send(.dismiss)
+            if let spotId = spotId {
+              await send(.dismissWithVerifyBloomState(id: spotId))
+            } else {
+              await send(.dismiss)
+            }
           } catch let error as NetworkError {
             print(error.errorDescription)
           } catch let error as FoundationError {
@@ -71,14 +76,18 @@ extension AuthReducer {
             print(error.localizedDescription)
           }
         }
-        
+      case let .setSpotId(id):
+        state.spotId = id
+        return .none
         // 최초 로그인 시 회원가입(닉네임 입력)화면 이동
       case .presentToSignUp:
         return .send(.delegate(.presentToSignUp))
-        
       case .dismiss:
+        state.spotId = nil
         return .send(.delegate(.dismiss))
-        
+      case let .dismissWithVerifyBloomState(id):
+        state.spotId = nil
+        return .send(.delegate(.dismissWithVerifyBloomState(id: id)))
       case .appleLoginFailure, .delegate:
         return .none
       }

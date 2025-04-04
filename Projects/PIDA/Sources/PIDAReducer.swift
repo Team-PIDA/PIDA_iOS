@@ -72,6 +72,7 @@ struct PIDAReducer {
     case presentSearch(Bool)
     case presentFlowerSpotDetail(Bool)
     case presentBloomingUpdate(Bool)
+    case presentToLogin(Bool)
   }
   
   var body: some ReducerOf<Self> {
@@ -119,7 +120,9 @@ struct PIDAReducer {
       case let .presentBloomingUpdate(isPresent):
         state.isPresentBlooming = isPresent
         return .none
-        
+      case let .presentToLogin(isPresent):
+        state.isPresentAuth = isPresent
+        return .none
         // map -> search
       case let .map(.delegate(.presentToSearch(keyword))):
         
@@ -185,9 +188,13 @@ struct PIDAReducer {
             send(.presentBloomingUpdate(true))
           }
         }
-      case .flowerSpotDetail(.delegate(.presentToLogin)):
-        state.isPresentAuth = true
-        return .none
+      case let .flowerSpotDetail(.delegate(.presentToLogin(id))):
+        return .run { send in
+          await MainActor.run {
+            send(.presentToLogin(true))
+            send(.auth(.setSpotId(id: id)))
+          }
+        }
       case let .blooming(.delegate(.dismiss(didUpdate, spotId))):
         return .run { send in
           await send(.presentBloomingUpdate(false))
@@ -242,10 +249,17 @@ struct PIDAReducer {
         state.isPresentAuth = false
         return .run { send in
           await MainActor.run {
+            send(.presentToLogin(false))
             send(.setting(.checkLoggedIn))
           }
         }
-        
+      case let .auth(.delegate(.dismissWithVerifyBloomState(id))):
+        return .run { send in
+          await MainActor.run {
+            send(.presentToLogin(false))
+            send(.map(.fetchDetailInfo(id)))
+          }
+        }
       case .auth(.delegate(.presentToSignUp)):
         state.isPresentSignUp = true
         state.isPresentAuth = false

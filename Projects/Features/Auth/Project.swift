@@ -13,7 +13,8 @@ let project = Project.makeFeature(
   name: "Auth",
   featureInterfaceDependencies: [
     .Domain.Auth.Interface,
-    .Domain.User.Interface
+    .Domain.User.Interface,
+    .Domain.Blooming.Interface
     // 필요 시, Domain Interface Dependency 추가
   ]
 )

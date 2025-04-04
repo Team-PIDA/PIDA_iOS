@@ -20,6 +20,7 @@ public struct AuthReducer {
   @ObservableState
   public struct State: Equatable {
     public var loginInfo: AppleLoginResult? = nil
+    public var spotId: Int? = nil
     public init() {}
   }
 
@@ -29,14 +30,16 @@ public struct AuthReducer {
     case appleLoginResponse(AppleLoginResult)
     case appleLoginFailure
     case fetchUserInfo
-    
+    case setSpotId(id: Int)
     case delegate(Delegate)
     case dismiss
+    case dismissWithVerifyBloomState(id: Int)
     case presentToSignUp
   }
   
   public enum Delegate: Equatable {
     case dismiss
+    case dismissWithVerifyBloomState(id: Int)
     case presentToSignUp
   }
   

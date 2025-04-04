@@ -31,6 +31,7 @@ public struct FlowerSpotDetailReducer {
     )
     public var bloomingStatus: BloomStatusEntity = .init(totalCount: 0, dayStatuses: [])
     public var distance: Double = .zero
+    public var spotId: Int = 0
     public var toastMessage: String? = nil
     public var isNeedDrawPath: Bool = false
     public var isNeedDeletePath: Bool = false
@@ -63,7 +64,7 @@ public struct FlowerSpotDetailReducer {
   public enum Delegate: Equatable {
     case dismiss
     case presentToBlooming(id: Int, streetName: String)
-    case presentToLogin
+    case presentToLogin(id: Int)
   }
 
   public var body: some ReducerOf<Self> {

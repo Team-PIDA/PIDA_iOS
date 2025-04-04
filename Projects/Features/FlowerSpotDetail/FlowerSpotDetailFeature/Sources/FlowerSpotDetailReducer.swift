@@ -47,9 +47,7 @@ extension FlowerSpotDetailReducer {
         return .none
       case .alertAcceptTapped:
         state.isShowLoginAlert = false
-        return .run { send in
-          await send(.delegate(.presentToLogin))
-        }
+        return .send(.delegate(.presentToLogin(id: state.flowerSpotData.id)))
       case .dismiss:
         state.isNeedDeletePath = true
         return .send(.delegate(.dismiss))
