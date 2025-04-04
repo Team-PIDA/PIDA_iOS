@@ -10,6 +10,7 @@ import MapFeatureInterface
 import FlowerSpotDomainInterface
 import BloomingDomainInterface
 import ComposableArchitecture
+import UserDefault
 import Utility
 
 extension MapReducer {
@@ -101,14 +102,16 @@ extension MapReducer {
         state.isBottomSheetPresented = true
         return .run { send in
           do {
-            async let detailResult = try await getFlowerSpotDetailUseCase.execute(id: id)
-            async let bloomingResult = try await getBloomingStateUseCase.execute(id: id)
-            async let verifyTodayResult = try await verifyBloomingTodayUseCase.execute(id: id)
-            let (detail, blooming, verifyToday) = try await (detailResult, bloomingResult, verifyTodayResult)
+            async let detailResult = try getFlowerSpotDetailUseCase.execute(id: id)
+            async let bloomingResult = try getBloomingStateUseCase.execute(id: id)
+            let verifyTodayResult = UserDefault.isLoggedIn == true
+            ? try await verifyBloomingTodayUseCase.execute(id: id)
+            : VerifyBloomingStateEntity(isBlooming: false)
+            let (detail, blooming) = try await (detailResult, bloomingResult)
             await MainActor.run {
-              send(.detailResponse(detail))
-              send(.bloomingResponse(blooming))
-              send(.verifyTodayBlooming(verifyToday))
+                send(.detailResponse(detail))
+                send(.bloomingResponse(blooming))
+                send(.verifyTodayBlooming(verifyTodayResult))
             }
           } catch let error as NetworkError {
             print(error.errorDescription)
