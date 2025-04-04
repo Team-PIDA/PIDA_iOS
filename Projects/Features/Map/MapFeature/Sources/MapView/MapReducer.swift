@@ -95,6 +95,8 @@ extension MapReducer {
         
       case let .requestDetailInfo(id):
         state.selectedItemDetail = nil
+        state.selectedItemBlooming = nil
+        state.selectedItemVote = nil
         state.isDetailLoading = true
         state.isBottomSheetPresented = true
         return .run { send in
@@ -118,15 +120,19 @@ extension MapReducer {
         }
       case let .fetchDetailInfo(id):
         state.selectedItemDetail = nil
+        state.selectedItemBlooming = nil
+        state.selectedItemVote = nil
         state.isNeedFetchDetail = true
         return .run { send in
           do {
             async let detailResult = try await getFlowerSpotDetailUseCase.execute(id: id)
             async let bloomingResult = try await getBloomingStateUseCase.execute(id: id)
-            let (detail, blooming) = try await (detailResult, bloomingResult)
+            async let verifyTodayResult = try await verifyBloomingTodayUseCase.execute(id: id)
+            let (detail, blooming, verifyToday) = try await (detailResult, bloomingResult, verifyTodayResult)
             await MainActor.run {
               send(.detailResponse(detail))
               send(.bloomingResponse(blooming))
+              send(.verifyTodayBlooming(verifyToday))
             }
           } catch let error as NetworkError {
             print(error.errorDescription)
@@ -138,15 +144,23 @@ extension MapReducer {
         }
       case let .detailResponse(item):
         state.selectedItemDetail = item
+        return .send(.calculateDistance(item.pinPoint))
+      case let .calculateDistance(pinPoint):
+        guard let userPoint = state.userLocation else {
+          state.distance = .zero
+          return .none
+        }
+        state.distance = pinPoint.distance(from: userPoint)
         if state.selectedItemBlooming != nil && state.selectedItemVote != nil {
           state.isDetailLoading = false
           return .send(.allDataUpdated)
         }
-        return .send(.calculateDistance(item.pinPoint))
+        return .none
       case let .bloomingResponse(item):
         state.selectedItemBlooming = item
         if state.selectedItemDetail != nil && state.selectedItemVote != nil {
           state.isDetailLoading = false
+          return .send(.allDataUpdated)
         }
         return .none
       case let .verifyTodayBlooming(item):
@@ -158,25 +172,20 @@ extension MapReducer {
         return .none
       case .allDataUpdated:
         if state.isNeedFetchDetail {
+          state.isNeedFetchDetail = false
           if let item = state.selectedItemDetail,
-             let bloomingStatus = state.selectedItemBlooming {
+             let bloomingStatus = state.selectedItemBlooming,
+             let isVotedBlooming = state.selectedItemVote {
             return .send(
               .presentToDetail(
                 flowerSpotData: item,
                 bloomingStatus: bloomingStatus,
-                distance: state.distance
+                distance: state.distance,
+                isVotedBlooming: isVotedBlooming
               )
             )
           }
-          state.isNeedFetchDetail = false
         }
-        return .none
-      case let .calculateDistance(pinPoint):
-        guard let userPoint = state.userLocation else {
-          state.distance = .zero
-          return .none
-        }
-        state.distance = pinPoint.distance(from: userPoint)
         return .none
       case let .fetchPathLines(id):
         if let data = state.flowerSpots[id] {
