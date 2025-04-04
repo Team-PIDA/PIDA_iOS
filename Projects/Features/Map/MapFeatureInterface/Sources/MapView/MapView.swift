@@ -10,6 +10,7 @@ import SwiftUI
 import Combine
 
 import FlowerSpotDomainInterface
+import BloomingDomainInterface
 import DesignKit
 import Utility
 
@@ -44,26 +45,10 @@ public struct MapView: View {
     }
     .overlay(
         Group {
-          if let item = store.selectedItemDetail {
-            CherryBlossomBottomSheet(
-              title: item.streetName,
-              description: item.address ?? "",
-              tags: ["\(item.district ?? "")", "최근 방문 \(item.recentlyVisitedCount)회"],
-              blossomState: item.bloomingStatus,
-              isLoading: store.isDetailLoading,
-              onPullUp: {
-                print("상세로 이동")
-              },
-              onPullDown:  {
-                return await MainActor.run {
-                  store.send(.resetSearchBar)
-                  store.send(.dismissBottomSheet)
-                  store.send(.markerTapped(id: nil))
-                }
-              },
-              onTap: {
-                print("상세로 이동")
-              })
+          if store.isBottomSheetPresented {
+            let item = store.selectedItemDetail
+            let bloomingStatus = store.selectedItemBlooming
+            BottomSheet(item: item, bloomingStatus: bloomingStatus)
           }
         },
         alignment: .bottom
@@ -118,7 +103,7 @@ extension MapView {
   
   @ViewBuilder
   private func searchView() -> some View {
-    // TODO: - ontap 시 textfield에 텍스트 
+    // TODO: - ontap 시 textfield에 텍스트
     if let result = store.searchText { // 검색 결과
       SearchBar(
         text: .constant(result),
@@ -149,6 +134,55 @@ extension MapView {
         store.send(.presentToSearch)
       }
     }
+  }
+  
+  @ViewBuilder
+  private func BottomSheet(
+    item: FlowerSpot?,
+    bloomingStatus: BloomStatusEntity?
+  ) -> some View {
+    CherryBlossomBottomSheet(
+      title: item?.streetName,
+      description: item?.address,
+      tags: [item?.district, "\(store.distance) km", item?.recentlyVisitedCountString],
+      blossomState: item?.bloomingStatus,
+      isLoading: store.isDetailLoading,
+      onPullUp: {
+        return await MainActor.run {
+          if let item = item,
+             let bloomingStatus = bloomingStatus {
+            store.send(
+              .presentToDetail(
+                flowerSpotData: item,
+                bloomingStatus: bloomingStatus,
+                distance: store.distance
+              )
+            )
+          }
+        }
+      },
+      onPullDown:  {
+        return await MainActor.run {
+          store.send(.resetSearchBar)
+          store.send(.dismissBottomSheet)
+          store.send(.markerTapped(id: nil))
+        }
+      },
+      onTap: {
+        return await MainActor.run {
+          if let item = item,
+             let bloomingStatus = bloomingStatus {
+            store.send(
+              .presentToDetail(
+                flowerSpotData: item,
+                bloomingStatus: bloomingStatus,
+                distance: store.distance
+              )
+            )
+          }
+        }
+      }
+    )
   }
   
   @ViewBuilder

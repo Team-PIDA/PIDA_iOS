@@ -15,11 +15,20 @@ public struct BloomingEndPoint: Sendable {
   
   public static func updateBlooming(body: UpdateBloomingBody) -> Endpoint<BasicDTO> {
     return Endpoint(
-      headers: .authorization(UserDefault.accessToken ?? ""),
+      headers: .authorization(UserDefault.accessToken),
       method: .post,
       baseURL: baseURL,
       path: "/blooming",
       parameters: .body(body)
+    )
+  }
+  
+  public static func getBloomingState(id: Int) -> Endpoint<BloomingStateDTO> {
+    return Endpoint(
+      headers: .authorization(UserDefault.accessToken),
+      method: .get,
+      baseURL: baseURL,
+      path: "/blooming/\(id)/details"
     )
   }
   

@@ -24,6 +24,9 @@ import AuthFeatureInterface
 import BloomingFeature
 import BloomingFeatureInterface
 
+import FlowerSpotDetailFeature
+import FlowerSpotDetailFeatureInterface
+
 enum Path: Hashable {
   case setting
   case policy
@@ -43,6 +46,7 @@ struct PIDAReducer {
     var signUp = SignUpReducer.State()
     var update = ProfileUpdateReducer.State()
     var blooming = BloomingUpdateReducer.State()
+    var flowerSpotDetail = FlowerSpotDetailReducer.State()
     
     /// 네비게이션 이동 경로
     var path: [Path] = []
@@ -50,6 +54,7 @@ struct PIDAReducer {
     var isPresentAuth: Bool = false
     var isPresentSignUp: Bool = false
     var isPresentBlooming: Bool = false
+    var isPresentFlowerSpotDetail: Bool = false
   }
   
   enum Action: BindableAction {
@@ -61,9 +66,12 @@ struct PIDAReducer {
     case signUp(SignUpReducer.Action)
     case update(ProfileUpdateReducer.Action)
     case blooming(BloomingUpdateReducer.Action)
+    case flowerSpotDetail(FlowerSpotDetailReducer.Action)
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
+    case presentFlowerSpotDetail(Bool)
+    case presentBloomingUpdate(Bool)
   }
   
   var body: some ReducerOf<Self> {
@@ -92,13 +100,24 @@ struct PIDAReducer {
     Scope(state: \.blooming, action: \.blooming) {
       BloomingUpdateReducer()
     }
+    Scope(state: \.flowerSpotDetail, action: \.flowerSpotDetail) {
+      FlowerSpotDetailReducer()
+    }
     
-    Reduce { state, action in
+    Reduce {
+      state,
+      action in
       switch action {
         // MARK: - Map <-> Search
         
       case let .presentSearch(isShow):
         state.isShowSearch = isShow
+        return .none
+      case let .presentFlowerSpotDetail(isPresent):
+        state.isPresentFlowerSpotDetail = isPresent
+        return .none
+      case let .presentBloomingUpdate(isPresent):
+        state.isPresentBlooming = isPresent
         return .none
         
         // map -> search
@@ -136,16 +155,38 @@ struct PIDAReducer {
         
         // MARK: - Spot Detail
         
-      case let .map(.delegate(.presentToDetail(id))):
-        // TODO: - 상세화면으로 변경, 상태 기록 화면은 상세화면이랑 연결
+      case let .map(.delegate(.presentToDetail(flowerSpotData, bloomingData, distance))):
+        // TODO: - 상세화면연결 및 flowerSpotData 전달
+        return .run { send in
+          await MainActor.run {
+            send(.flowerSpotDetail(.setFlowerSpotData(flowerSpotData)))
+            send(.flowerSpotDetail(.setBloomingStatus(bloomingData)))
+            send(.flowerSpotDetail(.setDistance(distance)))
+            send(.presentFlowerSpotDetail(true))
+          }
+        }
+      case .flowerSpotDetail(.delegate(.dismiss)):
+        return .send(.presentFlowerSpotDetail(false))
+      case let .flowerSpotDetail(.delegate(.presentToBlooming(id, streetName))):
+        return .run { send in
+          await MainActor.run {
+            send(.blooming(.setSpodtId(id)))
+            send(.blooming(.setStreetName(streetName)))
+            send(.presentBloomingUpdate(true))
+          }
+        }
+      case .flowerSpotDetail(.delegate(.presentToLogin)):
+        state.isPresentAuth = true
         return .none
-//        state.isPresentBlooming = true
-//        return .send(.blooming(.configSpotData(id: id, streetName: "석촌호수로")))
-        
       case let .blooming(.delegate(.dismiss(didUpdate))):
         print("기록 완료 여부 ", didUpdate)
-        state.isPresentBlooming = false
-        return .none
+        return .run { send in
+          await send(.presentBloomingUpdate(false))
+          if didUpdate {
+            try? await Task.sleep(for: .seconds(0.3))
+            await send(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다.")))
+          }
+        }
         
         // MARK: - Map <-> Setting
         
@@ -154,9 +195,9 @@ struct PIDAReducer {
         state.path.append(.setting)
         return .none
         
-        case .setting(.delegate(.pop)):
-          state.path.removeLast()
-          return .none
+      case .setting(.delegate(.pop)):
+        state.path.removeLast()
+        return .none
         
         // MARK: - Setting
         
@@ -210,7 +251,7 @@ struct PIDAReducer {
         
         // MARK: - None
         
-      case .binding, .map, .search, .setting, .policy, .auth, .signUp, .update, .blooming:
+      case .binding, .map, .search, .setting, .policy, .auth, .signUp, .update, .blooming, .flowerSpotDetail:
         return .none
       }
     }

@@ -41,7 +41,9 @@ public extension PIDButton {
   ) -> Self {
     var button = self
     button.isError = isError
-    button.backgroundColor = ColorSet.Component.Error
+    if isError {
+      button.backgroundColor = ColorSet.Component.Error
+    }
     return button
   }
   

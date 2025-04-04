@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreLocation
 import DesignKit
 
 public struct FlowerSpotListEntity: Equatable, Sendable {
@@ -19,12 +20,13 @@ public struct FlowerSpotListEntity: Equatable, Sendable {
 
 public struct FlowerSpot: Equatable, Sendable {
   public var id: Int
-  public var address: String?
+  public var address: String
   public var recentlyVisitedCount: Int
+  public var recentlyVisitedCountString: String
   public var bloomingStatus: BloomStatus
   public var streetName: String
-  public var district: String?
-  public var description: String?
+  public var district: String
+  public var description: String
   public var path: [MapPoint]
   public var pinPoint: MapPoint
   public var region: String
@@ -42,12 +44,13 @@ public struct FlowerSpot: Equatable, Sendable {
     region: String
   ) {
     self.id = id
-    self.address = address
+    self.address = address ?? "주소 정보 없음"
     self.recentlyVisitedCount = recentlyVisitedCount
+    self.recentlyVisitedCountString = "최근 방문 \(self.recentlyVisitedCount)회"
     self.bloomingStatus = bloomingStatus
     self.streetName = streetName
-    self.district = district
-    self.description = description
+    self.district = district ?? "구 정보 없음"
+    self.description = description ?? "나무 정보 없음"
     self.path = path
     self.pinPoint = pinPoint
     self.region = region
@@ -61,5 +64,17 @@ public struct MapPoint: Equatable, Sendable {
   public init(latitude: Double, longitude: Double) {
     self.latitude = latitude
     self.longitude = longitude
+  }
+  
+  public func distance(from point: MapPoint) -> Double {
+    let from = CLLocationCoordinate2D(
+      latitude: latitude,
+      longitude: longitude
+    )
+    let to = CLLocationCoordinate2D(
+      latitude: point.latitude,
+      longitude: point.longitude
+    )
+    return (Double.distanceInKilometers(from: from, to: to) * 10).rounded() / 10
   }
 }

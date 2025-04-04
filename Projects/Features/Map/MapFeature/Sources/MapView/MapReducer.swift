@@ -8,6 +8,7 @@
 
 import MapFeatureInterface
 import FlowerSpotDomainInterface
+import BloomingDomainInterface
 import ComposableArchitecture
 import Utility
 
@@ -16,8 +17,11 @@ extension MapReducer {
     @Dependency(\.fetchAllFlowerPinUseCase) var fetchAllFlowerPinUseCase
     @Dependency(\.fetchAllFlowerAddressUseCase) var fetchAllFlowerAddressUseCase
     @Dependency(\.getFlowerSpotDetailUseCase) var getFlowerSpotDetailUseCase
+    @Dependency(\.getBloomingStateUseCase) var getBloomingStateUseCase
     
-    let mapReducer = Reduce<State, Action> { state, action in
+    let mapReducer = Reduce<State, Action> {
+      state,
+      action in
       switch action {
         
       case let .showToastView(message):
@@ -27,15 +31,24 @@ extension MapReducer {
         // MARK: - Map
         
       case .fetchUserLocation:
-        return .run { _ in
+        let point = state.point
+        return .run { send in
           await LocationService.shared.requestUserLocation()
+          if let point = point {
+            await send(.moveLocation(point))  // 현재 저장된 위치로 이동
+          }
         }
       case .moveUserLocation:
         return .run { send in
           if let location = await LocationService.shared.userLocation {
-            await send(.moveLocation(MapPoint(latitude: location.0, longitude: location.1)))
+            let userLocation = MapPoint(latitude: location.0, longitude: location.1)
+            await send(.saveUserLocation(userLocation))
+            await send(.moveLocation(userLocation))
           }
         }
+      case let .saveUserLocation(location):
+        state.userLocation = location
+        return .none
       case let .moveLocation(point):
         state.point = point
         return .none
@@ -74,7 +87,6 @@ extension MapReducer {
           state.isNeedDeleteMarker = true
           return .none
         }
-        
         return .run { send in
           await send(.fetchPathLines(id))
           await send(.requestDetailInfo(id))
@@ -83,11 +95,15 @@ extension MapReducer {
       case let .requestDetailInfo(id):
         state.selectedItemDetail = nil
         state.isDetailLoading = true
+        state.isBottomSheetPresented = true
         return .run { send in
           do {
-            let detail = try await getFlowerSpotDetailUseCase.execute(id: id)
+            async let detailResult = try await getFlowerSpotDetailUseCase.execute(id: id)
+            async let bloomingResult = try await getBloomingStateUseCase.execute(id: id)
+            let (detail, blooming) = try await (detailResult, bloomingResult)
             await MainActor.run {
               send(.detailResponse(detail))
+              send(.bloomingResponse(blooming))
             }
           } catch let error as NetworkError {
             print(error.errorDescription)
@@ -100,10 +116,23 @@ extension MapReducer {
         
       case let .detailResponse(item):
         state.selectedItemDetail = item
-        state.isDetailLoading = false
-        
+        if state.selectedItemBlooming != nil {
+          state.isDetailLoading = false
+        }
+        return .send(.calculateDistance(item.pinPoint))
+      case let .bloomingResponse(item):
+        state.selectedItemBlooming = item
+        if state.selectedItemDetail != nil {
+          state.isDetailLoading = false
+        }
         return .none
-        
+      case let .calculateDistance(pinPoint):
+        guard let userPoint = state.userLocation else {
+          state.distance = .zero
+          return .none
+        }
+        state.distance = pinPoint.distance(from: userPoint)
+        return .none
       case let .fetchPathLines(id):
         if let data = state.flowerSpots[id] {
           state.selectedPathLines = data.path
@@ -127,10 +156,12 @@ extension MapReducer {
       case let .selectedItem(item):
         state.selectedItem = item
         return .send(.fetchPathLines(item.id))
-
+        
       case .dismissBottomSheet:
-        print("바텀시트 닫기")
+        state.isBottomSheetPresented = false
         state.selectedItemDetail = nil
+        state.selectedItemBlooming = nil
+        state.distance = .zero
         return .none
         
       case .viewDidAppear:
@@ -150,7 +181,7 @@ extension MapReducer {
         
         // MARK: - Search
         
-      // 검색 결과
+        // 검색 결과
       case let .showSearchResult(result):
         state.searchResult = result
         state.selectedItemDetail = nil
@@ -160,7 +191,7 @@ extension MapReducer {
             await send(.setSearchBarText(result.streetName))
             await send(.moveLocation(result.pinPoint))
             await send(.fetchPathLines(result.id))
-            await send(.detailResponse(result))
+            await send(.requestDetailInfo(result.id))
           }
         }
         
@@ -183,12 +214,20 @@ extension MapReducer {
         return .send(.delegate(.presentToSearch(state.searchText)))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
-      case let .presentToDetail(id):
-        return .send(.delegate(.presentToDetail(id: id)))
-        
+      case let .presentToDetail(flowerSpot, bloomingStatus, distance):
+        return .send(
+          .delegate(
+            .presentToDetail(
+              flowerSpotData: flowerSpot,
+              bloomingStatus: bloomingStatus,
+              distance: distance
+            )
+          )
+        )
         // MARK: - None
         
-      case .binding, .delegate:
+      case .binding,
+          .delegate:
         return .none
       }
     }

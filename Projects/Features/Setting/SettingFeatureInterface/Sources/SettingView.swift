@@ -126,10 +126,7 @@ extension SettingView {
   
   private func alertView(type: AlertType) -> some View {
     PIDAlert(
-      title: type.title,
-      message: type.message,
-      cancelTitle: type.cancel,
-      acceptTitle: type.accept,
+      type: type,
       closeAction: { store.send(.alertCancelTapped) },
       acceptAction: { store.send(.alertAcceptTapped(type)) }
     )

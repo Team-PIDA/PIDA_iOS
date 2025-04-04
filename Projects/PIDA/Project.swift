@@ -45,6 +45,8 @@ let project = Project.makePIDA(
 
     .Features.Blooming.Implement,
     .Domain.Blooming.Implement,
-    .Data.Blooming.Implement
+    .Data.Blooming.Implement,
+    
+    .Features.FlowerSpotDetail.Implement
   ]
 )

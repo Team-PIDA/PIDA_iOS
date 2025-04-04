@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import DesignKit
 
 @Reducer
 public struct SettingReducer {

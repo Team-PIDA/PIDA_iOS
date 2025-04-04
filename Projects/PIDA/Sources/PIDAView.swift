@@ -13,6 +13,7 @@ import SearchFeatureInterface
 import SettingFeatureInterface
 import AuthFeatureInterface
 import BloomingFeatureInterface
+import FlowerSpotDetailFeatureInterface
 
 struct PIDAView: View {
   @Bindable var store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) { PIDAReducer()
@@ -41,6 +42,9 @@ struct PIDAView: View {
         })
         .fullScreenCover(isPresented: $store.isShowSearch) {
           SearchView(store: store.scope(state: \.search, action: \.search))
+        }
+        .fullScreenCover(isPresented: $store.isPresentFlowerSpotDetail) {
+          FlowerSpotDetailView(store: store.scope(state: \.flowerSpotDetail, action: \.flowerSpotDetail))
         }
         .transaction { transaction in
           transaction.disablesAnimations = true

@@ -20,6 +20,7 @@ public enum Feature: String {
   case search = "Search"
   case setting = "Setting"
   case flowerSpot = "FlowerSpot"
+  case flowerSpotDetail = "FlowerSpotDetail"
   case auth = "Auth"
   case user = "User"
   case blooming = "Blooming"
@@ -29,6 +30,8 @@ public enum Feature: String {
 public enum ExternalDependency: String {
   case TCA = "ComposableArchitecture"
   case NMap = "NMapsMap"
+  case Lottie = "Lottie"
+  case DotLottie = "DotLottie"
 }
 
 public enum InternalTarget: String {
@@ -130,6 +133,10 @@ extension TargetDependency {
       public static let Interface = Self.projectWithFeature(feature: .blooming, inInterface: true)
       public static let Implement = Self.projectWithFeature(feature: .blooming)
     }
+    public struct FlowerSpotDetail: PIDADependency {
+      public static let Interface = Self.projectWithFeature(feature: .flowerSpotDetail, inInterface: true)
+      public static let Implement = Self.projectWithFeature(feature: .flowerSpotDetail)
+    }
   }
   
   public struct Domain {
@@ -207,5 +214,7 @@ extension TargetDependency {
   public struct ThirdParty: PIDADependency {
     public static let TCA = Self.external(externalDependency: .TCA)
     public static let NMaps = Self.external(externalDependency: .NMap)
+    public static let Lottie = Self.external(externalDependency: .Lottie)
+    public static let DotLottie = Self.external(externalDependency: .DotLottie)
   }
 }

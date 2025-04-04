@@ -29,4 +29,9 @@ public struct BloomingRepositoryImpl: BloomingRepository {
     )
     return try await network.execute(with: endpoint, timeout: 60).toEntity()
   }
+  
+  public func getBloomingState(id: Int) async throws -> BloomStatusEntity {
+    let endpoint = BloomingEndPoint.getBloomingState(id: id)
+    return try await network.execute(with: endpoint, timeout: 60).toEntity()
+  }
 }
