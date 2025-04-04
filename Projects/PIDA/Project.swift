@@ -19,6 +19,9 @@ let project = Project.makePIDA(
       "UIApplicationSupportsMultipleScenes": false,
       "UISceneConfigurations": []
     ],
+    "UISupportedInterfaceOrientations": [
+      "UIInterfaceOrientationPortrait"
+    ],
     "NSLocationWhenInUseUsageDescription": "지도에서 내 위치를 확인하여 길찾기, 네비게이션 기능을 이용하기 위해 권한이 필요합니다.(필수권한)",
     "NMCLIENTID": "$(NM_CLIENT_ID)"
   ],

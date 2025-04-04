@@ -9,7 +9,7 @@ import Foundation
 import ProjectDescription
 
 public extension Project {
-  static let organizationName = "com.yongin.pida"
+  static let organizationName = "com.pida.me.ios"
   
   // 단독으로 사용하는 Framework 모듈 (ex. Networker, DesignKit 등 등)
   static func makeInternalFramework(
