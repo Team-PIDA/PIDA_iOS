@@ -220,6 +220,7 @@ public struct FlowerSpotDetailView: View {
         print("오늘의 개화 상태 기록하기")
         store.send(.chechAuth)
       }
+      .isActive(!store.isVotedBlooming.isBlooming)
       .padding(.Number16)
     }
     .frame(height: 80)

@@ -18,6 +18,7 @@ extension MapReducer {
     @Dependency(\.fetchAllFlowerAddressUseCase) var fetchAllFlowerAddressUseCase
     @Dependency(\.getFlowerSpotDetailUseCase) var getFlowerSpotDetailUseCase
     @Dependency(\.getBloomingStateUseCase) var getBloomingStateUseCase
+    @Dependency(\.verifyBloomingTodayUseCase) var verifyBloomingTodayUseCase
     
     let mapReducer = Reduce<State, Action> {
       state,
@@ -100,10 +101,12 @@ extension MapReducer {
           do {
             async let detailResult = try await getFlowerSpotDetailUseCase.execute(id: id)
             async let bloomingResult = try await getBloomingStateUseCase.execute(id: id)
-            let (detail, blooming) = try await (detailResult, bloomingResult)
+            async let verifyTodayResult = try await verifyBloomingTodayUseCase.execute(id: id)
+            let (detail, blooming, verifyToday) = try await (detailResult, bloomingResult, verifyTodayResult)
             await MainActor.run {
               send(.detailResponse(detail))
               send(.bloomingResponse(blooming))
+              send(.verifyTodayBlooming(verifyToday))
             }
           } catch let error as NetworkError {
             print(error.errorDescription)
@@ -116,13 +119,19 @@ extension MapReducer {
         
       case let .detailResponse(item):
         state.selectedItemDetail = item
-        if state.selectedItemBlooming != nil {
+        if state.selectedItemBlooming != nil && state.selectedItemVote != nil {
           state.isDetailLoading = false
         }
         return .send(.calculateDistance(item.pinPoint))
       case let .bloomingResponse(item):
         state.selectedItemBlooming = item
-        if state.selectedItemDetail != nil {
+        if state.selectedItemDetail != nil && state.selectedItemVote != nil {
+          state.isDetailLoading = false
+        }
+        return .none
+      case let .verifyTodayBlooming(item):
+        state.selectedItemVote = item
+        if state.selectedItemDetail != nil && state.selectedItemBlooming != nil {
           state.isDetailLoading = false
         }
         return .none
@@ -214,13 +223,14 @@ extension MapReducer {
         return .send(.delegate(.presentToSearch(state.searchText)))
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
-      case let .presentToDetail(flowerSpot, bloomingStatus, distance):
+      case let .presentToDetail(flowerSpot, bloomingStatus, distance, isVotedBlooming):
         return .send(
           .delegate(
             .presentToDetail(
               flowerSpotData: flowerSpot,
               bloomingStatus: bloomingStatus,
-              distance: distance
+              distance: distance,
+              isVotedBlooming: isVotedBlooming
             )
           )
         )

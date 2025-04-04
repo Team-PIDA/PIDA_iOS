@@ -131,5 +131,9 @@ enum DependencyRegistry {
     getBloomingStateUseCaseResister(
       provider: { GetBloomingStateUseCaseImpl(repository: bloomingRepository) }
     )
+    
+    verifyBloomingTodayUseCaseResister(
+      provider: { VerifyBloomingTodayUseCaseImpl(repository: bloomingRepository) }
+    )
   }
 }

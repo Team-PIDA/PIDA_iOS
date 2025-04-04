@@ -35,6 +35,7 @@ public struct FlowerSpotDetailReducer {
     public var isNeedDrawPath: Bool = false
     public var isNeedDeletePath: Bool = false
     public var isShowLoginAlert: Bool = false
+    public var isVotedBlooming: VerifyBloomingStateEntity = .init(isBlooming: false)
     public init() {}
   }
 
@@ -48,6 +49,7 @@ public struct FlowerSpotDetailReducer {
     case setFlowerSpotData(FlowerSpot)
     case setBloomingStatus(BloomStatusEntity)
     case setDistance(Double)
+    case setVerifyBloomingStatus(VerifyBloomingStateEntity)
     
     case alertCancelTapped
     case alertAcceptTapped
