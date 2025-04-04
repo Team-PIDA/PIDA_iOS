@@ -32,4 +32,12 @@ public struct BloomingEndPoint: Sendable {
     )
   }
   
+  public static func verifyBloomingToday(id: Int) -> Endpoint<VerifyBloomingStateDTO> {
+    return Endpoint(
+      headers: .authorization(UserDefault.accessToken),
+      method: .get,
+      baseURL: baseURL,
+      path: "/blooming/\(id)/verify/today"
+    )
+  }
 }

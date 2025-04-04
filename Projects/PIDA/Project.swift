@@ -11,7 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.makePIDA(
   infoPlist: [
     "CFBundleDevelopmentRegion": "ko_KR",
-    "CFBundleShortVersionString": "0.9",
+    "CFBundleShortVersionString": "1.0",
     "CFBundleVersion": "1",
     "CFBundleIconName": "AppIcon",
     "UILaunchStoryboardName": "LaunchScreen",

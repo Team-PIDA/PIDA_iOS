@@ -51,7 +51,7 @@ public extension Target {
     : .release(name: .release, xcconfig: .relativeToRoot(env.configPath))
     return target(
       name: name,
-      destinations: .iOS,
+      destinations: [.iPhone], /// iPhone만!
       product: .app,
       bundleId: organizationName + env.addedBundlePath,
       deploymentTargets: .iOS("18.0"),

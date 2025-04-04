@@ -39,6 +39,9 @@ extension FlowerSpotDetailReducer {
       case let .setDistance(distance):
         state.distance = distance
         return .none
+      case let .setVerifyBloomingStatus(isVotedBlooming):
+        state.isVotedBlooming = isVotedBlooming
+        return .none
       case .alertCancelTapped:
         state.isShowLoginAlert = false
         return .none

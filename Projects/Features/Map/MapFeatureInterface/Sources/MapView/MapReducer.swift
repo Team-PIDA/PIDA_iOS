@@ -56,6 +56,8 @@ public struct MapReducer {
     public var selectedItemDetail: FlowerSpot? = nil
     /// 네트워크로 받아온 개화 상태 데이터
     public var selectedItemBlooming: BloomStatusEntity? = nil
+    /// 네트워크로 받아온 투표 상태 데이터
+    public var selectedItemVote: VerifyBloomingStateEntity? = nil
     /// 로딩 여부
     public var isDetailLoading: Bool = false
     
@@ -82,6 +84,7 @@ public struct MapReducer {
     case markerTapped(id: Int?)
     case detailResponse(FlowerSpot)
     case bloomingResponse(BloomStatusEntity)
+    case verifyTodayBlooming(VerifyBloomingStateEntity)
     case allDataUpdated
     case fetchPathLines(Int)
     case requestMapBounds(Bool)
@@ -111,7 +114,8 @@ public struct MapReducer {
     case presentToDetail(
       flowerSpotData: FlowerSpot,
       bloomingStatus: BloomStatusEntity,
-      distance: Double
+      distance: Double,
+      isVotedBlooming: VerifyBloomingStateEntity
     )
   }
   
@@ -122,7 +126,8 @@ public struct MapReducer {
     case presentToDetail(
       flowerSpotData: FlowerSpot,
       bloomingStatus: BloomStatusEntity,
-      distance: Double
+      distance: Double,
+      isVotedBlooming: VerifyBloomingStateEntity
     )
   }
   

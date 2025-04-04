@@ -48,7 +48,8 @@ public struct MapView: View {
           if store.isBottomSheetPresented {
             let item = store.selectedItemDetail
             let bloomingStatus = store.selectedItemBlooming
-            BottomSheet(item: item, bloomingStatus: bloomingStatus)
+            let isVotedBlooming = store.selectedItemVote
+            BottomSheet(item: item, bloomingStatus: bloomingStatus, isVotedBlooming: isVotedBlooming)
           }
         },
         alignment: .bottom
@@ -139,7 +140,8 @@ extension MapView {
   @ViewBuilder
   private func BottomSheet(
     item: FlowerSpot?,
-    bloomingStatus: BloomStatusEntity?
+    bloomingStatus: BloomStatusEntity?,
+    isVotedBlooming: VerifyBloomingStateEntity?
   ) -> some View {
     CherryBlossomBottomSheet(
       title: item?.streetName,
@@ -150,12 +152,14 @@ extension MapView {
       onPullUp: {
         return await MainActor.run {
           if let item = item,
-             let bloomingStatus = bloomingStatus {
+             let bloomingStatus = bloomingStatus,
+             let isVotedBlooming = isVotedBlooming {
             store.send(
               .presentToDetail(
                 flowerSpotData: item,
                 bloomingStatus: bloomingStatus,
-                distance: store.distance
+                distance: store.distance,
+                isVotedBlooming: isVotedBlooming
               )
             )
           }
@@ -171,12 +175,14 @@ extension MapView {
       onTap: {
         return await MainActor.run {
           if let item = item,
-             let bloomingStatus = bloomingStatus {
+             let bloomingStatus = bloomingStatus,
+             let isVotedBlooming = isVotedBlooming {
             store.send(
               .presentToDetail(
                 flowerSpotData: item,
                 bloomingStatus: bloomingStatus,
-                distance: store.distance
+                distance: store.distance,
+                isVotedBlooming: isVotedBlooming
               )
             )
           }
