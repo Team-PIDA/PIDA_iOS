@@ -178,11 +178,11 @@ struct PIDAReducer {
       case .flowerSpotDetail(.delegate(.presentToLogin)):
         state.isPresentAuth = true
         return .none
-      case let .blooming(.delegate(.dismiss(didUpdate))):
-        print("기록 완료 여부 ", didUpdate)
+      case let .blooming(.delegate(.dismiss(didUpdate, spotId))):
         return .run { send in
           await send(.presentBloomingUpdate(false))
           if didUpdate {
+            await send(.map(.fetchDetailInfo(spotId)))
             try? await Task.sleep(for: .seconds(0.3))
             await send(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다.")))
           }

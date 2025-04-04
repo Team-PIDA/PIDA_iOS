@@ -41,6 +41,8 @@ public struct MapReducer {
     public var researchButtonEnable: Bool = false
     /// 현재 위치에서 특정 지점까지의 거리 (단위: 킬로미터)
     public var distance: Double = .zero
+    /// DetailView가 fetch가 필요한 지 여부 flag
+    public var isNeedFetchDetail: Bool = false
     
     /// 검색 결과 데이터
     public var searchResult: FlowerSpot? = nil
@@ -80,12 +82,15 @@ public struct MapReducer {
     case markerTapped(id: Int?)
     case detailResponse(FlowerSpot)
     case bloomingResponse(BloomStatusEntity)
+    case allDataUpdated
     case fetchPathLines(Int)
     case requestMapBounds(Bool)
     case mapSearchError(String?)
     case selectedItem(FlowerSpot)
     case dismissBottomSheet
     case requestDetailInfo(Int)
+    case fetchDetailInfo(Int)
+    
     
     case calculateDistance(MapPoint)
     

@@ -41,11 +41,11 @@ public struct BloomingUpdateReducer {
     case setStreetName(String)
     
     case delegate(Delegate)
-    case dismiss(didUpdate: Bool) // 상태 기록 완료 여부
+    case dismiss(didUpdate: Bool, spotId: Int) // 상태 기록 완료 여부
   }
   
   public enum Delegate: Equatable {
-    case dismiss(didUpdate: Bool)
+    case dismiss(didUpdate: Bool, spotId: Int)
   }
   
   public enum ID: Hashable {
