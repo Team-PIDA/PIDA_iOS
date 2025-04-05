@@ -8,6 +8,7 @@
 
 import Foundation
 import FlowerSpotDomainInterface
+import DesignKit
 
 import NMapsMap
 
@@ -45,6 +46,22 @@ extension MapViewRepresentable {
     
     init(_ parent: MapViewRepresentable) {
       self.parent = parent
+    }
+    
+    func updateMarker(state: BloomStatus) {
+      if let activeMarker = activeMarker {
+        selectedPin?.bloomingStatus = state
+        activeMarker.iconImage = state.activeImage
+      } else if let focusMarker = focusMarker {
+        focusMarker.iconImage = state.activeImage
+      }
+      if let path = paths, let startMarker = startMarker, let endMarker = endMarker {
+        path.color = state.color
+        path.outlineColor = state.color
+        startMarker.iconImage = state.circleImage
+        endMarker.iconImage = state.circleImage
+      }
+      parent.updateMarkerStatus = nil
     }
     
     /// 지도 탭 이벤트

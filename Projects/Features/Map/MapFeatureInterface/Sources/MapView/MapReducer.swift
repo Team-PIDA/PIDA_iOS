@@ -11,6 +11,7 @@ import FlowerSpotDomainInterface
 import BloomingDomainInterface
 import SearchDomainInterface
 import ComposableArchitecture
+import DesignKit
 
 @Reducer
 public struct MapReducer {
@@ -65,6 +66,7 @@ public struct MapReducer {
     /// 바텀시트 띄우기 트리거
     public var isBottomSheetPresented: Bool = false
     
+    public var updateMarkerStatus: BloomStatus? = nil
 
     public init() {}
   }
@@ -79,16 +81,21 @@ public struct MapReducer {
     case moveUserLocation
     case saveUserLocation(MapPoint)
     case moveLocation(MapPoint)
+    
     case fetchFlowers([MapPoint])
     case storeFlowerData([FlowerSpot])
+    case fetchPathLines(Int)
+    
     case markerTapped(id: Int?)
     case detailResponse(FlowerSpot)
     case bloomingResponse(BloomStatusEntity)
     case verifyTodayBlooming(VerifyBloomingStateEntity)
     case allDataUpdated
-    case fetchPathLines(Int)
+    case updateMarkerStatus(BloomStatus, id: Int)
+    
     case requestMapBounds(Bool)
     case mapSearchError(String?)
+    
     case selectedItem(FlowerSpot)
     case dismissBottomSheet
     case requestDetailInfo(Int)

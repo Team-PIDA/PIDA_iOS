@@ -41,6 +41,9 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 마커 그리기 트리거
   @Binding var isNeedDrawMarker: Bool
   
+  /// 활성화 된 마커 상태를 업데이트
+  @Binding var updateMarkerStatus: BloomStatus?
+  
   /// 마커 탭 시 id값을 전달하기 위한 클로저
   var onMarkerTapped: ((Int?) -> Void)? = nil
   /// 지도 범위 좌표 값을 전달하기 위한 클로저
@@ -102,6 +105,10 @@ struct MapViewRepresentable: UIViewRepresentable {
       drawFocusMarker(uiView, result: focusData, context: context)
     } else if focusData == nil, context.coordinator.focusData != nil {
       context.coordinator.deleteSearchResult()
+    }
+    
+    if let state = updateMarkerStatus {
+      context.coordinator.updateMarker(state: state)
     }
   }
   
@@ -176,15 +183,18 @@ extension MapViewRepresentable {
   }
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
-  private func markerTapEvent(to marker: NMFMarker, data: FlowerSpot, context: Context) {
+  private func markerTapEvent(to marker: NMFMarker, id: Int, context: Context) {
     // 같은 마커를 탭 하면 무시
     if marker == context.coordinator.activeMarker { return }
-    
-    context.coordinator.markerTapEvent(marker: marker, data: data)
-    
-    if let onMarkerTapped = onMarkerTapped {
-      onMarkerTapped(data.id)
+    if let data = flowerPositions[id] {
+      marker.iconImage = data.bloomingStatus.activeImage
+      context.coordinator.markerTapEvent(marker: marker, data: data)
+      
+      if let onMarkerTapped = onMarkerTapped {
+        onMarkerTapped(id)
+      }
     }
+    
   }
   
   /// 여러 마커의 중간지점 찾는 메서드
@@ -290,8 +300,8 @@ extension MapViewRepresentable {
       // 마커 탭 이벤트 헨들러
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
-          marker.iconImage = pin.value.bloomingStatus.activeImage
-          markerTapEvent(to: marker, data: pin.value, context: context)
+//          marker.iconImage = pin.value.bloomingStatus.activeImage
+          markerTapEvent(to: marker, id: pin.value.id, context: context)
           moveCamera(view, to: position)
         }
         return true

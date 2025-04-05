@@ -170,6 +170,7 @@ extension MapReducer {
           return .send(.allDataUpdated)
         }
         return .none
+        
       case let .verifyTodayBlooming(item):
         state.selectedItemVote = item
         if state.selectedItemDetail != nil && state.selectedItemBlooming != nil {
@@ -184,17 +185,30 @@ extension MapReducer {
           if let item = state.selectedItemDetail,
              let bloomingStatus = state.selectedItemBlooming,
              let isVotedBlooming = state.selectedItemVote {
-            return .send(
-              .presentToDetail(
-                flowerSpotData: item,
-                bloomingStatus: bloomingStatus,
-                distance: state.distance,
-                isVotedBlooming: isVotedBlooming
+            return .run { [distance = state.distance] send in
+              await send(.updateMarkerStatus(item.bloomingStatus, id: item.id))
+              await send(
+                .presentToDetail(
+                  flowerSpotData: item,
+                  bloomingStatus: bloomingStatus,
+                  distance: distance,
+                  isVotedBlooming: isVotedBlooming
+                )
               )
-            )
+            }
           }
         }
         return .none
+        
+      case let .updateMarkerStatus(status, id):
+        if state.flowerSpots[id] != .none {
+          state.flowerSpots[id]?.bloomingStatus = status
+        } else if state.searchResult != .none {
+          state.searchResult?.bloomingStatus = status
+        }
+        state.updateMarkerStatus = status
+        return .none
+        
       case let .fetchPathLines(id):
         if let data = state.flowerSpots[id] {
           state.selectedPathLines = data.path
