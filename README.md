@@ -2,14 +2,24 @@
 
 ![pida](https://github.com/user-attachments/assets/f7656171-f0e2-46a7-994c-184ed088215d)
 
+<p align="center">
+  <a href="https://wealthy-session-98c.notion.site/pida-1b490c66759880519df7f9c93c1ed2dd?pvs=4">
+    <img src="https://img.shields.io/badge/소개페이지-blue?style=for-the-badge&logo=notion&logoColor=white" alt="소개페이지" />
+  </a>
+  <a href="https://www.instagram.com/_pida.flower/">
+    <img src="https://img.shields.io/badge/@_pida.flower-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="@_pida.flower" />
+  </a>
+  <a href="https://github.com/Team-PIDA/Pida-Server">
+    <img src="https://img.shields.io/badge/PIDA--Server-000000?style=for-the-badge&logo=github&logoColor=white" alt="PIDA-Server" />
+  </a>
+</p>
 
-[![소개페이지](https://img.shields.io/badge/소개페이지-blue?style=for-the-badge&logo=notion&logoColor=white)](https://wealthy-session-98c.notion.site/pida-1b490c66759880519df7f9c93c1ed2dd?pvs=4)
-[![@_pida.flower](https://img.shields.io/badge/@_pida.flower-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/_pida.flower/) <br>
-[![PIDA-Server](https://img.shields.io/badge/PIDA--Server-000000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Team-PIDA/Pida-Server)
 ----
 <img src = "https://github.com/user-attachments/assets/ea235b51-636f-4e41-a997-6df619704360" width = "150">
 
 # 🌸 우리 동네 꽃길 안내 서비스, pida
+
+[![Download on the App Store](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg)](https://apps.apple.com/app/id6744023330) </br>
 <br>
 
 ## 🗺️ Feature
