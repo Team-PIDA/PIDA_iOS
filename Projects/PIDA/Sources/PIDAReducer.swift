@@ -180,6 +180,7 @@ struct PIDAReducer {
         }
       case .flowerSpotDetail(.delegate(.dismiss)):
         return .send(.presentFlowerSpotDetail(false))
+        
       case let .flowerSpotDetail(.delegate(.presentToBlooming(id, streetName))):
         return .run { send in
           await MainActor.run {

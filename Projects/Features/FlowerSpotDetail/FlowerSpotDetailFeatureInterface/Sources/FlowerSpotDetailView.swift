@@ -41,6 +41,9 @@ public struct FlowerSpotDetailView: View {
         .isErrorType(false)
       }
     }
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
   
   @ViewBuilder
@@ -225,8 +228,5 @@ public struct FlowerSpotDetailView: View {
     }
     .frame(height: 80)
     .background(Color.white)
-    .onAppear {
-      store.send(.onAppear)
-    }
   }
 }

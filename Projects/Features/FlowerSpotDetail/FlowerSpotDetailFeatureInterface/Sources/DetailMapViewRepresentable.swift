@@ -67,6 +67,10 @@ struct DetailMapViewRepresentable: UIViewRepresentable {
       context.coordinator.deleteMarker()
       Task { @MainActor in isNeedDeletePath = false }
     }
+    
+    if context.coordinator.bloomStatus != state {
+      context.coordinator.updateBloomingStatue(state: state)
+    }
   }
   
   
@@ -203,8 +207,25 @@ extension DetailMapViewRepresentable {
     /// 경로선 끝 마커
     var endMarker: NMFMarker? = nil
     
+    var bloomStatus: BloomStatus? = nil
+    
     init(_ parent: DetailMapViewRepresentable) {
       self.parent = parent
+    }
+    
+    func updateBloomingStatue(state: BloomStatus) {
+      if let activeMarker = activeMarker,
+          let path = path,
+          let startMarker = startMarker,
+          let endMarker = endMarker {
+        activeMarker.iconImage = state.activeImage
+        path.color = state.color
+        path.outlineColor = state.color
+        startMarker.iconImage = state.circleImage
+        endMarker.iconImage = state.circleImage
+        bloomStatus = state
+      }
+      
     }
     
     /// 경로 비활성화 처리 메서드

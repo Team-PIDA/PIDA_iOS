@@ -121,6 +121,7 @@ extension MapReducer {
             print(error.localizedDescription)
           }
         }
+        
       case let .fetchDetailInfo(id):
         state.selectedItemDetail = nil
         state.selectedItemBlooming = nil
@@ -145,9 +146,11 @@ extension MapReducer {
             print(error.localizedDescription)
           }
         }
+        
       case let .detailResponse(item):
         state.selectedItemDetail = item
         return .send(.calculateDistance(item.pinPoint))
+        
       case let .calculateDistance(pinPoint):
         guard let userPoint = state.userLocation else {
           state.distance = .zero
@@ -159,6 +162,7 @@ extension MapReducer {
           return .send(.allDataUpdated)
         }
         return .none
+        
       case let .bloomingResponse(item):
         state.selectedItemBlooming = item
         if state.selectedItemDetail != nil && state.selectedItemVote != nil {
@@ -173,6 +177,7 @@ extension MapReducer {
           return .send(.allDataUpdated)
         }
         return .none
+        
       case .allDataUpdated:
         if state.isNeedFetchDetail {
           state.isNeedFetchDetail = false
