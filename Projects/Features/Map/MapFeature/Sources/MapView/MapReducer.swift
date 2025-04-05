@@ -40,6 +40,7 @@ extension MapReducer {
             await send(.moveLocation(point))  // 현재 저장된 위치로 이동
           }
         }
+        
       case .moveUserLocation:
         return .run { send in
           if let location = await LocationService.shared.userLocation {
@@ -48,12 +49,15 @@ extension MapReducer {
             await send(.moveLocation(userLocation))
           }
         }
+        
       case let .saveUserLocation(location):
         state.userLocation = location
         return .none
+        
       case let .moveLocation(point):
         state.point = point
         return .none
+        
       case let .fetchFlowers(positions):
         return .run { send in
           do {
