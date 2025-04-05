@@ -149,6 +149,7 @@ fileprivate extension DetailMapViewRepresentable {
     marker.isHideCollidedSymbols = true
     marker.iconImage = icon
     marker.mapView = view.mapView
+    marker.anchor = anchor
     
     return marker
   }

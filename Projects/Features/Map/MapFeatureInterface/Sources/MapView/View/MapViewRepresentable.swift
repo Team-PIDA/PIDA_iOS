@@ -300,7 +300,6 @@ extension MapViewRepresentable {
       // 마커 탭 이벤트 헨들러
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
-//          marker.iconImage = pin.value.bloomingStatus.activeImage
           markerTapEvent(to: marker, id: pin.value.id, context: context)
           moveCamera(view, to: position)
         }
