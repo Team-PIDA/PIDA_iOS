@@ -57,14 +57,14 @@ public struct MapView: View {
     .ignoresSafeArea(edges: .bottom)
     .onAppear {
       if !store.isViewAppeared {
-        store.send(.fetchUserLocation)
+        store.send(.location(.fetchUserLocation))
         store.send(.viewDidAppear)
       }
       
     }
     .task {
       for await _ in LocationService.shared.userLocationStream {
-        store.send(.moveUserLocation)
+        store.send(.location(.moveUserLocation))
       }
     }
   }
@@ -79,7 +79,7 @@ extension MapView {
   @ViewBuilder
   private var mapView: some View {
     MapViewRepresentable(
-      userLocation: $store.state.point,
+      userLocation: $store.location.point,
       flowerPositions: $store.state.flowerSpots,
       newPath: $store.state.selectedPathLines,
       requestBounds: $store.requestMapBound,
@@ -214,7 +214,7 @@ extension MapView {
           .size(.superLarge)
       }
       .action {
-        store.send(.fetchUserLocation)
+        store.send(.location(.fetchUserLocation))
       }
       .elevation(cornerRadius: .Number24)
     }

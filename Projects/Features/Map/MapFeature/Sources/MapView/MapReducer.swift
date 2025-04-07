@@ -21,41 +21,12 @@ extension MapReducer {
     @Dependency(\.getBloomingStateUseCase) var getBloomingStateUseCase
     @Dependency(\.verifyBloomingTodayUseCase) var verifyBloomingTodayUseCase
     
-    let mapReducer = Reduce<State, Action> {
-      state,
-      action in
+    let mapReducer = Reduce<State, Action> { state, action in
+        
       switch action {
         
       case let .showToastView(message):
         state.toastMessage = message
-        return .none
-        
-        // MARK: - Map
-        
-      case .fetchUserLocation:
-        let point = state.point
-        return .run { send in
-          await LocationService.shared.requestUserLocation()
-          if let point = point {
-            await send(.moveLocation(point))  // 현재 저장된 위치로 이동
-          }
-        }
-        
-      case .moveUserLocation:
-        return .run { send in
-          if let location = await LocationService.shared.userLocation {
-            let userLocation = MapPoint(latitude: location.0, longitude: location.1)
-            await send(.saveUserLocation(userLocation))
-            await send(.moveLocation(userLocation))
-          }
-        }
-        
-      case let .saveUserLocation(location):
-        state.userLocation = location
-        return .none
-        
-      case let .moveLocation(point):
-        state.point = point
         return .none
         
       case let .fetchFlowers(positions):
@@ -156,7 +127,7 @@ extension MapReducer {
         return .send(.calculateDistance(item.pinPoint))
         
       case let .calculateDistance(pinPoint):
-        guard let userPoint = state.userLocation else {
+        guard let userPoint = state.location.userLocation else {
           state.distance = .zero
           return .none
         }
@@ -269,7 +240,7 @@ extension MapReducer {
         return .run { send in
           if let result = result {
             await send(.setSearchBarText(result.streetName))
-            await send(.moveLocation(result.pinPoint))
+            await send(.location(.moveLocation(result.pinPoint)))
             await send(.fetchPathLines(result.id))
             await send(.requestDetailInfo(result.id))
           }
@@ -292,8 +263,10 @@ extension MapReducer {
         
       case .presentToSearch:
         return .send(.delegate(.presentToSearch(state.searchText)))
+        
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
+        
       case let .presentToDetail(flowerSpot, bloomingStatus, distance, isVotedBlooming):
         return .send(
           .delegate(
@@ -307,12 +280,13 @@ extension MapReducer {
         )
         // MARK: - None
         
-      case .binding,
-          .delegate:
+      case .binding, .delegate, .location:
         return .none
+        
       }
+    
     }
-    self.init(reducer: mapReducer)
+    self.init(reducer: mapReducer, location: Reduce(LocationReducer()))
     
   }
 }

@@ -16,18 +16,18 @@ import DesignKit
 @Reducer
 public struct MapReducer {
   private let reducer: Reduce<State, Action>
-  
-  public init(reducer: Reduce<State, Action>) {
+  private let location: Reduce<LocationState, LocationAction>
+  public init(reducer: Reduce<State, Action>,
+              location: Reduce<LocationState, LocationAction>
+  ) {
     self.reducer = reducer
+    self.location = location
   }
   
   @ObservableState
   public struct State: Equatable {
     
-    /// 특정 지점으로 이동하기 위한 위치정보
-    public var point: MapPoint? = nil
-    /// 유저의 현재 위치
-    public var userLocation: MapPoint? = nil
+    public var location: LocationState = .init()
     /// 현재 지도에 보여 줄 FlowerSpot 데이터
     public var flowerSpots: [Int: FlowerSpot] = [:]
     /// 현재 그려져있는 경로
@@ -67,9 +67,10 @@ public struct MapReducer {
     public var isBottomSheetPresented: Bool = false
     
     public var updateMarkerStatus: BloomStatus? = nil
-
+    
     public init() {}
   }
+  
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
@@ -77,10 +78,7 @@ public struct MapReducer {
     
     // MARK: - Map
     
-    case fetchUserLocation
-    case moveUserLocation
-    case saveUserLocation(MapPoint)
-    case moveLocation(MapPoint)
+    case location(LocationAction)
     
     case fetchFlowers([MapPoint])
     case storeFlowerData([FlowerSpot])
@@ -126,6 +124,20 @@ public struct MapReducer {
     )
   }
   
+  public struct LocationState: Equatable {
+    /// 특정 지점으로 이동하기 위한 위치정보
+    public var point: MapPoint? = nil
+    /// 유저의 현재 위치
+    public var userLocation: MapPoint? = nil
+  }
+  
+  public enum LocationAction: Equatable {
+    case fetchUserLocation
+    case moveUserLocation
+    case saveUserLocation(MapPoint)
+    case moveLocation(MapPoint)
+  }
+  
   public enum Delegate: Equatable {
     case presentToSearch(String?)
     case pushToSetting
@@ -140,6 +152,10 @@ public struct MapReducer {
   
   public var body: some ReducerOf<Self> {
     BindingReducer()
+    Scope(state: \.location, action: \.location) {
+      location
+    }
     reducer
+    
   }
 }
