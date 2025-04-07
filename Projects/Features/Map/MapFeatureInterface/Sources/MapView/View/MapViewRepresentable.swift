@@ -59,7 +59,7 @@ struct MapViewRepresentable: UIViewRepresentable {
     view.showZoomControls = false
     view.mapView.positionMode = .direction
     view.mapView.zoomLevel = 13
-    view.mapView.minZoomLevel = 12.5
+    view.mapView.minZoomLevel = 9.5
     view.mapView.maxZoomLevel = 16.5
     view.mapView.isIndoorMapEnabled = false
     view.showIndoorLevelPicker = false
@@ -171,13 +171,13 @@ extension MapViewRepresentable {
   }
   
   /// 카메라 이동 메서드
-  private func moveCamera(_ view: NMFNaverMapView, to point: MapPoint?) {
+  private func moveCamera(_ view: NMFNaverMapView, to point: MapPoint?, zoomLevel: Double = 13) {
     if let point = point {
       let coord = NMGLatLng(lat: point.latitude, lng: point.longitude)
-      let cameraUpdate = NMFCameraUpdate(scrollTo: coord)
+      let cameraUpdate = NMFCameraUpdate(scrollTo: coord, zoomTo: zoomLevel)
       cameraUpdate.animation = .easeOut
       cameraUpdate.animationDuration = 1
-      view.mapView.zoomLevel = 13
+      
       view.mapView.moveCamera(cameraUpdate)
     }
   }
@@ -286,7 +286,7 @@ extension MapViewRepresentable {
   private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerSpot], context: Context) {
     // 마커 중간지점으로 카메라 이동
     let mid = averageCenter(of: flowers.values.map { $0.pinPoint })
-    moveCamera(view, to: mid)
+    moveCamera(view, to: mid, zoomLevel: view.mapView.cameraPosition.zoom)
     
     for pin in flowers {
       let position = pin.value.pinPoint
@@ -301,7 +301,7 @@ extension MapViewRepresentable {
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
           markerTapEvent(to: marker, id: pin.value.id, context: context)
-          moveCamera(view, to: position)
+          moveCamera(view, to: position, zoomLevel: 14)
         }
         return true
       }
