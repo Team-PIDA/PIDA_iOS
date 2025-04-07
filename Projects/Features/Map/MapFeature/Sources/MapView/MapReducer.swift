@@ -17,16 +17,46 @@ extension MapReducer {
   public init() {
     @Dependency(\.fetchAllFlowerPinUseCase) var fetchAllFlowerPinUseCase
     @Dependency(\.fetchAllFlowerAddressUseCase) var fetchAllFlowerAddressUseCase
-    @Dependency(\.getFlowerSpotDetailUseCase) var getFlowerSpotDetailUseCase
-    @Dependency(\.getBloomingStateUseCase) var getBloomingStateUseCase
-    @Dependency(\.verifyBloomingTodayUseCase) var verifyBloomingTodayUseCase
     
     let mapReducer = Reduce<State, Action> { state, action in
-        
       switch action {
-        
       case let .showToastView(message):
         state.toastMessage = message
+        return .none
+        
+      case .viewDidAppear:
+        state.isViewAppeared = true
+        return .run { send in
+          do {
+            let _ = try await fetchAllFlowerAddressUseCase.execute()
+          } catch let error as NetworkError {
+            await send(.mapSearchError(error.localizedDescription))
+          } catch let error as FoundationError {
+            await send(.mapSearchError(error.localizedDescription))
+          } catch {
+            await send(.mapSearchError(error.localizedDescription))
+          }
+          await send(.location(.requestMapBounds(true)))
+        }
+        
+        // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
+      case let .markerTapped(id):
+        guard let id = id else {
+          state.isNeedDeleteMarker = true
+          return .none
+        }
+        return .run { send in
+          await send(.fetchPathLines(id))
+          await send(.detail(.requestDetailInfo(id)))
+        }
+        
+      case let .fetchPathLines(id):
+        if let data = state.flowerSpots[id] {
+          state.selectedPathLines = data.path
+          state.isNeedDrawMarker = true
+        } else {
+          state.selectedPathLines = []
+        }
         return .none
         
       case let .fetchFlowers(positions):
@@ -58,181 +88,17 @@ extension MapReducer {
         }
         return .none
         
-        // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
-      case let .markerTapped(id):
-        guard let id = id else {
-          state.isNeedDeleteMarker = true
-          return .none
-        }
-        return .run { send in
-          await send(.fetchPathLines(id))
-          await send(.requestDetailInfo(id))
-        }
-        
-      case let .requestDetailInfo(id):
-        state.selectedItemDetail = nil
-        state.selectedItemBlooming = nil
-        state.selectedItemVote = nil
-        state.isDetailLoading = true
-        state.isBottomSheetPresented = true
-        return .run { send in
-          do {
-            async let detailResult = try getFlowerSpotDetailUseCase.execute(id: id)
-            async let bloomingResult = try getBloomingStateUseCase.execute(id: id)
-            let verifyTodayResult = UserDefault.isLoggedIn == true
-            ? try await verifyBloomingTodayUseCase.execute(id: id)
-            : VerifyBloomingStateEntity(isBlooming: false)
-            let (detail, blooming) = try await (detailResult, bloomingResult)
-            await MainActor.run {
-                send(.detailResponse(detail))
-                send(.bloomingResponse(blooming))
-                send(.verifyTodayBlooming(verifyTodayResult))
-            }
-          } catch let error as NetworkError {
-            print(error.errorDescription)
-          } catch let error as FoundationError {
-            print(error.errorDescription)
-          } catch {
-            print(error.localizedDescription)
-          }
-        }
-        
-      case let .fetchDetailInfo(id):
-        state.selectedItemDetail = nil
-        state.selectedItemBlooming = nil
-        state.selectedItemVote = nil
-        state.isNeedFetchDetail = true
-        return .run { send in
-          do {
-            async let detailResult = try await getFlowerSpotDetailUseCase.execute(id: id)
-            async let bloomingResult = try await getBloomingStateUseCase.execute(id: id)
-            async let verifyTodayResult = try await verifyBloomingTodayUseCase.execute(id: id)
-            let (detail, blooming, verifyToday) = try await (detailResult, bloomingResult, verifyTodayResult)
-            await MainActor.run {
-              send(.detailResponse(detail))
-              send(.bloomingResponse(blooming))
-              send(.verifyTodayBlooming(verifyToday))
-            }
-          } catch let error as NetworkError {
-            print(error.errorDescription)
-          } catch let error as FoundationError {
-            print(error.errorDescription)
-          } catch {
-            print(error.localizedDescription)
-          }
-        }
-        
-      case let .detailResponse(item):
-        state.selectedItemDetail = item
-        return .send(.calculateDistance(item.pinPoint))
-        
-      case let .calculateDistance(pinPoint):
-        guard let userPoint = state.location.userLocation else {
-          state.distance = .zero
-          return .none
-        }
-        state.distance = pinPoint.distance(from: userPoint)
-        if state.selectedItemBlooming != nil && state.selectedItemVote != nil {
-          state.isDetailLoading = false
-          return .send(.allDataUpdated)
-        }
-        return .none
-        
-      case let .bloomingResponse(item):
-        state.selectedItemBlooming = item
-        if state.selectedItemDetail != nil && state.selectedItemVote != nil {
-          state.isDetailLoading = false
-          return .send(.allDataUpdated)
-        }
-        return .none
-        
-      case let .verifyTodayBlooming(item):
-        state.selectedItemVote = item
-        if state.selectedItemDetail != nil && state.selectedItemBlooming != nil {
-          state.isDetailLoading = false
-          return .send(.allDataUpdated)
-        }
-        return .none
-        
-      case .allDataUpdated:
-        if state.isNeedFetchDetail {
-          state.isNeedFetchDetail = false
-          if let item = state.selectedItemDetail,
-             let bloomingStatus = state.selectedItemBlooming,
-             let isVotedBlooming = state.selectedItemVote {
-            return .run { [distance = state.distance] send in
-              await send(.updateMarkerStatus(item.bloomingStatus, id: item.id))
-              await send(
-                .presentToDetail(
-                  flowerSpotData: item,
-                  bloomingStatus: bloomingStatus,
-                  distance: distance,
-                  isVotedBlooming: isVotedBlooming
-                )
-              )
-            }
-          }
-        }
-        return .none
-        
-      case let .updateMarkerStatus(status, id):
-        if state.flowerSpots[id] != .none {
-          state.flowerSpots[id]?.bloomingStatus = status
-        } else if state.searchResult != .none {
-          state.searchResult?.bloomingStatus = status
-        }
-        state.updateMarkerStatus = status
-        return .none
-        
-      case let .fetchPathLines(id):
-        if let data = state.flowerSpots[id] {
-          state.selectedPathLines = data.path
-          state.isNeedDrawMarker = true
-        } else {
-          state.selectedPathLines = []
-        }
-        return .none
-        
       case let .mapSearchError(error):
         print("=============")
         print(error ?? "ERROR!")
         print("=============")
         return .none
         
-      case let .requestMapBounds(isRequest):
-        state.requestMapBound = isRequest
-        state.researchButtonEnable = false
-        return .none
-        
-      case let .selectedItem(item):
-        state.selectedItem = item
-        return .send(.fetchPathLines(item.id))
-        
-      case .dismissBottomSheet:
-        state.isBottomSheetPresented = false
-        state.selectedItemDetail = nil
-        state.selectedItemBlooming = nil
-        state.distance = .zero
-        return .none
-        
-      case .viewDidAppear:
-        state.isViewAppeared = true
-        return .run { send in
-          do {
-            let _ = try await fetchAllFlowerAddressUseCase.execute()
-          } catch let error as NetworkError {
-            await send(.mapSearchError(error.localizedDescription))
-          } catch let error as FoundationError {
-            await send(.mapSearchError(error.localizedDescription))
-          } catch {
-            await send(.mapSearchError(error.localizedDescription))
-          }
-          await send(.requestMapBounds(true))
-        }
+      case let .fetchDetailInfo(id):
+        return .send(.detail(.fetchDetailInfo(id)))
         
         // MARK: - Search
         
-        // 검색 결과
       case let .showSearchResult(result):
         state.searchResult = result
         state.selectedItemDetail = nil
@@ -242,7 +108,7 @@ extension MapReducer {
             await send(.setSearchBarText(result.streetName))
             await send(.location(.moveLocation(result.pinPoint)))
             await send(.fetchPathLines(result.id))
-            await send(.requestDetailInfo(result.id))
+            await send(.detail(.requestDetailInfo(result.id)))
           }
         }
         
@@ -267,7 +133,7 @@ extension MapReducer {
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
         
-      case let .presentToDetail(flowerSpot, bloomingStatus, distance, isVotedBlooming):
+      case let .detail(.presentToDetail(flowerSpot, bloomingStatus, distance, isVotedBlooming)):
         return .send(
           .delegate(
             .presentToDetail(
@@ -278,15 +144,21 @@ extension MapReducer {
             )
           )
         )
-        // MARK: - None
         
-      case .binding, .delegate, .location:
+      case let .detail(.fetchPathLines(id)):
+        return .send(.fetchPathLines(id))
+        
+      case .binding, .delegate, .location, .detail:
         return .none
         
       }
     
     }
-    self.init(reducer: mapReducer, location: Reduce(LocationReducer()))
+    self.init(
+      reducer: mapReducer,
+      location: Reduce(LocationReducer()),
+      detail: Reduce(DetailReducer())
+    )
     
   }
 }

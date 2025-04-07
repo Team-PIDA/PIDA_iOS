@@ -16,18 +16,26 @@ import DesignKit
 @Reducer
 public struct MapReducer {
   private let reducer: Reduce<State, Action>
-  private let location: Reduce<LocationState, LocationAction>
-  public init(reducer: Reduce<State, Action>,
-              location: Reduce<LocationState, LocationAction>
+  private let location: Reduce<State, LocationAction>
+  private let detail: Reduce<State, DetailAction>
+  
+  public init(
+    reducer: Reduce<State, Action>,
+    location: Reduce<State, LocationAction>,
+    detail: Reduce<State, DetailAction>
   ) {
     self.reducer = reducer
     self.location = location
+    self.detail = detail
   }
   
   @ObservableState
   public struct State: Equatable {
+    /// 특정 지점으로 이동하기 위한 위치정보
+    public var point: MapPoint? = nil
+    /// 유저의 현재 위치
+    public var userLocation: MapPoint? = nil
     
-    public var location: LocationState = .init()
     /// 현재 지도에 보여 줄 FlowerSpot 데이터
     public var flowerSpots: [Int: FlowerSpot] = [:]
     /// 현재 그려져있는 경로
@@ -74,40 +82,23 @@ public struct MapReducer {
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
-    case showToastView(message: String?)
-    
-    // MARK: - Map
-    
     case location(LocationAction)
+    case detail(DetailAction)
     
-    case fetchFlowers([MapPoint])
-    case storeFlowerData([FlowerSpot])
-    case fetchPathLines(Int)
+    case showToastView(message: String?)
+    case viewDidAppear
     
     case markerTapped(id: Int?)
-    case detailResponse(FlowerSpot)
-    case bloomingResponse(BloomStatusEntity)
-    case verifyTodayBlooming(VerifyBloomingStateEntity)
-    case allDataUpdated
-    case updateMarkerStatus(BloomStatus, id: Int)
+    case fetchPathLines(Int)
+    case fetchFlowers([MapPoint])
+    case storeFlowerData([FlowerSpot])
     
-    case requestMapBounds(Bool)
     case mapSearchError(String?)
-    
-    case selectedItem(FlowerSpot)
-    case dismissBottomSheet
-    case requestDetailInfo(Int)
     case fetchDetailInfo(Int)
-    
-    
-    case calculateDistance(MapPoint)
-    
-    // MARK: - Life Cycle
-    case viewDidAppear
     
     // MARK: - Search
     
-    case showSearchResult(FlowerSpot?) // TODO: - ItemType
+    case showSearchResult(FlowerSpot?)
     case setSearchBarText(String?)
     case resetSearchBar
     
@@ -116,26 +107,41 @@ public struct MapReducer {
     case delegate(Delegate)
     case presentToSearch
     case pushToSetting
-    case presentToDetail(
-      flowerSpotData: FlowerSpot,
-      bloomingStatus: BloomStatusEntity,
-      distance: Double,
-      isVotedBlooming: VerifyBloomingStateEntity
-    )
   }
   
-  public struct LocationState: Equatable {
-    /// 특정 지점으로 이동하기 위한 위치정보
-    public var point: MapPoint? = nil
-    /// 유저의 현재 위치
-    public var userLocation: MapPoint? = nil
-  }
+  // MARK: - Location Action
   
   public enum LocationAction: Equatable {
     case fetchUserLocation
     case moveUserLocation
     case saveUserLocation(MapPoint)
     case moveLocation(MapPoint)
+    case requestMapBounds(Bool)
+  }
+  
+  // MARK: - Detail Action
+  
+  public enum DetailAction: Equatable {
+    case fetchPathLines(Int)
+    case selectedItem(FlowerSpot)
+    
+    case requestDetailInfo(Int)
+    case fetchDetailInfo(Int)
+    
+    case detailResponse(FlowerSpot)
+    case bloomingResponse(BloomStatusEntity)
+    case verifyTodayBlooming(VerifyBloomingStateEntity)
+    case allDataUpdated
+    
+    case calculateDistance(MapPoint)
+    case updateMarkerStatus(BloomStatus, id: Int)
+    case dismissBottomSheet
+    case presentToDetail(
+      flowerSpotData: FlowerSpot,
+      bloomingStatus: BloomStatusEntity,
+      distance: Double,
+      isVotedBlooming: VerifyBloomingStateEntity
+    )
   }
   
   public enum Delegate: Equatable {
@@ -152,8 +158,11 @@ public struct MapReducer {
   
   public var body: some ReducerOf<Self> {
     BindingReducer()
-    Scope(state: \.location, action: \.location) {
+    Scope(state: \.self, action: \.location) {
       location
+    }
+    Scope(state: \.self, action: \.detail) {
+      detail
     }
     reducer
     

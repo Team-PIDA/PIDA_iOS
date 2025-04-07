@@ -33,7 +33,7 @@ public struct MapView: View {
         if store.researchButtonEnable {
           ResearchButton(
             action: {
-              store.send(.requestMapBounds(true))
+              store.send(.location(.requestMapBounds(true)))
             }
           )
         }
@@ -79,7 +79,7 @@ extension MapView {
   @ViewBuilder
   private var mapView: some View {
     MapViewRepresentable(
-      userLocation: $store.location.point,
+      userLocation: $store.point,
       flowerPositions: $store.state.flowerSpots,
       newPath: $store.state.selectedPathLines,
       requestBounds: $store.requestMapBound,
@@ -97,7 +97,7 @@ extension MapView {
     .onMarkerTapped { id in
       store.send(.markerTapped(id: id))
       if id == .none {
-        store.send(.dismissBottomSheet)
+        store.send(.detail(.dismissBottomSheet))
       }
     }
     .ignoresSafeArea()
@@ -105,7 +105,6 @@ extension MapView {
   
   @ViewBuilder
   private func searchView() -> some View {
-    // TODO: - ontap 시 textfield에 텍스트
     if let result = store.searchText { // 검색 결과
       SearchBar(
         text: .constant(result),
@@ -116,7 +115,7 @@ extension MapView {
             .size(.extraLarge)
             .action {
               store.send(.resetSearchBar)
-              store.send(.dismissBottomSheet)
+              store.send(.detail(.dismissBottomSheet))
               store.send(.markerTapped(id: nil))
             }
         }
@@ -156,12 +155,12 @@ extension MapView {
              let bloomingStatus = bloomingStatus,
              let isVotedBlooming = isVotedBlooming {
             store.send(
-              .presentToDetail(
+              .detail(.presentToDetail(
                 flowerSpotData: item,
                 bloomingStatus: bloomingStatus,
                 distance: store.distance,
                 isVotedBlooming: isVotedBlooming
-              )
+              ))
             )
           }
         }
@@ -169,7 +168,7 @@ extension MapView {
       onPullDown:  {
         return await MainActor.run {
           store.send(.resetSearchBar)
-          store.send(.dismissBottomSheet)
+          store.send(.detail(.dismissBottomSheet))
           store.send(.markerTapped(id: nil))
         }
       },
@@ -179,12 +178,12 @@ extension MapView {
              let bloomingStatus = bloomingStatus,
              let isVotedBlooming = isVotedBlooming {
             store.send(
-              .presentToDetail(
+              .detail(.presentToDetail(
                 flowerSpotData: item,
                 bloomingStatus: bloomingStatus,
                 distance: store.distance,
                 isVotedBlooming: isVotedBlooming
-              )
+              ))
             )
           }
         }

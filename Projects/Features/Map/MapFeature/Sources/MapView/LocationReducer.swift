@@ -13,7 +13,7 @@ import Utility
 
 extension MapReducer {
   struct LocationReducer: Reducer {
-    public func reduce(into state: inout LocationState, action: LocationAction) -> Effect<LocationAction> {
+    public func reduce(into state: inout State, action: LocationAction) -> Effect<LocationAction> {
       
       switch action {
       case .fetchUserLocation:
@@ -43,6 +43,11 @@ extension MapReducer {
         
       case let .moveLocation(point):
         state.point = point
+        return .none
+        
+      case let .requestMapBounds(isRequest):
+        state.requestMapBound = isRequest
+        state.researchButtonEnable = false
         return .none
         
       }
