@@ -1,0 +1,59 @@
+//
+//  DetailReducer.swift
+//  MapFeature
+//
+//  Created by Jiyeon on 4/7/25.
+//  Copyright © 2025 com.pida.me.ios. All rights reserved.
+//
+
+import FlowerSpotDomainInterface
+import BloomingDomainInterface
+import ComposableArchitecture
+import DesignKit
+
+extension MapReducer {
+  
+  public struct DetailState: Equatable {
+    public var selectedItem: FlowerSpot? = nil
+    /// 네트워크로 받아온 상세 데이터
+    public var selectedItemDetail: FlowerSpot? = nil
+    /// 네트워크로 받아온 개화 상태 데이터
+    public var selectedItemBlooming: BloomStatusEntity? = nil
+    /// 네트워크로 받아온 투표 상태 데이터
+    public var selectedItemVote: VerifyBloomingStateEntity? = nil
+    /// 로딩 여부
+    public var isDetailLoading: Bool = false
+    /// DetailView가 fetch가 필요한 지 여부 flag
+    public var isNeedFetchDetail: Bool = false
+    /// 현재 위치에서 특정 지점까지의 거리 (단위: 킬로미터)
+    public var distance: Double = .zero
+    /// 바텀시트 띄우기 트리거
+    public var isBottomSheetPresented: Bool = false
+    
+    public var updateMarkerStatus: BloomStatus? = nil
+  }
+  
+  public enum DetailAction: Equatable {
+    case fetchPathLines(Int)
+    case selectedItem(FlowerSpot)
+    
+    case requestDetailInfo(Int)
+    case fetchDetailInfo(Int)
+    
+    case detailResponse(FlowerSpot)
+    case bloomingResponse(BloomStatusEntity)
+    case verifyTodayBlooming(VerifyBloomingStateEntity)
+    case allDataUpdated
+    
+    case calculateDistance(MapPoint)
+    case updateMarkerStatus(BloomStatus, id: Int)
+    case dismissBottomSheet
+    case presentToDetail(
+      flowerSpotData: FlowerSpot,
+      bloomingStatus: BloomStatusEntity,
+      distance: Double,
+      isVotedBlooming: VerifyBloomingStateEntity
+    )
+  }
+  
+}

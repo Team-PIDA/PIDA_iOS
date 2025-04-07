@@ -48,11 +48,6 @@ public struct MapReducer {
     public var requestMapBound: Bool = false
     /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
-    /// 현재 위치에서 특정 지점까지의 거리 (단위: 킬로미터)
-    public var distance: Double = .zero
-    /// DetailView가 fetch가 필요한 지 여부 flag
-    public var isNeedFetchDetail: Bool = false
-    
     /// 검색 결과 데이터
     public var searchResult: FlowerSpot? = nil
     /// 검색 결과 텍스트
@@ -60,22 +55,9 @@ public struct MapReducer {
     
     public var toastMessage: String? = nil
     
-    public var selectedItem: FlowerSpot? = nil
-    /// 네트워크로 받아온 상세 데이터
-    public var selectedItemDetail: FlowerSpot? = nil
-    /// 네트워크로 받아온 개화 상태 데이터
-    public var selectedItemBlooming: BloomStatusEntity? = nil
-    /// 네트워크로 받아온 투표 상태 데이터
-    public var selectedItemVote: VerifyBloomingStateEntity? = nil
-    /// 로딩 여부
-    public var isDetailLoading: Bool = false
-    
     public var isViewAppeared: Bool = false
-    /// 바텀시트 띄우기 트리거
-    public var isBottomSheetPresented: Bool = false
     
-    public var updateMarkerStatus: BloomStatus? = nil
-    
+    public var detail: DetailState = .init()
     public init() {}
   }
   
@@ -90,59 +72,19 @@ public struct MapReducer {
     
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
-    case fetchFlowers([MapPoint])
-    case storeFlowerData([FlowerSpot])
     
-    case mapSearchError(String?)
     case fetchDetailInfo(Int)
-    
-    // MARK: - Search
     
     case showSearchResult(FlowerSpot?)
     case setSearchBarText(String?)
     case resetSearchBar
-    
-    // MARK: - Delegate
     
     case delegate(Delegate)
     case presentToSearch
     case pushToSetting
   }
   
-  // MARK: - Location Action
-  
-  public enum LocationAction: Equatable {
-    case fetchUserLocation
-    case moveUserLocation
-    case saveUserLocation(MapPoint)
-    case moveLocation(MapPoint)
-    case requestMapBounds(Bool)
-  }
-  
-  // MARK: - Detail Action
-  
-  public enum DetailAction: Equatable {
-    case fetchPathLines(Int)
-    case selectedItem(FlowerSpot)
-    
-    case requestDetailInfo(Int)
-    case fetchDetailInfo(Int)
-    
-    case detailResponse(FlowerSpot)
-    case bloomingResponse(BloomStatusEntity)
-    case verifyTodayBlooming(VerifyBloomingStateEntity)
-    case allDataUpdated
-    
-    case calculateDistance(MapPoint)
-    case updateMarkerStatus(BloomStatus, id: Int)
-    case dismissBottomSheet
-    case presentToDetail(
-      flowerSpotData: FlowerSpot,
-      bloomingStatus: BloomStatusEntity,
-      distance: Double,
-      isVotedBlooming: VerifyBloomingStateEntity
-    )
-  }
+  // MARK: - Delegate
   
   public enum Delegate: Equatable {
     case presentToSearch(String?)

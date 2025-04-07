@@ -15,11 +15,11 @@ import Utility
 
 extension MapReducer {
   public init() {
-    @Dependency(\.fetchAllFlowerPinUseCase) var fetchAllFlowerPinUseCase
     @Dependency(\.fetchAllFlowerAddressUseCase) var fetchAllFlowerAddressUseCase
     
     let mapReducer = Reduce<State, Action> { state, action in
       switch action {
+        
       case let .showToastView(message):
         state.toastMessage = message
         return .none
@@ -30,11 +30,11 @@ extension MapReducer {
           do {
             let _ = try await fetchAllFlowerAddressUseCase.execute()
           } catch let error as NetworkError {
-            await send(.mapSearchError(error.localizedDescription))
+            print(error.localizedDescription)
           } catch let error as FoundationError {
-            await send(.mapSearchError(error.localizedDescription))
+            print(error.localizedDescription)
           } catch {
-            await send(.mapSearchError(error.localizedDescription))
+            print(error.localizedDescription)
           }
           await send(.location(.requestMapBounds(true)))
         }
@@ -58,42 +58,7 @@ extension MapReducer {
           state.selectedPathLines = []
         }
         return .none
-        
-      case let .fetchFlowers(positions):
-        return .run { send in
-          do {
-            let result = try await fetchAllFlowerPinUseCase.execute(
-              region: "SEOUL",
-              swLat: positions[0].latitude,
-              swLng: positions[0].longitude,
-              neLat: positions[1].latitude,
-              neLng: positions[1].longitude
-            )
-            if result.count == 0 {
-              await send(.showToastView(message: "이 근방에는 꽃길이 없어요."))
-            }
-            await send(.storeFlowerData(result))
-          } catch let error as NetworkError {
-            await send(.mapSearchError(error.localizedDescription))
-          } catch let error as FoundationError {
-            await send(.mapSearchError(error.localizedDescription))
-          } catch {
-            await send(.mapSearchError(error.localizedDescription))
-          }
-        }
-      case let .storeFlowerData(data):
-        state.flowerSpots.removeAll()
-        data.forEach {
-          state.flowerSpots[$0.id] = $0
-        }
-        return .none
-        
-      case let .mapSearchError(error):
-        print("=============")
-        print(error ?? "ERROR!")
-        print("=============")
-        return .none
-        
+      
       case let .fetchDetailInfo(id):
         return .send(.detail(.fetchDetailInfo(id)))
         
@@ -101,8 +66,8 @@ extension MapReducer {
         
       case let .showSearchResult(result):
         state.searchResult = result
-        state.selectedItemDetail = nil
-        state.isDetailLoading = true
+        state.detail.selectedItemDetail = nil
+        state.detail.isDetailLoading = true
         return .run { send in
           if let result = result {
             await send(.setSearchBarText(result.streetName))
@@ -147,6 +112,9 @@ extension MapReducer {
         
       case let .detail(.fetchPathLines(id)):
         return .send(.fetchPathLines(id))
+        
+      case let .location(.showToastView(message)):
+        return .send(.showToastView(message: message))
         
       case .binding, .delegate, .location, .detail:
         return .none

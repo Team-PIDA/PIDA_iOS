@@ -25,15 +25,15 @@ extension MapReducer {
       switch action {
       
       case let .selectedItem(item):
-        state.selectedItem = item
+        state.detail.selectedItem = item
         return .send(.fetchPathLines(item.id))
         
       case let .requestDetailInfo(id):
-        state.selectedItemDetail = nil
-        state.selectedItemBlooming = nil
-        state.selectedItemVote = nil
-        state.isDetailLoading = true
-        state.isBottomSheetPresented = true
+        state.detail.selectedItemDetail = nil
+        state.detail.selectedItemBlooming = nil
+        state.detail.selectedItemVote = nil
+        state.detail.isDetailLoading = true
+        state.detail.isBottomSheetPresented = true
         return .run { send in
           do {
             async let detailResult = try getFlowerSpotDetailUseCase.execute(id: id)
@@ -57,10 +57,10 @@ extension MapReducer {
         }
         
       case let .fetchDetailInfo(id):
-        state.selectedItemDetail = nil
-        state.selectedItemBlooming = nil
-        state.selectedItemVote = nil
-        state.isNeedFetchDetail = true
+        state.detail.selectedItemDetail = nil
+        state.detail.selectedItemBlooming = nil
+        state.detail.selectedItemVote = nil
+        state.detail.isNeedFetchDetail = true
         return .run { send in
           do {
             async let detailResult = try await getFlowerSpotDetailUseCase.execute(id: id)
@@ -82,32 +82,32 @@ extension MapReducer {
         }
         
       case let .detailResponse(item):
-        state.selectedItemDetail = item
+        state.detail.selectedItemDetail = item
         return .send(.calculateDistance(item.pinPoint))
         
       case let .bloomingResponse(item):
-        state.selectedItemBlooming = item
-        if state.selectedItemDetail != nil && state.selectedItemVote != nil {
-          state.isDetailLoading = false
+        state.detail.selectedItemBlooming = item
+        if state.detail.selectedItemDetail != nil && state.detail.selectedItemVote != nil {
+          state.detail.isDetailLoading = false
           return .send(.allDataUpdated)
         }
         return .none
         
       case let .verifyTodayBlooming(item):
-        state.selectedItemVote = item
-        if state.selectedItemDetail != nil && state.selectedItemBlooming != nil {
-          state.isDetailLoading = false
+        state.detail.selectedItemVote = item
+        if state.detail.selectedItemDetail != nil && state.detail.selectedItemBlooming != nil {
+          state.detail.isDetailLoading = false
           return .send(.allDataUpdated)
         }
         return .none
         
       case .allDataUpdated:
-        if state.isNeedFetchDetail {
-          state.isNeedFetchDetail = false
-          if let item = state.selectedItemDetail,
-             let bloomingStatus = state.selectedItemBlooming,
-             let isVotedBlooming = state.selectedItemVote {
-            return .run { [distance = state.distance] send in
+        if state.detail.isNeedFetchDetail {
+          state.detail.isNeedFetchDetail = false
+          if let item = state.detail.selectedItemDetail,
+             let bloomingStatus = state.detail.selectedItemBlooming,
+             let isVotedBlooming = state.detail.selectedItemVote {
+            return .run { [distance = state.detail.distance] send in
               await send(.updateMarkerStatus(item.bloomingStatus, id: item.id))
               await send(
                 .presentToDetail(
@@ -124,12 +124,12 @@ extension MapReducer {
         
       case let .calculateDistance(pinPoint):
         guard let userPoint = state.userLocation else {
-          state.distance = .zero
+          state.detail.distance = .zero
           return .none
         }
-        state.distance = pinPoint.distance(from: userPoint)
-        if state.selectedItemBlooming != nil && state.selectedItemVote != nil {
-          state.isDetailLoading = false
+        state.detail.distance = pinPoint.distance(from: userPoint)
+        if state.detail.selectedItemBlooming != nil && state.detail.selectedItemVote != nil {
+          state.detail.isDetailLoading = false
           return .send(.allDataUpdated)
         }
         return .none
@@ -140,14 +140,14 @@ extension MapReducer {
         } else if state.searchResult != .none {
           state.searchResult?.bloomingStatus = status
         }
-        state.updateMarkerStatus = status
+        state.detail.updateMarkerStatus = status
         return .none
         
       case .dismissBottomSheet:
-        state.isBottomSheetPresented = false
-        state.selectedItemDetail = nil
-        state.selectedItemBlooming = nil
-        state.distance = .zero
+        state.detail.isBottomSheetPresented = false
+        state.detail.selectedItemDetail = nil
+        state.detail.selectedItemBlooming = nil
+        state.detail.distance = .zero
         return .none
         
         // 부모 리듀서에 전달 할 액션

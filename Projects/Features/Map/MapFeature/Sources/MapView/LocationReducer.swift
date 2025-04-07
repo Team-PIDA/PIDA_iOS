@@ -13,6 +13,9 @@ import Utility
 
 extension MapReducer {
   struct LocationReducer: Reducer {
+    
+    @Dependency(\.fetchAllFlowerPinUseCase) var fetchAllFlowerPinUseCase
+    
     public func reduce(into state: inout State, action: LocationAction) -> Effect<LocationAction> {
       
       switch action {
@@ -49,6 +52,43 @@ extension MapReducer {
         state.requestMapBound = isRequest
         state.researchButtonEnable = false
         return .none
+        
+      case let .fetchFlowers(positions):
+        return .run { send in
+          do {
+            let result = try await fetchAllFlowerPinUseCase.execute(
+              region: "SEOUL",
+              swLat: positions[0].latitude,
+              swLng: positions[0].longitude,
+              neLat: positions[1].latitude,
+              neLng: positions[1].longitude
+            )
+            if result.count == 0 {
+              await send(.showToastView(message: "이 근방에는 꽃길이 없어요."))
+            }
+            await send(.storeFlowerData(result))
+          } catch let error as NetworkError {
+            await send(.mapSearchError(error.localizedDescription))
+          } catch let error as FoundationError {
+            await send(.mapSearchError(error.localizedDescription))
+          } catch {
+            await send(.mapSearchError(error.localizedDescription))
+          }
+        }
+      case let .storeFlowerData(data):
+        state.flowerSpots.removeAll()
+        data.forEach {
+          state.flowerSpots[$0.id] = $0
+        }
+        return .none
+        
+      case let .mapSearchError(error):
+        print("=============")
+        print(error ?? "ERROR!")
+        print("=============")
+        return .none
+        
+      case .showToastView: return .none
         
       }
     }

@@ -45,10 +45,10 @@ public struct MapView: View {
     }
     .overlay(
         Group {
-          if store.isBottomSheetPresented {
-            let item = store.selectedItemDetail
-            let bloomingStatus = store.selectedItemBlooming
-            let isVotedBlooming = store.selectedItemVote
+          if store.detail.isBottomSheetPresented {
+            let item = store.detail.selectedItemDetail
+            let bloomingStatus = store.detail.selectedItemBlooming
+            let isVotedBlooming = store.detail.selectedItemVote
             BottomSheet(item: item, bloomingStatus: bloomingStatus, isVotedBlooming: isVotedBlooming)
           }
         },
@@ -87,11 +87,11 @@ extension MapView {
       focusData: $store.searchResult,
       isNeedDeleteMarker: $store.isNeedDeleteMarker,
       isNeedDrawMarker: $store.isNeedDrawMarker,
-      updateMarkerStatus: $store.updateMarkerStatus
+      updateMarkerStatus: $store.detail.updateMarkerStatus
     )
     .onReceiveMapBounds {
       if store.requestMapBound {
-        store.send(.fetchFlowers($0))
+        store.send(.location(.fetchFlowers($0)))
       }
     }
     .onMarkerTapped { id in
@@ -146,9 +146,9 @@ extension MapView {
     CherryBlossomBottomSheet(
       title: item?.streetName,
       description: item?.address,
-      tags: [item?.district, "\(store.distance) km", item?.recentlyVisitedCountString],
+      tags: [item?.district, "\(store.detail.distance) km", item?.recentlyVisitedCountString],
       blossomState: item?.bloomingStatus,
-      isLoading: store.isDetailLoading,
+      isLoading: store.detail.isDetailLoading,
       onPullUp: {
         return await MainActor.run {
           if let item = item,
@@ -158,7 +158,7 @@ extension MapView {
               .detail(.presentToDetail(
                 flowerSpotData: item,
                 bloomingStatus: bloomingStatus,
-                distance: store.distance,
+                distance: store.detail.distance,
                 isVotedBlooming: isVotedBlooming
               ))
             )
@@ -181,7 +181,7 @@ extension MapView {
               .detail(.presentToDetail(
                 flowerSpotData: item,
                 bloomingStatus: bloomingStatus,
-                distance: store.distance,
+                distance: store.detail.distance,
                 isVotedBlooming: isVotedBlooming
               ))
             )
@@ -218,6 +218,6 @@ extension MapView {
       .elevation(cornerRadius: .Number24)
     }
     .padding(.trailing, .Number16)
-    .padding(.bottom, store.selectedItemDetail != nil ? 180 : 40)
+    .padding(.bottom, store.detail.selectedItemDetail != nil ? 180 : 40)
   }
 }
