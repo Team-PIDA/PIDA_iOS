@@ -59,7 +59,7 @@ struct MapViewRepresentable: UIViewRepresentable {
     view.showZoomControls = false
     view.mapView.positionMode = .direction
     view.mapView.zoomLevel = 13
-    view.mapView.minZoomLevel = 9.5
+    view.mapView.minZoomLevel = 9
     view.mapView.maxZoomLevel = 16.5
     view.mapView.isIndoorMapEnabled = false
     view.showIndoorLevelPicker = false
