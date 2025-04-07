@@ -8,6 +8,7 @@
 
 import Foundation
 import FlowerSpotDomainInterface
+import DesignKit
 
 import NMapsMap
 
@@ -47,6 +48,8 @@ extension MapViewRepresentable {
       self.parent = parent
     }
     
+    // MARK: - Delegate
+    
     /// 지도 탭 이벤트
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
       if let onMarkerTapped = parent.onMarkerTapped {
@@ -58,6 +61,15 @@ extension MapViewRepresentable {
       }
     }
     
+    func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
+      if reason == NMFMapChangedByGesture || reason == NMFMapChangedByControl {
+        if !isInitialBounds, !parent.isCameraMove {
+          parent.isCameraMove = true
+        }
+      }
+    }
+    
+    
     func deleteSearchResult() {
       deletePath()
       parent.focusData = nil
@@ -67,14 +79,6 @@ extension MapViewRepresentable {
       focusData = nil
       focusMarker = nil
       
-    }
-    
-    func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
-      if reason == NMFMapChangedByGesture || reason == NMFMapChangedByControl {
-        if !isInitialBounds, !parent.isCameraMove {
-          parent.isCameraMove = true
-        }
-      }
     }
     
     func mapViewCameraIdle(_ mapView: NMFMapView) {
@@ -135,6 +139,25 @@ extension MapViewRepresentable {
       selectedPin = data
       activeMarker = marker
       
+    }
+    
+    /// 마커 개화 상태 값 업데이트
+    func updateMarker(state: BloomStatus) {
+      if let activeMarker = activeMarker {
+        selectedPin?.bloomingStatus = state
+        activeMarker.iconImage = state.activeImage
+      } else if let focusMarker = focusMarker {
+        focusMarker.iconImage = state.activeImage
+      }
+      if let path = paths,
+          let startMarker = startMarker,
+          let endMarker = endMarker {
+        path.color = state.color
+        path.outlineColor = state.color
+        startMarker.iconImage = state.circleImage
+        endMarker.iconImage = state.circleImage
+      }
+      parent.updateMarkerStatus = nil
     }
     
   }

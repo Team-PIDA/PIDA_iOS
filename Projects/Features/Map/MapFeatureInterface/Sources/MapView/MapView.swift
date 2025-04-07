@@ -86,7 +86,8 @@ extension MapView {
       isCameraMove: $store.researchButtonEnable,
       focusData: $store.searchResult,
       isNeedDeleteMarker: $store.isNeedDeleteMarker,
-      isNeedDrawMarker: $store.isNeedDrawMarker
+      isNeedDrawMarker: $store.isNeedDrawMarker,
+      updateMarkerStatus: $store.updateMarkerStatus
     )
     .onReceiveMapBounds {
       if store.requestMapBound {
