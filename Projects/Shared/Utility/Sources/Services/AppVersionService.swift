@@ -18,7 +18,7 @@ public final actor AppVersionManager {
   }
   
   private func fetchAppStoreVersion(bundleId: String) async -> String? {
-    guard let url = URL(string: "https://itunes.apple.com/lookup?bundleId=\(bundleId)") else { return nil }
+    guard let url = URL(string: "https://itunes.apple.com/lookup?bundleId=\(bundleId)&country=KR") else { return nil }
     do {
       let (data, _) = try await URLSession.shared.data(from: url)
       if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
