@@ -60,14 +60,15 @@ struct MapViewRepresentable: UIViewRepresentable {
     view.mapView.positionMode = .direction
     view.mapView.zoomLevel = 13
     view.mapView.minZoomLevel = 9
-    view.mapView.maxZoomLevel = 16.5
+    view.mapView.maxZoomLevel = 18
     view.mapView.isIndoorMapEnabled = false
     view.showIndoorLevelPicker = false
-    view.mapView.liteModeEnabled = true
+    view.mapView.liteModeEnabled = false
     view.mapView.isTiltGestureEnabled = false
     view.mapView.touchDelegate = context.coordinator
     view.mapView.addCameraDelegate(delegate: context.coordinator)
     view.mapView.symbolScale = 0.8
+    
     moveCamera(view, to: defaultPoint)
     return view
   }
