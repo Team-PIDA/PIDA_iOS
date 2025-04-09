@@ -49,10 +49,11 @@ public struct MapView: View {
     .overlay(
         Group {
           if store.detail.isBottomSheetPresented {
-            let item = store.detail.selectedItemDetail
-            let bloomingStatus = store.detail.selectedItemBlooming
-            let isVotedBlooming = store.detail.selectedItemVote
-            BottomSheet(item: item, bloomingStatus: bloomingStatus, isVotedBlooming: isVotedBlooming)
+            if let item = store.detail.selectedItemDetail,
+               let bloomingStatus = store.detail.selectedItemBlooming,
+               let isVotedBlooming = store.detail.selectedItemVote {
+              BottomSheet(item: item, bloomingStatus: bloomingStatus, isVotedBlooming: isVotedBlooming)
+            }
           }
         },
         alignment: .bottom
@@ -141,30 +142,32 @@ extension MapView {
   
   @ViewBuilder
   private func BottomSheet(
-    item: FlowerSpot?,
-    bloomingStatus: BloomStatusEntity?,
-    isVotedBlooming: VerifyBloomingStateEntity?
+    item: FlowerSpot,
+    bloomingStatus: BloomStatusEntity,
+    isVotedBlooming: VerifyBloomingStateEntity
   ) -> some View {
     CherryBlossomBottomSheet(
-      title: item?.streetName,
-      description: item?.address,
-      tags: [item?.district, "\(store.detail.distance) km", item?.recentlyVisitedCountString],
-      blossomState: item?.bloomingStatus,
+      title: item.streetName,
+      description: item.address,
+      tags: [
+        .district(value: item.district),
+        .recentVisitCount(value: item.recentlyVisitedCountString),
+        bloomingStatus.nickname == nil ? nil : .informant(value: bloomingStatus.nickname!)
+      ],
+      blossomState: item.bloomingStatus,
       isLoading: store.detail.isDetailLoading,
       onPullUp: {
         return await MainActor.run {
-          if let item = item,
-             let bloomingStatus = bloomingStatus,
-             let isVotedBlooming = isVotedBlooming {
-            store.send(
-              .detail(.presentToDetail(
+          store.send(
+            .detail(
+              .presentToDetail(
                 flowerSpotData: item,
                 bloomingStatus: bloomingStatus,
                 distance: store.detail.distance,
                 isVotedBlooming: isVotedBlooming
-              ))
+              )
             )
-          }
+          )
         }
       },
       onPullDown:  {
@@ -176,18 +179,16 @@ extension MapView {
       },
       onTap: {
         return await MainActor.run {
-          if let item = item,
-             let bloomingStatus = bloomingStatus,
-             let isVotedBlooming = isVotedBlooming {
-            store.send(
-              .detail(.presentToDetail(
+          store.send(
+            .detail(
+              .presentToDetail(
                 flowerSpotData: item,
                 bloomingStatus: bloomingStatus,
                 distance: store.detail.distance,
                 isVotedBlooming: isVotedBlooming
-              ))
+              )
             )
-          }
+          )
         }
       }
     )
