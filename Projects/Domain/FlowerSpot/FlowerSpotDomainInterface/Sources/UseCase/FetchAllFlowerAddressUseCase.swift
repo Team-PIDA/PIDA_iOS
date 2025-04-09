@@ -9,5 +9,5 @@
 import Foundation
 
 public protocol FetchAllFlowerAddressUseCase {
-  func execute() async throws -> [FlowerSpot]
+  @discardableResult func execute() async throws -> [FlowerSpot]
 }

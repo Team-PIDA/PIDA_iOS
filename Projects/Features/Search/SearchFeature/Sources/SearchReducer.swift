@@ -15,6 +15,7 @@ import Utility
 extension SearchReducer {
   public init() {
     @Dependency(\.calculateSimilarityScoreUseCase) var calculateScoreUseCase
+    @Dependency(\.fetchAllFlowerAddressUseCase) var fetchAllFlowerAddressUseCase
     @Dependency(\.getSearchListFromCacheUseCase) var getSearchListFromCacheUseCase
     @Dependency(\.getFlowerSpotDetailUseCase) var getFlowerSpotDetailUseCase
     @Dependency(\.saveRecentSearchItemUseCase) var saveRecentSearchItemUseCase
@@ -55,7 +56,12 @@ extension SearchReducer {
       case let .searchItem(searchQuery):
         return .run { send in
           do {
-            let cache = try await getSearchListFromCacheUseCase.execute()
+            var cache = try await getSearchListFromCacheUseCase.execute()
+            if cache.isEmpty { // 캐시가 날라갔으면!
+              print("캐시 복구")
+              try await fetchAllFlowerAddressUseCase.execute()
+              cache = try await getSearchListFromCacheUseCase.execute()
+            }
             let scoredResults = cache.map { flowerSpot -> (flower: SearchListCellEntity, score: Int) in
               let addressScore = calculateScoreUseCase.execute(flowerSpot.address ?? "", query: searchQuery) * 2
               let streetScore = calculateScoreUseCase.execute(flowerSpot.streetName ?? "", query: searchQuery)

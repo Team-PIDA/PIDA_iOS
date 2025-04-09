@@ -35,7 +35,7 @@ extension MapReducer {
         state.isViewAppeared = true
         return .run { send in
           do {
-            let _ = try await fetchAllFlowerAddressUseCase.execute()
+            try await fetchAllFlowerAddressUseCase.execute()
           } catch let error as NetworkError {
             print(error.localizedDescription)
           } catch let error as FoundationError {
