@@ -42,7 +42,7 @@ public struct MapView: View {
         ToastView(message: $store.toastMessage)
         currentButton
       }
-      if store.state.isAlertShow, let type = store.alertType {
+      if let type = store.alertType {
         alertView(type: type)
       }
     }

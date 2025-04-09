@@ -94,7 +94,6 @@ extension MapReducer {
         
       case let .presentAlert(type):
         state.alertType = type
-        state.isAlertShow = true
         return .none
         
       case .alertCancelTapped:
@@ -109,7 +108,6 @@ extension MapReducer {
         }
       case .clearAlertState:
         state.alertType = nil
-        state.isAlertShow = false
         return .none
         
         // MARK: - Delegate

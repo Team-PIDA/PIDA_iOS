@@ -57,8 +57,6 @@ public struct MapReducer {
     
     public var isViewAppeared: Bool = false
     
-    public var isAlertShow: Bool = false
-    
     public var alertType: AlertType? = nil
     
     public var detail: DetailState = .init()
