@@ -20,10 +20,17 @@ extension MapReducer {
     let mapReducer = Reduce<State, Action> { state, action in
       switch action {
         
-      case let .showToastView(message):
+      case let .showToastView(message, buttonLabel):
         state.toastMessage = message
+        state.toastLabel = buttonLabel
         return .none
+      case .toastActionTapped:
         
+        return .run { send in
+          if let url = ExternalURL.report {
+            await openURL(url)
+          }
+        }
       case .viewDidAppear:
         state.isViewAppeared = true
         return .run { send in
@@ -133,8 +140,8 @@ extension MapReducer {
       case let .detail(.fetchPathLines(id)):
         return .send(.fetchPathLines(id))
         
-      case let .location(.showToastView(message)):
-        return .send(.showToastView(message: message))
+      case let .location(.showToastView(message, label)):
+        return .send(.showToastView(message: message, buttonLabel: label))
         
       case let .location(.presentAlert(type)):
         return .send(.presentAlert(type: type))

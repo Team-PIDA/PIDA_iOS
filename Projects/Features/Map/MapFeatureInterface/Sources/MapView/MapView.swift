@@ -39,7 +39,10 @@ public struct MapView: View {
         }
         
         Spacer()
-        ToastView(message: $store.toastMessage)
+        ToastView(message: $store.toastMessage, buttonLabel: store.toastLabel)
+          .action {
+            store.send(.toastActionTapped)
+          }
         currentButton
       }
       if let type = store.alertType {
