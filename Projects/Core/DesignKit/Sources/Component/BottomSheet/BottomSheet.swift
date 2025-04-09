@@ -12,7 +12,7 @@ import SwiftUI
 public struct CherryBlossomBottomSheet: View {
   public var title: String
   public var description: String
-  public var tags: [String]
+  public var tags: [TagCase]
   public var blossomState: BloomStatus
   public var isLoading: Bool
   public var onPullUp: (() async -> Void)?
@@ -29,7 +29,7 @@ public struct CherryBlossomBottomSheet: View {
   public init(
     title: String? = "",
     description: String? = "",
-    tags: [String?] = [],
+    tags: [TagCase?] = [],
     blossomState: BloomStatus? = nil,
     isLoading: Bool = false,
     onPullUp: (() async -> Void)? = nil,
@@ -127,7 +127,12 @@ public struct CherryBlossomBottomSheet: View {
       
       HStack(spacing: .Number4) {
         ForEach(tags, id: \.self) { tag in
-          TagView(text: tag)
+          if case .informant = tag {
+            TagView(text: tag.tagName)
+              .icon(.verified)
+          } else {
+            TagView(text: tag.tagName)
+          }
         }
       }
     }
