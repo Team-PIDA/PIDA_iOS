@@ -221,7 +221,7 @@ public struct FlowerSpotDetailView: View {
               date: status.date,
               little: status.little.percentage,
               bloomed: status.bloomed.percentage,
-              withered: status.bloomed.percentage,
+              withered: status.withered.percentage,
               maxVoteCount: status.maxValue
             )
           }
