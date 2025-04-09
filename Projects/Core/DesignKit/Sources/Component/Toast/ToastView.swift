@@ -14,11 +14,19 @@ public struct ToastView: View {
   @State private var isVisible = false
   @State private var height: CGFloat = 4
   @State private var textOpacity: Double = 0
-  @State private var verticalPadding: CGFloat = 4
   @State private var boxOpacity: Double = 1
   
-  public init(message: Binding<String?>) {
+  private var buttonLabel: String?
+  var action: (() async -> Void)?
+  
+  public init(
+    message: Binding<String?>,
+    buttonLabel: String? = nil,
+    action: (() async -> Void)? = nil
+  ) {
     self._message = message
+    self.buttonLabel = buttonLabel
+    self.action = action
   }
   
   public var body: some View {
@@ -30,14 +38,27 @@ public struct ToastView: View {
             .fill(ColorSet.Background.Inverse)
             .frame(height: height)
             .frame(maxWidth: .infinity)
-          
-          Text(message)
-            .fontStyle(FontSet.Body.body2)
-            .foregroundStyle(ColorSet.Text.Inverse)
-            .padding(.horizontal, .Number16)
-            .padding(.vertical, verticalPadding)
-            .opacity(textOpacity)
-            .frame(maxWidth: .infinity, alignment: .leading)
+          HStack {
+            Text(message)
+              .fontStyle(FontSet.Body.body2)
+              .foregroundStyle(ColorSet.Text.Inverse)
+              .opacity(textOpacity)
+              .frame(maxWidth: .infinity, alignment: .leading)
+            if let buttonLabel, let action {
+              Button(action: {
+                Task { @MainActor in await action() }
+              }) {
+                Text(buttonLabel)
+                  .fontStyle(FontSet.Label.label1)
+                  .foregroundStyle(ColorSet.Text.InverseAccent)
+                  .padding(.horizontal, .Number8)
+                  .opacity(textOpacity)
+              }
+            }
+          }
+          .padding(.vertical, .Number12)
+          .padding([.leading], .Number16)
+          .padding([.trailing], .Number12)
         }
         .opacity(boxOpacity)
         .padding(.Number16)
@@ -55,7 +76,6 @@ public struct ToastView: View {
       // 초기 상태: 얇은 박스 + 텍스트는 아래쪽에 살짝만
       height = 4
       textOpacity = 0
-      verticalPadding = 4
       boxOpacity = 1
       isVisible = true
       
@@ -68,7 +88,6 @@ public struct ToastView: View {
       try? await Task.sleep(for: .seconds(0.05))
       withAnimation(.easeOut(duration: 0.1)) {
         textOpacity = 1.0
-        verticalPadding = .Number12
       }
       
       // 사라질 때: 전체 박스와 텍스트 페이드아웃
@@ -85,22 +104,28 @@ public struct ToastView: View {
   }
 }
 
-
 #Preview {
   ToastPreiview()
 }
 
 struct ToastPreiview: View {
   @State var message: String? = ""
+  @State var title: Int = 0
   var body: some View {
     ZStack {
       VStack {
-        Button("SHOW") {
+        Button("\(title)") {
           message = "토스트 메세지!"
         }
       }
       Spacer()
-      ToastView(message: $message)
+      ToastView(
+        message: $message,
+        buttonLabel: "label"
+      )
+      .action {
+        title += 1
+      }
     }
   }
 }
