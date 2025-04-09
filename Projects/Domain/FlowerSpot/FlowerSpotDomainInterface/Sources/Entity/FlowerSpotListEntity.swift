@@ -49,7 +49,7 @@ public struct FlowerSpot: Equatable, Sendable {
     self.recentlyVisitedCountString = "최근 방문 \(self.recentlyVisitedCount)회"
     self.bloomingStatus = bloomingStatus
     self.streetName = streetName
-    self.district = district ?? "구 정보 없음"
+    self.district = district ?? "동네 정보 없음"
     self.description = description ?? "나무 정보 없음"
     self.path = path
     self.pinPoint = pinPoint

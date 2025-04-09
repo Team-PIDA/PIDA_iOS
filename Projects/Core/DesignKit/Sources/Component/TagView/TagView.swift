@@ -26,8 +26,8 @@ public struct TagView: View {
     }
     .padding(.horizontal, .Number6)
     .padding(.vertical, .Number2)
-    .cornerRadius(.Number4)
     .background(ColorSet.Background.Tertiary)
+    .cornerRadius(.Number4)
   }
 }
 
