@@ -26,18 +26,7 @@ public struct SettingView: View {
         navigationBar
         VStack(spacing: .Number0) {
           profileView
-          feedBackView
-          
-          SettingItemListView(title: "서비스", items: serviceItems()) {
-            store.send(.settingListTapped($0))
-          }
-          
-          if store.isLoggedIn {
-            BorderView(size: .xlarge)
-            SettingItemListView(items: accountItems()) {
-              store.send(.settingListTapped($0))
-            }
-          }
+          settingListView
         }
         
         Spacer()
@@ -54,6 +43,24 @@ public struct SettingView: View {
 }
 
 extension SettingView {
+  
+  @ViewBuilder
+  private var settingListView: some View {
+    SettingItemListView(title: "서비스", items: serviceItems()) {
+      store.send(.settingListTapped($0))
+    }
+    BorderView(size: .xlarge)
+    SettingItemListView(title: "기타", items: etcItems()) {
+      store.send(.settingListTapped($0))
+    }
+    
+    if store.isLoggedIn {
+      BorderView(size: .xlarge)
+      SettingItemListView(items: accountItems()) {
+        store.send(.settingListTapped($0))
+      }
+    }
+  }
   
   /// 네비게이션 바
   @ViewBuilder
@@ -142,6 +149,13 @@ extension SettingView {
 extension SettingView {
   
   private func serviceItems() -> [SettingItem] {
+    [
+      .init(type: .report, title: "꽃길 제보하기", icon: .location),
+      .init(type: .feedback, title: "피드백 남기기", icon: .feedback)
+    ]
+  }
+  
+  private func etcItems() -> [SettingItem] {
     [
       .init(type: .update, title: "최신버전 업데이트", subtitle: store.version, trailing: store.isNeedUpdate ? "업데이트" : "최신버전 사용 중"),
       .init(type: .terms, title: "서비스 이용약관"),

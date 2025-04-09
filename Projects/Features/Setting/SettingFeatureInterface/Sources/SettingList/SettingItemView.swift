@@ -20,7 +20,11 @@ struct SettingItemView: View {
   }
   
   var body: some View {
-    HStack {
+    HStack(spacing: .Number8) {
+      if let icon = item.icon {
+        Icon(image: icon)
+          .size(.large24)
+      }
       VStack(alignment: .leading, spacing: .Number2) {
         Text(item.title)
           .fontStyle(FontSet.Body.body2)
