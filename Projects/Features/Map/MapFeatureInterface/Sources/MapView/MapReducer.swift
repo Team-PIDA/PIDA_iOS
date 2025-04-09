@@ -57,7 +57,12 @@ public struct MapReducer {
     
     public var isViewAppeared: Bool = false
     
+    public var alertType: AlertType? = nil
+    
     public var detail: DetailState = .init()
+    
+    public var location: LocationState = .init()
+    
     public init() {}
   }
   
@@ -72,12 +77,16 @@ public struct MapReducer {
     
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
-    
     case fetchDetailInfo(Int)
     
     case showSearchResult(FlowerSpot?)
     case setSearchBarText(String?)
     case resetSearchBar
+    
+    case presentAlert(type: AlertType)
+    case alertCancelTapped
+    case alertAcceptTapped(AlertType)
+    case clearAlertState
     
     case delegate(Delegate)
     case presentToSearch

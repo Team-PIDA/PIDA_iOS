@@ -42,7 +42,7 @@ public struct SettingView: View {
         
         Spacer()
       }
-      if store.state.isAlertShow, let alertType = store.alertType {
+      if let alertType = store.alertType {
         alertView(type: alertType)
       }
     }

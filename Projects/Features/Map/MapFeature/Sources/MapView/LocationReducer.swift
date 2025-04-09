@@ -10,6 +10,7 @@ import MapFeatureInterface
 import FlowerSpotDomainInterface
 import ComposableArchitecture
 import Utility
+import DesignKit
 
 extension MapReducer {
   struct LocationReducer: Reducer {
@@ -32,11 +33,17 @@ extension MapReducer {
         }
         
       case .moveUserLocation:
+        let isCurrentButtonTap = state.location.isCurrentButtonTap
         return .run { send in
           if let location = await LocationService.shared.userLocation {
             let userLocation = MapPoint(latitude: location.0, longitude: location.1)
             await send(.saveUserLocation(userLocation))
             await send(.moveLocation(userLocation))
+          } else {
+            if isCurrentButtonTap {
+              await send(.presentAlert(type: .locationPermission))
+              await send(.currentButtonTapped(false))
+            }
           }
         }
         
@@ -51,6 +58,13 @@ extension MapReducer {
       case let .requestMapBounds(isRequest):
         state.requestMapBound = isRequest
         state.researchButtonEnable = false
+        return .none
+        
+      case let .currentButtonTapped(isTapped):
+        state.location.isCurrentButtonTap = isTapped
+        if isTapped {
+          return .send(.fetchUserLocation)
+        }
         return .none
         
       case let .fetchFlowers(positions):
@@ -88,7 +102,7 @@ extension MapReducer {
         print("=============")
         return .none
         
-      case .showToastView: return .none
+      case .showToastView, .presentAlert: return .none
         
       }
     }
