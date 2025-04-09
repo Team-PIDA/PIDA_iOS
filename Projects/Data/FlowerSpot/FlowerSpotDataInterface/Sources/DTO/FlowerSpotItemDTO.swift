@@ -34,17 +34,25 @@ extension FlowerSpotItem {
           let pinPoint = try? pinPoint.toEntity() else {
       throw FoundationError.failedToDecode(PointGeomDTO.self)
     }
-    let path = try? self.geom?.toEntity()
+    let path = (try? self.geom?.toEntity()) ?? []
+    let address = self.address ?? ""
+    let recentlyVisitedCount = self.recentlyVisitedCount ?? 0
+    let bloomingStatus = BloomStatus(rawValue: self.bloomingStatus) ?? .notBloomed
+    let streetName = self.streetName ?? ""
+    let description = self.description ?? "나무 정보 없음"
+    let district = self.district ?? ""
+    let region = self.region ?? ""
     return .init(
       id: self.id,
-      address: self.address ?? "",
-      recentlyVisitedCount: self.recentlyVisitedCount ?? 0,
-      bloomingStatus: BloomStatus(rawValue: self.bloomingStatus) ?? .notBloomed,
-      streetName: self.streetName ?? "",
-      district: self.district ?? "",
-      path: path ?? [],
+      address: address,
+      recentlyVisitedCount: recentlyVisitedCount,
+      bloomingStatus: bloomingStatus,
+      streetName: streetName,
+      district: district,
+      description: description,
+      path: path,
       pinPoint: pinPoint,
-      region: self.region ?? ""
+      region: region
     )
   }
 }
