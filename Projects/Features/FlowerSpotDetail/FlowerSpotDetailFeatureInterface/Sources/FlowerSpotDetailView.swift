@@ -171,7 +171,7 @@ public struct FlowerSpotDetailView: View {
          let updateAt = store.bloomingStatus.updateAt?.relativeText() {
         HStack(spacing: .Number8) {
           Icon(image: .verified)
-            .size(.extreamLarge)
+            .size(.extremeLarge)
             .foregroundColor(ColorSet.Icon.Accent)
           VStack(alignment: .leading, spacing: .Number2) {
             (Text(nickname)
