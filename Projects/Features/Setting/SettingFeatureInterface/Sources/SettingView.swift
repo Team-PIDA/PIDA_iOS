@@ -26,18 +26,7 @@ public struct SettingView: View {
         navigationBar
         VStack(spacing: .Number0) {
           profileView
-          feedBackView
-          
-          SettingItemListView(title: "서비스", items: serviceItems()) {
-            store.send(.settingListTapped($0))
-          }
-          
-          if store.isLoggedIn {
-            BorderView(size: .xlarge)
-            SettingItemListView(items: accountItems()) {
-              store.send(.settingListTapped($0))
-            }
-          }
+          settingListView
         }
         
         Spacer()
@@ -54,6 +43,24 @@ public struct SettingView: View {
 }
 
 extension SettingView {
+  
+  @ViewBuilder
+  private var settingListView: some View {
+    SettingItemListView(title: "서비스", items: serviceItems()) {
+      store.send(.settingListTapped($0))
+    }
+    BorderView(size: .xlarge)
+    SettingItemListView(title: "기타", items: etcItems()) {
+      store.send(.settingListTapped($0))
+    }
+    
+    if store.isLoggedIn {
+      BorderView(size: .xlarge)
+      SettingItemListView(items: accountItems()) {
+        store.send(.settingListTapped($0))
+      }
+    }
+  }
   
   /// 네비게이션 바
   @ViewBuilder
@@ -74,54 +81,29 @@ extension SettingView {
   
   @ViewBuilder
   private var profileView: some View {
-    HStack(alignment: .center, spacing: .Number16) {
-      Image(asset: ImageSet.avatarLarge.swiftUIImage)
-      HStack(spacing: .Number0) {
-        if store.isLoggedIn {
-          Text("환영해요! \(store.username)님")
-        } else {
-          Text("로그인 하기")
+    VStack(spacing: .Number16) {
+      HStack(alignment: .center, spacing: .Number16) {
+        Image(asset: ImageSet.avatarLarge.swiftUIImage)
+        HStack(spacing: .Number0) {
+          if store.isLoggedIn {
+            Text("환영해요! \(store.username)님")
+          } else {
+            Text("로그인 하기")
+          }
+          Icon(image: .chevronRight)
+            .size(.extraLarge)
         }
-        Icon(image: .chevronRight)
-          .size(.extraLarge)
+        Spacer()
       }
-      
-      Spacer()
-    }
-    .fontStyle(FontSet.Body.body2)
-    .foregroundStyle(ColorSet.Text.Primary)
-    .padding(.Number16)
-    .onTapGesture {
-      store.send(.profileTapped)
-    }
-  }
-  
-  @ViewBuilder
-  private var feedBackView: some View {
-    HStack(spacing: .Number12) {
-      Image(asset: ImageSet.loveletter.swiftUIImage)
-      
-      VStack(alignment: .leading, spacing: .Number2) {
-        Text("피드백 남기러 가기")
-          .fontStyle(FontSet.Title.title3)
-          .foregroundStyle(ColorSet.Text.Primary)
-
-        Text("좋은 점, 개선할 점, 궁금한 점 의견을 들려주세요!")
-          .fontStyle(FontSet.Caption.caption1)
-          .foregroundStyle(ColorSet.Text.Secondary)
+      .fontStyle(FontSet.Body.body2)
+      .foregroundStyle(ColorSet.Text.Primary)
+      .padding(.top, .Number16)
+      .onTapGesture {
+        store.send(.profileTapped)
       }
-      Spacer()
+      BorderView(size: .short)
     }
-    .padding(.vertical, .Number16)
     .padding(.horizontal, .Number16)
-    .background(
-      RoundedRectangle(cornerRadius: .Number10)
-        .fill(ColorSet.Background.Accent)
-    )
-    .padding(.horizontal, .Number16)
-    .onTapGesture {
-      store.send(.feedBackTapped)
-    }
   }
   
   private func alertView(type: AlertType) -> some View {
@@ -139,6 +121,13 @@ extension SettingView {
 extension SettingView {
   
   private func serviceItems() -> [SettingItem] {
+    [
+      .init(type: .report, title: "꽃길 제보하기", icon: .location),
+      .init(type: .feedback, title: "피드백 남기기", icon: .feedback)
+    ]
+  }
+  
+  private func etcItems() -> [SettingItem] {
     [
       .init(type: .update, title: "최신버전 업데이트", subtitle: store.version, trailing: store.isNeedUpdate ? "업데이트" : "최신버전 사용 중"),
       .init(type: .terms, title: "서비스 이용약관"),

@@ -78,7 +78,7 @@ extension MapReducer {
               neLng: positions[1].longitude
             )
             if result.count == 0 {
-              await send(.showToastView(message: "이 근방에는 꽃길이 없어요."))
+              await send(.showToastView(message: "이 근방에는 꽃길이 없어요.", buttonLabel: "제보하기"))
             }
             await send(.storeFlowerData(result))
           } catch let error as NetworkError {

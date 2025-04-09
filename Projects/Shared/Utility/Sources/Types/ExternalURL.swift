@@ -15,4 +15,6 @@ public enum ExternalURL {
   public static let feedBack: URL? = URL(string: "https://docs.google.com/forms/d/e/1FAIpQLSdXZDODUO-SehJ5zM8DTQADC_2PXDclRw7KK0638Tyml2OSbA/viewform")
   
   public static let appStore: URL? = URL(string: "itms-apps://itunes.apple.com/app/id6744023330")
+  
+  public static let report: URL? = URL(string: "https://walla.my/survey/uNpUPauhPlUlvZbn2qEH")
 }

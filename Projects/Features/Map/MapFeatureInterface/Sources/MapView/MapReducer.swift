@@ -55,6 +55,8 @@ public struct MapReducer {
     
     public var toastMessage: String? = nil
     
+    public var toastLabel: String? = nil
+    
     public var isViewAppeared: Bool = false
     
     public var alertType: AlertType? = nil
@@ -72,7 +74,8 @@ public struct MapReducer {
     case location(LocationAction)
     case detail(DetailAction)
     
-    case showToastView(message: String?)
+    case showToastView(message: String?, buttonLabel: String?)
+    case toastActionTapped
     case viewDidAppear
     
     case markerTapped(id: Int?)

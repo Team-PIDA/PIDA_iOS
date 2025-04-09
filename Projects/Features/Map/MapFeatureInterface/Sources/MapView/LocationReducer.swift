@@ -28,7 +28,7 @@ extension MapReducer {
     case storeFlowerData([FlowerSpot])
     
     case mapSearchError(String?)
-    case showToastView(message: String?)
+    case showToastView(message: String?, buttonLabel: String?)
     case presentAlert(type: AlertType)
   }
   
