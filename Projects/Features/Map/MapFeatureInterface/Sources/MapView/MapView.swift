@@ -42,6 +42,9 @@ public struct MapView: View {
         ToastView(message: $store.toastMessage)
         currentButton
       }
+      if store.state.isAlertShow, let type = store.alertType {
+        alertView(type: type)
+      }
     }
     .overlay(
         Group {
@@ -60,7 +63,6 @@ public struct MapView: View {
         store.send(.location(.fetchUserLocation))
         store.send(.viewDidAppear)
       }
-      
     }
     .task {
       for await _ in LocationService.shared.userLocationStream {
@@ -213,11 +215,20 @@ extension MapView {
           .size(.superLarge)
       }
       .action {
-        store.send(.location(.fetchUserLocation))
+        store.send(.location(.currentButtonTapped(true)))
       }
       .elevation(cornerRadius: .Number24)
     }
     .padding(.trailing, .Number16)
     .padding(.bottom, store.detail.selectedItemDetail != nil ? 180 : 40)
+  }
+  
+  private func alertView(type: AlertType) -> some View {
+    PIDAlert(
+      type: type,
+      closeAction: { store.send(.alertCancelTapped) },
+      acceptAction: { store.send(.alertAcceptTapped(type)) }
+    )
+    .isErrorType(false)
   }
 }

@@ -6,16 +6,16 @@
 //  Created by JiYeon
 //
 
+import UIKit
 import MapFeatureInterface
 import FlowerSpotDomainInterface
-import BloomingDomainInterface
 import ComposableArchitecture
-import UserDefault
 import Utility
 
 extension MapReducer {
   public init() {
     @Dependency(\.fetchAllFlowerAddressUseCase) var fetchAllFlowerAddressUseCase
+    @Dependency(\.openURL) var openURL
     
     let mapReducer = Reduce<State, Action> { state, action in
       switch action {
@@ -90,6 +90,28 @@ extension MapReducer {
           }
         }
         
+        // MARK: - Alert
+        
+      case let .presentAlert(type):
+        state.alertType = type
+        state.isAlertShow = true
+        return .none
+        
+      case .alertCancelTapped:
+        return .send(.clearAlertState)
+        
+      case .alertAcceptTapped(.locationPermission):
+        return .run { send in
+          if let url = URL(string: UIApplication.openSettingsURLString) {
+            await openURL(url)
+            await send(.clearAlertState)
+          }
+        }
+      case .clearAlertState:
+        state.alertType = nil
+        state.isAlertShow = false
+        return .none
+        
         // MARK: - Delegate
         
       case .presentToSearch:
@@ -116,7 +138,10 @@ extension MapReducer {
       case let .location(.showToastView(message)):
         return .send(.showToastView(message: message))
         
-      case .binding, .delegate, .location, .detail:
+      case let .location(.presentAlert(type)):
+        return .send(.presentAlert(type: type))
+        
+      case .binding, .delegate, .location, .detail, .alertAcceptTapped:
         return .none
         
       }
