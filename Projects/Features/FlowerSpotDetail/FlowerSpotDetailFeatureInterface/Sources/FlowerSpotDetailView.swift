@@ -167,6 +167,29 @@ public struct FlowerSpotDetailView: View {
       )
       .frame(height: 160)
       .cornerRadius(10)
+      if let nickname = store.bloomingStatus.nickname,
+         let updateAt = store.bloomingStatus.updateAt?.relativeText() {
+        HStack(spacing: .Number8) {
+          Icon(image: .verified)
+            .size(.extreamLarge)
+            .foregroundColor(ColorSet.Icon.Accent)
+          VStack(alignment: .leading, spacing: .Number2) {
+            (Text(nickname)
+              .foregroundColor(ColorSet.Text.Accent) +
+             Text("님이 제보해준 길이에요")
+              .foregroundColor(ColorSet.Text.Primary))
+            .fontStyle(FontSet.Title.title4)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Text("\(updateAt) 업데이트")
+              .fontStyle(FontSet.Caption.caption1)
+              .foregroundColor(ColorSet.Text.Secondary)
+              .frame(maxWidth: .infinity, alignment: .leading)
+          }
+        }
+        .padding(.Number12)
+        .background(ColorSet.Background.Secondary)
+        .cornerRadius(.Number10)
+      }
     }
     .padding(.Number16)
   }
