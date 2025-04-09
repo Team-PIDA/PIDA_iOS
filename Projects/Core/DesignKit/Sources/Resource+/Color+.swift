@@ -87,6 +87,7 @@ extension DesignKitAsset {
       public static let Accent = ColorSet.Mint._400
       public static let Error = ColorSet.SubColor.red
       public static let Inverse = ColorSet.Gray._0
+      public static let InverseAccent = ColorSet.Mint._100
     }
     
     public struct Background: Sendable {
