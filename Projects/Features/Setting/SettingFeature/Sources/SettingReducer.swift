@@ -90,11 +90,9 @@ extension SettingReducer {
       case .settingListTapped(.privacy):
         return .send(.delegate(.pushToPolicy(.privacy)))
       case .settingListTapped(.logout):
-        state.isAlertShow = true
         state.alertType = .logout
         return .none
       case .settingListTapped(.withdraw):
-        state.isAlertShow = true
         state.alertType = .withdraw
         return .none
         
@@ -120,7 +118,6 @@ extension SettingReducer {
         }
         
       case .clearAlertState:
-        state.isAlertShow = false
         state.alertType = nil
         return .none
         

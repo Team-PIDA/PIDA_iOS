@@ -21,7 +21,6 @@ public struct SettingReducer {
   public struct State: Equatable {
     public var isLoggedIn: Bool = false
     public var username: String = ""
-    public var isAlertShow: Bool = false
     public var alertType: AlertType? = nil
     public var isNeedUpdate: Bool = false
     public var version: String = ""
