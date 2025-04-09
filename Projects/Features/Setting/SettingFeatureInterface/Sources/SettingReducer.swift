@@ -36,7 +36,6 @@ public struct SettingReducer {
     case checkUserInfo
     case deleteToken
     
-    case feedBackTapped
     case profileTapped
     case settingListTapped(SettingType)
     case alertCancelTapped

@@ -106,34 +106,6 @@ extension SettingView {
     .padding(.horizontal, .Number16)
   }
   
-  @ViewBuilder
-  private var feedBackView: some View {
-    HStack(spacing: .Number12) {
-      Image(asset: ImageSet.loveletter.swiftUIImage)
-      
-      VStack(alignment: .leading, spacing: .Number2) {
-        Text("피드백 남기러 가기")
-          .fontStyle(FontSet.Title.title3)
-          .foregroundStyle(ColorSet.Text.Primary)
-
-        Text("좋은 점, 개선할 점, 궁금한 점 의견을 들려주세요!")
-          .fontStyle(FontSet.Caption.caption1)
-          .foregroundStyle(ColorSet.Text.Secondary)
-      }
-      Spacer()
-    }
-    .padding(.vertical, .Number16)
-    .padding(.horizontal, .Number16)
-    .background(
-      RoundedRectangle(cornerRadius: .Number10)
-        .fill(ColorSet.Background.Accent)
-    )
-    .padding(.horizontal, .Number16)
-    .onTapGesture {
-      store.send(.feedBackTapped)
-    }
-  }
-  
   private func alertView(type: AlertType) -> some View {
     PIDAlert(
       type: type,

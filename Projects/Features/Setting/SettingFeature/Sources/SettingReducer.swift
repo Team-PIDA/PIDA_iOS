@@ -58,12 +58,6 @@ extension SettingReducer {
         } else {
           return .send(.delegate(.presentToUpdateProfile))
         }
-      case .feedBackTapped:
-        return .run { send in
-          if let url = ExternalURL.feedBack {
-            await openURL(url)
-          }
-        }
         
       case .deleteToken:
         return .run { send in
@@ -73,6 +67,19 @@ extension SettingReducer {
         
         // MARK: - SettingList Events
         
+      case .settingListTapped(.feedback):
+        return .run { send in
+          if let url = ExternalURL.feedBack {
+            await openURL(url)
+          }
+        }
+        
+      case .settingListTapped(.report):
+        return .run { send in
+          if let url = ExternalURL.report {
+            await openURL(url)
+          }
+        }
       case .settingListTapped(.update):
         if state.isNeedUpdate {
           return .run { _ in
