@@ -18,7 +18,7 @@ public struct BloomingStateDTO: DTO {
   public let totalCount: Int
   public let details: [String: [String: StatusData]]
   public let nickname: String?
-  public let updateAt: String?
+  public let updatedAt: String?
   
   public struct StatusData: Decodable & Sendable{
     public let peopleCount: Int
@@ -56,7 +56,7 @@ extension BloomingStateDTO {
     return BloomStatusEntity(
       totalCount: totalCount,
       nickname: nickname,
-      updateAt: updateAt?.relativeText(),
+      updatedAt: updatedAt?.relativeText(),
       dayStatuses: dayStatuses
     )
   }

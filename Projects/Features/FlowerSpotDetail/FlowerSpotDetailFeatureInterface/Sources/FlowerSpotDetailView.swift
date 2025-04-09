@@ -168,7 +168,7 @@ public struct FlowerSpotDetailView: View {
       .frame(height: 160)
       .cornerRadius(10)
       if let nickname = store.bloomingStatus.nickname,
-         let updateAt = store.bloomingStatus.updateAt {
+         let updateAt = store.bloomingStatus.updatedAt {
         HStack(spacing: .Number8) {
           Icon(image: .verified)
             .size(.extremeLarge)
