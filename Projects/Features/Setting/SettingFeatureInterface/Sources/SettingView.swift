@@ -74,26 +74,29 @@ extension SettingView {
   
   @ViewBuilder
   private var profileView: some View {
-    HStack(alignment: .center, spacing: .Number16) {
-      Image(asset: ImageSet.avatarLarge.swiftUIImage)
-      HStack(spacing: .Number0) {
-        if store.isLoggedIn {
-          Text("환영해요! \(store.username)님")
-        } else {
-          Text("로그인 하기")
+    VStack(spacing: .Number16) {
+      HStack(alignment: .center, spacing: .Number16) {
+        Image(asset: ImageSet.avatarLarge.swiftUIImage)
+        HStack(spacing: .Number0) {
+          if store.isLoggedIn {
+            Text("환영해요! \(store.username)님")
+          } else {
+            Text("로그인 하기")
+          }
+          Icon(image: .chevronRight)
+            .size(.extraLarge)
         }
-        Icon(image: .chevronRight)
-          .size(.extraLarge)
+        Spacer()
       }
-      
-      Spacer()
+      .fontStyle(FontSet.Body.body2)
+      .foregroundStyle(ColorSet.Text.Primary)
+      .padding(.top, .Number16)
+      .onTapGesture {
+        store.send(.profileTapped)
+      }
+      BorderView(size: .short)
     }
-    .fontStyle(FontSet.Body.body2)
-    .foregroundStyle(ColorSet.Text.Primary)
-    .padding(.Number16)
-    .onTapGesture {
-      store.send(.profileTapped)
-    }
+    .padding(.horizontal, .Number16)
   }
   
   @ViewBuilder
