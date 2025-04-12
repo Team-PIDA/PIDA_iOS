@@ -128,8 +128,9 @@ extension Networker {
       case 400...599:
         throw throwError(
           NetworkError.serverError(
-            message: errorResponse.message,
-            code: httpResponse.statusCode
+            message: errorResponse.data.message,
+            code: errorResponse.status,
+            className: errorResponse.data.errorClassName
           ),
           endpoint: endpoint
         )
