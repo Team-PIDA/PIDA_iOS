@@ -25,18 +25,23 @@ public struct SignUpReducer {
     public var isValidInput: Bool = true
     public var inputValid: NickNameInputValid = .none
     public var isLoading: Bool = false
+    public var toastMessage: String? = nil
     public init() {}
   }
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case onAppear
+    case showToastView(message: String?)
+    
     case initState
+    case isLoading(Bool)
     case showKeyboard(Bool)
     case confirmTapped
     case checkValidNickName(String)
+    case nicknameValidMessage(NickNameInputValid)
+    
     case requestSignUp(nickname: String)
-    case failSignUp
     case fetchUserInfo
     
     case dismiss
