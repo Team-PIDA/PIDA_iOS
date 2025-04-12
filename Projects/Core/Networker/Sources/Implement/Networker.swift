@@ -44,7 +44,14 @@ public struct Networker: NetworkProtocol, Sendable {
             endpoint: endpoint
           )
         }
-      } catch {
+      } catch let error as NetworkError {
+        group.cancelAll()
+        throw error
+      } catch let error as FoundationError {
+        group.cancelAll()
+        throw error
+      }
+      catch {
         group.cancelAll()
         throw throwError(
           FoundationError.taskCancelled,
