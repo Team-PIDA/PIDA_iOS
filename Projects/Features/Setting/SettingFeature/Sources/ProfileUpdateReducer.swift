@@ -50,13 +50,18 @@ extension ProfileUpdateReducer {
           state.isValidInput = true
           return .none
         }
+        let inputValid: NickNameInputValid
         if nickname.count < 2 {
-          state.inputValid = .tooShort
+          inputValid = .tooShort
         } else if nickname.count > 12 {
-          state.inputValid = .tooLong
+          inputValid = .tooLong
         } else {
-          state.inputValid = .valid
+          inputValid = .valid
         }
+        return .send(.nicknameValidMessage(inputValid))
+        
+      case let .nicknameValidMessage(type):
+        state.inputValid = type
         state.isValidInput = state.inputValid.isValid
         return .none
         
@@ -67,7 +72,16 @@ extension ProfileUpdateReducer {
             let result = try await changeNicknameUseCase.execute(nickname: nickname)
             UserDefault.username = result.nickname
             await send(.pop)
-          } catch {
+          } catch let error as NetworkError {
+            if error.errorClassName == .duplicateNickname {
+              await send(.isLoading(false))
+              await send(.nicknameValidMessage(.duplicate))
+            } else {
+              await send(.isLoading(false))
+              await send(.showToastView(message: "닉네임 변경에 실패했어요."))
+            }
+          }
+          catch {
             await send(.isLoading(false))
             await send(.showToastView(message: "닉네임 변경에 실패했어요."))
           }

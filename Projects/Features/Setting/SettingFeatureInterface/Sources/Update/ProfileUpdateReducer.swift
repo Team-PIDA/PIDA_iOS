@@ -40,6 +40,7 @@ public struct ProfileUpdateReducer {
     case checkValidNickName(String)
     case showKeyboard(Bool)
     case changeNickName(String)
+    case nicknameValidMessage(NickNameInputValid)
     
     case delegate(Delegate)
     case pop
