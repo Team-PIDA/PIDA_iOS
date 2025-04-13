@@ -44,7 +44,14 @@ public struct Networker: NetworkProtocol, Sendable {
             endpoint: endpoint
           )
         }
-      } catch {
+      } catch let error as NetworkError {
+        group.cancelAll()
+        throw error
+      } catch let error as FoundationError {
+        group.cancelAll()
+        throw error
+      }
+      catch {
         group.cancelAll()
         throw throwError(
           FoundationError.taskCancelled,
@@ -128,8 +135,9 @@ extension Networker {
       case 400...599:
         throw throwError(
           NetworkError.serverError(
-            message: errorResponse.message,
-            code: httpResponse.statusCode
+            message: errorResponse.data.message,
+            code: errorResponse.status,
+            className: errorResponse.data.errorClassName
           ),
           endpoint: endpoint
         )

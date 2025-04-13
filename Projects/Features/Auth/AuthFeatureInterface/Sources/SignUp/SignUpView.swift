@@ -31,7 +31,7 @@ public struct SignUpView: View {
         nicknameTextField
         
         Spacer()
-        
+        ToastView(message: $store.toastMessage)
         completeButton
       }
       .padding(.horizontal, .Number16)
@@ -67,8 +67,8 @@ public struct SignUpView: View {
         store.send(.confirmTapped)
       }
       .isActive(store.inputValid.isValid)
-      .padding(.vertical, .Number16)
       .disabled(store.isLoading)
+      .padding(.vertical, .Number16)
   }
   
 }

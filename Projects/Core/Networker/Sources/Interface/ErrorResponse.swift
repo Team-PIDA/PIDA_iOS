@@ -9,6 +9,13 @@
 import Foundation
 
 public struct ErrorResponse: Decodable, Sendable {
-  public let code: String
+  public let success: Bool
+  public let status: Int
+  public let data: ErrorData
+  public let timestamp: String
+}
+
+public struct ErrorData: Decodable, Sendable {
+  public let errorClassName: String
   public let message: String
 }

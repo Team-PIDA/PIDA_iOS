@@ -86,7 +86,12 @@ extension SettingView {
         Image(asset: ImageSet.avatarLarge.swiftUIImage)
         HStack(spacing: .Number0) {
           if store.isLoggedIn {
-            Text("환영해요! \(store.username)님")
+            HStack(spacing: .Number0) {
+              Text("환영해요! ")
+              Text(store.username)
+                .fontStyle(FontSet.Title.title3)
+              Text("님")
+            }
           } else {
             Text("로그인 하기")
           }
@@ -104,6 +109,12 @@ extension SettingView {
       BorderView(size: .short)
     }
     .padding(.horizontal, .Number16)
+  }
+  
+  @ViewBuilder
+  private var nicknameText: some View {
+    Text(store.username)
+      .fontStyle(FontSet.Title.title3)
   }
   
   private func alertView(type: AlertType) -> some View {

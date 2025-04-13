@@ -26,52 +26,73 @@ extension SignUpReducer {
       case .onAppear:
         return .run { send in
           await MainActor.run {
-            send(.initState)
             send(.showKeyboard(true))
+            send(.initState)
           }
         }
+      case let .showToastView(message):
+        state.toastMessage = message
+        return .none
+        
       case let .showKeyboard(isShow):
         state.focusKeyboard = isShow
         return .none
         
       case .initState:
-        state.nickname = ""
         state.isValidInput = true
         state.inputValid = .none
         state.isLoading = false
         
         return .none
+        
+      case let .isLoading(isLoading):
+        state.isLoading = isLoading
+        return .none
+        
       case .confirmTapped:
         return .send(.requestSignUp(nickname: state.nickname))
           .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
         
       case let .checkValidNickName(nickname):
+        let inputValid: NickNameInputValid
         if nickname.count < 2 {
-          state.inputValid = .tooShort
+          inputValid = .tooShort
         } else if nickname.count > 12 {
-          state.inputValid = .tooLong
+          inputValid = .tooLong
         } else {
-          state.inputValid = .valid
+          inputValid = .valid
         }
+        return .send(.nicknameValidMessage(inputValid))
+        
+      case let .nicknameValidMessage(type):
+        state.inputValid = type
         state.isValidInput = state.inputValid.isValid
         return .none
         
       case let .requestSignUp(nickname):
-        state.isLoading = true
         return .run { send in
+          await send(.isLoading(true))
           do {
             if let email: String = KeyChainWrapper.read(forKey: .email) {
               try await signUpUseCase.execute(email: email, nickname: nickname)
               UserDefault.isLoggedIn = true
               await send(.fetchUserInfo)
             }
-          } catch {
-            print(error.localizedDescription)
+          } catch let error as NetworkError {
+            if error.errorClassName == .duplicateNickname {
+              await send(.nicknameValidMessage(.duplicate))
+              await send(.isLoading(false))
+              
+            } else {
+              await send(.isLoading(false))
+              await send(.showToastView(message: "회원가입에 실패했어요."))
+            }
+          }
+          catch {
+            await send(.isLoading(false))
+            await send(.showToastView(message: "회원가입에 실패했어요."))
           }
         }
-      case .failSignUp:
-        state.isLoading = false
-        return .none
         
       case .fetchUserInfo:
         return .run { send in
