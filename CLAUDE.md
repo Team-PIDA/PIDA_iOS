@@ -340,3 +340,8 @@ case .child(.delegate(.didComplete)):
 1. `Tuist/Package.swift`에 패키지 추가
 2. `Tuist/ProjectDescriptionHelpers/TargetDependency+.swift`에 등록
 3. `.ThirdParty.{Name}` 또는 `.CoreTarget.{Name}` 등으로 참조
+
+## Git 커밋 규칙
+- 커밋 메시지에 Co-Authored-By 또는 Claude 관련 정보를 포함하지 않음
+- 커밋 형식: `타입: #이슈번호 설명`
+- 타입 예시: `fix`, `feat`, `chore`, `docs`, `refactor`
