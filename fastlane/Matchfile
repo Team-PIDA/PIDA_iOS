@@ -4,7 +4,7 @@ storage_mode("git")
 
 username("cocoa9805@naver.com") # Apple Developer 계정
 
-app_identifier(["com.pida.me.ios"])
+app_identifier(["com.pida.me.ios","com.pida.me.ios-dev"])
 
 type("development","appstore")
 
