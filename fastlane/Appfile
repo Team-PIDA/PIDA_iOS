@@ -1,0 +1,22 @@
+# Production App
+app_identifier("com.pida.me.ios")
+
+# Apple Developer 계정
+apple_id("cocoa9805@naver.com")
+
+# Apple Developer Team ID (환경변수로 관리)
+team_id(ENV["TEAM_ID"])
+
+# App Store Connect Team ID (환경변수로 관리)
+itc_team_id(ENV["ITC_TEAM_ID"])
+
+# 앱별 identifier 설정
+for_platform :ios do
+  for_lane :sync_dev_certs do
+    app_identifier(["com.pida.me.ios", "com.pida.me.ios.dev"])
+  end
+
+  for_lane :sync_appstore_certs do
+    app_identifier("com.pida.me.ios")
+  end
+end
