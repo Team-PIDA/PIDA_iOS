@@ -1,19 +1,16 @@
 //
-//  {{ name }}DomainInterfaceProject.swift
+//  {{ name }}DomainInterface.swift
 //
-//  {{name}}
+//  {{ name }}DomainInterface
 //
-//  Created by {{author}}
+//  Created by {{ author }}
 //
 
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeInterfaceProject(
-  name: "{{ name }}",
-  layer: .domain,
-  interfaceDependency: [
-    .InternalDependency.Core
-  ]
+let project = Project.buildStaticLibrary(
+  for: Domain.{{ name }},
+  dependencies: [.SPM.Dependencies],
+  nameSuffix: "Interface"
 )
-

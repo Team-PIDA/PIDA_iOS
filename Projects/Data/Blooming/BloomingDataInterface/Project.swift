@@ -9,10 +9,11 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeInterfaceProject(
-  name: "Blooming",
-  layer: .data,
-  interfaceDependency: [
+let project = Project.buildStaticLibrary(
+  for: Data.Blooming,
+  dependencies: [
+    // 필요한 Domain Interface 의존성 추가
     .Domain.Blooming.Interface
-  ]
+  ],
+  nameSuffix: "Interface"
 )

@@ -9,10 +9,9 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeFeature(
-  name: "{{ name }}",
-  featureInterfaceDependencies: [
-    .Domain.{{ name }}.Interface
-    // 필요 시, Domain Interface Dependency 추가
+let project = Project.buildFeature(
+  for: Feature.{{ name }},
+  interfaceDependencies: [
+    // 필요한 Domain Interface 의존성 추가
   ]
 )

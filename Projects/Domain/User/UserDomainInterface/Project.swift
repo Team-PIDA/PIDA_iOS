@@ -9,11 +9,9 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeInterfaceProject(
-  name: "User",
-  layer: .domain,
-  interfaceDependency: [
-    .InternalDependency.Core
-  ]
+let project = Project.buildStaticLibrary(
+  for: Domain.User,
+  dependencies: [.SPM.Dependencies],
+  nameSuffix: "Interface"
 )
 

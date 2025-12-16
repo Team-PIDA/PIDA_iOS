@@ -10,41 +10,62 @@ import ProjectDescription
 
 fileprivate let name: Template.Attribute = .required("name")
 fileprivate let author: Template.Attribute = .required("author")
-fileprivate let currentDate: Template.Attribute = .optional("currentDate", default: .string(DateFormatter().string(from: Date())))
+fileprivate let DomainPath: String = "Projects/Domain/\(name)"
+
 
 let domainTemplate = Template(
   description: "Domain 템플릿",
-  attributes: [
-    name,
-    author,
-    currentDate
-  ],
+  attributes: [name, author],
   items: [
-    // Domain Interface 프로젝트 생성
+    // Interface Project
     .file(
-      path: "Projects/Domain/\(name)/\(name)DomainInterface/Project.swift",
+      path: "\(DomainPath)/\(name)DomainInterface/Project.swift",
       templatePath: "domain_interface_project.stencil"
     ),
+    // Implementation Project
     .file(
-      path: "Projects/Domain/\(name)/\(name)DomainInterface/Sources/\(name)UseCase.swift",
-      templatePath: "domain_usecase.stencil"
-    ),
-    .file(
-      path: "Projects/Domain/\(name)/\(name)DomainInterface/Sources/\(name)Repository.swift",
-      templatePath: "domain_repository_interface.stencil"
-    ),
-    .file(
-      path: "Projects/Domain/\(name)/\(name)DomainTesting/Sources/\(name)UseCaseTests.swift",
-      templatePath: "domain_usecase_tests.stencil"
-    ),
-    // Domain Implement 프로젝트 생성
-    .file(
-      path: "Projects/Domain/\(name)/\(name)Domain/Project.swift",
+      path: "\(DomainPath)/\(name)Domain/Project.swift",
       templatePath: "domain_implement_project.stencil"
     ),
+    // Tests Project
     .file(
-      path: "Projects/Domain/\(name)/\(name)Domain/Sources/\(name)UseCaseImpl.swift",
+      path: "\(DomainPath)/\(name)DomainTests/Project.swift",
+      templatePath: "domain_tests_project.stencil"
+    ),
+    // Repository Interface
+    .file(
+      path: "\(DomainPath)/\(name)DomainInterface/Sources/Repository/\(name)Repository.swift",
+      templatePath: "domain_repository.stencil"
+    ),
+    // UseCase Interface
+    .file(
+      path: "\(DomainPath)/\(name)DomainInterface/Sources/UseCases/\(name)UseCase.swift",
+      templatePath: "domain_usecase_interface.stencil"
+    ),
+    // Entity
+    .file(
+      path: "\(DomainPath)/\(name)DomainInterface/Sources/Entity/\(name)Entity.swift",
+      templatePath: "domain_entity.stencil"
+    ),
+    // Dependency Key
+    .file(
+      path: "\(DomainPath)/\(name)DomainInterface/Sources/DependencyKey/\(name)UseCaseKey.swift",
+      templatePath: "domain_dependencyKey.stencil"
+    ),
+    // UseCase Implementation
+    .file(
+      path: "\(DomainPath)/\(name)Domain/Sources/\(name)UseCaseImpl.swift",
       templatePath: "domain_usecase_implement.stencil"
+    ),
+    // UseCase Tests
+    .file(
+      path: "\(DomainPath)/\(name)DomainTests/Sources/\(name)UseCaseTests.swift",
+      templatePath: "domain_usecase_test.stencil"
+    ),
+    // Testing에 사용되는 Mock or Stub
+    .file(
+      path: "\(DomainPath)/\(name)DomainTesting/Sources/\(name)UseCaseMock.swift",
+      templatePath: "domain_testing_mock.stencil"
     )
   ]
 )

@@ -9,10 +9,11 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeInterfaceProject(
-    name: "Search",
-    layer: .data,
-    interfaceDependency: [
-        .Domain.Search.Interface
-    ]
+let project = Project.buildStaticLibrary(
+  for: Data.Search,
+  dependencies: [
+    // 필요한 Domain Interface 의존성 추가
+    .Domain.Search.Interface
+  ],
+  nameSuffix: "Interface"
 )

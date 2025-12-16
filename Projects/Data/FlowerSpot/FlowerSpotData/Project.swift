@@ -9,11 +9,9 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeImplementProject(
-  name: "FlowerSpot",
-  layer: .data,
-  implementDependency: [
+let project = Project.buildStaticLibrary(
+  for: Data.FlowerSpot,
+  dependencies: [
     .Data.FlowerSpot.Interface
   ]
 )
-

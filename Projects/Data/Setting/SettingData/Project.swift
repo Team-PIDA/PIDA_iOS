@@ -9,11 +9,9 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeImplementProject(
-  name: "Setting",
-  layer: .data,
-  implementDependency: [
+let project = Project.buildStaticLibrary(
+  for: Data.Setting,
+  dependencies: [
     .Data.Setting.Interface
   ]
 )
-

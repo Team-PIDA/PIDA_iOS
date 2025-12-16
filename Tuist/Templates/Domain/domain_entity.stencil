@@ -1,0 +1,9 @@
+//
+//  {{ name }}Entity.swift
+//
+//  {{ name }}DomainInterface
+//
+//  Created by {{ author }}
+//
+
+import Foundation

@@ -9,11 +9,10 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeImplementProject(
-  name: "{{ name }}",
-  layer: .data,
-  implementDependency: [
+let project = Project.buildStaticLibrary(
+  for: Data.{{ name }},
+  dependencies: [
+    // 필요한 Domain Interface 의존성 추가
     .Data.{{ name }}.Interface
   ]
 )
-

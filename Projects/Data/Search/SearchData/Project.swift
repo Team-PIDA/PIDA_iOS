@@ -9,11 +9,9 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeImplementProject(
-    name: "Search",
-    layer: .data,
-    implementDependency: [
-        .Data.Search.Interface
-    ]
+let project = Project.buildStaticLibrary(
+  for: Data.Search,
+  dependencies: [
+    .Data.Search.Interface
+  ]
 )
-

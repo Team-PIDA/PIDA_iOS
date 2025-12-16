@@ -9,10 +9,7 @@
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeImplementProject(
-  name: "User",
-  layer: .domain,
-  implementDependency: [
-    .Domain.User.Interface
-  ]
+let project = Project.buildStaticLibrary(
+  for: Domain.User,
+  dependencies: [.Domain.User.Interface]
 )
