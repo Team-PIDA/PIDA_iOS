@@ -16,19 +16,6 @@ let project = Project.buildApp(
     .Feature.FlowerSpotDetail,
     .Feature.Auth,
     .Feature.Blooming,
-    
-    .Domain.Search.Implement,
-    .Domain.Setting.Implement,
-    .Domain.FlowerSpot.Implement,
-    .Domain.Auth.Implement,
-    .Domain.User.Implement,
-    .Domain.Blooming.Implement,
-    
-    .Data.Search.Implement,
-    .Data.Setting.Implement,
-    .Data.FlowerSpot.Implement,
-    .Data.Auth.Implement,
-    .Data.User.Implement,
-    .Data.Blooming.Implement
+    .Common.AppDependencies
   ]
 )

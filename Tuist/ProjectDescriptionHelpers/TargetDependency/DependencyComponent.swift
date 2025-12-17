@@ -91,7 +91,6 @@ extension TargetDependency {
   
   public struct SPM: TargetDependencyFactory {
     public static let TCA = Self.project(.spm(.TCA))
-    public static let Dependencies = Self.project(.spm(.Dependencies))
     public static let NMap = Self.project(.spm(.NMap))
     public static let Lottie = Self.project(.spm(.Lottie))
     public static let DotLottie = Self.project(.spm(.DotLottie))
@@ -104,6 +103,7 @@ extension TargetDependency {
     public static let Networker = Self.project(.common(.Networker))
     public static let DesignKit = Self.project(.common(.DesignKit))
     public static let Cache = Self.project(.common(.Cache))
+    public static let AppDependencies = Self.project(.common(.AppDependencies))
   }
   
   public static let NetworkKit = TargetDependency.project(

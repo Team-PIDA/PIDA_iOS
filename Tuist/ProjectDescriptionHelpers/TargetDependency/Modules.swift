@@ -58,12 +58,12 @@ public enum Common: ModuleRepresentable {
   case Networker
   case DesignKit
   case Cache
+  case AppDependencies
   public var layer: String { String(describing: self) }
 }
 
 public enum SPM: String, ModuleRepresentable {
   case TCA = "ComposableArchitecture"
-  case Dependencies = "Dependencies"
   case NMap = "NMapsMap"
   case Lottie = "Lottie"
   case DotLottie = "DotLottie"

@@ -11,7 +11,6 @@ import ProjectDescriptionHelpers
 
 let project = Project.buildStaticLibrary(
   for: Domain.Setting,
-  dependencies: [.SPM.Dependencies],
   nameSuffix: "Interface"
 )
 

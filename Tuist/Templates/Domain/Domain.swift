@@ -47,11 +47,6 @@ let domainTemplate = Template(
       path: "\(DomainPath)/\(name)DomainInterface/Sources/Entity/\(name)Entity.swift",
       templatePath: "domain_entity.stencil"
     ),
-    // Dependency Key
-    .file(
-      path: "\(DomainPath)/\(name)DomainInterface/Sources/DependencyKey/\(name)UseCaseKey.swift",
-      templatePath: "domain_dependencyKey.stencil"
-    ),
     // UseCase Implementation
     .file(
       path: "\(DomainPath)/\(name)Domain/Sources/\(name)UseCaseImpl.swift",
