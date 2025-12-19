@@ -12,7 +12,7 @@ import Shared
 public struct DefaultTokenRefresher: TokenRefresher {
   
   public static func refreshToken() async throws -> String? {
-    if let refreshToken: String = KeyChainWrapper.read(forKey: .refreshToken) {
+    if let refreshToken: String = KeyChain.read(forKey: .refreshToken) {
       let refreshEndpoint = Endpoint<TokenRefreshDTO>(
         headers: .plain,
         method: .post,
@@ -22,12 +22,12 @@ public struct DefaultTokenRefresher: TokenRefresher {
       )
       do {
         let response = try await Networker().execute(with: refreshEndpoint)
-        KeyChainWrapper.save(response.refreshToken, forKey: .refreshToken)
+        KeyChain.save(response.refreshToken, forKey: .refreshToken)
         UserDefaultsKeys.accessToken = response.accessToken
         return response.accessToken
       } catch {
         UserDefaultsKeys.isLoggedIn = false
-        KeyChainWrapper.delete(forKey: .refreshToken)
+        KeyChain.delete(forKey: .refreshToken)
         UserDefaultsKeys.accessToken = nil
         throw TokenError.expiredToken
       }

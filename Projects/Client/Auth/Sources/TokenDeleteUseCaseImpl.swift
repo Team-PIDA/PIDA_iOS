@@ -16,7 +16,7 @@ public struct TokenDeleteUseCaseImpl: TokenDeleteUseCase {
   public func execute() async {
     UserDefaultsKeys.isLoggedIn = false
     UserDefaultsKeys.accessToken = nil
-    KeyChainWrapper.delete(forKey: .refreshToken)
+    KeyChain.delete(forKey: .refreshToken)
     UserDefaultsKeys.username = nil
   }
 }

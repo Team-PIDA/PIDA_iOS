@@ -37,7 +37,7 @@ extension AuthReducer {
         }
       case let .appleLoginResponse(info):
         if let email = info.email {
-          KeyChainWrapper.save(email, forKey: .email)
+          KeyChain.save(email, forKey: .email)
         }
         return .run { send in
           do {

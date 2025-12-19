@@ -1,5 +1,5 @@
 //
-//  KeyChainWrapper.swift
+//  KeyChain+.swift
 //  KeyChain
 //
 //  Created by Jiyeon on 3/13/25.
@@ -8,15 +8,23 @@
 
 import Foundation
 
-public struct KeyChainWrapper {
+public struct KeyChain {
+  
+  /// 키체인 키 설정
+  public enum KeychainKey: String {
+    case refreshToken
+    case email
+  }
   
   private static let bundleId = Bundle.main.bundleIdentifier ?? ""
-  
+}
+
+extension KeyChain {
   /// 키체인 저장 메서드
   ///
   /// 사용 예시:
   /// ```swift
-  /// KeychainWrapper.save("abcd1234", key: .accessToken)
+  /// Keychain.save("abcd1234", key: .accessToken)
   /// ```
   @discardableResult
   public static func save<T: Codable>(_ value: T, forKey key: KeychainKey) -> Bool {
@@ -56,7 +64,7 @@ public struct KeyChainWrapper {
   /// 사용 예시:
   /// ```swift
   /// var token: String? =
-  ///   KeychainWrapper.read(key: .accessToken)
+  ///   Keychain.read(key: .accessToken)
   /// ```
   public static func read<T: Codable>(forKey key: KeychainKey) -> T? {
     let query: [CFString: Any] = [
@@ -94,7 +102,7 @@ public struct KeyChainWrapper {
   ///
   /// 사용 예시:
   /// ```swift
-  /// KeychainWrapper.update("def", key: .accessToken)
+  /// Keychain.update("def", key: .accessToken)
   /// ```
   @discardableResult
   public static func update<T: Codable>(_ value: T, forKey key: KeychainKey) -> Bool {
@@ -136,7 +144,7 @@ public struct KeyChainWrapper {
   ///
   /// 사용 예시:
   /// ```swift
-  /// KeychainWrapper.delete(key: .accessToken)
+  /// Keychain.delete(key: .accessToken)
   /// ```
   @discardableResult
   public static func delete(forKey key: KeychainKey) -> Bool {
@@ -154,5 +162,4 @@ public struct KeyChainWrapper {
     }
     return status
   }
-  
 }
