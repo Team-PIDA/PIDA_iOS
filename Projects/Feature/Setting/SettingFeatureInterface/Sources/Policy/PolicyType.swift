@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Utility
+import Shared
 
 public enum PolicyType {
   case terms

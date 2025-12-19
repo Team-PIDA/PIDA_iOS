@@ -10,7 +10,7 @@ import UIKit
 import MapFeatureInterface
 import FlowerSpotDomainInterface
 import ComposableArchitecture
-import Utility
+import Shared
 
 extension MapReducer {
   public init() {

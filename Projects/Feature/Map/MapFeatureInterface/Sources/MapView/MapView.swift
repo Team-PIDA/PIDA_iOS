@@ -12,7 +12,7 @@ import Combine
 import FlowerSpotDomainInterface
 import BloomingDomainInterface
 import DesignKit
-import Utility
+import Shared
 
 import ComposableArchitecture
 

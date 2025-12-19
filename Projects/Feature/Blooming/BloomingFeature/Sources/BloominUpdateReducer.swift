@@ -10,7 +10,7 @@ import Foundation
 import BloomingFeatureInterface
 import BloomingDomainInterface
 import ComposableArchitecture
-import Utility
+import Shared
 
 extension BloomingUpdateReducer {
   public init() {

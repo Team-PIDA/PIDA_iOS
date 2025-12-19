@@ -10,7 +10,7 @@ import SearchFeatureInterface
 import FlowerSpotDomainInterface
 import ComposableArchitecture
 import SearchDomainInterface
-import Utility
+import Shared
 
 extension SearchReducer {
   public init() {

@@ -9,7 +9,7 @@
 import MapFeatureInterface
 import FlowerSpotDomainInterface
 import ComposableArchitecture
-import Utility
+import Shared
 import DesignKit
 
 extension MapReducer {

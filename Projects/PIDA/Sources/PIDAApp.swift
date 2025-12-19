@@ -9,7 +9,7 @@
 import SwiftUI
 import MapFeature
 import NMapsMap
-import Utility
+import Shared
 
 @main
 struct PIDAApp: App {

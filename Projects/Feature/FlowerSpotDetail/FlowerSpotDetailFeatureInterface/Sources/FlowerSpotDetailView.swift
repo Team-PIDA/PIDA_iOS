@@ -9,7 +9,7 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignKit
-import Utility
+import Shared
 import FlowerSpotDomainInterface
 
 public struct FlowerSpotDetailView: View {

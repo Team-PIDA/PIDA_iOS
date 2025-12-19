@@ -9,7 +9,7 @@
 import Foundation
 import BloomingDomainInterface
 import Networker
-import Utility
+import Shared
 import DesignKit
 
 public struct BloomingStateDTO: DTO {

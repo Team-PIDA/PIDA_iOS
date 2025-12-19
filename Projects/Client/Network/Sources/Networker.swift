@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Utility
+import Shared
 
 public struct Networker: NetworkProtocol, Sendable {
   

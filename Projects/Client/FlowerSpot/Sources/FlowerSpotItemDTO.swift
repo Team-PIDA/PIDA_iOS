@@ -9,7 +9,7 @@
 import Foundation
 import Networker
 import FlowerSpotDomainInterface
-import Utility
+import Shared
 import DesignKit
 
 public struct FlowerSpotItem: DTO {

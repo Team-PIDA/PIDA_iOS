@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Utility
+import Shared
 
 struct EmptyResponse: Codable {}
 

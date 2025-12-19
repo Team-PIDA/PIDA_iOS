@@ -8,7 +8,7 @@
 
 import Foundation
 import SearchDomainInterface
-import Utility
+import Shared
 
 public struct FetchRecentSearchUseCaseImpl: FetchRecentSearchUseCase {
   private let repository: SearchRepository

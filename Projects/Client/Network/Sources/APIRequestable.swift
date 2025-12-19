@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import Utility
+import Shared
 
 public typealias HTTPHeaders = [String: String]
 public typealias HTTPParameters = [String: Any]

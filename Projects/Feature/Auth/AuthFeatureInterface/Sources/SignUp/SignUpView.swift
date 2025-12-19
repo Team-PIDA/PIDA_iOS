@@ -9,7 +9,7 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignKit
-import Utility
+import Shared
 
 public struct SignUpView: View {
   @Bindable var store: StoreOf<SignUpReducer>
