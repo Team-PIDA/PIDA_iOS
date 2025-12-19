@@ -24,7 +24,7 @@ public extension Target {
     
     var addedBundlePath: String {
       switch self {
-      case .development: ".dev"
+      case .development: "-dev"
       case .production: ""
       }
     }

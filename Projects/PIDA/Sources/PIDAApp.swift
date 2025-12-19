@@ -15,7 +15,7 @@ import Utility
 struct PIDAApp: App {
   
   init() {
-    NMFAuthManager.shared().clientId = Constant.naver_map_client_id
+    NMFAuthManager.shared().ncpKeyId = Constant.naver_map_client_id
     DependencyRegistry.registerDependencies()
   }
   
