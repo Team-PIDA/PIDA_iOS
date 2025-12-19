@@ -7,9 +7,7 @@
 //
 
 import Foundation
-import KeyChain
-import UserDefault
-import Utility
+import Shared
 
 public struct DefaultTokenRefresher: TokenRefresher {
   
@@ -25,12 +23,12 @@ public struct DefaultTokenRefresher: TokenRefresher {
       do {
         let response = try await Networker().execute(with: refreshEndpoint)
         KeyChainWrapper.save(response.refreshToken, forKey: .refreshToken)
-        UserDefault.accessToken = response.accessToken
+        UserDefaultsKeys.accessToken = response.accessToken
         return response.accessToken
       } catch {
-        UserDefault.isLoggedIn = false
+        UserDefaultsKeys.isLoggedIn = false
         KeyChainWrapper.delete(forKey: .refreshToken)
-        UserDefault.accessToken = nil
+        UserDefaultsKeys.accessToken = nil
         throw TokenError.expiredToken
       }
       

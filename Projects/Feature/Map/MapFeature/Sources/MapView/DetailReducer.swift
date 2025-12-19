@@ -10,8 +10,7 @@ import MapFeatureInterface
 import FlowerSpotDomainInterface
 import BloomingDomainInterface
 import ComposableArchitecture
-import Utility
-import UserDefault
+import Shared
 
 extension MapReducer {
   
@@ -38,7 +37,7 @@ extension MapReducer {
           do {
             async let detailResult = try getFlowerSpotDetailUseCase.execute(id: id)
             async let bloomingResult = try getBloomingStateUseCase.execute(id: id)
-            let verifyTodayResult = UserDefault.isLoggedIn == true
+            let verifyTodayResult = UserDefaultsKeys.isLoggedIn == true
             ? try await verifyBloomingTodayUseCase.execute(id: id)
             : VerifyBloomingStateEntity(isBlooming: false)
             let (detail, blooming) = try await (detailResult, bloomingResult)

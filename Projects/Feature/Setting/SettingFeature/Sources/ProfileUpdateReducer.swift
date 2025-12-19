@@ -8,8 +8,7 @@
 
 import ComposableArchitecture
 import SettingFeatureInterface
-import Utility
-import UserDefault
+import Shared
 
 extension ProfileUpdateReducer {
   public init() {
@@ -22,7 +21,7 @@ extension ProfileUpdateReducer {
         return .send(.checkValidNickName(state.changeName))
         
       case .onAppear:
-        if let nickname = UserDefault.username {
+        if let nickname = UserDefaultsKeys.username {
           state.nickname = nickname
           state.changeName = nickname
         }
@@ -70,7 +69,7 @@ extension ProfileUpdateReducer {
           await send(.isLoading(true))
           do {
             let result = try await changeNicknameUseCase.execute(nickname: nickname)
-            UserDefault.username = result.nickname
+            UserDefaultsKeys.username = result.nickname
             await send(.pop)
           } catch let error as NetworkError {
             if error.errorClassName == .duplicateNickname {

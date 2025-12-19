@@ -8,7 +8,7 @@
 
 import ComposableArchitecture
 import AuthDomainInterface
-import Utility
+import Shared
 
 @Reducer
 public struct SignUpReducer {

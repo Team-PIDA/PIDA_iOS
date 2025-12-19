@@ -9,9 +9,7 @@
 import AuthFeatureInterface
 import UserDomainInterface
 import ComposableArchitecture
-import Utility
-import UserDefault
-import KeyChain
+import Shared
 
 extension AuthReducer {
   public init() {
@@ -62,7 +60,7 @@ extension AuthReducer {
         return .run { send in
           do {
             let result = try await userInfoUseCase.execute()
-            UserDefault.username = result.nickname
+            UserDefaultsKeys.username = result.nickname
             if let spotId = spotId {
               await send(.dismissWithVerifyBloomState(id: spotId))
             } else {

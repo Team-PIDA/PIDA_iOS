@@ -8,12 +8,12 @@
 
 import Foundation
 import Networker
-import UserDefault
+import Shared
 
 public struct BloomingEndPoint: Sendable {
   public static func updateBlooming(body: UpdateBloomingBody) -> Endpoint<BasicDTO> {
     return Endpoint(
-      headers: .authorization(UserDefault.accessToken),
+      headers: .authorization(UserDefaultsKeys.accessToken),
       method: .post,
       path: "/blooming",
       parameters: .body(body)
@@ -22,7 +22,7 @@ public struct BloomingEndPoint: Sendable {
   
   public static func getBloomingState(id: Int) -> Endpoint<BloomingStateDTO> {
     return Endpoint(
-      headers: .authorization(UserDefault.accessToken),
+      headers: .authorization(UserDefaultsKeys.accessToken),
       method: .get,
       path: "/blooming/\(id)/details"
     )
@@ -30,7 +30,7 @@ public struct BloomingEndPoint: Sendable {
   
   public static func verifyBloomingToday(id: Int) -> Endpoint<VerifyBloomingStateDTO> {
     return Endpoint(
-      headers: .authorization(UserDefault.accessToken),
+      headers: .authorization(UserDefaultsKeys.accessToken),
       method: .get,
       path: "/blooming/\(id)/verify/today"
     )

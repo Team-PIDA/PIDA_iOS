@@ -8,16 +8,15 @@
 
 import Foundation
 import AuthDomainInterface
-import UserDefault
-import KeyChain
+import Shared
 
 public struct TokenDeleteUseCaseImpl: TokenDeleteUseCase {
   public init() {}
   
   public func execute() async {
-    UserDefault.isLoggedIn = false
-    UserDefault.accessToken = nil
+    UserDefaultsKeys.isLoggedIn = false
+    UserDefaultsKeys.accessToken = nil
     KeyChainWrapper.delete(forKey: .refreshToken)
-    UserDefault.username = nil
+    UserDefaultsKeys.username = nil
   }
 }

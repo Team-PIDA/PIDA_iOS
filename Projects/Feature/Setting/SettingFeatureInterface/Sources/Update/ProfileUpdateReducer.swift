@@ -8,7 +8,7 @@
 
 import Foundation
 import ComposableArchitecture
-import Utility
+import Shared
 
 @Reducer
 public struct ProfileUpdateReducer {

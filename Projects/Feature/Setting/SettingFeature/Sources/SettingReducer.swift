@@ -11,9 +11,8 @@ import AuthDomainInterface
 import UserDomainInterface
 
 import ComposableArchitecture
-import Utility
 import DesignKit
-import UserDefault
+import Shared
 
 extension SettingReducer {
   public init() {
@@ -40,7 +39,7 @@ extension SettingReducer {
         state.isNeedUpdate = inNeedUpdate
         return .none
       case .checkLoggedIn:
-        let isLoggedIn = UserDefault.isLoggedIn ?? false
+        let isLoggedIn = UserDefaultsKeys.isLoggedIn ?? false
         state.isLoggedIn = isLoggedIn
         if isLoggedIn {
           return .send(.checkUserInfo)

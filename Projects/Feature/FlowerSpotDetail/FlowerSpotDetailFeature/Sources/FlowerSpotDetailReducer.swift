@@ -8,7 +8,7 @@
 
 import FlowerSpotDetailFeatureInterface
 import ComposableArchitecture
-import UserDefault
+import Shared
 
 extension FlowerSpotDetailReducer {
   public init() {
@@ -22,7 +22,7 @@ extension FlowerSpotDetailReducer {
         state.isNeedDrawPath = true
         return .none
       case .chechAuth:
-        if UserDefault.isLoggedIn == true {
+        if UserDefaultsKeys.isLoggedIn == true {
           let streetName = state.flowerSpotData.streetName
           let id = state.flowerSpotData.id
           return .send(.presentToBlooming(id: id, streetName: streetName))

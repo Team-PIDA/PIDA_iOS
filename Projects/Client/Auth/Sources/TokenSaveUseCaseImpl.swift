@@ -8,15 +8,14 @@
 
 import Foundation
 import AuthDomainInterface
-import UserDefault
-import KeyChain
+import Shared
 
 public struct TokenSaveUseCaseImpl: TokenSaveUseCase {
   public init() {}
   
   public func execute(tokenInfo: SocialLoginEntity) async {
-    UserDefault.isLoggedIn = !tokenInfo.isTempToken
-    UserDefault.accessToken = tokenInfo.accessToKen
+    UserDefaultsKeys.isLoggedIn = !tokenInfo.isTempToken
+    UserDefaultsKeys.accessToken = tokenInfo.accessToKen
     KeyChainWrapper.save(tokenInfo.refreshToken, forKey: .refreshToken)
   }
 }

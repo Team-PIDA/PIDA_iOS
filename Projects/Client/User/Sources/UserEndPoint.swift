@@ -8,12 +8,12 @@
 
 import Foundation
 import Networker
-import UserDefault
+import Shared
 
 public struct UserEndPoint: Sendable {
   public static func fetchUserInfo() -> Endpoint<UserInfoDTO> {
     return Endpoint(
-      headers: .authorization(UserDefault.accessToken ?? ""),
+      headers: .authorization(UserDefaultsKeys.accessToken ?? ""),
       method: .get,
       path: "/users/me"
     )
@@ -21,7 +21,7 @@ public struct UserEndPoint: Sendable {
   
   public static func withDraw() -> Endpoint<WithdrawDTO> {
     return Endpoint(
-      headers: .authorization(UserDefault.accessToken ?? ""),
+      headers: .authorization(UserDefaultsKeys.accessToken ?? ""),
       method: .delete,
       path: "/users"
     )
@@ -29,7 +29,7 @@ public struct UserEndPoint: Sendable {
   
   public static func changeNickname(body: ChangeNicknameBody) -> Endpoint<UserInfoDTO> {
     return Endpoint(
-      headers: .authorization(UserDefault.accessToken ?? ""),
+      headers: .authorization(UserDefaultsKeys.accessToken ?? ""),
       method: .put,
       path: "/users/nickname",
       parameters: .body(body)

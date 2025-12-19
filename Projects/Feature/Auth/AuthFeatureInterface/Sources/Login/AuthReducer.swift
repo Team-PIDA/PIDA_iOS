@@ -7,7 +7,7 @@
 //
 
 import ComposableArchitecture
-import Utility
+import Shared
 
 @Reducer
 public struct AuthReducer {

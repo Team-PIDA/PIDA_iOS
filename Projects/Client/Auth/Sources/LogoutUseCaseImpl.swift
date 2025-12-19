@@ -8,7 +8,7 @@
 
 import Foundation
 import AuthDomainInterface
-import UserDefault
+import Shared
 
 public struct LogoutUseCaseImpl: LogoutUseCase {
   private let repository: AuthRepository
@@ -18,6 +18,6 @@ public struct LogoutUseCaseImpl: LogoutUseCase {
   }
   
   public func execute() async throws {
-    return try await repository.logout(token: UserDefault.accessToken ?? "")
+    return try await repository.logout(token: UserDefaultsKeys.accessToken ?? "")
   }
 }
