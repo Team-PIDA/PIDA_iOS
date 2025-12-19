@@ -71,7 +71,7 @@ extension SignUpReducer {
         return .run { send in
           await send(.isLoading(true))
           do {
-            if let email: String = KeyChainWrapper.read(forKey: .email) {
+            if let email: String = KeyChain.read(forKey: .email) {
               try await signUpUseCase.execute(email: email, nickname: nickname)
               UserDefaultsKeys.isLoggedIn = true
               await send(.fetchUserInfo)
@@ -96,7 +96,7 @@ extension SignUpReducer {
         return .run { send in
           do {
             let result = try await userInfoUseCase.execute()
-            UserDefault.username = result.nickname
+            UserDefaultsKeys.username = result.nickname
             await send(.dismiss)
           } catch {
             print(error.localizedDescription)
