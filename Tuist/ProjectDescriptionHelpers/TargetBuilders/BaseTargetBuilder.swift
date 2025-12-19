@@ -24,7 +24,7 @@ extension Target {
     resources: [ResourceFileElement] = [],
     dependencies: [TargetDependency] = []
   ) -> Target {
-    let targetName = String(describing: module) + module.layer + nameSuffix
+    let targetName = String(describing: module) + module.root + nameSuffix
     let sourcesPath = module is Feature ? "./\(targetName)/Sources/**": "./Sources/**"
     
     return target(

@@ -12,7 +12,6 @@ import ProjectDescriptionHelpers
 let project = Project.buildFeature(
   for: Feature.Blooming,
   interfaceDependencies: [
-    .Domain.Blooming.Interface
-    // 필요 시, Domain Interface Dependency 추가
+    .Client.Blooming
   ]
 )

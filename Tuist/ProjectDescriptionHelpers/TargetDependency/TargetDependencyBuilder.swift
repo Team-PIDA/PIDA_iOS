@@ -11,51 +11,27 @@ import ProjectDescription
 protocol TargetDependencyFactory { }
 
 extension TargetDependencyFactory {
-  public static func project(_ module: Module) -> TargetDependency {
-    switch module {
-    case let .feature(feature):
-      return buildTargetDependency(for: feature)
-      
-    case let .domain(domain, isInterface):
-      if let isInterface = isInterface { return buildTargetDependency(for: domain, isInterface: isInterface) }
-      return buildTargetDependency(for: domain)
-      
-    case let .data(data, isInterface):
-      if let isInterface = isInterface { return buildTargetDependency(for: data, isInterface: isInterface) }
-      return buildTargetDependency(for: data)
-      
-    case let .common(module):
-      return buildCommonTargetDependency(for: module)
-      
-    case let .spm(spm):
-      return .external(name: spm.rawValue)
+  public static func project(_ folder: Folder) -> TargetDependency {
+    switch folder {
+    case let .feature(feature): buildTargetDependency(for: feature)
+    case let .client(client): buildTargetDependency(for: client)
+    case let .spm(spm): .external(name: String(describing: spm))
     }
   }
 }
 
 extension TargetDependencyFactory {
-  /// Feature/Domain/Data 전용 의존성 생성
-  /// `Projects/Domain/Sample/SampleDomainInterface` 또는 `Projects/Domain/Sample/SampleDomain`
+  /// `target` 타입에 따라 경로와 타겟 이름을 동적으로 생성
+  /// `Projects/{root}/{module}` 형태로 생성
   fileprivate static func buildTargetDependency<T: ModuleRepresentable>(
     for target: T,
     isInterface: Bool = false
   ) -> TargetDependency {
-    let suffix = isInterface ? "Interface" : ""
-    let targetName = String(describing: target) + target.layer + suffix
-    let addPath = target is Feature ? "" : "/\(targetName)"
+    let root = target.root
+    let module = String(describing: target) + target.root
     return .project(
-      target: targetName,
-      path: .relativeToRoot("./Projects/\(target.layer)/\(target)" + addPath)
-    )
-  }
-  
-  /// 특정 Common 공통 모듈 의존성 생성
-  fileprivate static func buildCommonTargetDependency<T: ModuleRepresentable>(
-    for common: T
-  ) -> TargetDependency {
-    return .project(
-      target: common.layer,
-      path: .relativeToRoot("./Projects/" + "\(common.layer)")
+      target: module,
+      path: .relativeToRoot("./Projects/\(root)/\(String(describing: target))")
     )
   }
 }

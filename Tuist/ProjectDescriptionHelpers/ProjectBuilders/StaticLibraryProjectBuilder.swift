@@ -22,7 +22,11 @@ public extension Project {
   ) -> Project {
     return buildBaseProject(
       name: name(for: module, suffix: nameSuffix),
-      targets: [.buildStaticLibraryTarget(for: module, dependencies: dependencies, nameSuffix: nameSuffix)]
+      targets: [.buildStaticLibraryTarget(
+        for: module,
+        dependencies: dependencies,
+        nameSuffix: nameSuffix
+      )]
     )
   }
 }

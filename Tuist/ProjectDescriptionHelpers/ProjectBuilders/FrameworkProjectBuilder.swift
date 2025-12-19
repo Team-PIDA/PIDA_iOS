@@ -21,7 +21,11 @@ public extension Project {
   ) -> Project {
     return buildBaseProject(
       name: name(for: module, suffix: nameSuffix),
-      targets: [.buildFrameworkTarget(for: module, dependencies: dependencies, nameSuffix: nameSuffix)]
+      targets: [.buildFrameworkTarget(
+        for: module,
+        dependencies: dependencies,
+        nameSuffix: nameSuffix
+      )]
     )
   }
 }

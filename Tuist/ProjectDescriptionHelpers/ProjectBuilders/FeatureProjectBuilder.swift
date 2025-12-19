@@ -31,11 +31,11 @@ public extension Project {
     
     let demo = Target.buildDemoTarget(
       for: module,
-      dependencies: [.target(name: featureName), .target(name: testingName)]
+      dependencies: [.target(name: featureName)]
     )
     let featureTests = Target.buildUnitTestTarget(
       for: module,
-      dependencies: [.target(name: featureName), .target(name: testingName)],
+      dependencies: [.target(name: testingName)],
     )
     
     let featureTesting = Target.buildStaticLibraryTarget(
@@ -45,12 +45,12 @@ public extension Project {
     )
     let feature = Target.buildStaticLibraryTarget(
       for: module,
-      dependencies: [.target(name: interfaceName), .Common.DesignKit] + implementDependencies
+      dependencies: [.target(name: interfaceName)]
     )
     
     let featureInterface = Target.buildStaticLibraryTarget(
       for: module,
-      dependencies: [.SPM.TCA] + interfaceDependencies,
+      dependencies: interfaceDependencies + [.DesignKit],
       nameSuffix: "Interface"
     )
     return buildBaseProject(

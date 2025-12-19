@@ -13,17 +13,11 @@ let project = Project(
   organizationName: organization,
   settings: .default,
   targets: [
-    .buildDemoTarget(
-      for: Common.DesignKit,
-      dependencies: [
-        .target(name: "DesignKit")
-      ]
-    ),
     .target(
       name: "DesignKit",
       destinations: .iOS,
       product: .framework,
-      bundleId: "com.yongin.pida.DesignKit",
+      bundleId: organization + ".DesignKit",
       deploymentTargets: .iOS("18.0"),
       infoPlist: .extendingDefault(with: [
         "UIAppFonts": [
@@ -32,13 +26,7 @@ let project = Project(
       ]),
       sources: ["Sources/**"],
       resources: ["Resources/**"],
-      dependencies: [
-        .Common.Cache,
-        .Common.KeyChain,
-        .Common.UserDefault,
-        .Common.Utility,
-        .SPM.DotLottie
-      ]
+      dependencies: [.SPM.DotLottie]
     )
   ]
 )

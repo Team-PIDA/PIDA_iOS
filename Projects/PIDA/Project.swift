@@ -15,7 +15,6 @@ let project = Project.buildApp(
     .Feature.Setting,
     .Feature.FlowerSpotDetail,
     .Feature.Auth,
-    .Feature.Blooming,
-    .Common.AppDependencies
+    .Feature.Blooming
   ]
 )

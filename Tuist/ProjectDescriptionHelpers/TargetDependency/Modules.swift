@@ -8,19 +8,16 @@
 import Foundation
 import ProjectDescription
 
-public protocol ModuleRepresentable { var layer: String { get } }
+public protocol ModuleRepresentable { var root: String { get } }
+extension ModuleRepresentable { public var root: String { String(describing: Self.self) } }
 
-public enum Module {
+public enum Folder {
   case feature(Feature)
-  case domain(Domain, isInterface: Bool? = false)
-  case data(Data, isInterface: Bool? = false)
-  case common(Common)
+  case client(Client)
   case spm(SPM)
 }
 
 public enum Feature: ModuleRepresentable {
-  public var layer: String { String(describing: Self.self) }
-  // 예시: case Home, Login, Profile, Settings
   case Map
   case Search
   case Setting
@@ -29,43 +26,19 @@ public enum Feature: ModuleRepresentable {
   case Blooming
 }
 
-public enum Domain: ModuleRepresentable {
-  // 예시: case Auth, User, Product, Order
-  case Search
-  case Setting
-  case FlowerSpot
-  case Auth
-  case User
-  case Blooming
-  public var layer: String { String(describing: Self.self) }
-}
-
-public enum Data: ModuleRepresentable {
-  // 예시: case Auth, User, Product, Order
-  case Search
-  case Setting
-  case FlowerSpot
-  case Auth
-  case User
-  case Blooming
-  public var layer: String { String(describing: Self.self) }
-}
-
-public enum Common: ModuleRepresentable {
-  case KeyChain
-  case UserDefault
-  case Utility
-  case Networker
-  case DesignKit
+public enum Client: ModuleRepresentable {
+  case Network
   case Cache
-  case AppDependencies
-  public var layer: String { String(describing: self) }
+  case Search
+  case Setting
+  case FlowerSpot
+  case Auth
+  case User
+  case Blooming
 }
 
-public enum SPM: String, ModuleRepresentable {
-  case TCA = "ComposableArchitecture"
-  case NMap = "NMapsMap"
-  case Lottie = "Lottie"
-  case DotLottie = "DotLottie"
-  public var layer: String { "SPM" }
+public enum SPM: ModuleRepresentable {
+  case ComposableArchitecture
+  case NMapsMap
+  case DotLottie
 }

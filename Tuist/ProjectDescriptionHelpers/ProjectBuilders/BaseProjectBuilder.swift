@@ -15,7 +15,7 @@ public extension Project {
     suffix: String = ""
   ) -> String {
     /// 예: `Sample`+ `Feature` + `Interface`
-    return String(describing: module) + module.layer + suffix
+    return String(describing: module) + module.root + suffix
   }
   
   /// 공통 Project 초기화
