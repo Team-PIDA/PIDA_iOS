@@ -8,6 +8,7 @@
 
 import Foundation
 import ComposableArchitecture
+import Shared
 
 @DependencyClient
 public struct APIClient: Sendable {
@@ -16,7 +17,7 @@ public struct APIClient: Sendable {
   /// - Parameters:
   ///  - endpoint: 요청할 API 엔드포인트를 나타내는 `APIRequestable` 프로토콜을 준수하는 객체입니다.
   ///  - timeout: 요청의 타임아웃 시간을 초 단위로 지정합니다
-  public var execute: @Sendable (
+  var _execute: @Sendable (
     _ endpoint: any APIRequestable
   ) async throws -> any (Decodable & Sendable)
   
@@ -38,6 +39,25 @@ public struct APIClient: Sendable {
   public var download: @Sendable (
     _ url: String
   ) async throws -> Data
+}
+
+// MARK: - APIClient Extension
+extension APIClient {
+  /// 제네릭 타입을 유지하는 execute 메서드
+  public func execute<T: APIRequestable>(
+    _ endpoint: T
+  ) async throws -> T.Response where T.Response: Decodable & Sendable {
+    let result = try await _execute(endpoint)
+    guard let typedResult = result as? T.Response else {
+      throw Self.throwError(
+        FoundationError.failedToCasting(
+          from: type(of: result),
+          to: T.Response.self
+        )
+      )
+    }
+    return typedResult
+  }
 }
 
 // MARK: - DependencyValues Extension

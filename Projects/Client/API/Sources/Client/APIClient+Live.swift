@@ -12,7 +12,7 @@ import Shared
 
 extension APIClient: DependencyKey {
   public static var liveValue = APIClient(
-      execute: { try await Self.internalExecute($0) },
+      _execute: { try await Self.internalExecute($0) },
       upload: { try await Self.internalUpload($0, $1) },
       download: { try await Self.internalDownload($0) }
     )
