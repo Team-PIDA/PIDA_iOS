@@ -1,198 +1,230 @@
 //
-//  TwoTierCache.swift
+//  TwoTierStorage.swift
 //  Cache
 //
-//  Created by 조용인 on 3/21/25.
-//  Copyright © 2025 com.yongin.pida. All rights reserved.
+//  Created by 조용인 on 12/21/25.
+//  Copyright © 2025 com.pida.me. All rights reserved.
 //
 
 import Foundation
 
-/// `TwoTierCache`는 메모리와 디스크를 함께 사용하는 캐시 구현체입니다.
-/// - Description: 메모리와 디스크를 함께 사용하는 2단계 캐시 구현체로, 캐시 항목을 메모리에 저장하고, 디스크에도 저장합니다.
-///  - `memoryStorage`: 메모리 캐시 저장소
-///  - `diskStorage`: 디스크 캐시 저장소
-///  - `defaultTTL`: 기본 캐시 유지 시간(.low, .medium, .high)
-///  - `eviction`: 캐시 제거 정책 (LRU, FIFO, Size, None 등 등)
-///  - `expirationTimer`: 일정 시간마다 만료된 캐시 항목 제거를 위한 타이머
-public actor TwoTierCache<Namespace: CacheNamespace, Value: Codable & Sendable>: Cache {
-  public typealias Key = CacheKey<Namespace>
-  
-  private let memoryStorage: MemoryCacheStorage<Key, Value>
-  private let diskStorage: DiskCacheStorage<Namespace, Value>
+// MARK: - TwoTierStorage
+
+/// 2단계 캐시 저장소 (Memory + Disk)
+///
+/// 메모리와 디스크 두 계층으로 구성된 캐시 시스템입니다.
+/// 메모리 캐시는 빠른 접근을, 디스크 캐시는 영속성을 제공합니다.
+///
+/// ## 동작 원리
+///
+/// ### 조회 흐름 (getData)
+/// ```
+/// 1. 메모리 캐시 확인
+///    ├─ Hit → 데이터 반환 (가장 빠름)
+///    └─ Miss → 디스크 캐시 확인
+///              ├─ Hit → 메모리에 복사 후 반환
+///              └─ Miss → nil 반환
+/// ```
+///
+/// ### 저장 흐름 (setData)
+/// ```
+/// 데이터 저장 요청
+///    ├─ 메모리에 저장 (빠른 접근용)
+///    └─ 디스크에 저장 (영속성 보장)
+/// ```
+///
+/// ## 메모리 관리 (LRU)
+/// - 메모리 캐시는 최대 100개 항목으로 제한
+/// - 초과 시 가장 오래 접근하지 않은 항목부터 제거 (LRU 정책)
+/// - 디스크 캐시는 제한 없음 (TTL로만 관리)
+///
+/// ## 자동 정리
+/// - 60초마다 백그라운드에서 만료된 항목 자동 삭제
+/// - 앱 재시작 시에도 디스크 캐시는 유지됨
+///
+/// - Note: `actor`로 구현되어 동시성 안전(thread-safe)합니다.
+actor TwoTierStorage {
+
+  // MARK: - Properties
+
+  /// 1차 캐시: 메모리 (빠른 접근)
+  private let memoryStorage = MemoryStorage()
+
+  /// 2차 캐시: 디스크 (영속성)
+  private let diskStorage: DiskStorage
+
+  /// 만료 항목 정리 타이머
   private var expirationTimer: Task<Void, Never>?
-  
-  private let defaultTTL: TTLScale
-  private let eviction: EvictionPolicy
-  
-  public init(
-    defaultTTL: TTLScale = .medium,
-    eviction: EvictionPolicy = .lru(100),
-    cacheName: String
-  ) async throws {
-    self.defaultTTL = defaultTTL
-    self.eviction = eviction
-    self.memoryStorage = MemoryCacheStorage()
-    self.diskStorage = try DiskCacheStorage(cacheName: cacheName)
-    
-    await loadFromDisk()
-    await startExpirationTimer(interval: 60.0)
+
+  /// 메모리 캐시 최대 항목 수 (LRU 임계값)
+  private let maxMemoryCount = 100
+
+  // MARK: - Lifecycle
+
+  init() {
+    self.diskStorage = DiskStorage()
+    // 백그라운드에서 만료 항목 정리 시작
+    Task.detached(priority: .background) { await self.startExpirationTimer() }
   }
-  
-  /// `TwoTierCache`가 `deinit`될 때, 즉 `TwoTierCache` 인스턴스가 사라질 때, `expirationTimer`도 같이 취소
-  deinit { expirationTimer?.cancel() }
-  
-  /// 디스크에서 캐시 항목 로드
+
+  deinit {
+    expirationTimer?.cancel()
+  }
+
+  // MARK: - Public API
+
+  /// 캐시에서 데이터를 조회합니다.
   ///
-  /// - Note: `TwoTierCache` 초기화 시, Disk Cache에서 캐시 항목을 로드하여 Memory Cache에 저장합니다.
-  private func loadFromDisk() async {
-    do {
-      let keys = try await diskStorage.allKeys()
-      for key in keys {
-        if let entry = try await diskStorage.retrieve(forKey: key), !entry.isExpired {
-          try await memoryStorage.store(entry, forKey: key) /// Disk Cache에서 조회 성공하면, Memory Cache에 저장
-        }
+  /// 조회 순서:
+  /// 1. 메모리 캐시 확인 (빠름)
+  /// 2. 디스크 캐시 확인 (느림, 하지만 영속적)
+  ///
+  /// 디스크에서 찾은 경우 메모리에도 복사하여 다음 조회를 빠르게 합니다.
+  ///
+  /// - Parameter key: 조회할 캐시 키
+  /// - Returns: 캐시된 데이터, 없거나 만료된 경우 `nil`
+  func getData(key: String) async -> Data? {
+    // 1. Memory 먼저 확인 (빠름)
+    if let entry = await memoryStorage.get(key: key) {
+      if !entry.isExpired {
+        // LRU를 위해 마지막 접근 시간 갱신
+        let updated = entry.accessed()
+        await memoryStorage.set(key: key, entry: updated)
+        return entry.data
+      } else {
+        // 만료된 항목 삭제
+        await memoryStorage.remove(key: key)
       }
-      await applyEvictionIfNeeded() /// 디스크에서 로드한 캐시에 대해 제거 정책 적용
-    } catch {
-      print("디스크에서 캐시를 로드하는데 실패: \(error)")
+    }
+
+    // 2. Disk 확인 (메모리에 없는 경우)
+    if let entry = await diskStorage.get(key: key) {
+      if !entry.isExpired {
+        // 디스크에서 찾은 데이터를 메모리에 복사 (다음 조회 가속화)
+        let updated = entry.accessed()
+        await memoryStorage.set(key: key, entry: updated)
+        await diskStorage.set(key: key, entry: updated)
+        await applyLRU()
+        return entry.data
+      } else {
+        // 만료된 항목 삭제
+        await diskStorage.remove(key: key)
+      }
+    }
+
+    return nil
+  }
+
+  /// 캐시에 데이터를 저장합니다.
+  ///
+  /// 메모리와 디스크 모두에 저장하여 빠른 접근과 영속성을 동시에 보장합니다.
+  ///
+  /// - Parameters:
+  ///   - key: 저장할 캐시 키
+  ///   - data: 저장할 데이터
+  ///   - ttl: 만료 시간
+  func setData(key: String, data: Data, ttl: TTL) async throws {
+    let expiration = Date().addingTimeInterval(ttl.timeInterval)
+    let entry = DataCacheEntry(
+      data: data,
+      expiration: expiration,
+      lastAccessed: Date(),
+      createdAt: Date()
+    )
+
+    // 메모리 + 디스크 동시 저장
+    await memoryStorage.set(key: key, entry: entry)
+    await diskStorage.set(key: key, entry: entry)
+
+    // 메모리 제한 초과 시 LRU 적용
+    await applyLRU()
+  }
+
+  /// 특정 키의 캐시를 삭제합니다.
+  func remove(key: String) async {
+    await memoryStorage.remove(key: key)
+    await diskStorage.remove(key: key)
+  }
+
+  /// 모든 캐시를 삭제합니다.
+  func removeAll() async {
+    await memoryStorage.removeAll()
+    await diskStorage.removeAll()
+  }
+
+  // MARK: - Private Helpers
+
+  /// LRU(Least Recently Used) 정책 적용
+  ///
+  /// 메모리 캐시가 `maxMemoryCount`를 초과하면
+  /// 가장 오래 접근하지 않은 항목부터 제거합니다.
+  ///
+  /// - Note: 디스크 캐시에는 LRU를 적용하지 않습니다. (TTL로만 관리)
+  private func applyLRU() async {
+    let entries = await memoryStorage.allEntries()
+    guard entries.count > maxMemoryCount else { return }
+
+    // 마지막 접근 시간 기준 오름차순 정렬 (오래된 것이 앞에)
+    let sorted = entries.sorted { $0.value.lastAccessed < $1.value.lastAccessed }
+
+    // 초과분만큼 제거
+    let toRemove = sorted.prefix(entries.count - maxMemoryCount)
+
+    for (key, _) in toRemove {
+      await memoryStorage.remove(key: key)
     }
   }
-  
-  /// 제거 정책 적용
-  /// - Discussion: 캐시 항목이 제한을 초과하면 제거 정책(`eviction`)에 따라 적절한 항목을 제거합니다.
-  ///   - `.lru(maxCount)`: 최근에 사용된 항목을 우선적으로 제거 (메모리에서만)
-  ///   - `.fifo(maxCount)`: 먼저 저장된 항목을 우선적으로 제거 (메모리에서만)
-  ///   - `.size(maxSize)`: 캐시 크기 제한 (미구현)
-  ///   - `.none`: 제거 정책 없음
-  private func applyEvictionIfNeeded() async {
-    switch eviction {
-    case let .lru(maxCount):
-      let keys = try? await memoryStorage.allKeys()
-      guard let allKeys = keys, allKeys.count > maxCount else { return }
-      
-      // 모든 항목과 마지막 접근 시간을 가져옴
-      var entries: [(key: Key, entry: CacheEntry<Value>)] = []
-      for key in allKeys {
-        if let entry = try? await memoryStorage.retrieve(forKey: key) {
-          entries.append((key, entry))
-        }
+
+  /// 만료된 항목 자동 제거 타이머 시작
+  ///
+  /// 60초마다 메모리와 디스크에서 만료된 항목을 정리합니다.
+  /// 백그라운드에서 실행되어 메인 스레드에 영향을 주지 않습니다.
+  private func startExpirationTimer() {
+    expirationTimer = Task.detached { [weak self] in
+      while !Task.isCancelled {
+        // 60초 대기
+        try? await Task.sleep(nanoseconds: 60_000_000_000)
+        guard let self = self else { return }
+        // 만료 항목 정리
+        await self.memoryStorage.removeExpired()
+        await self.diskStorage.removeExpired()
       }
-      
-      // 접근 시간 기준 정렬
-      let sortedEntries = entries.sorted { $0.entry.lastAccessed < $1.entry.lastAccessed }
-      
-      // 초과분 제거 (메모리에서만)
-      let toRemove = sortedEntries.prefix(entries.count - maxCount)
-      for (key, _) in toRemove {
-        try? await memoryStorage.remove(forKey: key)
-      }
-    case let .fifo(maxCount):
-      let keys = try? await memoryStorage.allKeys()
-      guard let allKeys = keys, allKeys.count > maxCount else { return }
-      
-      /// 모든 항목과 생성 시간을 가져옴
-      var entries: [(key: Key, entry: CacheEntry<Value>)] = []
-      for key in allKeys {
-        if let entry = try? await memoryStorage.retrieve(forKey: key) {
-          entries.append((key, entry))
-        }
-      }
-      
-      /// 생성 시간 기준 정렬
-      let sortedEntries = entries.sorted { $0.entry.createdAt < $1.entry.createdAt }
-      
-      /// 초과분 제거 (메모리에서만)
-      let toRemove = sortedEntries.prefix(entries.count - maxCount)
-      for (key, _) in toRemove {
-        try? await memoryStorage.remove(forKey: key)
-      }
-    case let .size(maxSize): break
-    case .none: return
     }
   }
 }
 
-// MARK: - Cache 프로토콜 구현
-public extension TwoTierCache {
-  
-  /// `key`에 해당하는 캐시 항목을 저장
+// MARK: - DataCacheEntry
+
+/// 캐시 항목을 저장하는 내부 구조체
+///
+/// 실제 데이터와 메타데이터(만료 시간, 접근 시간 등)를 함께 저장합니다.
+/// 디스크 저장을 위해 `Codable`을 준수합니다.
+struct DataCacheEntry: Codable {
+
+  /// 캐시된 실제 데이터
+  let data: Data
+
+  /// 만료 시점
+  let expiration: Date
+
+  /// 마지막 접근 시점 (LRU 정책에 사용)
+  let lastAccessed: Date
+
+  /// 생성 시점
+  let createdAt: Date
+
+  /// 만료 여부 확인
+  var isExpired: Bool { Date() > expiration }
+
+  /// 접근 시간을 현재로 갱신한 새 엔트리 반환
   ///
-  /// - Parameters:
-  ///   - value: 저장할 값 (`Codable` & `Sendable`)
-  ///   - key: 저장할 값의 키 (`CacheKey` -> `Namespace`로 구분)
-  ///   - ttl: 캐시 유지 시간 (기본값: `defaultTTL`)
-  ///
-  /// - Note: Memory Cache -> Disk Cache 순서로 저장하며, 저장 이후 제거 정책(Eviction Policy)을 적용함
-  func insert(
-    _ value: Value,
-    forKey key: Key,
-    ttl: TTLScale? = nil
-  ) async throws {
-    let ttlValue = ttl ?? defaultTTL
-    let expiration = Date().addingTimeInterval(ttlValue.timeInterval)
-    let entry = CacheEntry(value: value, expiration: expiration)
-    
-    try await memoryStorage.store(entry, forKey: key) // 1. 우선 Memory Cache에 저장
-    try await diskStorage.store(entry, forKey: key)   // 2. 추가적으로 Disk Cache에 저장
-    await applyEvictionIfNeeded()                     // 3. 제거 정책 적용
-  }
-  
-  /// Memory Cache -> Disk Cache 순서로 확인하며, 캐시 항목 반환 (Cache Miss 시 nil 반환)
-  ///
-  /// - Parameters:
-  ///   - key: 캐시 항목을 찾기 위한 키
-  ///
-  /// - Note: Memory Cache -> Disk Cache 순서로 확인하며, Cache Miss 시 nil 반환
-  func value(forKey key: Key) async -> Value? {
-    // 1. 먼저 Memory Cache 확인
-    if let entry = try? await memoryStorage.retrieve(forKey: key) {
-      let updatedEntry = entry.accessed()
-      try? await memoryStorage.store(updatedEntry, forKey: key)
-      return entry.value
-    }
-    
-    // 2. Memory에 없으면, Disk Cache 확인
-    if let entry = try? await diskStorage.retrieve(forKey: key) {
-      let updatedEntry = entry.accessed()
-      try? await memoryStorage.store(updatedEntry, forKey: key)
-      try? await diskStorage.store(updatedEntry, forKey: key)
-      return entry.value
-    }
-    
-    // 3. 둘 다 없으면 nil 반환 -> Cache Miss~
-    return nil
-  }
-  
-  /// Memory & Disk Cache에서 key에 해당하는 캐시 항목 제거
-  func remove(forKey key: Key) async {
-    try? await memoryStorage.remove(forKey: key)// 1. Memory Cache에서 제거
-    try? await diskStorage.remove(forKey: key)  // 2. Disk Cache에서 제거
-  }
-  
-  
-  /// Memory & Disk Cache 모두 초기화
-  func removeAll() async {
-    try? await memoryStorage.removeAll()      // 1. Memory Cache 초기화
-    try? await diskStorage.removeAll()        // 2. Disk Cache 초기화
-  }
-  
-  /// 일정 시간(interval)마다, Memory & Disk Cache에서 Expired 지난 항목들 제거
-  ///
-  /// - Parameters:
-  ///   - interval: 시간 간격 (초 단위)
-  ///
-  /// - Note: `TwoTierCache`가 `deinit`될 때, 즉 `TwoTierCache` 인스턴스가 사라질 때, `expirationTimer`도 같이 취소
-  func startExpirationTimer(interval: TimeInterval) async {
-    expirationTimer?.cancel()
-    
-    expirationTimer = Task.detached { [weak self] in
-      while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: UInt64(interval * 1_000_000_000)) // interval초
-        guard let self = self else { return }
-        try? await self.memoryStorage.removeExpired()
-        try? await self.diskStorage.removeExpired()
-      }
-    }
+  /// 구조체는 불변이므로 새 인스턴스를 생성합니다.
+  func accessed() -> DataCacheEntry {
+    DataCacheEntry(
+      data: data,
+      expiration: expiration,
+      lastAccessed: Date(),
+      createdAt: createdAt
+    )
   }
 }
