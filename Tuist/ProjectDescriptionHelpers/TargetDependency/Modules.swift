@@ -27,7 +27,7 @@ public enum Feature: ModuleRepresentable {
 }
 
 public enum Client: ModuleRepresentable {
-  case Network
+  case API
   case Cache
   case Search
   case Setting

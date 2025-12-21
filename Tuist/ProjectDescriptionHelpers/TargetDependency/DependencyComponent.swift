@@ -22,7 +22,7 @@ extension TargetDependency {
 extension TargetDependency {
   public struct Client: TargetDependencyFactory {
     public static let Cache = Self.project(.client(.Cache))
-    public static let Network = Self.project(.client(.Network))
+    public static let API = Self.project(.client(.API))
     public static let Search = Self.project(.client(.Search))
     public static let Setting = Self.project(.client(.Setting))
     public static let FlowerSpot = Self.project(.client(.FlowerSpot))

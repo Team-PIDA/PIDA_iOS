@@ -11,7 +11,7 @@ import ProjectDescriptionHelpers
 let project = Project.buildStaticLibrary(
   for: Client.User,
   dependencies: [
-    .Client.Network,
+    .Client.API,
     .Client.Cache,
     .SPM.TCA
   ]

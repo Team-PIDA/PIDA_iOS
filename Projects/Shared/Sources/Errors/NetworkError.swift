@@ -12,6 +12,7 @@ public enum NetworkError: Error, LocalizedError, Sendable {
   
   case invalidStatusCode(Int)
   case timeout(TimeInterval)
+  case customError(message: String)
   case serverError(message: String, code: Int, className: String)
   
   public var errorDescription: String {
@@ -19,6 +20,7 @@ public enum NetworkError: Error, LocalizedError, Sendable {
     case let .serverError(message, code, className):
       return "[에러코드: \(code)] - \(className)_\(message)"
     case let .invalidStatusCode(code): return "[잘못 된 StatusCode] - \(code)"
+    case let .customError(message): return "[커스텀 에러] - \(message)"
     case let .timeout(time): return "[네트워크 요청 시간이 초과되었습니다.] - \(time)Seconds"
     }
   }

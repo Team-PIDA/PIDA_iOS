@@ -1,27 +1,26 @@
 //
-//  TokenRefresherImpl.swift
-//  Networker
+//  APIClient+Interceptor.swift
+//  NetworkClient
 //
-//  Created by Jiyeon on 3/29/25.
-//  Copyright © 2025 com.yongin.pida. All rights reserved.
+//  Created by 조용인 on 12/21/25.
+//  Copyright © 2025 com.pida.me. All rights reserved.
 //
 
 import Foundation
 import Shared
 
-public struct DefaultTokenRefresher: TokenRefresher {
-  
-  public static func refreshToken() async throws -> String? {
+extension APIClient {
+  static func refreshToken() async throws -> String? {
     if let refreshToken: String = KeyChain.read(forKey: .refreshToken) {
       let refreshEndpoint = Endpoint<TokenRefreshDTO>(
         headers: .plain,
         method: .post,
         path: "/auth/reissue",
-        parameters: .body(ReissueTokenBody(refreshToken: refreshToken)),
+        parameters: .body(["refreshToken": refreshToken]),
         isRefreshToken: true
       )
       do {
-        let response = try await Networker().execute(with: refreshEndpoint)
+        let response = try await Self.internalExecute(refreshEndpoint)
         KeyChain.save(response.refreshToken, forKey: .refreshToken)
         UserDefaultsKeys.accessToken = response.accessToken
         return response.accessToken
@@ -31,7 +30,6 @@ public struct DefaultTokenRefresher: TokenRefresher {
         UserDefaultsKeys.accessToken = nil
         throw TokenError.expiredToken
       }
-      
     }
     throw TokenError.invalidToken
   }

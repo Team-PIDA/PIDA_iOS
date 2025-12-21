@@ -9,6 +9,6 @@
 import Foundation
 
 public protocol DTO: Decodable & Sendable{
-  associatedtype Entity
+  associatedtype Entity = Decodable & Sendable
   func toEntity() throws -> Entity
 }

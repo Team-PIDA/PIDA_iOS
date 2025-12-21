@@ -9,7 +9,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.buildStaticLibrary(
-  for: Client.Network,
+  for: Client.API,
   dependencies: [
     .SPM.TCA,
     .Shared
