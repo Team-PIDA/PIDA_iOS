@@ -7,15 +7,20 @@
 //
 
 import Foundation
-import Networker
+import APIClient
 
-public struct LogoutDTO: DTO {
-  public typealias Entity = Void
+struct LogoutDTO: DTO {
+  typealias Entity = LogoutEntity
+  
   let message: String
   
-  public init(message: String) {
+  init(message: String) {
     self.message = message
   }
-  
-  public func toEntity() throws -> Void {}
+}
+
+extension LogoutDTO {
+  func toEntity() -> Entity {
+    return .init(message: message)
+  }
 }

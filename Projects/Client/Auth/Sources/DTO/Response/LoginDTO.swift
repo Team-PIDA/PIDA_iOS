@@ -8,20 +8,18 @@
 
 import Foundation
 import AuthDomainInterface
-import Networker
+import APIClient
 
-public struct LoginDTO: DTO {
-  public typealias Entity = SocialLoginEntity
+struct LoginDTO: DTO {
+  typealias Entity = SocialLoginEntity
   
-  public var isTemporaryToken: Bool
-  public var accessToken: String
-  public var refreshToken: String
-  
-  
+  var isTemporaryToken: Bool
+  var accessToken: String
+  var refreshToken: String
 }
 
 extension LoginDTO {
-  public func toEntity() throws -> SocialLoginEntity {
+  func toEntity() throws -> Entity {
     return .init(
       isTempToken: isTemporaryToken,
       accessToKen: accessToken,

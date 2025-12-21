@@ -7,21 +7,21 @@
 //
 
 import Foundation
-import AuthDomainInterface
-import Networker
+import APIClient
 
-public struct SignUpDTO: DTO {
-  public typealias Entity = SignUpEntity
+struct SignUpDTO: DTO {
+  typealias Entity = SignUpEntity
+  
   let message: String
   
-  public init(message: String) {
+  init(message: String) {
     self.message = message
   }
   
 }
 
 extension SignUpDTO {
-  public func toEntity() throws -> SignUpEntity {
+  func toEntity() throws -> SignUpEntity {
     return .init(message: message)
   }
 }

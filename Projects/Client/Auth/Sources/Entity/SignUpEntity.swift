@@ -9,7 +9,9 @@
 import Foundation
 
 public struct SignUpEntity: Sendable, Equatable {
+  
   public let message: String
+  
   public init(message: String) {
     self.message = message
   }
