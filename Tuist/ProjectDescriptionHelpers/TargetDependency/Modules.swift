@@ -30,7 +30,6 @@ public enum Client: ModuleRepresentable {
   case API
   case Cache
   case Search
-  case Setting
   case FlowerSpot
   case Auth
   case User

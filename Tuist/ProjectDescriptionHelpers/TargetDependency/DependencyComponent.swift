@@ -24,7 +24,6 @@ extension TargetDependency {
     public static let Cache = Self.project(.client(.Cache))
     public static let API = Self.project(.client(.API))
     public static let Search = Self.project(.client(.Search))
-    public static let Setting = Self.project(.client(.Setting))
     public static let FlowerSpot = Self.project(.client(.FlowerSpot))
     public static let Auth = Self.project(.client(.Auth))
     public static let User = Self.project(.client(.User))
