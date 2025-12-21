@@ -7,17 +7,17 @@
 //
 
 import Foundation
-import UserDomainInterface
-import Networker
+import APIClient
 
-public struct UserInfoDTO: DTO {
-  public typealias Entity = UserInfoEntity
+struct UserInfoDTO: DTO {
+  typealias Entity = UserInfoEntity
+  
   let userId: Int
   let email: String
   let name: String
   let nickname: String
   
-  public init(
+  init(
     userId: Int,
     email: String,
     name: String,
@@ -28,8 +28,13 @@ public struct UserInfoDTO: DTO {
     self.name = name
     self.nickname = nickname
   }
-  
-  public func toEntity() throws -> UserInfoEntity {
-    return .init(userId: userId, nickname: nickname)
+}
+
+extension UserInfoDTO {
+  func toEntity() throws -> Entity {
+    return .init(
+      userId: userId,
+      nickname: nickname
+    )
   }
 }

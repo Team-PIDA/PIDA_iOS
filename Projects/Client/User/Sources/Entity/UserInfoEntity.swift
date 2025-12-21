@@ -11,6 +11,7 @@ import Foundation
 public struct UserInfoEntity: Sendable, Equatable {
   public var userId: Int
   public var nickname: String
+  
   public init(userId: Int, nickname: String) {
     self.userId = userId
     self.nickname = nickname
