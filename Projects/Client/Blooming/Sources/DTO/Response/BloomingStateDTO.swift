@@ -7,39 +7,36 @@
 //
 
 import Foundation
-import BloomingDomainInterface
-import Networker
+import APIClient
 import Shared
-import DesignKit
 
-public struct BloomingStateDTO: DTO {
-  public typealias Entity = BloomStatusEntity
+struct BloomingStateDTO: DTO {
+  typealias Entity = BloomStatusEntity
   
-  public let totalCount: Int
-  public let details: [String: [String: StatusData]]
-  public let nickname: String?
-  public let updatedAt: String?
+  let totalCount: Int
+  let details: [String: [String: StatusData]]
+  let nickname: String?
+  let updatedAt: String?
   
-  public struct StatusData: Decodable & Sendable{
-    public let peopleCount: Int
-    public let percentage: Int
+  struct StatusData: Decodable & Sendable{
+    let peopleCount: Int
+    let percentage: Int
   }
 }
 
 extension BloomingStateDTO {
-  public func toEntity() -> BloomStatusEntity {
+  func toEntity() -> BloomStatusEntity {
     let dayStatuses = details.map { (date, statusDict) in
-      var bloomed: StatusTypeData = .init(peopleCount: 0, percentage: 0)
-      var withered: StatusTypeData = .init(peopleCount: 0, percentage: 0)
-      var little: StatusTypeData = .init(peopleCount: 0, percentage: 0)
+      var bloomed = DayStatus.StatusData()
+      var withered = DayStatus.StatusData()
+      var little = DayStatus.StatusData()
       statusDict.forEach { (key, value) in
-        let state = BloomStatus(rawValue: key)
-        switch state {
-        case .bloomed:
+        switch key {
+        case "BLOOMED":
           bloomed = .init(peopleCount: value.peopleCount, percentage: value.percentage)
-        case .little:
+        case "LITTLE":
           little = .init(peopleCount: value.peopleCount, percentage: value.percentage)
-        case .withered:
+        case "WITHERED":
           withered = .init(peopleCount: value.peopleCount, percentage: value.percentage)
         default: break
         }

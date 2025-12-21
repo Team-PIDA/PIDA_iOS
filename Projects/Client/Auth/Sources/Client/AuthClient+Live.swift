@@ -12,7 +12,6 @@ import Shared
 
 extension AuthClient: DependencyKey {
   public static var liveValue: Self {
-    
     @Dependency(\.apiClient) var apiClient
     
     return .init(

@@ -7,21 +7,20 @@
 //
 
 import Foundation
-import BloomingDomainInterface
-import Networker
+import APIClient
 
-public struct VerifyBloomingStateDTO: DTO {
-  public typealias Entity = VerifyBloomingStateEntity
+struct VerifyBloomingStateDTO: DTO {
+  typealias Entity = VerifyBloomingStateEntity
   
-  public let isBlooming: Bool
+  let isBlooming: Bool
   
-  public init(isBlooming: Bool) {
+  init(isBlooming: Bool) {
     self.isBlooming = isBlooming
   }
 }
 
 extension VerifyBloomingStateDTO {
-  public func toEntity() throws -> VerifyBloomingStateEntity {
+  func toEntity() throws -> VerifyBloomingStateEntity {
     return .init(isBlooming: isBlooming)
   }
 }

@@ -8,11 +8,11 @@
 
 import Foundation
 
-public struct UpdateBloomingBody: Encodable {
+struct UpdateBloomingBody: Encodable {
   let flowerSpotId: Int
   let status: String
   
-  public init(flowerSpotId: Int, status: String) {
+  init(flowerSpotId: Int, status: String) {
     self.flowerSpotId = flowerSpotId
     self.status = status
   }
