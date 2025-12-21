@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct SearchListCellEntity: Equatable, Sendable {
+public struct SearchListCellEntity: Equatable, Sendable, Codable {
   public let id: Int
   public let address: String?
   public let streetName: String?

@@ -12,14 +12,7 @@ import APIClient
 @DependencyClient
 public struct FlowerSpotClient: Sendable {
   public var fetchAllFlowerAddress: @Sendable () async throws -> FlowerSpotListEntity
-  public var fetchAllFlowerPin: @Sendable(
-    String?,
-    Double?,
-    Double?,
-    Double?,
-    Double?,
-    Double?
-  ) async throws -> FlowerSpotListEntity
+  public var fetchAllFlowerPin: @Sendable(GetFlowerSpotQuery) async throws -> FlowerSpotListEntity
   public var getFlowerSpotDetail: @Sendable (Int) async throws -> FlowerSpotEntity
   public var saveAllFlowerSpotToCache: @Sendable (FlowerSpotListEntity) async throws -> Void
 }

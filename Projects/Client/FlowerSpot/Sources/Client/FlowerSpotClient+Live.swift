@@ -20,20 +20,13 @@ extension FlowerSpotClient: DependencyKey {
       fetchAllFlowerAddress: {
         let endpoint = FlowerSpotEndpoint.getFlowerSpotWithArea(getFlowerSpotQuery: .init())
         let result = try await apiClient.execute(endpoint).toEntity()
-        //TODO: Cache에 저장
-        return result.itemList
+        try await cache.set(.allFlowerSpots, result)
+        return result
       },
-      fetchAllFlowerPin: { region, swLat, swLng, neLat, neLng in
-        let query = GetFlowerSpotQuery(
-          region: region,
-          swLat: swLat,
-          swLng: swLng,
-          neLat: neLat,
-          neLng: neLng
-        )
+      fetchAllFlowerPin: { query in
         let endpoint = FlowerSpotEndpoint.getFlowerSpotWithArea(getFlowerSpotQuery: query)
         let result = try await apiClient.execute(endpoint).toEntity()
-        return result.itemList
+        return result
       },
       getFlowerSpotDetail: { id in
         let endpoint = FlowerSpotEndpoint.getFlowerSpotDetail(id: id)
@@ -41,7 +34,7 @@ extension FlowerSpotClient: DependencyKey {
         return result
       },
       saveAllFlowerSpotToCache: { flowerSpotEntity in
-        try await cache.set(.allFlowerSpots, flwowerSpotEntity)
+        try await cache.set(.allFlowerSpots, flowerSpotEntity)
       }
     )
   }
