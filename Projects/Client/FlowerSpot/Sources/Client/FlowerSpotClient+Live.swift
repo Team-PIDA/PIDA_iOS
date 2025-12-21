@@ -8,11 +8,13 @@
 
 import ComposableArchitecture
 import APIClient
+import CacheClient
 import Shared
 
 extension FlowerSpotClient: DependencyKey {
   public static var liveValue: FlowerSpotClient {
     @Dependency(\.apiClient) var apiClient
+    @Dependency(\.cache) var cache
     
     return .init(
       fetchAllFlowerAddress: {
@@ -37,6 +39,9 @@ extension FlowerSpotClient: DependencyKey {
         let endpoint = FlowerSpotEndpoint.getFlowerSpotDetail(id: id)
         let result = try await apiClient.execute(endpoint).toEntity()
         return result
+      },
+      saveAllFlowerSpotToCache: { flowerSpotEntity in
+        try await cache.set(.allFlowerSpots, flwowerSpotEntity)
       }
     )
   }

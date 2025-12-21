@@ -21,6 +21,7 @@ public struct FlowerSpotClient: Sendable {
     Double?
   ) async throws -> FlowerSpotListEntity
   public var getFlowerSpotDetail: @Sendable (Int) async throws -> FlowerSpotEntity
+  public var saveAllFlowerSpotToCache: @Sendable (FlowerSpotListEntity) async throws -> Void
 }
 
 public extension DependencyValues {

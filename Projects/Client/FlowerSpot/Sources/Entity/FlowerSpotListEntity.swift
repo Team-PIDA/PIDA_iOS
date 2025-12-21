@@ -9,7 +9,7 @@
 import Foundation
 import CoreLocation
 
-public struct FlowerSpotListEntity: Equatable, Sendable {
+public struct FlowerSpotListEntity: Equatable, Sendable, Codable {
   public var itemList: [FlowerSpotEntity]
   public init(itemList: [FlowerSpotEntity]) {
     self.itemList = itemList
@@ -17,7 +17,7 @@ public struct FlowerSpotListEntity: Equatable, Sendable {
 }
 
 
-public struct FlowerSpotEntity: Equatable, Sendable {
+public struct FlowerSpotEntity: Equatable, Sendable, Codable {
   public var id: Int
   public var address: String
   public var recentlyVisitedCount: Int

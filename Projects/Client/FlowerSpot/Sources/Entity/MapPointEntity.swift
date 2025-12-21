@@ -9,7 +9,7 @@
 import Foundation
 import Shared
 
-public struct MapPointEntity: Equatable, Sendable {
+public struct MapPointEntity: Equatable, Sendable, Codable {
   public var latitude: Double
   public var longitude: Double
   
