@@ -7,15 +7,14 @@
 //
 
 import Foundation
-import Networker
-import FlowerSpotDomainInterface
+import APIClient
 
-public struct PointGeomDTO: DTO {
-  public typealias Entity = MapPoint?
-  public var type: String
-  public var coordinates: [Double]
+struct PointGeomDTO: DTO {
+  typealias Entity = MapPointEntity?
+  var type: String
+  var coordinates: [Double]
   
-  public init(
+  init(
     type: String,
     coordinates: [Double]
   ) {
@@ -25,8 +24,8 @@ public struct PointGeomDTO: DTO {
 }
 
 extension PointGeomDTO {
-  public func toEntity() throws -> MapPoint? {
+  func toEntity() throws -> MapPointEntity? {
     if coordinates.count < 2 { return nil }
-    return MapPoint(latitude: coordinates[1], longitude: coordinates[0])
+    return MapPointEntity(latitude: coordinates[1], longitude: coordinates[0])
   }
 }

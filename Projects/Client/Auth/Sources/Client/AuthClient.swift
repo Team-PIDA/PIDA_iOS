@@ -15,7 +15,7 @@ public struct AuthClient: Sendable {
   public var signUp: @Sendable (String, String) async throws -> SignUpEntity
   public var logout: @Sendable () async throws -> LogoutEntity
   public var deleteTokenInfo: @Sendable () async throws -> Void
-  public var saveTokenInfo: @Sendable (SocialLoginEntity) async throws -> Void
+  public var saveTokenInfo: @Sendable (Bool, String, String) async throws -> Void
 }
 
 public extension DependencyValues {

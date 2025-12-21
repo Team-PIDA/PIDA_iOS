@@ -8,39 +8,38 @@
 
 import Foundation
 import CoreLocation
-import DesignKit
 
 public struct FlowerSpotListEntity: Equatable, Sendable {
-  public var itemList: [FlowerSpot]
-  public init(itemList: [FlowerSpot]) {
+  public var itemList: [FlowerSpotEntity]
+  public init(itemList: [FlowerSpotEntity]) {
     self.itemList = itemList
   }
 }
 
 
-public struct FlowerSpot: Equatable, Sendable {
+public struct FlowerSpotEntity: Equatable, Sendable {
   public var id: Int
   public var address: String
   public var recentlyVisitedCount: Int
   public var recentlyVisitedCountString: String
-  public var bloomingStatus: BloomStatus
+  public var bloomingStatus: String
   public var streetName: String
   public var district: String
   public var description: String
-  public var path: [MapPoint]
-  public var pinPoint: MapPoint
+  public var path: [MapPointEntity]
+  public var pinPoint: MapPointEntity
   public var region: String
   
   public init(
     id: Int,
     address: String? = nil,
     recentlyVisitedCount: Int,
-    bloomingStatus: BloomStatus,
+    bloomingStatus: String,
     streetName: String,
     district: String? = nil,
     description: String? = nil,
-    path: [MapPoint],
-    pinPoint: MapPoint,
+    path: [MapPointEntity],
+    pinPoint: MapPointEntity,
     region: String
   ) {
     self.id = id
@@ -54,27 +53,5 @@ public struct FlowerSpot: Equatable, Sendable {
     self.path = path
     self.pinPoint = pinPoint
     self.region = region
-  }
-}
-
-public struct MapPoint: Equatable, Sendable {
-  public var latitude: Double
-  public var longitude: Double
-  
-  public init(latitude: Double, longitude: Double) {
-    self.latitude = latitude
-    self.longitude = longitude
-  }
-  
-  public func distance(from point: MapPoint) -> Double {
-    let from = CLLocationCoordinate2D(
-      latitude: latitude,
-      longitude: longitude
-    )
-    let to = CLLocationCoordinate2D(
-      latitude: point.latitude,
-      longitude: point.longitude
-    )
-    return (Double.distanceInKilometers(from: from, to: to) * 10).rounded() / 10
   }
 }

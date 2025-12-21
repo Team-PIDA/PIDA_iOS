@@ -1,5 +1,5 @@
 //
-//  ListDTO.swift
+//  FlowerSpotItemDTO.swift
 //  FlowerSpotDataInterface
 //
 //  Created by Jiyeon on 3/28/25.
@@ -7,29 +7,27 @@
 //
 
 import Foundation
-import Networker
-import FlowerSpotDomainInterface
+import APIClient
 import Shared
-import DesignKit
 
-public struct FlowerSpotItem: DTO {
-  public typealias Entity = FlowerSpot
-  public var id: Int
-  public var address: String?
-  public var recentlyVisitedCount: Int?
-  public var bloomingStatus: String
-  public var streetName: String?
-  public var district: String?
-  public var description: String?
-  public var geom: LineStringGeomDTO?
-  public var pinPoint: PointGeomDTO?
-  public var region: String?
-  public var deletedAt: String?
+struct FlowerSpotItemDTO: DTO {
+  typealias Entity = FlowerSpotEntity
+  var id: Int
+  var address: String?
+  var recentlyVisitedCount: Int?
+  var bloomingStatus: String
+  var streetName: String?
+  var district: String?
+  var description: String?
+  var geom: LineStringGeomDTO?
+  var pinPoint: PointGeomDTO?
+  var region: String?
+  var deletedAt: String?
   
 }
 
-extension FlowerSpotItem {
-  public func toEntity() throws -> FlowerSpot {
+extension FlowerSpotItemDTO {
+  func toEntity() throws -> FlowerSpotEntity {
     guard let pinPoint = self.pinPoint,
           let pinPoint = try? pinPoint.toEntity() else {
       throw FoundationError.failedToDecode(PointGeomDTO.self)
@@ -37,7 +35,7 @@ extension FlowerSpotItem {
     let path = (try? self.geom?.toEntity()) ?? []
     let address = self.address ?? ""
     let recentlyVisitedCount = self.recentlyVisitedCount ?? 0
-    let bloomingStatus = BloomStatus(rawValue: self.bloomingStatus) ?? .notBloomed
+    let bloomingStatus = self.bloomingStatus
     let streetName = self.streetName ?? ""
     let description = self.description ?? "나무 정보 없음"
     let district = self.district ?? ""

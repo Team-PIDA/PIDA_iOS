@@ -7,18 +7,17 @@
 //
 
 import Foundation
-import Networker
-import FlowerSpotDomainInterface
+import APIClient
 
-public struct GetFlowerSpotListDTO: DTO {
-  public typealias Entity = FlowerSpotListEntity
+struct GetFlowerSpotListDTO: DTO {
+  typealias Entity = FlowerSpotListEntity
   
-  public var list: [FlowerSpotItem]?
+  var list: [FlowerSpotItemDTO]?
   
 }
 
 extension GetFlowerSpotListDTO {
-  public func toEntity() throws -> FlowerSpotListEntity {
+  func toEntity() throws -> FlowerSpotListEntity {
     guard let list = list else { return FlowerSpotListEntity(itemList: []) }
     let items = list.compactMap {
       try? $0.toEntity()

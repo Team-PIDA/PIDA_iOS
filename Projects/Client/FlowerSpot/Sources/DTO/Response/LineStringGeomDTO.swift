@@ -7,15 +7,14 @@
 //
 
 import Foundation
-import Networker
-import FlowerSpotDomainInterface
+import APIClient
 
-public struct LineStringGeomDTO: DTO {
-  public typealias Entity = [MapPoint]?
-  public var type: String
-  public var coordinates: [[Double]]
+struct LineStringGeomDTO: DTO {
+  typealias Entity = [MapPointEntity]?
+  var type: String
+  var coordinates: [[Double]]
   
-  public init(
+  init(
     type: String,
     coordinates: [[Double]]
   ) {
@@ -25,14 +24,12 @@ public struct LineStringGeomDTO: DTO {
 }
 
 extension LineStringGeomDTO {
-  
-  public func toEntity() throws -> [MapPoint]? {
-    let points = coordinates.compactMap { coord -> MapPoint? in
+  func toEntity() throws -> [MapPointEntity]? {
+    let points = coordinates.compactMap { coord -> MapPointEntity? in
       guard coord.count == 2 else { return nil }
       
-      return MapPoint(latitude: coord[1], longitude: coord[0])
+      return MapPointEntity(latitude: coord[1], longitude: coord[0])
     }
     return points.isEmpty ? nil : points
   }
-  
 }

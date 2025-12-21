@@ -1,5 +1,5 @@
 //
-//  GetFlowerSpotParameter.swift
+//  GetFlowerSpotQuery.swift
 //  FlowerSpotDataInterface
 //
 //  Created by 조용인 on 3/26/25.
@@ -8,19 +8,19 @@
 
 import Foundation
 
-public struct GetFlowerSpotParameter: Encodable {
+struct GetFlowerSpotQuery: Encodable {
   let region: String?
   let swLat: Double?
   let swLng: Double?
   let neLat: Double?
   let neLng: Double?
   
-  public init(
-    region: String?,
-    swLat: Double?,
-    swLng: Double?,
-    neLat: Double?,
-    neLng: Double?
+  init(
+    region: String? = nil,
+    swLat: Double? = nil,
+    swLng: Double? = nil,
+    neLat: Double? = nil,
+    neLng: Double = nil?
   ) {
     self.region = region
     self.swLat = swLat
