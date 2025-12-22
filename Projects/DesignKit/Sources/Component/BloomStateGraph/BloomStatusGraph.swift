@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-
+import Shared
 
 /// - Parameters: date
 ///   - date: 데이터의 날짜

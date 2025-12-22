@@ -16,17 +16,27 @@ let project = Project(
     .target(
       name: "DesignKit",
       destinations: .iOS,
-      product: .framework,
+      product: .staticLibrary,
       bundleId: organization + ".DesignKit",
       deploymentTargets: .iOS("18.0"),
-      infoPlist: .extendingDefault(with: [
-        "UIAppFonts": [
-          "Item 0": "Pretendard-SemiBold.otf"
-        ]
-      ]),
+      infoPlist: .default,
       sources: ["Sources/**"],
       resources: ["Resources/**"],
-      dependencies: [.SPM.DotLottie]
-    )
+      dependencies: [
+        .SPM.DotLottie,
+        .Shared
+      ],
+      settings: .settings(
+        base: [
+          "ENABLE_PREVIEWS": "YES",  // SwiftUI Preview 지원
+          "ENABLE_BITCODE": "NO"     // Static library는 bitcode 비활성화
+        ]
+      )
+    ),
+  ],
+  resourceSynthesizers: [
+    .assets(),
+    .strings(),
+    .fonts()
   ]
 )
