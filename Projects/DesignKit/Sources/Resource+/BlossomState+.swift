@@ -6,38 +6,33 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
-import Foundation
-import NMapsMap
+import UIKit
 
 public extension BloomStatus {
   private typealias Images = DesignKitAsset.Icons
   
-  private static let activeImages: [Self: NMFOverlayImage] = [
-    .withered: NMFOverlayImage(image: Images.goneActive.image),
-    .bloomed: NMFOverlayImage(image: Images.manyActive.image),
-    .little: NMFOverlayImage(image: Images.fewActive.image),
-    .notBloomed: NMFOverlayImage(image: Images.noneActive.image)
+  private static let activeImages: [Self: UIImage] = [
+    .withered: Images.goneActive.image,
+    .bloomed: Images.manyActive.image,
+    .little: Images.fewActive.image,
+    .notBloomed: Images.noneActive.image
   ]
-  private static let inactiveImages: [Self: NMFOverlayImage] = [
-    .withered: NMFOverlayImage(image: Images.goneInactive.image),
-    .bloomed: NMFOverlayImage(image: Images.manyInactive.image),
-    .little: NMFOverlayImage(image: Images.fewInactive.image),
-    .notBloomed: NMFOverlayImage(image: Images.noneInactive.image)
+  private static let inactiveImages: [Self: UIImage] = [
+    .withered: Images.goneInactive.image,
+    .bloomed: Images.manyInactive.image,
+    .little: Images.fewInactive.image,
+    .notBloomed: Images.noneInactive.image
   ]
-  private static let pathPointImages: [Self: NMFOverlayImage] = [
-    .withered: NMFOverlayImage(image: Images.gonePathpoint.image),
-    .bloomed: NMFOverlayImage(image: Images.manyPathpoint.image),
-    .little: NMFOverlayImage(image: Images.fewPathpoint.image),
-    .notBloomed: NMFOverlayImage(image: Images.nonePathpoint.image)
+  private static let pathPointImages: [Self: UIImage] = [
+    .withered: Images.gonePathpoint.image,
+    .bloomed: Images.manyPathpoint.image,
+    .little: Images.fewPathpoint.image,
+    .notBloomed: Images.nonePathpoint.image
   ]
   
-  var activeImage: NMFOverlayImage {
-    Self.activeImages[self]!
-  }
+  var activeImage: UIImage { Self.activeImages[self]! }
   
-  var inactiveImage: NMFOverlayImage {
-    Self.inactiveImages[self]!
-  }
+  var inactiveImage: UIImage { Self.inactiveImages[self]! }
   
   var color: UIColor {
     switch self {
@@ -52,8 +47,6 @@ public extension BloomStatus {
     }
   }
   
-  var circleImage: NMFOverlayImage {
-    Self.pathPointImages[self]!
-  }
+  var circleImage: UIImage { Self.pathPointImages[self]! }
 }
 

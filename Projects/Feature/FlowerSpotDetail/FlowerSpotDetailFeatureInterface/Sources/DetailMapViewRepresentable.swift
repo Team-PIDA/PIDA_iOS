@@ -9,7 +9,6 @@
 import UIKit
 import SwiftUI
 import DesignKit
-import FlowerSpotDomainInterface
 import NMapsMap
 
 @MainActor
@@ -142,12 +141,13 @@ fileprivate extension DetailMapViewRepresentable {
   private func drawMarker(
     _ view: NMFNaverMapView,
     to point: NMGLatLng,
-    icon: NMFOverlayImage,
+    icon: UIImage,
     anchor: CGPoint = CGPoint(x: 0.5, y: 1)
   ) -> NMFMarker{
     let marker = NMFMarker(position: point)
+    let nmImage = NMFOverlayImage(image: icon)
     marker.isHideCollidedSymbols = true
-    marker.iconImage = icon
+    marker.iconImage = nmImage
     marker.mapView = view.mapView
     marker.anchor = anchor
     
@@ -219,7 +219,7 @@ extension DetailMapViewRepresentable {
           let path = path,
           let startMarker = startMarker,
           let endMarker = endMarker {
-        activeMarker.iconImage = state.activeImage
+        activeMarker.iconImage = NMFOverlayImage(image: state.activeImage)
         path.color = state.color
         path.outlineColor = state.color
         startMarker.iconImage = state.circleImage

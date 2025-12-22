@@ -316,12 +316,12 @@ extension MapViewRepresentable {
   private func drawMarker(
     _ view: NMFNaverMapView,
     to point: NMGLatLng,
-    icon: NMFOverlayImage,
+    icon: UIImage,
     anchor: CGPoint = CGPoint(x: 0.5, y: 1)
   ) -> NMFMarker{
     let marker = NMFMarker(position: point)
     marker.isHideCollidedSymbols = true
-    marker.iconImage = icon
+    marker.iconImage = NMFOverlayImage(image: icon)
     marker.anchor = anchor
     marker.mapView = view.mapView
     

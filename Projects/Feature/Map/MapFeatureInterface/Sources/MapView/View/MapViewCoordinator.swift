@@ -120,7 +120,8 @@ extension MapViewRepresentable {
     func deleteMarker() {
       if let data = selectedPin,
          let activeMarker = activeMarker {
-        activeMarker.iconImage = data.bloomingStatus.inactiveImage
+        let image = data.bloomingStatus.inactiveImage
+        activeMarker.iconImage = NMFOverlayImage(image: image)
         self.activeMarker = nil
         self.selectedPin = nil
       }
@@ -145,9 +146,9 @@ extension MapViewRepresentable {
     func updateMarker(state: BloomStatus) {
       if let activeMarker = activeMarker {
         selectedPin?.bloomingStatus = state
-        activeMarker.iconImage = state.activeImage
+        activeMarker.iconImage = NMFOverlayImage(image: state.activeImage)
       } else if let focusMarker = focusMarker {
-        focusMarker.iconImage = state.activeImage
+        focusMarker.iconImage = NMFOverlayImage(image: state.activeImage)
       }
       if let path = paths,
           let startMarker = startMarker,

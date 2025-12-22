@@ -13,6 +13,7 @@ let project = Project.buildFeature(
   for: Feature.Map,
   interfaceDependencies: [
     .Client.FlowerSpot,
-    .Client.Blooming
+    .Client.Blooming,
+    .SPM.NMap
   ]
 )
