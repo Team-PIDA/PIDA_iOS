@@ -7,6 +7,8 @@
 //
 
 import ComposableArchitecture
+import FlowerSpotClient
+import BloomingClient
 
 @Reducer
 public struct FlowerSpotDetailReducer {
@@ -18,10 +20,10 @@ public struct FlowerSpotDetailReducer {
   
   @ObservableState
   public struct State: Equatable {
-    public var flowerSpotData: FlowerSpot = .init(
+    public var flowerSpotData: FlowerSpotEntity = .init(
       id: 0,
       recentlyVisitedCount: 0,
-      bloomingStatus: .notBloomed,
+      bloomingStatus: "NOT_BLOOMED",
       streetName: "",
       path: [],
       pinPoint: .init(latitude: 0, longitude: 0),
@@ -45,7 +47,7 @@ public struct FlowerSpotDetailReducer {
     case chechAuth
     case onAppear
     
-    case setFlowerSpotData(FlowerSpot)
+    case setFlowerSpotData(FlowerSpotEntity)
     case setBloomingStatus(BloomStatusEntity)
     case setDistance(Double)
     case setVerifyBloomingStatus(VerifyBloomingStateEntity)

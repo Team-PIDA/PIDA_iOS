@@ -17,10 +17,10 @@ public struct DayStatus: Identifiable, Equatable {
   public let maxValue: Int
   
   public struct StatusData: Decodable & Sendable{
-    let peopleCount: Int
-    let percentage: Int
+    public let peopleCount: Int
+    public let percentage: Int
     
-    init(peopleCount: Int = 0, percentage: Int = 0) {
+    public init(peopleCount: Int = 0, percentage: Int = 0) {
       self.peopleCount = 0
       self.percentage = 0
     }

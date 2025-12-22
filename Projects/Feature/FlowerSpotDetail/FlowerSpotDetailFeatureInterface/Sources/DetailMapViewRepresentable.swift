@@ -10,12 +10,13 @@ import UIKit
 import SwiftUI
 import DesignKit
 import NMapsMap
+import FlowerSpotClient
 
 @MainActor
 struct DetailMapViewRepresentable: UIViewRepresentable {
   
-  var location: MapPoint
-  var pathMarkers: [MapPoint]
+  var location: MapPointEntity
+  var pathMarkers: [MapPointEntity]
   var state: BloomStatus
   
   @Binding var isNeedDrawPath: Bool
@@ -81,7 +82,7 @@ struct DetailMapViewRepresentable: UIViewRepresentable {
 
 fileprivate extension DetailMapViewRepresentable {
   /// 카메라 이동
-  private func moveCamera(_ view: NMFNaverMapView, to point: MapPoint?) {
+  private func moveCamera(_ view: NMFNaverMapView, to point: MapPointEntity?) {
     if let point = point {
       let coord = NMGLatLng(lat: point.latitude, lng: point.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: coord)
@@ -91,7 +92,11 @@ fileprivate extension DetailMapViewRepresentable {
   }
   
   /// 경로 그리기
-  private func drawPathLine(_ view: NMFNaverMapView, for newPath: [MapPoint], context: Context) {
+  private func drawPathLine(
+    _ view: NMFNaverMapView,
+    for newPath: [MapPointEntity],
+    context: Context
+  ) {
     if !context.coordinator.pathMarkers.isEmpty {
       return
     }
@@ -129,7 +134,11 @@ fileprivate extension DetailMapViewRepresentable {
   }
   
   /// 마커 그리기
-  private func presentMarker(_ view: NMFNaverMapView, location: MapPoint, context: Context) {
+  private func presentMarker(
+    _ view: NMFNaverMapView,
+    location: MapPointEntity,
+    context: Context
+  ) {
     let point = NMGLatLng(lat: location.latitude, lng: location.longitude)
     let marker = drawMarker(view, to: point, icon: state.activeImage)
     if context.coordinator.activeMarker == nil {
@@ -199,8 +208,8 @@ extension DetailMapViewRepresentable {
   
   class Coordinator: NSObject {
     var parent: DetailMapViewRepresentable
-    var location: MapPoint? = nil
-    var pathMarkers: [MapPoint] = []
+    var location: MapPointEntity? = nil
+    var pathMarkers: [MapPointEntity] = []
     
     var activeMarker: NMFMarker? = nil
     var path: NMFPath? = nil
@@ -222,8 +231,8 @@ extension DetailMapViewRepresentable {
         activeMarker.iconImage = NMFOverlayImage(image: state.activeImage)
         path.color = state.color
         path.outlineColor = state.color
-        startMarker.iconImage = state.circleImage
-        endMarker.iconImage = state.circleImage
+        startMarker.iconImage = NMFOverlayImage(image: state.circleImage)
+        endMarker.iconImage = NMFOverlayImage(image: state.circleImage)
         bloomStatus = state
       }
       

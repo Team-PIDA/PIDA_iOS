@@ -7,9 +7,9 @@
 //
 
 import SwiftUI
-import ComposableArchitecture
-import DesignKit
 import Shared
+import DesignKit
+import ComposableArchitecture
 
 public struct FlowerSpotDetailView: View {
   @Bindable var store: StoreOf<FlowerSpotDetailReducer>
@@ -94,12 +94,14 @@ public struct FlowerSpotDetailView: View {
             .fontStyle(FontSet.Label.label2)
             .foregroundColor(ColorSet.Text.Secondary)
           HStack(spacing: .Number4) {
-            GradiantIcon(image: .flower)
-              .size(.large)
-              .foregroundStyle(store.flowerSpotData.bloomingStatus.gradiant)
-            Text(store.flowerSpotData.bloomingStatus.text)
-              .fontStyle(FontSet.Label.label2)
-              .foregroundColor(store.flowerSpotData.bloomingStatus.textColor)
+            if let blooming = BloomStatus(rawValue: store.flowerSpotData.bloomingStatus) {
+              GradiantIcon(image: .flower)
+                .size(.large)
+                .foregroundStyle(blooming.gradiant)
+              Text(blooming.text)
+                .fontStyle(FontSet.Label.label2)
+                .foregroundColor(blooming.textColor)
+            }
           }
         }
       }
@@ -157,15 +159,17 @@ public struct FlowerSpotDetailView: View {
           .fontStyle(FontSet.Title.title4)
           .foregroundColor(ColorSet.Text.Accent)
       }
-      DetailMapViewRepresentable(
-        location: store.flowerSpotData.pinPoint,
-        pathMarkers: store.flowerSpotData.path,
-        state: store.flowerSpotData.bloomingStatus,
-        isNeedDrawPath: $store.isNeedDrawPath,
-        isNeedDeletePath: $store.isNeedDeletePath
-      )
-      .frame(height: 160)
-      .cornerRadius(10)
+      if let blooming = BloomStatus(rawValue: store.flowerSpotData.bloomingStatus) {
+        DetailMapViewRepresentable(
+          location: store.flowerSpotData.pinPoint,
+          pathMarkers: store.flowerSpotData.path,
+          state: blooming,
+          isNeedDrawPath: $store.isNeedDrawPath,
+          isNeedDeletePath: $store.isNeedDeletePath
+        )
+        .frame(height: 160)
+        .cornerRadius(10)
+      }
       if let nickname = store.bloomingStatus.nickname,
          let updateAt = store.bloomingStatus.updatedAt {
         HStack(spacing: .Number8) {

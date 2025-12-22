@@ -9,8 +9,6 @@
 import Shared
 import ComposableArchitecture
 import FlowerSpotDetailFeatureInterface
-import FlowerSpotClient
-import BloomingClient
 
 extension FlowerSpotDetailReducer {
   public init() {
