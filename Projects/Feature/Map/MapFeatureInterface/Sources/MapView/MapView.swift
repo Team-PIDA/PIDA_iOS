@@ -8,9 +8,6 @@
 
 import SwiftUI
 import Combine
-
-import FlowerSpotDomainInterface
-import BloomingDomainInterface
 import DesignKit
 import Shared
 

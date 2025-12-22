@@ -8,7 +8,6 @@
 
 import Foundation
 import BloomingFeatureInterface
-import BloomingDomainInterface
 import ComposableArchitecture
 import Shared
 

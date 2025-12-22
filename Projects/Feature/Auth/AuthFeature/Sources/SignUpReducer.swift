@@ -8,7 +8,6 @@
 
 import ComposableArchitecture
 import AuthFeatureInterface
-import UserDomainInterface
 import Shared
 
 extension SignUpReducer {

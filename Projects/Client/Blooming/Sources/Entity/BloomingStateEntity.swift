@@ -1,6 +1,6 @@
 //
 //  BloomingStateEntity.swift
-//  BloomingDomainInterface
+//  BloomingClient
 //
 //  Created by 조용인 on 4/3/25.
 //  Copyright © 2025 com.yongin.pida. All rights reserved.

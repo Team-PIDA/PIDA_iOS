@@ -7,9 +7,6 @@
 //
 
 import Foundation
-import FlowerSpotDomainInterface
-import BloomingDomainInterface
-import SearchDomainInterface
 import ComposableArchitecture
 import DesignKit
 

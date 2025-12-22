@@ -10,7 +10,6 @@ import SwiftUI
 import ComposableArchitecture
 import DesignKit
 import Shared
-import FlowerSpotDomainInterface
 
 public struct FlowerSpotDetailView: View {
   @Bindable var store: StoreOf<FlowerSpotDetailReducer>

@@ -1,6 +1,6 @@
 //
 //  GetFlowerSpotQuery.swift
-//  FlowerSpotDataInterface
+//  FlowerSpotClient
 //
 //  Created by 조용인 on 3/26/25.
 //  Copyright © 2025 com.yongin.pida. All rights reserved.

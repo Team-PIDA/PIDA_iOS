@@ -7,7 +7,6 @@
 //
 
 import AuthFeatureInterface
-import UserDomainInterface
 import ComposableArchitecture
 import Shared
 

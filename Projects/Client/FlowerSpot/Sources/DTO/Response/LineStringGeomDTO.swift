@@ -1,6 +1,6 @@
 //
 //  LineStringGeomDTO.swift
-//  FlowerSpotDataInterface
+//  FlowerSpotClient
 //
 //  Created by Jiyeon on 3/28/25.
 //  Copyright © 2025 com.yongin.pida. All rights reserved.

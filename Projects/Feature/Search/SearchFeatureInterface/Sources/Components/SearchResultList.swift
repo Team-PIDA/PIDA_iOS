@@ -8,8 +8,6 @@
 
 import SwiftUI
 import DesignKit
-import FlowerSpotDomainInterface
-import SearchDomainInterface
 
 /// 검색 결과 리스트 셀
 ///

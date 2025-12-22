@@ -7,8 +7,6 @@
 //
 
 import ComposableArchitecture
-import FlowerSpotDomainInterface
-import BloomingDomainInterface
 
 @Reducer
 public struct FlowerSpotDetailReducer {

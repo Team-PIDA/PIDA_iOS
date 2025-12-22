@@ -7,7 +7,6 @@
 //
 
 import MapFeatureInterface
-import FlowerSpotDomainInterface
 import ComposableArchitecture
 import Shared
 import DesignKit

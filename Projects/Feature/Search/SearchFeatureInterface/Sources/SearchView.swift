@@ -8,9 +8,7 @@
 
 import SwiftUI
 import DesignKit
-
 import ComposableArchitecture
-import FlowerSpotDomainInterface
 
 public struct SearchView: View {
   @Bindable var store: StoreOf<SearchReducer>

@@ -7,8 +7,6 @@
 //
 
 import ComposableArchitecture
-import FlowerSpotDomainInterface
-import SearchDomainInterface
 
 @Reducer
 public struct SearchReducer {

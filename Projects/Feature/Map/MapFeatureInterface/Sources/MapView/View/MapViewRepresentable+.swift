@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import FlowerSpotDomainInterface
 
 extension MapViewRepresentable {
   

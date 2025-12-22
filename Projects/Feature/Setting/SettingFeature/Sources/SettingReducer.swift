@@ -7,8 +7,6 @@
 //
 
 import SettingFeatureInterface
-import AuthDomainInterface
-import UserDomainInterface
 
 import ComposableArchitecture
 import DesignKit
