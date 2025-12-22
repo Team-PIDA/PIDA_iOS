@@ -7,8 +7,8 @@
 //
 
 import SwiftUI
-import ComposableArchitecture
 import DesignKit
+import ComposableArchitecture
 
 public struct AuthView: View {
   let store: StoreOf<AuthReducer>

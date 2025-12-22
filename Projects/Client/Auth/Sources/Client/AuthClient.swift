@@ -11,11 +11,11 @@ import APIClient
 
 @DependencyClient
 public struct AuthClient: Sendable {
-  public var appleLogin: @Sendable (String) async throws -> SocialLoginEntity
-  public var signUp: @Sendable (String, String) async throws -> SignUpEntity
+  public var appleLogin: @Sendable (_ token: String) async throws -> SocialLoginEntity
+  public var signUp: @Sendable (_ email: String, _ nickname: String) async throws -> SignUpEntity
   public var logout: @Sendable () async throws -> LogoutEntity
   public var deleteTokenInfo: @Sendable () async throws -> Void
-  public var saveTokenInfo: @Sendable (Bool, String, String) async throws -> Void
+  public var saveTokenInfo: @Sendable (_ entity: SocialLoginEntity) async throws -> Void
 }
 
 public extension DependencyValues {

@@ -10,7 +10,7 @@ import ComposableArchitecture
 
 @DependencyClient
 public struct UserClient: Sendable {
-  public var changeNickname: @Sendable (String) async throws -> UserInfoEntity
+  public var changeNickname: @Sendable (_ nickname: String) async throws -> UserInfoEntity
   public var fetchUserInfo: @Sendable () async throws -> UserInfoEntity
   public var withdrawUser: @Sendable () async throws -> WithDrawEntity
 }

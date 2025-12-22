@@ -6,9 +6,10 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
+import Shared
 import ComposableArchitecture
 import SettingFeatureInterface
-import Shared
+import UserClient
 
 extension ProfileUpdateReducer {
   public init() {

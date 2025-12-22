@@ -6,8 +6,8 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
-import ComposableArchitecture
 import Shared
+import ComposableArchitecture
 
 @Reducer
 public struct SignUpReducer {

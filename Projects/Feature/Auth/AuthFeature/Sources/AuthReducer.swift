@@ -6,15 +6,16 @@
 //  Created by JiYeon
 //
 
-import AuthFeatureInterface
-import ComposableArchitecture
 import Shared
+import ComposableArchitecture
+import AuthFeatureInterface
+import AuthClient
+import UserClient
 
 extension AuthReducer {
   public init() {
-    @Dependency(\.fetchUserInfoUseCase) var userInfoUseCase
-    @Dependency(\.appleLoginUseCase) var appleLoginUseCase
-    @Dependency(\.tokenSaveUseCase) var tokenSaveUseCase
+    @Dependency(\.authClient) var authClient
+    @Dependency(\.userClient) var userClient
     @Dependency(\.mainQueue) var mainQueue
     
     let authReducer = Reduce<State, Action> { state, action in
@@ -40,9 +41,9 @@ extension AuthReducer {
         }
         return .run { send in
           do {
-            let result = try await appleLoginUseCase.execute(token: info.idToken)
+            let result = try await authClient.appleLogin(token: info.idToken)
             // 토큰 저장
-            await tokenSaveUseCase.execute(tokenInfo: result)
+            try await authClient.saveTokenInfo(entity: result)
             if result.isTempToken { // 최초 회원가입
               await send(.presentToSignUp)
             } else {
@@ -58,7 +59,7 @@ extension AuthReducer {
         let spotId = state.spotId
         return .run { send in
           do {
-            let result = try await userInfoUseCase.execute()
+            let result = try await userClient.fetchUserInfo()
             UserDefaultsKeys.username = result.nickname
             if let spotId = spotId {
               await send(.dismissWithVerifyBloomState(id: spotId))

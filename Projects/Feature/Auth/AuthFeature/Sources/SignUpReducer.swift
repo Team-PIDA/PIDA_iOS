@@ -6,14 +6,16 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
+import Shared
 import ComposableArchitecture
 import AuthFeatureInterface
-import Shared
+import AuthClient
+import UserClient
 
 extension SignUpReducer {
   public init() {
-    @Dependency(\.fetchUserInfoUseCase) var userInfoUseCase
-    @Dependency(\.signUpUseCase) var signUpUseCase
+    @Dependency(\.authClient) var authClient
+    @Dependency(\.userClient) var userClient
     @Dependency(\.mainQueue) var mainQueue
     let reducer = Reduce<State, Action> { state, action in
       switch action {
@@ -71,8 +73,9 @@ extension SignUpReducer {
           await send(.isLoading(true))
           do {
             if let email: String = KeyChain.read(forKey: .email) {
-              try await signUpUseCase.execute(email: email, nickname: nickname)
+              let result = try await authClient.signUp(email: email, nickname: nickname)
               UserDefaultsKeys.isLoggedIn = true
+              await send(.showToastView(message: result.message))
               await send(.fetchUserInfo)
             }
           } catch let error as NetworkError {
@@ -94,7 +97,7 @@ extension SignUpReducer {
       case .fetchUserInfo:
         return .run { send in
           do {
-            let result = try await userInfoUseCase.execute()
+            let result = try await userClient.fetchUserInfo()
             UserDefaultsKeys.username = result.nickname
             await send(.dismiss)
           } catch {

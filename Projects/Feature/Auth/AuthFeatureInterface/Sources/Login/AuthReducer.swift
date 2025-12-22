@@ -6,8 +6,8 @@
 //  Created by JiYeon
 //
 
-import ComposableArchitecture
 import Shared
+import ComposableArchitecture
 
 @Reducer
 public struct AuthReducer {

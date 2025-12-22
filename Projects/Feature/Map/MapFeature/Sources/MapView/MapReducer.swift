@@ -6,10 +6,13 @@
 //  Created by JiYeon
 //
 
-import UIKit
-import MapFeatureInterface
-import ComposableArchitecture
+import SwiftUI
 import Shared
+import ComposableArchitecture
+import MapFeatureInterface
+import FlowerSpotClient
+import BloomingClient
+
 
 extension MapReducer {
   public init() {

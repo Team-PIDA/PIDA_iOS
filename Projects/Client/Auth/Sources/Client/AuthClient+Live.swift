@@ -37,10 +37,10 @@ extension AuthClient: DependencyKey {
         KeyChain.delete(forKey: .refreshToken)
         UserDefaultsKeys.username = nil
       },
-      saveTokenInfo: { isTempToken, accessToken, refreshToken in
-        UserDefaultsKeys.isLoggedIn = !isTempToken
-        UserDefaultsKeys.accessToken = accessToken
-        KeyChain.save(refreshToken, forKey: .refreshToken)
+      saveTokenInfo: { entity in
+        UserDefaultsKeys.isLoggedIn = !entity.isTempToken
+        UserDefaultsKeys.accessToken = entity.accessToKen
+        KeyChain.save(entity.refreshToken, forKey: .refreshToken)
       }
     )
   }

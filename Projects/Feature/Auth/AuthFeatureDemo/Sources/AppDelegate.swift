@@ -8,15 +8,13 @@
 
 import SwiftUI
 import ComposableArchitecture
+import AuthFeatureInterface
 
 @main
 struct AuthDemoApp: App {
-  let feature = AuthFeature()
 
   var body: some Scene {
-    WindowGroup {
-      AuthView(store: feature.store)
-    }
+    WindowGroup { }
   }
 }
 

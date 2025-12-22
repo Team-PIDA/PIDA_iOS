@@ -6,10 +6,10 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
-import SwiftUI
-import ComposableArchitecture
-import DesignKit
 import Shared
+import SwiftUI
+import DesignKit
+import ComposableArchitecture
 
 public struct SignUpView: View {
   @Bindable var store: StoreOf<SignUpReducer>
