@@ -13,7 +13,7 @@ import BloomingClient
 
 extension BloomingUpdateReducer {
   public init() {
-    @Dependency(\.updateBloomingUseCase) var updateBloomingUseCase
+    @Dependency(\.bloomingClient) var bloomingClient
     @Dependency(\.mainQueue) var mainQueue
     
     let reducer = Reduce<State, Action> { state, action in
@@ -52,8 +52,9 @@ extension BloomingUpdateReducer {
         guard let id = state.spotId, let status = state.selectedStatus else { return .none }
         return .run { send in
           do {
-            try await updateBloomingUseCase.execute(id: id, status: status.rawValue)
+            let result = try await bloomingClient.updateBloomingState(id: id, status: status.rawValue)
             await send(.dismiss(didUpdate: true, spotId: id))
+            await send(.sendToastMessage(result.message))
           } catch {
             await send(.sendToastMessage("기록에 실패했어요"))
           }

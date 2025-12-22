@@ -11,9 +11,9 @@ import APIClient
 
 @DependencyClient
 public struct BloomingClient: Sendable {
-  public var getBloomingState: @Sendable (Int) async throws -> BloomStatusEntity
-  public var updateBloomingState: @Sendable (Int, String) async throws -> UpdateBloomingStateEntity
-  public var verifyBloomingToday: @Sendable (Int) async throws -> VerifyBloomingStateEntity
+  public var getBloomingState: @Sendable (_ id: Int) async throws -> BloomStatusEntity
+  public var updateBloomingState: @Sendable (_ id: Int, _ status: String) async throws -> UpdateBloomingStateEntity
+  public var verifyBloomingToday: @Sendable (_ id: Int) async throws -> VerifyBloomingStateEntity
 }
 
 public extension DependencyValues {
