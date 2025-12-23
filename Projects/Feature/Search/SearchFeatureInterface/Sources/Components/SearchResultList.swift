@@ -8,10 +8,8 @@
 
 import SwiftUI
 import DesignKit
+import SearchClient
 
-/// 검색 결과 리스트 셀
-///
-/// `onTap`: 리스트 탭 시 리스트 값을 리턴하는 클로저
 public struct SearchResultList: View {
   
   private var item: SearchListCellEntity

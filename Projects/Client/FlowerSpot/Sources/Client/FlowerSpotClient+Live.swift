@@ -21,7 +21,6 @@ extension FlowerSpotClient: DependencyKey {
         let endpoint = FlowerSpotEndpoint.getFlowerSpotWithArea(getFlowerSpotQuery: .init())
         let result = try await apiClient.execute(endpoint).toEntity()
         try await cache.set(.allFlowerSpots, result)
-        return result
       },
       fetchAllFlowerPin: { query in
         let endpoint = FlowerSpotEndpoint.getFlowerSpotWithArea(getFlowerSpotQuery: query)

@@ -11,7 +11,7 @@ import APIClient
 
 @DependencyClient
 public struct FlowerSpotClient: Sendable {
-  public var fetchAllFlowerAddress: @Sendable () async throws -> FlowerSpotListEntity
+  public var fetchAllFlowerAddress: @Sendable () async throws -> Void
   public var fetchAllFlowerPin: @Sendable(_ query: GetFlowerSpotQuery) async throws -> FlowerSpotListEntity
   public var getFlowerSpotDetail: @Sendable (_ id: Int) async throws -> FlowerSpotEntity
   public var saveAllFlowerSpotToCache: @Sendable (_ entity: FlowerSpotListEntity) async throws -> Void

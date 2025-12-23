@@ -15,14 +15,12 @@ import FlowerSpotClient
 
 extension SearchReducer {
   public init() {
-    @Dependency(\.calculateSimilarityScoreUseCase) var calculateScoreUseCase
-    @Dependency(\.fetchAllFlowerAddressUseCase) var fetchAllFlowerAddressUseCase
-    @Dependency(\.getSearchListFromCacheUseCase) var getSearchListFromCacheUseCase
-    @Dependency(\.getFlowerSpotDetailUseCase) var getFlowerSpotDetailUseCase
-    @Dependency(\.saveRecentSearchItemUseCase) var saveRecentSearchItemUseCase
-    @Dependency(\.fetchRecentSearchItemUseCase) var fetchRecentSearchItemUseCase
+    @Dependency(\.searchClient) var searchClient
+    @Dependency(\.flowerSpotClient) var flowerSpotClient
     
-    let searchReducer = Reduce<State, Action> { state, action in
+    let searchReducer = Reduce<State, Action> {
+      state,
+      action in
       switch action {
       case .binding(\.searchWord):
         let searchQuery = state.searchWord
@@ -52,20 +50,26 @@ extension SearchReducer {
           return .send(.searchItem(state.searchWord))
         }
         
-      // MARK: - Search
+        // MARK: - Search
         
       case let .searchItem(searchQuery):
         return .run { send in
           do {
-            var cache = try await getSearchListFromCacheUseCase.execute()
-            if cache.isEmpty { // 캐시가 날라갔으면!
+            var data = try await searchClient.getSearchListFromCache()
+            if data.isEmpty { // 캐시가 날라갔으면!
               print("캐시 복구")
-              try await fetchAllFlowerAddressUseCase.execute()
-              cache = try await getSearchListFromCacheUseCase.execute()
+              try await flowerSpotClient.fetchAllFlowerAddress()
+              data = try await searchClient.getSearchListFromCache()
             }
-            let scoredResults = cache.map { flowerSpot -> (flower: SearchListCellEntity, score: Int) in
-              let addressScore = calculateScoreUseCase.execute(flowerSpot.address ?? "", query: searchQuery) * 2
-              let streetScore = calculateScoreUseCase.execute(flowerSpot.streetName ?? "", query: searchQuery)
+            let scoredResults = try data.map { flowerSpot -> (flower: SearchListCellEntity, score: Int) in
+              let addressScore = try searchClient.calculateSimilarityScore(
+                text: flowerSpot.address,
+                query: searchQuery
+              ) * 2
+              let streetScore = try searchClient.calculateSimilarityScore(
+                text: flowerSpot.streetName,
+                query: searchQuery
+              )
               let totalScore = addressScore + streetScore
               return (flowerSpot, totalScore)
             }
@@ -93,8 +97,7 @@ extension SearchReducer {
       case .fetchRecentResult:
         return .run { [searchKeyword = state.searchWord] send in
           do {
-            let recent = try await fetchRecentSearchItemUseCase.execute()
-            
+            let recent = try await searchClient.fetchRecentSearch()
             await send(.storeRecentResult(recent))
             if searchKeyword.isEmpty {
               await send(.updateSearchResults(recent))
@@ -120,13 +123,13 @@ extension SearchReducer {
         state.searchWord = text ?? ""
         return .none
         
-      // MARK: - Delegate
+        // MARK: - Delegate
         
       case let .selectResult(item):
         return .run { send in
           do {
-            let detail = try await getFlowerSpotDetailUseCase.execute(id: item.id)
-            try await saveRecentSearchItemUseCase.execute(spot: item)
+            let detail = try await flowerSpotClient.getFlowerSpotDetail(id: item.id)
+            try await searchClient.saveRecentSearchItem(item: item)
             await MainActor.run {
               send(.searchBarFocused(false))
               send(.fetchSearchResult(detail))
@@ -146,7 +149,8 @@ extension SearchReducer {
             send(.delegate(.dismiss))
           }
         }
-      case .binding, .delegate:
+      case .binding,
+          .delegate:
         return .none
       }
     }

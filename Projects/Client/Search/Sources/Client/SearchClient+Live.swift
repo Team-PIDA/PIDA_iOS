@@ -11,12 +11,12 @@ import CacheClient
 import Shared
 
 extension SearchClient: DependencyKey {
-  public static var liveValue: Self {
+  public static var liveValue: SearchClient {
     @Dependency(\.cache) var cache
     
     return .init(
       calculateSimilarityScore: { text, query in
-        guard !text.isEmpty, !query.isEmpty else { return 0 }
+        guard let text, !text.isEmpty, !query.isEmpty else { return 0 }
         
         let normalizedText = text.lowercased()
         let normalizedQuery = query.lowercased()

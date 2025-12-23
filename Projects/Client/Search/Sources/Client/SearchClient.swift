@@ -10,10 +10,10 @@ import ComposableArchitecture
 
 @DependencyClient
 public struct SearchClient {
-  public var calculateSimilarityScore: @Sendable (String, String) -> Int
+  public var calculateSimilarityScore: @Sendable (_ text: String?, _ query: String) throws -> Int
   public var fetchRecentSearch: @Sendable () async throws -> [SearchListCellEntity]
   public var getSearchListFromCache: @Sendable () async throws -> [SearchListCellEntity]
-  public var saveRecentSearchItem: @Sendable (SearchListCellEntity) async throws -> Void
+  public var saveRecentSearchItem: @Sendable (_ item: SearchListCellEntity) async throws -> Void
 }
 
 public extension DependencyValues {

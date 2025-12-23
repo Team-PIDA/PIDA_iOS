@@ -7,6 +7,8 @@
 //
 
 import ComposableArchitecture
+import SearchClient
+import FlowerSpotClient
 
 @Reducer
 public struct SearchReducer {
@@ -38,7 +40,7 @@ public struct SearchReducer {
     case searchItem(String)
     
     case updateSearchResults([SearchListCellEntity])
-    case fetchSearchResult(FlowerSpot)
+    case fetchSearchResult(FlowerSpotEntity)
     case fetchRecentResult
     
     case storeRecentResult([SearchListCellEntity])
@@ -54,7 +56,7 @@ public struct SearchReducer {
   
   public enum Delegate: Equatable {
     case dismiss
-    case selectResult(FlowerSpot)
+    case selectResult(FlowerSpotEntity)
   }
 
   public var body: some Reducer<State, Action> {
