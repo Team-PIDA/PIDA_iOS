@@ -6,24 +6,23 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
-import UIKit
 import SwiftUI
-import Combine
 import DesignKit
-
 import NMapsMap
+import FlowerSpotClient
+import BloomingClient
 
 struct MapViewRepresentable: UIViewRepresentable {
   /// 사용자의 현재 위치 정보
   ///
   /// - 초기 및 현위치 버튼 탭 시에만 값이 채워져 있음
   /// - 현 위치 이동 플래그 기능과 유사하게 동작
-  @Binding var userLocation: MapPoint?
+  @Binding var userLocation: MapPointEntity?
   /// 지도에 보여줄 데이터
-  @Binding var flowerPositions: [Int: FlowerSpot]
+  @Binding var flowerPositions: [Int: FlowerSpotEntity]
   
   /// 마커 탭 시 경로를 보여주기 위한 프로퍼티
-  @Binding var newPath: [MapPoint]
+  @Binding var newPath: [MapPointEntity]
   
   /// 지도 범위 요청 프로퍼티
   @Binding var requestBounds: Bool
@@ -32,7 +31,7 @@ struct MapViewRepresentable: UIViewRepresentable {
   @Binding var isCameraMove: Bool
   
   /// 지도에 특정 위치를 표시하기 위한 프로퍼티
-  @Binding var focusData: FlowerSpot?
+  @Binding var focusData: FlowerSpotEntity?
   
   /// 마커 삭제 트리거
   @Binding var isNeedDeleteMarker: Bool
@@ -46,10 +45,10 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 마커 탭 시 id값을 전달하기 위한 클로저
   var onMarkerTapped: ((Int?) -> Void)? = nil
   /// 지도 범위 좌표 값을 전달하기 위한 클로저
-  var mapBounds: (([MapPoint]) -> Void)? = nil
+  var mapBounds: (([MapPointEntity]) -> Void)? = nil
   
   /// 지도 초기 위치 설정 - 석촌호수 근처
-  private let defaultPoint: MapPoint = .init(latitude: 37.50545, longitude: 127.10143)
+  private let defaultPoint: MapPointEntity = .init(latitude: 37.50545, longitude: 127.10143)
   
   // MARK: - UIViewRepresentable Method
   
@@ -123,7 +122,7 @@ struct MapViewRepresentable: UIViewRepresentable {
 extension MapViewRepresentable {
   
   /// 특정 위치에 마커를 표시
-  func drawFocusMarker(_ view: NMFNaverMapView, result: FlowerSpot, context: Context) {
+  func drawFocusMarker(_ view: NMFNaverMapView, result: FlowerSpotEntity, context: Context) {
     // 중복 그리기 방지
     if context.coordinator.focusData == result { return }
     if let marker = context.coordinator.focusMarker {
@@ -132,8 +131,9 @@ extension MapViewRepresentable {
     isNeedDeleteMarker = false
     context.coordinator.focusData = result
     
+    let state = BloomStatus(rawValue: result.bloomingStatus)
     let coord = NMGLatLng(lat: result.pinPoint.latitude, lng: result.pinPoint.longitude)
-    let marker = drawMarker(view, to: coord, icon: result.bloomingStatus.activeImage)
+    let marker = drawMarker(view, to: coord, icon: state?.activeImage)
     marker.isHideCollidedMarkers = true
     marker.zIndex = 100
     context.coordinator.focusMarker = marker
@@ -142,11 +142,11 @@ extension MapViewRepresentable {
   /// 현재 지도에 보이는 좌표 범위를 반환하는 메서드
   func currentVisibleBounds(on mapView: NMFMapView) {
     let bounds = mapView.projection.latlngBounds(fromViewBounds: mapView.bounds)
-    let northEast = MapPoint(
+    let northEast = MapPointEntity(
       latitude: bounds.northEastLat.rounded(to: 6),
       longitude: bounds.northEastLng.rounded(to: 6)
     )
-    let southWest = MapPoint(
+    let southWest = MapPointEntity(
       latitude: bounds.southWestLat.rounded(to: 6),
       longitude: bounds.southWestLng.rounded(to: 6)
     )
@@ -156,10 +156,10 @@ extension MapViewRepresentable {
   }
   
   /// 특정 위치로 이동하기 위한 메서드
-  private func moveUserLocation(_ view: NMFNaverMapView, to userLocation: MapPoint, context: Context) {
+  private func moveUserLocation(_ view: NMFNaverMapView, to userLocation: MapPointEntity, context: Context) {
     /// 카메라 위치의 변화가 있을 때만 설정
     let cameraPosition = view.mapView.cameraPosition.target
-    let point = MapPoint(latitude: cameraPosition.lat, longitude: cameraPosition.lng)
+    let point = MapPointEntity(latitude: cameraPosition.lat, longitude: cameraPosition.lng)
     
     if point != context.coordinator.lastCameraPoint {
       view.mapView.positionMode = .normal
@@ -171,7 +171,7 @@ extension MapViewRepresentable {
   }
   
   /// 카메라 이동 메서드
-  private func moveCamera(_ view: NMFNaverMapView, to point: MapPoint?, zoomLevel: Double = 13) {
+  private func moveCamera(_ view: NMFNaverMapView, to point: MapPointEntity?, zoomLevel: Double = 13) {
     if let point = point {
       let coord = NMGLatLng(lat: point.latitude, lng: point.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: coord, zoomTo: zoomLevel)
@@ -186,8 +186,9 @@ extension MapViewRepresentable {
   private func markerTapEvent(to marker: NMFMarker, id: Int, context: Context) {
     // 같은 마커를 탭 하면 무시
     if marker == context.coordinator.activeMarker { return }
-    if let data = flowerPositions[id] {
-      marker.iconImage = data.bloomingStatus.activeImage
+    if let data = flowerPositions[id],
+       let state = BloomStatus(rawValue: data.bloomingStatus){
+      marker.iconImage = NMFOverlayImage(image: state.activeImage)
       context.coordinator.markerTapEvent(marker: marker, data: data)
       
       if let onMarkerTapped = onMarkerTapped {
@@ -198,7 +199,7 @@ extension MapViewRepresentable {
   }
   
   /// 여러 마커의 중간지점 찾는 메서드
-  private func averageCenter(of points: [MapPoint]) -> MapPoint? {
+  private func averageCenter(of points: [MapPointEntity]) -> MapPointEntity? {
     guard !points.isEmpty else { return nil }
 
     let total = points.reduce((lat: 0.0, lon: 0.0)) { result, point in
@@ -206,7 +207,7 @@ extension MapViewRepresentable {
     }
 
     let count = Double(points.count)
-    return MapPoint(
+    return MapPointEntity(
       latitude: total.lat / count,
       longitude: total.lon / count
     )
@@ -225,7 +226,12 @@ extension MapViewRepresentable {
   }
   
   /// 경로 선을 그리기 위한 메서드
-  private func drawPathLine(_ view: NMFNaverMapView, data: FlowerSpot, for newPath: [MapPoint], context: Context) {
+  private func drawPathLine(
+    _ view: NMFNaverMapView,
+    data: FlowerSpotEntity,
+    for newPath: [MapPointEntity],
+    context: Context
+  ) {
     
     // 그릴 경로가 없으면 종료
     guard !newPath.isEmpty else { return }
@@ -252,8 +258,7 @@ extension MapViewRepresentable {
     
     context.coordinator.drawPathPoints = newPath
     
-    let flowerState = data.bloomingStatus
-    
+    let flowerState = BloomStatus(rawValue: data.bloomingStatus) ?? .notBloomed
     // 새로운 경로 그리기
     let path = NMFPath()
     path.width = 6
@@ -283,7 +288,7 @@ extension MapViewRepresentable {
   }
   
   /// 지도 위에 비활성화 마커를 표시하기 위한 메서드
-  private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerSpot], context: Context) {
+  private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerSpotEntity], context: Context) {
     // 마커 중간지점으로 카메라 이동
     let mid = averageCenter(of: flowers.values.map { $0.pinPoint })
     moveCamera(view, to: mid, zoomLevel: view.mapView.cameraPosition.zoom)
@@ -291,10 +296,12 @@ extension MapViewRepresentable {
     for pin in flowers {
       let position = pin.value.pinPoint
       let point = NMGLatLng(lat: position.latitude, lng: position.longitude)
-      
-      let marker = drawMarker(view,
-                              to: point,
-                              icon: pin.value.bloomingStatus.inactiveImage)
+      let flowerState = BloomStatus(rawValue: pin.value.bloomingStatus) ?? .notBloomed
+      let marker = drawMarker(
+        view,
+        to: point,
+        icon: flowerState.inactiveImage
+      )
       marker.tag = UInt(pin.key)
       
       // 마커 탭 이벤트 헨들러
@@ -315,15 +322,15 @@ extension MapViewRepresentable {
   private func drawMarker(
     _ view: NMFNaverMapView,
     to point: NMGLatLng,
-    icon: UIImage,
+    icon: UIImage?,
     anchor: CGPoint = CGPoint(x: 0.5, y: 1)
   ) -> NMFMarker{
     let marker = NMFMarker(position: point)
     marker.isHideCollidedSymbols = true
-    marker.iconImage = NMFOverlayImage(image: icon)
+    if let icon = icon { marker.iconImage = NMFOverlayImage(image: icon) }
+    // TODO: 혹시 모르는 디폴트 이미지
     marker.anchor = anchor
     marker.mapView = view.mapView
-    
     return marker
   }
   

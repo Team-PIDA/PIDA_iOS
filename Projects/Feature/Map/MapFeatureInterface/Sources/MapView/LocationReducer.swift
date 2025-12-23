@@ -8,6 +8,7 @@
 
 import Foundation
 import DesignKit
+import FlowerSpotClient
 
 extension MapReducer {
   
@@ -18,13 +19,13 @@ extension MapReducer {
   public enum LocationAction: Equatable {
     case fetchUserLocation
     case moveUserLocation
-    case saveUserLocation(MapPoint)
-    case moveLocation(MapPoint)
+    case saveUserLocation(MapPointEntity)
+    case moveLocation(MapPointEntity)
     case requestMapBounds(Bool)
     case currentButtonTapped(Bool)
     
-    case fetchFlowers([MapPoint])
-    case storeFlowerData([FlowerSpot])
+    case fetchFlowers([MapPointEntity])
+    case storeFlowerData([FlowerSpotEntity])
     
     case mapSearchError(String?)
     case showToastView(message: String?, buttonLabel: String?)

@@ -7,11 +7,11 @@
 //
 
 import SwiftUI
-import Combine
-import DesignKit
 import Shared
-
+import DesignKit
 import ComposableArchitecture
+import FlowerSpotClient
+import BloomingClient
 
 public struct MapView: View {
   @Bindable var store: StoreOf<MapReducer>
@@ -142,7 +142,7 @@ extension MapView {
   
   @ViewBuilder
   private func BottomSheet(
-    item: FlowerSpot,
+    item: FlowerSpotEntity,
     bloomingStatus: BloomStatusEntity,
     isVotedBlooming: VerifyBloomingStateEntity
   ) -> some View {
@@ -154,7 +154,7 @@ extension MapView {
         .recentVisitCount(value: item.recentlyVisitedCountString),
         bloomingStatus.nickname == nil ? nil : .informant(value: bloomingStatus.nickname!)
       ],
-      blossomState: item.bloomingStatus,
+      blossomState: BloomStatus(rawValue: item.bloomingStatus),
       isLoading: store.detail.isDetailLoading,
       onPullUp: {
         return await MainActor.run {

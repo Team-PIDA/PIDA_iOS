@@ -6,15 +6,17 @@
 //  Copyright © 2025 com.pida.me.ios. All rights reserved.
 //
 
-import ComposableArchitecture
 import DesignKit
+import ComposableArchitecture
+import FlowerSpotClient
+import BloomingClient
 
 extension MapReducer {
   
   public struct DetailState: Equatable {
-    public var selectedItem: FlowerSpot? = nil
+    public var selectedItem: FlowerSpotEntity? = nil
     /// 네트워크로 받아온 상세 데이터
-    public var selectedItemDetail: FlowerSpot? = nil
+    public var selectedItemDetail: FlowerSpotEntity? = nil
     /// 네트워크로 받아온 개화 상태 데이터
     public var selectedItemBlooming: BloomStatusEntity? = nil
     /// 네트워크로 받아온 투표 상태 데이터
@@ -33,21 +35,21 @@ extension MapReducer {
   
   public enum DetailAction: Equatable {
     case fetchPathLines(Int)
-    case selectedItem(FlowerSpot)
+    case selectedItem(FlowerSpotEntity)
     
     case requestDetailInfo(Int)
     case fetchDetailInfo(Int)
     
-    case detailResponse(FlowerSpot)
+    case detailResponse(FlowerSpotEntity)
     case bloomingResponse(BloomStatusEntity)
     case verifyTodayBlooming(VerifyBloomingStateEntity)
     case allDataUpdated
     
-    case calculateDistance(MapPoint)
+    case calculateDistance(MapPointEntity)
     case updateMarkerStatus(BloomStatus, id: Int)
     case dismissBottomSheet
     case presentToDetail(
-      flowerSpotData: FlowerSpot,
+      flowerSpotData: FlowerSpotEntity,
       bloomingStatus: BloomStatusEntity,
       distance: Double,
       isVotedBlooming: VerifyBloomingStateEntity

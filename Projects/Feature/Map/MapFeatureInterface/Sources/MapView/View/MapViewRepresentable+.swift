@@ -7,11 +7,12 @@
 //
 
 import Foundation
+import FlowerSpotClient
 
 extension MapViewRepresentable {
   
   /// 현재 지도 범위를 가져오는 메서드
-  func onReceiveMapBounds(_ action: @escaping ([MapPoint]) -> Void) -> Self {
+  func onReceiveMapBounds(_ action: @escaping ([MapPointEntity]) -> Void) -> Self {
     var map = self
     map.mapBounds = action
     return map

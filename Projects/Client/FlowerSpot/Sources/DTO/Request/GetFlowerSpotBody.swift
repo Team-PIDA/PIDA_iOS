@@ -8,19 +8,19 @@
 
 import Foundation
 
-struct GetFlowerSpotQuery: Encodable {
-  let region: String?
-  let swLat: Double?
-  let swLng: Double?
-  let neLat: Double?
-  let neLng: Double?
+public struct GetFlowerSpotQuery: Encodable {
+  public let region: String?
+  public let swLat: Double?
+  public let swLng: Double?
+  public let neLat: Double?
+  public let neLng: Double?
   
-  init(
+  public init(
     region: String? = nil,
     swLat: Double? = nil,
     swLng: Double? = nil,
     neLat: Double? = nil,
-    neLng: Double = nil?
+    neLng: Double? = nil
   ) {
     self.region = region
     self.swLat = swLat

@@ -7,8 +7,10 @@
 //
 
 import Foundation
-import ComposableArchitecture
 import DesignKit
+import ComposableArchitecture
+import FlowerSpotClient
+import BloomingClient
 
 @Reducer
 public struct MapReducer {
@@ -29,14 +31,14 @@ public struct MapReducer {
   @ObservableState
   public struct State: Equatable {
     /// 특정 지점으로 이동하기 위한 위치정보
-    public var point: MapPoint? = nil
+    public var point: MapPointEntity? = nil
     /// 유저의 현재 위치
-    public var userLocation: MapPoint? = nil
+    public var userLocation: MapPointEntity? = nil
     
     /// 현재 지도에 보여 줄 FlowerSpot 데이터
-    public var flowerSpots: [Int: FlowerSpot] = [:]
+    public var flowerSpots: [Int: FlowerSpotEntity] = [:]
     /// 현재 그려져있는 경로
-    public var selectedPathLines: [MapPoint] = []
+    public var selectedPathLines: [MapPointEntity] = []
     /// 지도에 마커 및 경로 비활성화 트리거
     public var isNeedDeleteMarker: Bool = false
     /// 지도에 마커 및 경로 그리기 트리거
@@ -46,7 +48,7 @@ public struct MapReducer {
     /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
     /// 검색 결과 데이터
-    public var searchResult: FlowerSpot? = nil
+    public var searchResult: FlowerSpotEntity? = nil
     /// 검색 결과 텍스트
     public var searchText: String? = nil
     
@@ -79,7 +81,7 @@ public struct MapReducer {
     case fetchPathLines(Int)
     case fetchDetailInfo(Int)
     
-    case showSearchResult(FlowerSpot?)
+    case showSearchResult(FlowerSpotEntity?)
     case setSearchBarText(String?)
     case resetSearchBar
     
@@ -100,7 +102,7 @@ public struct MapReducer {
     case pushToSetting
     case resetSearchView
     case presentToDetail(
-      flowerSpotData: FlowerSpot,
+      flowerSpotData: FlowerSpotEntity,
       bloomingStatus: BloomStatusEntity,
       distance: Double,
       isVotedBlooming: VerifyBloomingStateEntity

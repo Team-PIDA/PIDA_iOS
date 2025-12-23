@@ -15,14 +15,8 @@ import NMapsMap
 
 @main
 struct MapDemoApp: App {
-  let store = Store(initialState: MapReducer.State()) {
-    MapReducer()
-  }
   
   var body: some Scene {
-    WindowGroup {
-      MapView(store: store)
-        
-    }
+    WindowGroup { }
   }
 }

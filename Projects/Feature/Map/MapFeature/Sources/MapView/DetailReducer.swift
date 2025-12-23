@@ -7,20 +7,22 @@
 
 //
 import Shared
+import NMapsMap
+import DesignKit
 import ComposableArchitecture
 import MapFeatureInterface
 import FlowerSpotClient
 import BloomingClient
-import NMapsMap
-
+import CacheClient
 
 extension MapReducer {
   
+  
   struct DetailReducer: Reducer {
     
-    @Dependency(\.getFlowerSpotDetailUseCase) var getFlowerSpotDetailUseCase
-    @Dependency(\.getBloomingStateUseCase) var getBloomingStateUseCase
-    @Dependency(\.verifyBloomingTodayUseCase) var verifyBloomingTodayUseCase
+    @Dependency(\.flowerSpotClient) var flowerSpotClient
+    @Dependency(\.bloomingClient) var bloomingClient
+    @Dependency(\.cache) var cache
     
     func reduce(into state: inout State, action: DetailAction) -> Effect<DetailAction> {
       switch action {
@@ -37,10 +39,10 @@ extension MapReducer {
         state.detail.isBottomSheetPresented = true
         return .run { send in
           do {
-            async let detailResult = try getFlowerSpotDetailUseCase.execute(id: id)
-            async let bloomingResult = try getBloomingStateUseCase.execute(id: id)
+            async let detailResult = try flowerSpotClient.getFlowerSpotDetail(id: id)
+            async let bloomingResult = try bloomingClient.getBloomingState(id: id)
             let verifyTodayResult = UserDefaultsKeys.isLoggedIn == true
-            ? try await verifyBloomingTodayUseCase.execute(id: id)
+            ? try await bloomingClient.verifyBloomingToday(id: id)
             : VerifyBloomingStateEntity(isBlooming: false)
             let (detail, blooming) = try await (detailResult, bloomingResult)
             await MainActor.run {
@@ -64,9 +66,9 @@ extension MapReducer {
         state.detail.isNeedFetchDetail = true
         return .run { send in
           do {
-            async let detailResult = try await getFlowerSpotDetailUseCase.execute(id: id)
-            async let bloomingResult = try await getBloomingStateUseCase.execute(id: id)
-            async let verifyTodayResult = try await verifyBloomingTodayUseCase.execute(id: id)
+            async let detailResult = try flowerSpotClient.getFlowerSpotDetail(id: id)
+            async let bloomingResult = try bloomingClient.getBloomingState(id: id)
+            async let verifyTodayResult = try await bloomingClient.verifyBloomingToday(id: id)
             let (detail, blooming, verifyToday) = try await (detailResult, bloomingResult, verifyTodayResult)
             await MainActor.run {
               send(.detailResponse(detail))
@@ -107,9 +109,10 @@ extension MapReducer {
           state.detail.isNeedFetchDetail = false
           if let item = state.detail.selectedItemDetail,
              let bloomingStatus = state.detail.selectedItemBlooming,
-             let isVotedBlooming = state.detail.selectedItemVote {
+             let isVotedBlooming = state.detail.selectedItemVote,
+             let bloomStatus = BloomStatus(rawValue: item.bloomingStatus){
             return .run { [distance = state.detail.distance] send in
-              await send(.updateMarkerStatus(item.bloomingStatus, id: item.id))
+              await send(.updateMarkerStatus(bloomStatus, id: item.id))
               await send(
                 .presentToDetail(
                   flowerSpotData: item,
@@ -137,9 +140,9 @@ extension MapReducer {
         
       case let .updateMarkerStatus(status, id):
         if state.flowerSpots[id] != .none {
-          state.flowerSpots[id]?.bloomingStatus = status
+          state.flowerSpots[id]?.bloomingStatus = status.rawValue
         } else if state.searchResult != .none {
-          state.searchResult?.bloomingStatus = status
+          state.searchResult?.bloomingStatus = status.rawValue
         }
         state.detail.updateMarkerStatus = status
         return .none

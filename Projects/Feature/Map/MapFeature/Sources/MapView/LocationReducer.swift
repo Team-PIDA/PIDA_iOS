@@ -8,16 +8,16 @@
 
 import Shared
 import DesignKit
+import NMapsMap
 import ComposableArchitecture
 import MapFeatureInterface
 import FlowerSpotClient
-import BloomingClient
-import NMapsMap
+import CacheClient
 
 extension MapReducer {
   struct LocationReducer: Reducer {
-    
-    @Dependency(\.fetchAllFlowerPinUseCase) var fetchAllFlowerPinUseCase
+    @Dependency(\.flowerSpotClient) var flowerSpotClient
+    @Dependency(\.cache) var cache
     
     public func reduce(into state: inout State, action: LocationAction) -> Effect<LocationAction> {
       
@@ -38,7 +38,7 @@ extension MapReducer {
         let isCurrentButtonTap = state.location.isCurrentButtonTap
         return .run { send in
           if let location = await LocationService.shared.userLocation {
-            let userLocation = MapPoint(latitude: location.0, longitude: location.1)
+            let userLocation = MapPointEntity(latitude: location.0, longitude: location.1)
             await send(.saveUserLocation(userLocation))
             await send(.moveLocation(userLocation))
           } else {
@@ -72,17 +72,18 @@ extension MapReducer {
       case let .fetchFlowers(positions):
         return .run { send in
           do {
-            let result = try await fetchAllFlowerPinUseCase.execute(
+            let query = GetFlowerSpotQuery(
               region: "SEOUL",
               swLat: positions[0].latitude,
               swLng: positions[0].longitude,
               neLat: positions[1].latitude,
               neLng: positions[1].longitude
             )
-            if result.count == 0 {
+            let result = try await flowerSpotClient.fetchAllFlowerPin(query: query)
+            if result.itemList.count == 0 {
               await send(.showToastView(message: "이 근방에는 꽃길이 없어요.", buttonLabel: "제보하기"))
             }
-            await send(.storeFlowerData(result))
+            await send(.storeFlowerData(result.itemList))
           } catch let error as NetworkError {
             await send(.mapSearchError(error.localizedDescription))
           } catch let error as FoundationError {
