@@ -15,8 +15,7 @@ import Shared
 struct PIDAApp: App {
   
   init() {
-    NMFAuthManager.shared().clientId = Constant.naver_map_client_id
-    DependencyRegistry.registerDependencies()
+    NMFAuthManager.shared().ncpKeyId = Constant.naver_map_client_id
   }
   
   var body: some Scene {

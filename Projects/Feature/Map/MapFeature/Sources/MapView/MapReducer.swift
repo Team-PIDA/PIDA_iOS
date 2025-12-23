@@ -11,14 +11,12 @@ import Shared
 import ComposableArchitecture
 import MapFeatureInterface
 import FlowerSpotClient
-import CacheClient
 
 
 extension MapReducer {
   public init() {
     
     @Dependency(\.flowerSpotClient) var flowerSpot
-    @Dependency(\.cache) var cache
     @Dependency(\.openURL) var openURL
     
     let mapReducer = Reduce<State, Action> { state, action in
@@ -39,8 +37,7 @@ extension MapReducer {
         state.isViewAppeared = true
         return .run { send in
           do {
-            let result = try await flowerSpot.fetchAllFlowerAddress()
-            try await cache.set(.allFlowerSpots, result)
+            try await flowerSpot.fetchAllFlowerAddress()
           } catch let error as NetworkError {
             print(error.localizedDescription)
           } catch let error as FoundationError {

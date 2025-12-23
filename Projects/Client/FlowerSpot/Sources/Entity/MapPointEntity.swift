@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreLocation
 import Shared
 
 public struct MapPointEntity: Equatable, Sendable, Codable {
