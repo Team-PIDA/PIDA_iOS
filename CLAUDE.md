@@ -24,11 +24,8 @@ tuist graph
 # 새 Feature 모듈 생성
 tuist scaffold Feature --name FeatureName --author "AuthorName"
 
-# 새 Domain 모듈 생성
-tuist scaffold Domain --name DomainName --author "AuthorName"
-
-# 새 Data 모듈 생성
-tuist scaffold Data --name DataName --author "AuthorName"
+# 새 Client 모듈 생성
+tuist scaffold Client --name ClientName --author "AuthorName"
 ```
 
 ### Scheme 및 빌드 타겟
@@ -48,16 +45,141 @@ tuist scaffold Data --name DataName --author "AuthorName"
 
 ## 아키텍처 핵심 구조
 
-### 레이어 구조 (하위 레이어는 상위 레이어를 알 수 없음)
+### Native-TCA 아키텍처
+> Clean Architecture 대신 TCA의 `@DependencyClient`를 활용한 단순화된 구조입니다.
+> 자세한 마이그레이션 배경은 `ARCHITECTURE_MIGRATION.md`를 참고하세요.
+
+### 모듈 구조
 ```
-Feature (UI) → Domain (Business Logic) → Data (API/Repository)
-     ↓              ↓                        ↓
-   Shared    ←    Core    ←              Networker
+Projects/
+├── Client/              # 도메인별 @DependencyClient 모듈
+│   ├── API/             # 공통 HTTP 클라이언트
+│   ├── Auth/            # 인증 (로그인/로그아웃)
+│   ├── User/            # 사용자 정보
+│   ├── FlowerSpot/      # 꽃 명소
+│   ├── Blooming/        # 개화 상태
+│   ├── Search/          # 검색
+│   └── Cache/           # 캐시 (메모리 + 디스크)
+├── Feature/             # TCA Reducer + SwiftUI View
+│   ├── Auth/
+│   ├── Map/
+│   ├── Search/
+│   ├── FlowerSpotDetail/
+│   ├── Blooming/
+│   └── Setting/
+├── DesignKit/           # 디자인 시스템
+├── Shared/              # 공용 유틸리티
+├── ThirdParty/          # 외부 라이브러리 래퍼
+└── PIDA/                # 메인 앱 타겟
 ```
 
-### TCA (The Composable Architecture) 패턴
+### 레이어 흐름
+```
+Feature (UI/Reducer)
+    ↓ @Dependency
+Client (비즈니스 로직 + API 호출)
+    ↓ @Dependency
+APIClient (HTTP 통신)
+```
 
-#### 1. Feature 구현 기본 구조
+## Client 모듈 패턴
+
+### 파일 구조
+```
+Projects/Client/{Domain}/
+├── Project.swift
+└── Sources/
+    ├── Client/
+    │   ├── {Domain}Client.swift           # @DependencyClient 정의
+    │   ├── {Domain}Client+Live.swift      # liveValue 구현
+    │   └── {Domain}Client+Endpoint.swift  # API 엔드포인트
+    ├── DTO/
+    │   ├── Request/                       # 요청 바디
+    │   └── Response/                      # 응답 DTO
+    └── Entity/                            # 도메인 모델
+```
+
+### Client 정의 예시
+```swift
+// {Domain}Client.swift
+import ComposableArchitecture
+
+@DependencyClient
+public struct AuthClient: Sendable {
+  public var appleLogin: @Sendable (_ token: String) async throws -> SocialLoginEntity
+  public var signUp: @Sendable (_ email: String, _ nickname: String) async throws -> SignUpEntity
+  public var logout: @Sendable () async throws -> LogoutEntity
+}
+
+public extension DependencyValues {
+  var authClient: AuthClient {
+    get { self[AuthClient.self] }
+    set { self[AuthClient.self] = newValue }
+  }
+}
+```
+
+### Live 구현 예시
+```swift
+// {Domain}Client+Live.swift
+import Dependencies
+
+extension AuthClient: DependencyKey {
+  public static let liveValue: AuthClient = {
+    @Dependency(\.apiClient) var apiClient
+
+    return AuthClient(
+      appleLogin: { token in
+        let dto = try await apiClient.execute(AuthEndpoint.appleLogin(token: token))
+        return dto.toEntity()
+      },
+      signUp: { email, nickname in
+        let dto = try await apiClient.execute(AuthEndpoint.signUp(email: email, nickname: nickname))
+        return dto.toEntity()
+      },
+      logout: {
+        let dto = try await apiClient.execute(AuthEndpoint.logout)
+        return dto.toEntity()
+      }
+    )
+  }()
+}
+```
+
+### Endpoint 정의 예시
+```swift
+// {Domain}Client+Endpoint.swift
+import APIClient
+
+enum AuthEndpoint: APIRequestable {
+  case appleLogin(token: String)
+  case signUp(email: String, nickname: String)
+  case logout
+
+  typealias Response = LoginDTO // 또는 각 케이스별 Response
+
+  var path: String {
+    switch self {
+    case .appleLogin: return "/auth/apple"
+    case .signUp: return "/auth/signup"
+    case .logout: return "/auth/logout"
+    }
+  }
+
+  var method: HTTPMethod {
+    switch self {
+    case .appleLogin, .signUp: return .post
+    case .logout: return .delete
+    }
+  }
+
+  var body: Encodable? { ... }
+}
+```
+
+## TCA (The Composable Architecture) 패턴
+
+### Feature 구현 기본 구조
 ```swift
 // Reducer 정의 (Interface)
 @Reducer
@@ -68,26 +190,21 @@ public struct FeatureNameReducer {
     self.reducer = reducer
   }
 
-  // State: ObservableState 사용
   @ObservableState
   public struct State: Equatable {
-    // 상태 정의
     public init() {}
   }
 
-  // Action 정의
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case viewDidAppear
     case delegate(Delegate)
   }
 
-  // Delegate (부모-자식 통신)
   public enum Delegate: Equatable {
     case didComplete
   }
 
-  // Reducer body
   public var body: some ReducerOf<Self> {
     BindingReducer()
     reducer
@@ -104,9 +221,33 @@ public struct FeatureNameView: View {
 }
 ```
 
-#### 2. Reducer 분리 패턴 (Location/Detail 등 서브 기능)
+### Reducer에서 Client 사용
 ```swift
-// MapReducer 예시 - 서브 Reducer를 조합
+@Reducer
+public struct AuthReducer {
+  @Dependency(\.authClient) var authClient
+
+  public var body: some ReducerOf<Self> {
+    Reduce { state, action in
+      switch action {
+      case .loginButtonTapped:
+        return .run { send in
+          do {
+            let result = try await authClient.appleLogin(token)
+            await send(.inner(.loginSuccess(result)))
+          } catch {
+            await send(.inner(.loginFailure(error)))
+          }
+        }
+      // ...
+      }
+    }
+  }
+}
+```
+
+### Reducer 분리 패턴 (서브 기능)
+```swift
 @Reducer
 public struct MapReducer {
   private let reducer: Reduce<State, Action>
@@ -126,110 +267,8 @@ public struct MapReducer {
 }
 ```
 
-### Domain Layer (UseCase 패턴)
+## Feature 모듈 구조
 
-#### 1. UseCase Interface 정의
-```swift
-// DomainInterface/Sources/UseCases/SomeUseCase.swift
-public protocol SomeUseCase {
-  func execute(param: String) async throws -> Result
-}
-```
-
-#### 2. DependencyKey 정의
-```swift
-// DomainInterface/Sources/DependencyKeys/SomeUseCaseKey.swift
-public enum SomeUseCaseKey: DependencyKey {
-  public static var liveValue: SomeUseCase { someUseCaseProvider() }
-  public static var previewValue: SomeUseCase { someUseCaseProvider() }
-  public static var testValue: SomeUseCase { someUseCaseProvider() }
-}
-
-var someUseCaseProvider: () -> SomeUseCase = {
-  fatalError("SomeUseCase Dependency not configured")
-}
-
-public func someUseCaseRegister(provider: @escaping () -> SomeUseCase) {
-  someUseCaseProvider = provider
-}
-
-extension DependencyValues {
-  public var someUseCase: SomeUseCase {
-    get { self[SomeUseCaseKey.self] }
-    set { self[SomeUseCaseKey.self] = newValue }
-  }
-}
-```
-
-#### 3. UseCase 구현
-```swift
-// Domain/Sources/SomeUseCaseImpl.swift
-public struct SomeUseCaseImpl: SomeUseCase {
-  private let repository: SomeRepository
-
-  public init(repository: SomeRepository) {
-    self.repository = repository
-  }
-
-  public func execute(param: String) async throws -> Result {
-    return try await repository.fetch(param: param)
-  }
-}
-```
-
-### Data Layer (Repository 패턴)
-
-```swift
-// Repository 구현
-public struct SomeRepositoryImpl: SomeRepository {
-  private let networker: NetworkProtocol
-
-  public func fetch(param: String) async throws -> Result {
-    let dto = try await networker.request(SomeAPI.fetch(param: param))
-    return dto.toDomain()
-  }
-}
-
-// API 정의
-enum SomeAPI: APIRequestable {
-  case fetch(param: String)
-
-  var path: String { "/api/endpoint" }
-  var method: HTTPMethod { .get }
-}
-```
-
-### Dependency Injection
-
-```swift
-// Projects/PIDA/Sources/DependencyRegister.swift
-enum DependencyRegistry {
-  static func registerDependencies() {
-    let networker = Networker()
-    let someRepository = SomeRepositoryImpl(networker: networker)
-
-    // UseCase 등록
-    someUseCaseRegister {
-      SomeUseCaseImpl(repository: someRepository)
-    }
-  }
-}
-```
-
-## 모듈 구조 및 역할
-
-### Core 모듈
-- **Networker**: HTTP 네트워킹 추상화, 토큰 리프레시
-- **DesignKit**: 디자인 시스템, SwiftUI 컴포넌트, 색상/폰트
-- **Cache**: 2단계 캐싱 (메모리 + 디스크)
-
-### Shared 모듈
-- **Utility**: Extensions, Common Types
-- **KeyChain**: 토큰 저장
-- **UserDefault**: 사용자 설정
-- **ThirdParty**: 외부 라이브러리 래퍼
-
-### Feature 모듈
 각 Feature는 독립적으로 개발/테스트 가능:
 - `{Feature}Feature`: TCA Reducer 구현체
 - `{Feature}FeatureInterface`: TCA Reducer 인터페이스, SwiftUI View
@@ -246,16 +285,21 @@ enum DependencyRegistry {
 
 ## 개발 워크플로우
 
-### Feature 추가 시
-1. Tuist scaffold로 모듈 생성
-2. DomainInterface에 UseCase protocol 정의
-3. DomainInterface에 DependencyKey 정의
-4. Domain에 UseCase 구현
-5. DataInterface에 Repository protocol 정의
-6. Data에 Repository 구현
-7. Feature에 TCA Reducer/View 구현
-8. DependencyRegister에 의존성 등록
-9. 부모 Feature에 Scope로 연결
+### 새 Client 추가 시
+1. `tuist scaffold Client --name {Name}` 실행
+2. `{Name}Client.swift`에 필요한 메서드 정의
+3. `{Name}Client+Live.swift`에서 liveValue 구현
+4. `{Name}Client+Endpoint.swift`에서 API 정의
+5. DTO/Entity 모델 추가
+6. `tuist generate` 실행
+
+### 새 Feature 추가 시
+1. `tuist scaffold Feature --name {Name}` 실행
+2. Interface에 Reducer State/Action/Delegate 정의
+3. Interface에 View 구현
+4. Implement에 Reducer 로직 구현
+5. 부모 Feature에 Scope로 연결
+6. `tuist generate` 실행
 
 ### 코드 수정 후
 ```bash
@@ -266,14 +310,13 @@ tuist generate
 # Debug-PIDA scheme 선택 후 Cmd+B
 ```
 
-### PR 작성 시
-- release 브랜치로 PR 생성
-
 ## 주요 설정 파일 위치
 - 환경 변수: `Config/Debug.xcconfig`, `Config/Release.xcconfig`
 - Naver Maps API 키: Info.plist의 `NMCLIENTID`
 - Base URL: Info.plist의 `BASE_URL`
 - Entitlements: `Config/Debug.entitlements`, `Config/Release.entitlements`
+- CI 스크립트: `ci_scripts/ci_post_clone.sh`
+- Fastlane Match: `fastlane/Matchfile`
 
 ## 자주 사용하는 패턴
 
@@ -305,7 +348,7 @@ state.toastLabel = buttonLabel
 ```swift
 return .run { send in
   do {
-    let result = try await useCase.execute()
+    let result = try await client.fetchData()
     await send(.inner(.fetchSuccess(result)))
   } catch {
     await send(.inner(.fetchFailure(error)))
@@ -325,23 +368,70 @@ case .child(.delegate(.didComplete)):
   // 처리 로직
 ```
 
+### Cache 사용
+```swift
+@Dependency(\.cache) var cache
+
+// 저장
+try await cache.set(.userProfile, userProfile)
+
+// 조회
+let profile: UserProfile? = await cache.get(.userProfile)
+
+// 삭제
+await cache.remove(.userProfile)
+```
+
 ## 디버깅 팁
 - Demo 앱으로 개별 Feature 독립 실행 가능
 - 각 모듈별 Testing 타겟으로 단위 테스트
 - Tuist graph로 의존성 시각화
 - 환경별 설정은 xcconfig 파일 확인
+- `@DependencyClient`는 testValue/previewValue 자동 생성
 
 ## 코드 스타일
 - 들여쓰기: 2 spaces
 - 지역: 한국어 (`ko`)
 - 최소 배포 타겟: iOS 18.0
 
+## Tuist 프로젝트 설정
+
+### ProjectDescriptionHelpers 구조
+```
+Tuist/ProjectDescriptionHelpers/
+├── ProjectBuilders/           # 프로젝트 빌더
+│   ├── BaseProjectBuilder.swift
+│   ├── AppProjectBuilder.swift
+│   ├── FeatureProjectBuilder.swift
+│   └── FrameworkProjectBuilder.swift
+├── TargetBuilders/            # 타겟 빌더
+│   ├── BaseTargetBuilder.swift
+│   ├── AppTargetBuilder.swift
+│   └── FrameworkTargetBuilder.swift
+├── TargetDependency/          # 의존성 정의
+│   ├── Modules.swift          # 모듈 열거형
+│   ├── DependencyComponent.swift
+│   └── TargetDependencyBuilder.swift
+├── Scheme+.swift
+└── Settings+.swift
+```
+
 ## 외부 의존성 추가 방법
 1. `Tuist/Package.swift`에 패키지 추가
-2. `Tuist/ProjectDescriptionHelpers/TargetDependency+.swift`에 등록
-3. `.ThirdParty.{Name}` 또는 `.CoreTarget.{Name}` 등으로 참조
+2. `Tuist/ProjectDescriptionHelpers/TargetDependency/DependencyComponent.swift`에 등록
+3. 해당 모듈의 `Project.swift`에서 의존성 추가
 
-## Git 커밋 규칙
-- 커밋 메시지에 Co-Authored-By 또는 Claude 관련 정보를 포함하지 않음
+## CI/CD
+
+### Xcode Cloud
+- `ci_scripts/ci_post_clone.sh`가 빌드 전 자동 실행
+- mise로 Tuist 설치 후 프로젝트 생성
+
+### Fastlane Match
+- 인증서/프로비저닝 프로파일 Git 저장소 관리
+- `fastlane/Matchfile` 설정 참고
+
+## Git 규칙
 - 커밋 형식: `타입: #이슈번호 설명`
-- 타입 예시: `fix`, `feat`, `chore`, `docs`, `refactor`
+- 타입: `fix`, `feat`, `chore`, `docs`, `refactor`, `delete`
+- PR 대상 브랜치: `release`
