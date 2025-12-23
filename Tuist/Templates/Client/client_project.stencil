@@ -1,0 +1,16 @@
+//
+//  Project.swift
+//
+//  Created by {{author}}
+//
+
+import ProjectDescription
+import ProjectDescriptionHelpers
+
+let project = Project.buildStaticLibrary(
+  for: Client.{{name}},
+  dependencies: [
+    .Client.API,
+    .SPM.TCA
+  ]
+)

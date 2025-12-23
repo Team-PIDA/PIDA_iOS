@@ -1,0 +1,13 @@
+//
+//  {{name}}Client+Endpoint.swift
+//  {{name}}Client
+//
+//  Created by {{author}}
+//  Copyright © com.pida.me. All rights reserved.
+//
+
+import APIClient
+
+extension {{name}}Client {
+  struct {{name}}Endpoint: Sendable { }
+}

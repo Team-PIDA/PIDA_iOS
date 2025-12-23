@@ -1,0 +1,16 @@
+//
+//  {{name}}Client+Live.swift
+//  {{name}}Client
+//
+//  Created by 조용인
+//  Copyright © com.pida.me. All rights reserved.
+//
+
+import ComposableArchitecture
+
+extension {{name}}Client: DependencyKey {
+  public static var liveValue: Self {
+    
+    return .init()
+  }
+}
