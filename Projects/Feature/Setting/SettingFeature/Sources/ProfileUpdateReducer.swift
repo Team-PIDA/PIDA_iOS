@@ -13,7 +13,7 @@ import UserClient
 
 extension ProfileUpdateReducer {
   public init() {
-    @Dependency(\.changeNicknameUseCase) var changeNicknameUseCase
+    @Dependency(\.userClient) var userClient
     @Dependency(\.mainQueue) var mainQueue
     
     let reducer = Reduce<State, Action> { state, action in
@@ -69,7 +69,7 @@ extension ProfileUpdateReducer {
         return .run { send in
           await send(.isLoading(true))
           do {
-            let result = try await changeNicknameUseCase.execute(nickname: nickname)
+            let result = try await userClient.changeNickname(nickname: nickname)
             UserDefaultsKeys.username = result.nickname
             await send(.pop)
           } catch let error as NetworkError {

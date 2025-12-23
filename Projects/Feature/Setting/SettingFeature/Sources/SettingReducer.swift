@@ -12,13 +12,13 @@ import DesignKit
 import ComposableArchitecture
 import SettingFeatureInterface
 import UserClient
+import AuthClient
 
 extension SettingReducer {
   public init() {
     @Dependency(\.openURL) var openURL
-    @Dependency(\.tokenDeleteUseCase) var tokenDeleteUseCase
-    @Dependency(\.withdrawUseCase) var withdrawUseCase
-    @Dependency(\.logoutUseCase) var logoutUseCase
+    @Dependency(\.userClient) var userClient
+    @Dependency(\.authClient) var authClient
     
     let reducer = Reduce<State, Action> { state, action in
       switch action {
@@ -46,7 +46,7 @@ extension SettingReducer {
         return .none
         
       case .checkUserInfo:
-        if let username = UserDefault.username {
+        if let username = UserDefaultsKeys.username {
           state.username = username
         }
         return .none
@@ -59,7 +59,7 @@ extension SettingReducer {
         
       case .deleteToken:
         return .run { send in
-          await tokenDeleteUseCase.execute()
+          try await authClient.deleteTokenInfo()
           await send(.checkLoggedIn)
         }
         
@@ -108,7 +108,8 @@ extension SettingReducer {
       case .alertAcceptTapped(.withdraw):
         return .run { send in
           do {
-            try await withdrawUseCase.execute()
+            let result = try await userClient.withdrawUser()
+            print(result.message)
           } catch { }
           await send(.deleteToken)
           await send(.clearAlertState)
@@ -116,7 +117,8 @@ extension SettingReducer {
       case .alertAcceptTapped(.logout):
         return .run { send in
           do {
-            try await logoutUseCase.execute()
+            let result = try await authClient.logout()
+            print(result.message)
           } catch { }
           await send(.deleteToken)
           await send(.clearAlertState)

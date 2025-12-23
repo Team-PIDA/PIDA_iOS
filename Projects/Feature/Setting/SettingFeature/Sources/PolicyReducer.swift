@@ -8,7 +8,6 @@
 
 import ComposableArchitecture
 import SettingFeatureInterface
-import UserClient
 
 extension PolicyReducer {
   public init() {
