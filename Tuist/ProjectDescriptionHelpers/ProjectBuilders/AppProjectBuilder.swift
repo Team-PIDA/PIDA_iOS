@@ -14,7 +14,7 @@ public extension Project {
   /// - Parameters:
   ///  - dependencies: App Target이 의존하는 TargetDependency 목록
   static func buildApp(
-    dependencies: [TargetDependency] = [],
+    dependencies: [TargetDependency] = []
   ) -> Project {
     return buildBaseProject(
       name: "PIDA",

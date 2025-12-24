@@ -29,7 +29,7 @@ public struct APIClient: Sendable {
   ///  - timeout: 업로드 요청의 타임아웃 시간을 초 단위로 지정
   public var upload: @Sendable (
     _ url: String,
-    _ data: Data,
+    _ data: Data
   ) async throws -> Void
   
   /// 이미지 다운로드를 수행합니다.

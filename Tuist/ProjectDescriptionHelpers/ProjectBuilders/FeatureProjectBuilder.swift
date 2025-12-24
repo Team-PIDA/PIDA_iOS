@@ -35,7 +35,7 @@ public extension Project {
     )
     let featureTests = Target.buildUnitTestTarget(
       for: module,
-      dependencies: [.target(name: testingName)],
+      dependencies: [.target(name: testingName)]
     )
     
     let featureTesting = Target.buildStaticLibraryTarget(

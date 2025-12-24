@@ -96,7 +96,7 @@ extension APIClient {
   }
   
   static func internalDownload(
-    _ url: String,
+    _ url: String
   ) async throws -> Data {
     try await withThrowingTaskGroup(of: Data.self) { group in
       group.addTask {
