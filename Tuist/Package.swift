@@ -32,7 +32,6 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.18.0"),
     .package(url: "https://github.com/pointfreeco/swift-navigation.git", exact: "2.3.1"), /// swift-navigation 명시적 버전 지정
     .package(url: "https://github.com/navermaps/SPM-NMapsMap.git", exact: "3.21.0"),
-    .package(url: "https://github.com/airbnb/lottie-ios.git", exact: "4.5.0"),
     .package(url: "https://github.com/LottieFiles/dotlottie-ios", exact: "0.8.0")
   ]
 )

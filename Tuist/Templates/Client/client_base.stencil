@@ -1,0 +1,21 @@
+//
+//  {{name}}Client.swift
+//  {{name}}Client
+//
+//  Created by {{author}}
+//  Copyright © com.pida.me. All rights reserved.
+//
+
+import ComposableArchitecture
+
+@DependencyClient
+public struct {{name}}Client: Sendable {
+  public var execute: @Sendable () async throws -> Void
+}
+
+public extension DependencyValues {
+  var {{name}}Client /*<- 카멜케이스 적용*/ : {{name}}Client {
+    get { self[{{name}}Client.self] }
+    set { self[{{name}}Client.self] = newValue }
+  }
+}

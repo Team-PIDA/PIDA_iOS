@@ -72,3 +72,15 @@ Tuist/Package.resolved
 
 
 *.xcconfig
+
+### Fastlane ###
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+fastlane/.env
+CLAUDE.md
+ARCHITECTURE_MIGRATION.md
+
+# Gemfile.lock은 팀 일관성을 위해 커밋 권장
+# Gemfile.lock

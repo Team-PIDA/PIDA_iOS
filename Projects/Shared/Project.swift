@@ -1,19 +1,27 @@
 //
 //  Project.swift
-//  PIDA_iOSManifests
+//  SharedManifests
 //
-//  Created by 조용인 on 3/12/25.
+//  Created by 조용인 on 12/19/25.
 //
 
 import ProjectDescription
 import ProjectDescriptionHelpers
 
-let project = Project.makeInternalFramework(
+let project = Project(
   name: "Shared",
-  dependencies: [
-    .SharedTarget.Utility,
-    .SharedTarget.KeyChain,
-    .SharedTarget.ThirdParty,
-    .SharedTarget.UserDefault
+  organizationName: organization,
+  settings: .default,
+  targets: [
+    .target(
+      name: "Shared",
+      destinations: .iOS,
+      product: .staticLibrary,
+      bundleId: organization + ".Shared",
+      deploymentTargets: .iOS("18.0"),
+      infoPlist: .default,
+      sources: ["Sources/**"],
+      dependencies: []
+    )
   ]
 )
