@@ -23,14 +23,14 @@ let featureTemplate = Template(
       path: "\(FeaturePath)/Project.swift",
       templatePath: "feature_project.stencil"
     ),
-    // Feature의 Reducer implement 파일 (TCA)
+    // Feature의 implement 파일 (TCA)
     .file(
-      path: "\(FeaturePath)/\(name)Feature/Sources/\(name)Reducer.swift",
+      path: "\(FeaturePath)/\(name)Feature/Sources/\(name)Feature.swift",
       templatePath: "feature_implement.stencil"
     ),
-    // Feature Reducer의 interface 파일
+    // Feature의 interface 파일
     .file(
-      path: "\(FeaturePath)/\(name)FeatureInterface/Sources/\(name)Reducer.swift",
+      path: "\(FeaturePath)/\(name)FeatureInterface/Sources/\(name)Feature.swift",
       templatePath: "feature_interface.stencil"
     ),
     // Feature의 SwiftUI View 파일

@@ -9,7 +9,7 @@
 import ComposableArchitecture
 
 @Reducer
-public struct {{ name }}Reducer {
+public struct {{ name }}Feature {
   private let reducer: Reduce<State, Action>
   
   public init(reducer: Reduce<State, Action>) {

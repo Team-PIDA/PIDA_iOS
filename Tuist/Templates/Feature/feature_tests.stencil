@@ -8,13 +8,13 @@
 
 import XCTest
 import ComposableArchitecture
-@testable import {{ name }}Interface
+@testable import {{ name }}FeatureInterface
 
 final class {{ name }}UnitTests: XCTestCase {
     
     func testIncrement() {
-        let store = TestStore(initialState: {{ name }}Reducer.State()) {
-            {{ name }}Reducer()
+        let store = TestStore(initialState: {{ name }}Feature.State()) {
+            {{ name }}Feature()
         }
 
         store.send(.increment) {
@@ -23,8 +23,8 @@ final class {{ name }}UnitTests: XCTestCase {
     }
 
     func testDecrement() {
-        let store = TestStore(initialState: {{ name }}Reducer.State()) {
-            {{ name }}Reducer()
+        let store = TestStore(initialState: {{ name }}Feature.State()) {
+            {{ name }}Feature()
         }
 
         store.send(.decrement) {
