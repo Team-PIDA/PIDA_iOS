@@ -78,8 +78,6 @@ public class LocationService: NSObject, CLLocationManagerDelegate {
       switch status {
       case .authorizedAlways, .authorizedWhenInUse:
         locationManager.startUpdatingLocation()
-      case .notDetermined:
-        break
       default:
         singleLocationContinuation?.resume(returning: nil)
         singleLocationContinuation = nil
