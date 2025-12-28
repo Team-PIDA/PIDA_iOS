@@ -58,11 +58,7 @@ extension SignUpFeature {
           .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
 
       case let .checkValidNickName(nickname):
-        let inputValid: NickNameInputValid
-        if nickname.count < 2 { inputValid = .tooShort }
-        else if nickname.count > 12 { inputValid = .tooLong }
-        else { inputValid = .valid }
-        return .send(.nicknameValidMessage(inputValid))
+        return checkValidNickname(nickname: nickname)
 
       case let .nicknameValidMessage(type):
         state.inputValid = type
@@ -70,39 +66,10 @@ extension SignUpFeature {
         return .none
 
       case let .requestSignUp(nickname):
-        return .run { send in
-          await send(.isLoading(true))
-          do {
-            if let email: String = KeyChain.read(forKey: .email) {
-              let result = try await authClient.signUp(email: email, nickname: nickname)
-              UserDefaultsKeys.isLoggedIn = true
-              await send(.showToastView(message: result.message))
-              await send(.fetchUserInfo)
-            }
-          } catch let error as NetworkError {
-            if error.errorClassName == .duplicateNickname {
-              await send(.nicknameValidMessage(.duplicate))
-              await send(.isLoading(false))
-            } else {
-              await send(.isLoading(false))
-              await send(.showToastView(message: "회원가입에 실패했어요."))
-            }
-          } catch {
-            await send(.isLoading(false))
-            await send(.showToastView(message: "회원가입에 실패했어요."))
-          }
-        }
-
+        return requestSignUp(nickname: nickname)
+        
       case .fetchUserInfo:
-        return .run { send in
-          do {
-            let result = try await userClient.fetchUserInfo()
-            UserDefaultsKeys.username = result.nickname
-            await send(.dismiss)
-          } catch {
-            print(error.localizedDescription)
-          }
-        }
+        return fetchUserInfo()
 
       case .dismiss:
         return .run { send in
@@ -114,6 +81,57 @@ extension SignUpFeature {
 
       case .delegate, .binding:
         return .none
+      }
+    }
+  }
+}
+
+extension SignUpFeature.SignUpFeature {
+  private func checkValidNickname(nickname: String) -> Effect<Action> {
+    let inputValid: NickNameInputValid
+    if nickname.count < 2 {
+      inputValid = .tooShort
+    } else if nickname.count > 12 {
+      inputValid = .tooLong
+    } else {
+      inputValid = .valid
+    }
+    return .send(.nicknameValidMessage(inputValid))
+  }
+  
+  private func requestSignUp(nickname: String) -> Effect<Action> {
+    return .run { send in
+      await send(.isLoading(true))
+      do {
+        if let email: String = KeyChain.read(forKey: .email) {
+          let result = try await authClient.signUp(email: email, nickname: nickname)
+          UserDefaultsKeys.isLoggedIn = true
+          await send(.showToastView(message: result.message))
+          await send(.fetchUserInfo)
+        }
+      } catch let error as NetworkError {
+        if error.errorClassName == .duplicateNickname {
+          await send(.nicknameValidMessage(.duplicate))
+          await send(.isLoading(false))
+        } else {
+          await send(.isLoading(false))
+          await send(.showToastView(message: "회원가입에 실패했어요."))
+        }
+      } catch {
+        await send(.isLoading(false))
+        await send(.showToastView(message: "회원가입에 실패했어요."))
+      }
+    }
+  }
+  
+  private func fetchUserInfo() -> Effect<Action> {
+    return .run { send in
+      do {
+        let result = try await userClient.fetchUserInfo()
+        UserDefaultsKeys.username = result.nickname
+        await send(.dismiss)
+      } catch {
+        print(error.localizedDescription)
       }
     }
   }
