@@ -8,9 +8,10 @@
 
 import Foundation
 import APIClient
+import Shared
 
 struct LineStringGeomDTO: DTO {
-  typealias Entity = [MapPointEntity]?
+  typealias Entity = [Coordinate]?
   var type: String
   var coordinates: [[Double]]
   
@@ -24,11 +25,11 @@ struct LineStringGeomDTO: DTO {
 }
 
 extension LineStringGeomDTO {
-  func toEntity() throws -> [MapPointEntity]? {
-    let points = coordinates.compactMap { coord -> MapPointEntity? in
+  func toEntity() throws -> [Coordinate]? {
+    let points = coordinates.compactMap { coord -> Coordinate? in
       guard coord.count == 2 else { return nil }
       
-      return MapPointEntity(latitude: coord[1], longitude: coord[0])
+      return Coordinate(latitude: coord[1], longitude: coord[0])
     }
     return points.isEmpty ? nil : points
   }

@@ -11,18 +11,19 @@ import DesignKit
 import NMapsMap
 import FlowerSpotClient
 import BloomingClient
+import Shared
 
 struct MapViewRepresentable: UIViewRepresentable {
   /// 사용자의 현재 위치 정보
   ///
   /// - 초기 및 현위치 버튼 탭 시에만 값이 채워져 있음
   /// - 현 위치 이동 플래그 기능과 유사하게 동작
-  @Binding var userLocation: MapPointEntity?
+  @Binding var userLocation: Coordinate?
   /// 지도에 보여줄 데이터
   @Binding var flowerPositions: [Int: FlowerSpotEntity]
   
   /// 마커 탭 시 경로를 보여주기 위한 프로퍼티
-  @Binding var newPath: [MapPointEntity]
+  @Binding var newPath: [Coordinate]
   
   /// 지도 범위 요청 프로퍼티
   @Binding var requestBounds: Bool
@@ -45,10 +46,10 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 마커 탭 시 id값을 전달하기 위한 클로저
   var onMarkerTapped: ((Int?) -> Void)? = nil
   /// 지도 범위 좌표 값을 전달하기 위한 클로저
-  var mapBounds: (([MapPointEntity]) -> Void)? = nil
+  var mapBounds: (([Coordinate]) -> Void)? = nil
   
   /// 지도 초기 위치 설정 - 석촌호수 근처
-  private let defaultPoint: MapPointEntity = .init(latitude: 37.50545, longitude: 127.10143)
+  private let defaultPoint: Coordinate = .init(latitude: 37.50545, longitude: 127.10143)
   
   // MARK: - UIViewRepresentable Method
   
@@ -142,11 +143,11 @@ extension MapViewRepresentable {
   /// 현재 지도에 보이는 좌표 범위를 반환하는 메서드
   func currentVisibleBounds(on mapView: NMFMapView) {
     let bounds = mapView.projection.latlngBounds(fromViewBounds: mapView.bounds)
-    let northEast = MapPointEntity(
+    let northEast = Coordinate(
       latitude: bounds.northEastLat.rounded(to: 6),
       longitude: bounds.northEastLng.rounded(to: 6)
     )
-    let southWest = MapPointEntity(
+    let southWest = Coordinate(
       latitude: bounds.southWestLat.rounded(to: 6),
       longitude: bounds.southWestLng.rounded(to: 6)
     )
@@ -156,10 +157,10 @@ extension MapViewRepresentable {
   }
   
   /// 특정 위치로 이동하기 위한 메서드
-  private func moveUserLocation(_ view: NMFNaverMapView, to userLocation: MapPointEntity, context: Context) {
+  private func moveUserLocation(_ view: NMFNaverMapView, to userLocation: Coordinate, context: Context) {
     /// 카메라 위치의 변화가 있을 때만 설정
     let cameraPosition = view.mapView.cameraPosition.target
-    let point = MapPointEntity(latitude: cameraPosition.lat, longitude: cameraPosition.lng)
+    let point = Coordinate(latitude: cameraPosition.lat, longitude: cameraPosition.lng)
     
     if point != context.coordinator.lastCameraPoint {
       view.mapView.positionMode = .normal
@@ -171,7 +172,7 @@ extension MapViewRepresentable {
   }
   
   /// 카메라 이동 메서드
-  private func moveCamera(_ view: NMFNaverMapView, to point: MapPointEntity?, zoomLevel: Double = 13) {
+  private func moveCamera(_ view: NMFNaverMapView, to point: Coordinate?, zoomLevel: Double = 13) {
     if let point = point {
       let coord = NMGLatLng(lat: point.latitude, lng: point.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: coord, zoomTo: zoomLevel)
@@ -199,7 +200,7 @@ extension MapViewRepresentable {
   }
   
   /// 여러 마커의 중간지점 찾는 메서드
-  private func averageCenter(of points: [MapPointEntity]) -> MapPointEntity? {
+  private func averageCenter(of points: [Coordinate]) -> Coordinate? {
     guard !points.isEmpty else { return nil }
 
     let total = points.reduce((lat: 0.0, lon: 0.0)) { result, point in
@@ -207,7 +208,7 @@ extension MapViewRepresentable {
     }
 
     let count = Double(points.count)
-    return MapPointEntity(
+    return Coordinate(
       latitude: total.lat / count,
       longitude: total.lon / count
     )
@@ -229,7 +230,7 @@ extension MapViewRepresentable {
   private func drawPathLine(
     _ view: NMFNaverMapView,
     data: FlowerSpotEntity,
-    for newPath: [MapPointEntity],
+    for newPath: [Coordinate],
     context: Context
   ) {
     

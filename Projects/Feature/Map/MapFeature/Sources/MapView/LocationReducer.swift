@@ -38,7 +38,7 @@ extension MapReducer {
         let isCurrentButtonTap = state.location.isCurrentButtonTap
         return .run { send in
           if let location = await LocationService.shared.userLocation {
-            let userLocation = MapPointEntity(latitude: location.0, longitude: location.1)
+            let userLocation = Coordinate(latitude: location.0, longitude: location.1)
             await send(.saveUserLocation(userLocation))
             await send(.moveLocation(userLocation))
           } else {

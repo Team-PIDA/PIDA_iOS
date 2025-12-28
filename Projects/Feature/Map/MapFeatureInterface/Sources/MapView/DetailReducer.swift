@@ -10,6 +10,7 @@ import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
 import BloomingClient
+import Shared
 
 extension MapReducer {
   
@@ -45,7 +46,7 @@ extension MapReducer {
     case verifyTodayBlooming(VerifyBloomingStateEntity)
     case allDataUpdated
     
-    case calculateDistance(MapPointEntity)
+    case calculateDistance(Coordinate)
     case updateMarkerStatus(BloomStatus, id: Int)
     case dismissBottomSheet
     case presentToDetail(

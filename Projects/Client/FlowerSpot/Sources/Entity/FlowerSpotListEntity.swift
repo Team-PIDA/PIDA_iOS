@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreLocation
+import Shared
 
 public struct FlowerSpotListEntity: Equatable, Sendable, Codable {
   public var itemList: [FlowerSpotEntity]
@@ -26,8 +27,8 @@ public struct FlowerSpotEntity: Equatable, Sendable, Codable {
   public var streetName: String
   public var district: String
   public var description: String
-  public var path: [MapPointEntity]
-  public var pinPoint: MapPointEntity
+  public var path: [Coordinate]
+  public var pinPoint: Coordinate
   public var region: String
   
   public init(
@@ -38,8 +39,8 @@ public struct FlowerSpotEntity: Equatable, Sendable, Codable {
     streetName: String,
     district: String? = nil,
     description: String? = nil,
-    path: [MapPointEntity],
-    pinPoint: MapPointEntity,
+    path: [Coordinate],
+    pinPoint: Coordinate,
     region: String
   ) {
     self.id = id
