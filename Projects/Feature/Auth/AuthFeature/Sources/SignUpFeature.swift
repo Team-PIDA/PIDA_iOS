@@ -14,14 +14,19 @@ import UserClient
 
 extension SignUpFeature {
   public init() {
+    self.init(reducer: Reduce(SignUpFeature()))
+  }
+
+  struct SignUpFeature: Reducer {
     @Dependency(\.authClient) var authClient
     @Dependency(\.userClient) var userClient
     @Dependency(\.mainQueue) var mainQueue
-    let reducer = Reduce<State, Action> { state, action in
+
+    func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
-        
       case .binding(\.nickname):
         return .send(.checkValidNickName(state.nickname))
+
       case .onAppear:
         return .run { send in
           await MainActor.run {
@@ -29,45 +34,41 @@ extension SignUpFeature {
             send(.initState)
           }
         }
+
       case let .showToastView(message):
         state.toastMessage = message
         return .none
-        
+
       case let .showKeyboard(isShow):
         state.focusKeyboard = isShow
         return .none
-        
+
       case .initState:
         state.isValidInput = true
         state.inputValid = .none
         state.isLoading = false
-        
         return .none
-        
+
       case let .isLoading(isLoading):
         state.isLoading = isLoading
         return .none
-        
+
       case .confirmTapped:
         return .send(.requestSignUp(nickname: state.nickname))
           .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
-        
+
       case let .checkValidNickName(nickname):
         let inputValid: NickNameInputValid
-        if nickname.count < 2 {
-          inputValid = .tooShort
-        } else if nickname.count > 12 {
-          inputValid = .tooLong
-        } else {
-          inputValid = .valid
-        }
+        if nickname.count < 2 { inputValid = .tooShort }
+        else if nickname.count > 12 { inputValid = .tooLong }
+        else { inputValid = .valid }
         return .send(.nicknameValidMessage(inputValid))
-        
+
       case let .nicknameValidMessage(type):
         state.inputValid = type
         state.isValidInput = state.inputValid.isValid
         return .none
-        
+
       case let .requestSignUp(nickname):
         return .run { send in
           await send(.isLoading(true))
@@ -82,18 +83,16 @@ extension SignUpFeature {
             if error.errorClassName == .duplicateNickname {
               await send(.nicknameValidMessage(.duplicate))
               await send(.isLoading(false))
-              
             } else {
               await send(.isLoading(false))
               await send(.showToastView(message: "회원가입에 실패했어요."))
             }
-          }
-          catch {
+          } catch {
             await send(.isLoading(false))
             await send(.showToastView(message: "회원가입에 실패했어요."))
           }
         }
-        
+
       case .fetchUserInfo:
         return .run { send in
           do {
@@ -104,7 +103,7 @@ extension SignUpFeature {
             print(error.localizedDescription)
           }
         }
-        
+
       case .dismiss:
         return .run { send in
           await MainActor.run {
@@ -112,10 +111,10 @@ extension SignUpFeature {
             send(.delegate(.dismiss))
           }
         }
+
       case .delegate, .binding:
         return .none
       }
     }
-    self.init(reducer: reducer)
   }
 }

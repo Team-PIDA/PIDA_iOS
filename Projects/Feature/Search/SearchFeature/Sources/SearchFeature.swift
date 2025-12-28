@@ -15,12 +15,14 @@ import FlowerSpotClient
 
 extension SearchFeature {
   public init() {
+    self.init(reducer: Reduce(SearchFeature()))
+  }
+
+  struct SearchFeature: Reducer {
     @Dependency(\.searchClient) var searchClient
     @Dependency(\.flowerSpotClient) var flowerSpotClient
-    
-    let searchReducer = Reduce<State, Action> {
-      state,
-      action in
+
+    func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       case .binding(\.searchWord):
         let searchQuery = state.searchWord
@@ -31,7 +33,7 @@ extension SearchFeature {
           state.showRecentList = false
           return .send(.searchItem(searchQuery))
         }
-        
+
       case .onAppear:
         return .run { send in
           await MainActor.run {
@@ -40,7 +42,7 @@ extension SearchFeature {
             send(.fetchRecentResult)
           }
         }
-        
+
       case .configureSearchList:
         if state.searchWord.isEmpty {
           state.showRecentList = true
@@ -49,14 +51,13 @@ extension SearchFeature {
           state.showRecentList = false
           return .send(.searchItem(state.searchWord))
         }
-        
-        // MARK: - Search
-        
+
+      // MARK: - Search
       case let .searchItem(searchQuery):
         return .run { send in
           do {
             var data = try await searchClient.getSearchListFromCache()
-            if data.isEmpty { // 캐시가 날라갔으면!
+            if data.isEmpty {
               print("캐시 복구")
               try await flowerSpotClient.fetchAllFlowerAddress()
               data = try await searchClient.getSearchListFromCache()
@@ -74,13 +75,11 @@ extension SearchFeature {
               return (flowerSpot, totalScore)
             }
             let filteredResults = scoredResults
-              .filter { $0.score > 0 } // 검색어와 일치하는 부분이 있는 항목만 선택
-              .sorted { $0.score > $1.score } // 점수 높은 순으로 정렬
-              .prefix(20) // 상위 20개만 선택
-              .map { $0.flower } // 원본 데이터만 추출
-            await MainActor.run {
-              send(.updateSearchResults(filteredResults))
-            }
+              .filter { $0.score > 0 }
+              .sorted { $0.score > $1.score }
+              .prefix(20)
+              .map { $0.flower }
+            await MainActor.run { send(.updateSearchResults(filteredResults)) }
           } catch let error as NetworkError {
             print(error.errorDescription)
           } catch let error as FoundationError {
@@ -89,11 +88,11 @@ extension SearchFeature {
             print(error.localizedDescription)
           }
         }
-        
+
       case let .updateSearchResults(results):
         state.searchList = results
         return .none
-        
+
       case .fetchRecentResult:
         return .run { [searchKeyword = state.searchWord] send in
           do {
@@ -104,27 +103,25 @@ extension SearchFeature {
             }
           }
         }
-        
+
       case let .storeRecentResult(item):
         state.recentList = item
         return .none
-        
+
       case let .fetchSearchResult(result):
         return .run { send in
-          await MainActor.run {
-            send(.delegate(.selectResult(result)))
-          }
+          await MainActor.run { send(.delegate(.selectResult(result))) }
         }
-        
+
       case let .searchBarFocused(isFocused):
         state.isFocused = isFocused
         return .none
-      case let .initialSearchBar(text): // 서치바 초기화
+
+      case let .initialSearchBar(text):
         state.searchWord = text ?? ""
         return .none
-        
-        // MARK: - Delegate
-        
+
+      // MARK: - Delegate
       case let .selectResult(item):
         return .run { send in
           do {
@@ -142,6 +139,7 @@ extension SearchFeature {
             print(error.localizedDescription)
           }
         }
+
       case .dismiss:
         return .run { send in
           await MainActor.run {
@@ -149,12 +147,10 @@ extension SearchFeature {
             send(.delegate(.dismiss))
           }
         }
-      case .binding,
-          .delegate:
+
+      case .binding, .delegate:
         return .none
       }
     }
-    
-    self.init(reducer: searchReducer)
   }
 }

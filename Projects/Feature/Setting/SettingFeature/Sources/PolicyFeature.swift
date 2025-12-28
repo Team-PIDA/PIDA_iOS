@@ -11,7 +11,11 @@ import SettingFeatureInterface
 
 extension PolicyFeature {
   public init() {
-    let reducer = Reduce<State, Action> { state, action in
+    self.init(reducer: Reduce(PolicyFeature()))
+  }
+
+  struct PolicyFeature: Reducer {
+    func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       case .pop:
         return .run { send in
@@ -20,14 +24,14 @@ extension PolicyFeature {
             send(.clearType)
           }
         }
+
       case .clearType:
         state.type = nil
         return .none
+
       case .delegate:
         return .none
       }
-      
     }
-    self.init(reducer: reducer)
   }
 }
