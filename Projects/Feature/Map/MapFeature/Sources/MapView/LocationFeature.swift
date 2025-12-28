@@ -16,25 +16,16 @@ import CacheClient
 
 extension MapFeature {
   struct LocationFeature: Reducer {
+    typealias Action = LocationAction
+    
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.cache) var cache
-    
-    public func reduce(into state: inout State, action: LocationAction) -> Effect<LocationAction> {
-      
+
+    public func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       case .moveUserLocation:
         let isCurrentButtonTap = state.location.isCurrentButtonTap
-        return .run { send in
-          if let location = await LocationService.shared.requestUserLocation() {
-            await send(.saveUserLocation(location))
-            await send(.moveLocation(location))
-          } else {
-            if isCurrentButtonTap {
-              await send(.presentAlert(type: .locationPermission))
-              await send(.currentButtonTapped(false))
-            }
-          }
-        }
+        return moveUserLocation(isCurrentButtonTap: isCurrentButtonTap)
         
       case let .saveUserLocation(location):
         state.userLocation = location
@@ -57,28 +48,8 @@ extension MapFeature {
         return .none
         
       case let .fetchFlowers(positions):
-        return .run { send in
-          do {
-            let query = GetFlowerSpotQuery(
-              region: "SEOUL",
-              swLat: positions[0].latitude,
-              swLng: positions[0].longitude,
-              neLat: positions[1].latitude,
-              neLng: positions[1].longitude
-            )
-            let result = try await flowerSpotClient.fetchAllFlowerPin(query: query)
-            if result.itemList.count == 0 {
-              await send(.showToastView(message: "이 근방에는 꽃길이 없어요.", buttonLabel: "제보하기"))
-            }
-            await send(.storeFlowerData(result.itemList))
-          } catch let error as NetworkError {
-            await send(.mapSearchError(error.localizedDescription))
-          } catch let error as FoundationError {
-            await send(.mapSearchError(error.localizedDescription))
-          } catch {
-            await send(.mapSearchError(error.localizedDescription))
-          }
-        }
+        return fetchFlowerSpots(positions: positions)
+        
       case let .storeFlowerData(data):
         state.flowerSpots.removeAll()
         data.forEach {
@@ -98,4 +69,45 @@ extension MapFeature {
     }
   }
   
+}
+
+extension MapFeature.LocationFeature {
+  private func moveUserLocation(isCurrentButtonTap: Bool) -> Effect<Action> {
+    return .run { send in
+      if let location = await LocationService.shared.requestUserLocation() {
+        await send(.saveUserLocation(location))
+        await send(.moveLocation(location))
+      } else {
+        if isCurrentButtonTap {
+          await send(.presentAlert(type: .locationPermission))
+          await send(.currentButtonTapped(false))
+        }
+      }
+    }
+  }
+  
+  private func fetchFlowerSpots(positions: [Coordinate]) -> Effect<Action> {
+    return .run { send in
+      do {
+        let query = GetFlowerSpotQuery(
+          region: "SEOUL",
+          swLat: positions[0].latitude,
+          swLng: positions[0].longitude,
+          neLat: positions[1].latitude,
+          neLng: positions[1].longitude
+        )
+        let result = try await flowerSpotClient.fetchAllFlowerPin(query: query)
+        if result.itemList.count == 0 {
+          await send(.showToastView(message: "이 근방에는 꽃길이 없어요.", buttonLabel: "제보하기"))
+        }
+        await send(.storeFlowerData(result.itemList))
+      } catch let error as NetworkError {
+        await send(.mapSearchError(error.localizedDescription))
+      } catch let error as FoundationError {
+        await send(.mapSearchError(error.localizedDescription))
+      } catch {
+        await send(.mapSearchError(error.localizedDescription))
+      }
+    }
+  }
 }
