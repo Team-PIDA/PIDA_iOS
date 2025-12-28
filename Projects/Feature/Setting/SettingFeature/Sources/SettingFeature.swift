@@ -47,15 +47,21 @@ extension SettingFeature {
       case .checkLoggedIn:
         let isLoggedIn = UserDefaultsKeys.isLoggedIn ?? false
         state.isLoggedIn = isLoggedIn
-        if isLoggedIn { return .send(.checkUserInfo) }
+        if isLoggedIn {
+          return .send(.checkUserInfo)
+        }
         return .none
 
       case .checkUserInfo:
-        if let username = UserDefaultsKeys.username { state.username = username }
+        if let username = UserDefaultsKeys.username {
+          state.username = username
+        }
         return .none
 
       case .profileTapped:
-        return .send(state.isLoggedIn ? .delegate(.presentToUpdateProfile) : .delegate(.presentToLogin))
+        return .send(
+          state.isLoggedIn ? .delegate(.presentToUpdateProfile) : .delegate(.presentToLogin)
+        )
 
       case .deleteToken:
         return .run { send in
@@ -65,15 +71,28 @@ extension SettingFeature {
 
       // MARK: - SettingList Events
       case .settingListTapped(.feedback):
-        return .run { _ in if let url = ExternalURL.feedBack { await openURL(url) } }
+        return .run {
+          _ in
+          if let url = ExternalURL.feedBack {
+            await openURL(url)
+          }
+        }
 
       case .settingListTapped(.report):
-        return .run { _ in if let url = ExternalURL.report { await openURL(url) } }
+        return .run { _ in
+          if let url = ExternalURL.report {
+            await openURL(url)
+          }
+        }
 
       case .settingListTapped(.update):
         if state.isNeedUpdate {
           return .run { _ in
-            if let url = ExternalURL.appStore { await openURL(url) } else { print("앱스토어 이동 실패") }
+            if let url = ExternalURL.appStore {
+              await openURL(url)
+            } else {
+              print("앱스토어 이동 실패")
+            }
           }
         }
         return .none

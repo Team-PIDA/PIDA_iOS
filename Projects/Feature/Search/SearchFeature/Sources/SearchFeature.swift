@@ -54,40 +54,7 @@ extension SearchFeature {
 
       // MARK: - Search
       case let .searchItem(searchQuery):
-        return .run { send in
-          do {
-            var data = try await searchClient.getSearchListFromCache()
-            if data.isEmpty {
-              print("캐시 복구")
-              try await flowerSpotClient.fetchAllFlowerAddress()
-              data = try await searchClient.getSearchListFromCache()
-            }
-            let scoredResults = try data.map { flowerSpot -> (flower: SearchListCellEntity, score: Int) in
-              let addressScore = try searchClient.calculateSimilarityScore(
-                text: flowerSpot.address,
-                query: searchQuery
-              ) * 2
-              let streetScore = try searchClient.calculateSimilarityScore(
-                text: flowerSpot.streetName,
-                query: searchQuery
-              )
-              let totalScore = addressScore + streetScore
-              return (flowerSpot, totalScore)
-            }
-            let filteredResults = scoredResults
-              .filter { $0.score > 0 }
-              .sorted { $0.score > $1.score }
-              .prefix(20)
-              .map { $0.flower }
-            await MainActor.run { send(.updateSearchResults(filteredResults)) }
-          } catch let error as NetworkError {
-            print(error.errorDescription)
-          } catch let error as FoundationError {
-            print(error.errorDescription)
-          } catch {
-            print(error.localizedDescription)
-          }
-        }
+        return searchItem(with: searchQuery)
 
       case let .updateSearchResults(results):
         state.searchList = results
@@ -123,22 +90,7 @@ extension SearchFeature {
 
       // MARK: - Delegate
       case let .selectResult(item):
-        return .run { send in
-          do {
-            let detail = try await flowerSpotClient.getFlowerSpotDetail(id: item.id)
-            try await searchClient.saveRecentSearchItem(item: item)
-            await MainActor.run {
-              send(.searchBarFocused(false))
-              send(.fetchSearchResult(detail))
-            }
-          } catch let error as NetworkError {
-            print(error.errorDescription)
-          } catch let error as FoundationError {
-            print(error.errorDescription)
-          } catch {
-            print(error.localizedDescription)
-          }
-        }
+        return fetchSelectedDetailInfo(item: item)
 
       case .dismiss:
         return .run { send in
@@ -150,6 +102,64 @@ extension SearchFeature {
 
       case .binding, .delegate:
         return .none
+      }
+    }
+  }
+}
+
+extension SearchFeature.SearchFeature {
+  private func searchItem(with searchQuery: String) -> Effect<Action> {
+    return .run { send in
+      do {
+        var data = try await searchClient.getSearchListFromCache()
+        if data.isEmpty {
+          print("캐시 복구")
+          try await flowerSpotClient.fetchAllFlowerAddress()
+          data = try await searchClient.getSearchListFromCache()
+        }
+        let scoredResults = try data.map { flowerSpot -> (flower: SearchListCellEntity, score: Int) in
+          let addressScore = try searchClient.calculateSimilarityScore(
+            text: flowerSpot.address,
+            query: searchQuery
+          ) * 2
+          let streetScore = try searchClient.calculateSimilarityScore(
+            text: flowerSpot.streetName,
+            query: searchQuery
+          )
+          let totalScore = addressScore + streetScore
+          return (flowerSpot, totalScore)
+        }
+        let filteredResults = scoredResults
+          .filter { $0.score > 0 }
+          .sorted { $0.score > $1.score }
+          .prefix(20)
+          .map { $0.flower }
+        await MainActor.run { send(.updateSearchResults(filteredResults)) }
+      } catch let error as NetworkError {
+        print(error.errorDescription)
+      } catch let error as FoundationError {
+        print(error.errorDescription)
+      } catch {
+        print(error.localizedDescription)
+      }
+    }
+  }
+  
+  private func fetchSelectedDetailInfo(item: SearchListCellEntity) -> Effect<Action> {
+    return .run { send in
+      do {
+        let detail = try await flowerSpotClient.getFlowerSpotDetail(id: item.id)
+        try await searchClient.saveRecentSearchItem(item: item)
+        await MainActor.run {
+          send(.searchBarFocused(false))
+          send(.fetchSearchResult(detail))
+        }
+      } catch let error as NetworkError {
+        print(error.errorDescription)
+      } catch let error as FoundationError {
+        print(error.errorDescription)
+      } catch {
+        print(error.localizedDescription)
       }
     }
   }

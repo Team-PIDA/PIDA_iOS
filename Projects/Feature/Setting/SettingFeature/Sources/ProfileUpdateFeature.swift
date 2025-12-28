@@ -66,25 +66,7 @@ extension ProfileUpdateFeature {
         return .none
 
       case let .changeNickName(nickname):
-        return .run { send in
-          await send(.isLoading(true))
-          do {
-            let result = try await userClient.changeNickname(nickname: nickname)
-            UserDefaultsKeys.username = result.nickname
-            await send(.pop)
-          } catch let error as NetworkError {
-            if error.errorClassName == .duplicateNickname {
-              await send(.isLoading(false))
-              await send(.nicknameValidMessage(.duplicate))
-            } else {
-              await send(.isLoading(false))
-              await send(.showToastView(message: "닉네임 변경에 실패했어요."))
-            }
-          } catch {
-            await send(.isLoading(false))
-            await send(.showToastView(message: "닉네임 변경에 실패했어요."))
-          }
-        }
+        return changeNickname(nickname: nickname)
 
       case .pop:
         state.nickname = ""
@@ -99,6 +81,30 @@ extension ProfileUpdateFeature {
 
       case .binding, .delegate:
         return .none
+      }
+    }
+  }
+}
+
+extension ProfileUpdateFeature.ProfileUpdateFeature {
+  private func changeNickname(nickname: String) -> Effect<Action> {
+    return .run { send in
+      await send(.isLoading(true))
+      do {
+        let result = try await userClient.changeNickname(nickname: nickname)
+        UserDefaultsKeys.username = result.nickname
+        await send(.pop)
+      } catch let error as NetworkError {
+        if error.errorClassName == .duplicateNickname {
+          await send(.isLoading(false))
+          await send(.nicknameValidMessage(.duplicate))
+        } else {
+          await send(.isLoading(false))
+          await send(.showToastView(message: "닉네임 변경에 실패했어요."))
+        }
+      } catch {
+        await send(.isLoading(false))
+        await send(.showToastView(message: "닉네임 변경에 실패했어요."))
       }
     }
   }

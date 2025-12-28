@@ -10,6 +10,7 @@ import Shared
 import ComposableArchitecture
 import BloomingFeatureInterface
 import BloomingClient
+import DesignKit
 
 extension BloomingUpdateFeature {
   public init() {
@@ -55,16 +56,11 @@ extension BloomingUpdateFeature {
           .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
 
       case .updateBloomingRequest:
-        guard let id = state.spotId, let status = state.selectedStatus else { return .none }
-        return .run { send in
-          do {
-            let result = try await bloomingClient.updateBloomingState(id: id, status: status.rawValue)
-            await send(.dismiss(didUpdate: true, spotId: id))
-            await send(.sendToastMessage(result.message))
-          } catch {
-            await send(.sendToastMessage("기록에 실패했어요"))
-          }
+        guard let id = state.spotId,
+              let status = state.selectedStatus else {
+          return .none
         }
+        return updateBloomingRequest(id: id, status: status)
 
       case let .dismiss(update, spotId):
         return .run { send in
@@ -76,5 +72,23 @@ extension BloomingUpdateFeature {
         return .none
       }
     }
+  }
+}
+
+extension BloomingUpdateFeature.BloomingUpdateFeature {
+  private func updateBloomingRequest(id: Int, status: BloomStatus) -> Effect<Action> {
+    return .run { send in
+      do {
+        let result = try await bloomingClient.updateBloomingState(
+          id: id,
+          status: status.rawValue
+        )
+        await send(.dismiss(didUpdate: true, spotId: id))
+        await send(.sendToastMessage(result.message))
+      } catch {
+        await send(.sendToastMessage("기록에 실패했어요"))
+      }
+    }
+
   }
 }
