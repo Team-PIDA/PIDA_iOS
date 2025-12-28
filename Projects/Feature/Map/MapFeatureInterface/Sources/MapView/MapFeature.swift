@@ -75,9 +75,10 @@ public struct MapFeature {
     case detail(DetailAction)
     
     case showToastView(message: String?, buttonLabel: String?)
-    case toastActionTapped
+    case moveToReportURL
     case viewDidAppear
     
+    case fetchAllFlowerAddress
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
     case fetchDetailInfo(Int)

@@ -38,7 +38,7 @@ public struct MapView: View {
         Spacer()
         ToastView(message: $store.toastMessage, buttonLabel: store.toastLabel)
           .action {
-            store.send(.toastActionTapped)
+            store.send(.moveToReportURL)
           }
         currentButton
       }
