@@ -117,14 +117,20 @@ extension SettingFeature {
 
       case .alertAcceptTapped(.withdraw):
         return .run { send in
-          do { let result = try await userClient.withdrawUser(); print(result.message) } catch { }
+          do {
+            let result = try await userClient.withdrawUser()
+            print(result.message)
+          } catch { }
           await send(.deleteToken)
           await send(.clearAlertState)
         }
 
       case .alertAcceptTapped(.logout):
         return .run { send in
-          do { let result = try await authClient.logout(); print(result.message) } catch { }
+          do {
+            let result = try await authClient.logout()
+            print(result.message)
+          } catch { }
           await send(.deleteToken)
           await send(.clearAlertState)
         }
