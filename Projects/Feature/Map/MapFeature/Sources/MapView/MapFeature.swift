@@ -25,7 +25,8 @@ extension MapFeature {
   struct MapFeature: Reducer {
     @Dependency(\.flowerSpotClient) var flowerSpot
     @Dependency(\.openURL) var openURL
-    public func reduce(into state: inout State, action: Action) -> Effect<Action> {
+    
+    func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
         
       case let .showToastView(message, buttonLabel):
@@ -120,28 +121,38 @@ extension MapFeature {
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
         
-      case let .detail(.presentToDetail(flowerSpot, bloomingStatus, distance, isVotedBlooming)):
-        return .send(
-          .delegate(
-            .presentToDetail(
-              flowerSpotData: flowerSpot,
-              bloomingStatus: bloomingStatus,
-              distance: distance,
-              isVotedBlooming: isVotedBlooming
+      case let .detail(action):
+        switch action {
+        case let .presentToDetail(flowerSpot, bloomingStatus, distance, isVotedBlooming):
+          return .send(
+            .delegate(
+              .presentToDetail(
+                flowerSpotData: flowerSpot,
+                bloomingStatus: bloomingStatus,
+                distance: distance,
+                isVotedBlooming: isVotedBlooming
+              )
             )
           )
-        )
+          
+        case let .fetchPathLines(id):
+          return .send(.fetchPathLines(id))
+          
+        default: return .none
+        }
         
-      case let .detail(.fetchPathLines(id)):
-        return .send(.fetchPathLines(id))
+      case let .location(action):
+        switch action {
+        case let .showToastView(message, label):
+          return .send(.showToastView(message: message, buttonLabel: label))
+          
+        case let .presentAlert(type):
+          return .send(.presentAlert(type: type))
+          
+        default: return .none
+        }
         
-      case let .location(.showToastView(message, label)):
-        return .send(.showToastView(message: message, buttonLabel: label))
-        
-      case let .location(.presentAlert(type)):
-        return .send(.presentAlert(type: type))
-        
-      case .binding, .delegate, .location, .detail, .alertAcceptTapped:
+      case .binding, .delegate, .alertAcceptTapped:
         return .none
         
       }
