@@ -1,5 +1,5 @@
 //
-//  MapReducer.swift
+//  MapFeature.swift
 //
 //  Map
 //
@@ -13,7 +13,7 @@ import MapFeatureInterface
 import FlowerSpotClient
 
 
-extension MapReducer {
+extension MapFeature {
   public init() {
     
     @Dependency(\.flowerSpotClient) var flowerSpot
@@ -156,8 +156,8 @@ extension MapReducer {
     }
     self.init(
       reducer: mapReducer,
-      location: Reduce(LocationReducer()),
-      detail: Reduce(DetailReducer())
+      location: Reduce(LocationFeature()),
+      detail: Reduce(DetailFeature())
     )
     
   }

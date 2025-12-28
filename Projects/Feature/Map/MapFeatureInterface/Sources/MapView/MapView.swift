@@ -14,9 +14,9 @@ import FlowerSpotClient
 import BloomingClient
 
 public struct MapView: View {
-  @Bindable var store: StoreOf<MapReducer>
+  @Bindable var store: StoreOf<MapFeature>
   
-  public init(store: StoreOf<MapReducer>) {
+  public init(store: StoreOf<MapFeature>) {
     self.store = store
   }
   

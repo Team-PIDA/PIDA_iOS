@@ -11,9 +11,9 @@ import DesignKit
 import ComposableArchitecture
 
 public struct AuthView: View {
-  let store: StoreOf<AuthReducer>
-
-  public init(store: StoreOf<AuthReducer>) {
+  let store: StoreOf<AuthFeature>
+  
+  public init(store: StoreOf<AuthFeature>) {
     self.store = store
   }
 
@@ -72,4 +72,3 @@ public struct AuthView: View {
     .frame(height: .Number48)
   }
 }
-

@@ -1,5 +1,5 @@
 //
-//  DetailReducer.swift
+//  DetailFeature.swift
 //  MapFeature
 //
 //  Created by Jiyeon on 4/7/25.
@@ -12,7 +12,7 @@ import FlowerSpotClient
 import BloomingClient
 import Shared
 
-extension MapReducer {
+extension MapFeature {
   
   public struct DetailState: Equatable {
     public var selectedItem: FlowerSpotEntity? = nil

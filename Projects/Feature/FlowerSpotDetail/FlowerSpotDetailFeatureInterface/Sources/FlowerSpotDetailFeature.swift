@@ -1,5 +1,5 @@
 //
-//  FlowerSpotDetailReducer.swift
+//  FlowerSpotDetailFeature.swift
 //
 //  FlowerSpotDetail
 //
@@ -11,7 +11,7 @@ import FlowerSpotClient
 import BloomingClient
 
 @Reducer
-public struct FlowerSpotDetailReducer {
+public struct FlowerSpotDetailFeature {
   private let reducer: Reduce<State, Action>
   
   public init(reducer: Reduce<State, Action>) {

@@ -1,5 +1,5 @@
 //
-//  LocationReducer.swift
+//  LocationFeature.swift
 //  MapFeature
 //
 //  Created by Jiyeon on 4/7/25.
@@ -11,7 +11,7 @@ import DesignKit
 import FlowerSpotClient
 import Shared
 
-extension MapReducer {
+extension MapFeature {
   
   public struct LocationState: Equatable {
     public var isCurrentButtonTap: Bool = false

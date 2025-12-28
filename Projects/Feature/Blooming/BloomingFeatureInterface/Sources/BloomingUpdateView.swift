@@ -11,9 +11,9 @@ import DesignKit
 import ComposableArchitecture
 
 public struct BloomingUpdateView: View {
-  @Bindable var store: StoreOf<BloomingUpdateReducer>
+  @Bindable var store: StoreOf<BloomingUpdateFeature>
   
-  public init(store: StoreOf<BloomingUpdateReducer>) {
+  public init(store: StoreOf<BloomingUpdateFeature>) {
     self.store = store
   }
   @State var selectedStatus: BloomStatus? = nil

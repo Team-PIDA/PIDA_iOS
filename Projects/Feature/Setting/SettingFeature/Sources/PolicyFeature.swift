@@ -1,5 +1,5 @@
 //
-//  PolicyReducer.swift
+//  PolicyFeature.swift
 //  SettingFeature
 //
 //  Created by Jiyeon on 3/24/25.
@@ -9,7 +9,7 @@
 import ComposableArchitecture
 import SettingFeatureInterface
 
-extension PolicyReducer {
+extension PolicyFeature {
   public init() {
     let reducer = Reduce<State, Action> { state, action in
       switch action {

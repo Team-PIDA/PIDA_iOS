@@ -1,5 +1,5 @@
 //
-//  BloominUpdateReducer.swift
+//  BloomingUpdateFeature.swift
 //  BloomingFeatureInterface
 //
 //  Created by Jiyeon on 3/30/25.
@@ -11,7 +11,7 @@ import ComposableArchitecture
 import BloomingFeatureInterface
 import BloomingClient
 
-extension BloomingUpdateReducer {
+extension BloomingUpdateFeature {
   public init() {
     @Dependency(\.bloomingClient) var bloomingClient
     @Dependency(\.mainQueue) var mainQueue

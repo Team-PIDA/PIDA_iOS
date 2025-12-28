@@ -1,5 +1,5 @@
 //
-//  BloomingUpdateReducer.swift
+//  BloomingUpdateFeature.swift
 //  BloomingFeatureInterface
 //
 //  Created by Jiyeon on 3/30/25.
@@ -11,7 +11,7 @@ import ComposableArchitecture
 
 
 @Reducer
-public struct BloomingUpdateReducer {
+public struct BloomingUpdateFeature {
   private let reducer: Reduce<State, Action>
   public init(reducer: Reduce<State, Action>) {
     self.reducer = reducer
@@ -58,4 +58,3 @@ public struct BloomingUpdateReducer {
     reducer
   }
 }
-

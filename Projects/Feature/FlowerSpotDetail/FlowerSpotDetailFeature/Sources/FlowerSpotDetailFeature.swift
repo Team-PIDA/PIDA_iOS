@@ -1,5 +1,5 @@
 //
-//  FlowerSpotDetailReducer.swift
+//  FlowerSpotDetailFeature.swift
 //
 //  FlowerSpotDetail
 //
@@ -10,7 +10,7 @@ import Shared
 import ComposableArchitecture
 import FlowerSpotDetailFeatureInterface
 
-extension FlowerSpotDetailReducer {
+extension FlowerSpotDetailFeature {
   public init() {
     let reducer = Reduce<State, Action> { state, action in
       switch action {

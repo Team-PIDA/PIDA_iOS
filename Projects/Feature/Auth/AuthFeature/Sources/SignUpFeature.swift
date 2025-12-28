@@ -1,5 +1,5 @@
 //
-//  SignUpReducer.swift
+//  SignUpFeature.swift
 //  AuthFeatureInterface
 //
 //  Created by Jiyeon on 3/27/25.
@@ -12,7 +12,7 @@ import AuthFeatureInterface
 import AuthClient
 import UserClient
 
-extension SignUpReducer {
+extension SignUpFeature {
   public init() {
     @Dependency(\.authClient) var authClient
     @Dependency(\.userClient) var userClient

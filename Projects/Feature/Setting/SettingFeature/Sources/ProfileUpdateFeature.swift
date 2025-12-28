@@ -1,5 +1,5 @@
 //
-//  ProfileUpdateReducer.swift
+//  ProfileUpdateFeature.swift
 //  SettingDemo
 //
 //  Created by Jiyeon on 3/29/25.
@@ -11,7 +11,7 @@ import ComposableArchitecture
 import SettingFeatureInterface
 import UserClient
 
-extension ProfileUpdateReducer {
+extension ProfileUpdateFeature {
   public init() {
     @Dependency(\.userClient) var userClient
     @Dependency(\.mainQueue) var mainQueue

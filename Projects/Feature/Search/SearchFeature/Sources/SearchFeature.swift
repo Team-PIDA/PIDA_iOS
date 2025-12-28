@@ -1,5 +1,5 @@
 //
-//  SearchReducer.swift
+//  SearchFeature.swift
 //
 //  Search
 //
@@ -13,7 +13,7 @@ import SearchClient
 import FlowerSpotClient
 
 
-extension SearchReducer {
+extension SearchFeature {
   public init() {
     @Dependency(\.searchClient) var searchClient
     @Dependency(\.flowerSpotClient) var flowerSpotClient

@@ -1,5 +1,5 @@
 //
-//  SettingReducer.swift
+//  SettingFeature.swift
 //
 //  Setting
 //
@@ -14,7 +14,7 @@ import SettingFeatureInterface
 import UserClient
 import AuthClient
 
-extension SettingReducer {
+extension SettingFeature {
   public init() {
     @Dependency(\.openURL) var openURL
     @Dependency(\.userClient) var userClient

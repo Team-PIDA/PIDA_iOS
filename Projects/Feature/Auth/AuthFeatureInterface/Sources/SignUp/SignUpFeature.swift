@@ -1,17 +1,16 @@
 //
-//  ProfileUpdateReducer.swift
-//  SettingDemo
+//  SignUpFeature.swift
+//  AuthFeatureInterface
 //
-//  Created by Jiyeon on 3/29/25.
+//  Created by Jiyeon on 3/27/25.
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
-import Foundation
-import ComposableArchitecture
 import Shared
+import ComposableArchitecture
 
 @Reducer
-public struct ProfileUpdateReducer {
+public struct SignUpFeature {
   private let reducer: Reduce<State, Action>
   
   public init(reducer: Reduce<State, Action>) {
@@ -21,13 +20,12 @@ public struct ProfileUpdateReducer {
   @ObservableState
   public struct State: Equatable {
     public var nickname: String = ""
-    public var changeName: String = ""
     public var focusKeyboard: Bool = false
-    public var isLoading: Bool = false
+    public var isValidInput: Bool = true
     public var inputValid: NickNameInputValid = .none
-    public var isValidInput: Bool = false
+    public var isLoading: Bool = false
     public var toastMessage: String? = nil
-    public init(){}
+    public init() {}
   }
   
   public enum Action: BindableAction, Equatable {
@@ -35,19 +33,22 @@ public struct ProfileUpdateReducer {
     case onAppear
     case showToastView(message: String?)
     
-    case saveTapped
+    case initState
     case isLoading(Bool)
-    case checkValidNickName(String)
     case showKeyboard(Bool)
-    case changeNickName(String)
+    case confirmTapped
+    case checkValidNickName(String)
     case nicknameValidMessage(NickNameInputValid)
     
+    case requestSignUp(nickname: String)
+    case fetchUserInfo
+    
+    case dismiss
     case delegate(Delegate)
-    case pop
   }
   
-  public enum Delegate {
-    case pop
+  public enum Delegate: Equatable {
+    case dismiss
   }
   
   public enum ID: Hashable {

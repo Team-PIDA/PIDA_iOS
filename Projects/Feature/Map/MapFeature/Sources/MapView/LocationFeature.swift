@@ -1,5 +1,5 @@
 //
-//  locationReducer.swift
+//  LocationFeature.swift
 //  MapFeature
 //
 //  Created by Jiyeon on 4/7/25.
@@ -14,8 +14,8 @@ import MapFeatureInterface
 import FlowerSpotClient
 import CacheClient
 
-extension MapReducer {
-  struct LocationReducer: Reducer {
+extension MapFeature {
+  struct LocationFeature: Reducer {
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.cache) var cache
     

@@ -12,9 +12,9 @@ import DesignKit
 import ComposableArchitecture
 
 public struct SignUpView: View {
-  @Bindable var store: StoreOf<SignUpReducer>
+  @Bindable var store: StoreOf<SignUpFeature>
   
-  public init(store: StoreOf<SignUpReducer>) {
+  public init(store: StoreOf<SignUpFeature>) {
     self.store = store
   }
   
@@ -72,5 +72,4 @@ public struct SignUpView: View {
   }
   
 }
-
 

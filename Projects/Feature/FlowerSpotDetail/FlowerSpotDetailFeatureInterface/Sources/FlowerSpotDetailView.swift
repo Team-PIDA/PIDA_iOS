@@ -12,13 +12,13 @@ import DesignKit
 import ComposableArchitecture
 
 public struct FlowerSpotDetailView: View {
-  @Bindable var store: StoreOf<FlowerSpotDetailReducer>
+  @Bindable var store: StoreOf<FlowerSpotDetailFeature>
   @State private var offsetY: CGPoint = .zero
   
   @State var isNeedDrawPath: Bool = true
   @State var isNeedDeletePath: Bool = false
   
-  public init(store: StoreOf<FlowerSpotDetailReducer>) {
+  public init(store: StoreOf<FlowerSpotDetailFeature>) {
     self.store = store
   }
   

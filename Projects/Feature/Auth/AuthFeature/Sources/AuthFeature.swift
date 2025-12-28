@@ -1,5 +1,5 @@
 //
-//  AuthReducer.swift
+//  AuthFeature.swift
 //
 //  Auth
 //
@@ -12,7 +12,7 @@ import AuthFeatureInterface
 import AuthClient
 import UserClient
 
-extension AuthReducer {
+extension AuthFeature {
   public init() {
     @Dependency(\.authClient) var authClient
     @Dependency(\.userClient) var userClient

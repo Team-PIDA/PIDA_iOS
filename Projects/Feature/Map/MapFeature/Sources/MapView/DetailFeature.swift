@@ -1,5 +1,5 @@
 //
-//  DetailReducer.swift
+//  DetailFeature.swift
 //  MapFeature
 //
 //  Created by Jiyeon on 4/7/25.
@@ -15,10 +15,10 @@ import FlowerSpotClient
 import BloomingClient
 import CacheClient
 
-extension MapReducer {
+extension MapFeature {
   
   
-  struct DetailReducer: Reducer {
+  struct DetailFeature: Reducer {
     
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.bloomingClient) var bloomingClient

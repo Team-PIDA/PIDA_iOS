@@ -12,9 +12,9 @@ import ComposableArchitecture
 import DesignKit
 
 public struct SettingView: View {
-  @Bindable var store: StoreOf<SettingReducer>
+  @Bindable var store: StoreOf<SettingFeature>
   
-  public init(store: StoreOf<SettingReducer>) {
+  public init(store: StoreOf<SettingFeature>) {
     self.store = store
   }
   

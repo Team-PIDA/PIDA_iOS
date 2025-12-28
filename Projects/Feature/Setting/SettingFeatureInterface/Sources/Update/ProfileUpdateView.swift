@@ -11,9 +11,9 @@ import DesignKit
 import ComposableArchitecture
 
 public struct ProfileUpdateView: View {
-  @Bindable var store: StoreOf<ProfileUpdateReducer>
+  @Bindable var store: StoreOf<ProfileUpdateFeature>
   
-  public init(store: StoreOf<ProfileUpdateReducer>) {
+  public init(store: StoreOf<ProfileUpdateFeature>) {
     self.store = store
   }
   public var body: some View {

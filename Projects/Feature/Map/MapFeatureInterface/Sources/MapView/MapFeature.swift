@@ -1,5 +1,5 @@
 //
-//  MapReducer.swift
+//  MapFeature.swift
 //  MapFeatureInterface
 //
 //  Created by Jiyeon on 3/14/25.
@@ -14,7 +14,7 @@ import BloomingClient
 import Shared
 
 @Reducer
-public struct MapReducer {
+public struct MapFeature {
   private let reducer: Reduce<State, Action>
   private let location: Reduce<State, LocationAction>
   private let detail: Reduce<State, DetailAction>
