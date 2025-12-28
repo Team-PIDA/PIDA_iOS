@@ -17,14 +17,14 @@ import CacheClient
 
 extension MapFeature {
   
-  
   struct DetailFeature: Reducer {
+    typealias Action = DetailAction
     
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.bloomingClient) var bloomingClient
     @Dependency(\.cache) var cache
     
-    func reduce(into state: inout State, action: DetailAction) -> Effect<DetailAction> {
+    func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       
       case let .selectedItem(item):
@@ -37,52 +37,14 @@ extension MapFeature {
         state.detail.selectedItemVote = nil
         state.detail.isDetailLoading = true
         state.detail.isBottomSheetPresented = true
-        return .run { send in
-          do {
-            async let detailResult = try flowerSpotClient.getFlowerSpotDetail(id: id)
-            async let bloomingResult = try bloomingClient.getBloomingState(id: id)
-            let verifyTodayResult = UserDefaultsKeys.isLoggedIn == true
-            ? try await bloomingClient.verifyBloomingToday(id: id)
-            : VerifyBloomingStateEntity(isBlooming: false)
-            let (detail, blooming) = try await (detailResult, bloomingResult)
-            await MainActor.run {
-              send(.detailResponse(detail))
-              send(.bloomingResponse(blooming))
-              send(.verifyTodayBlooming(verifyTodayResult))
-            }
-          } catch let error as NetworkError {
-            print(error.errorDescription)
-          } catch let error as FoundationError {
-            print(error.errorDescription)
-          } catch {
-            print(error.localizedDescription)
-          }
-        }
+        return requestDetailInfo(id: id)
         
       case let .fetchDetailInfo(id):
         state.detail.selectedItemDetail = nil
         state.detail.selectedItemBlooming = nil
         state.detail.selectedItemVote = nil
         state.detail.isNeedFetchDetail = true
-        return .run { send in
-          do {
-            async let detailResult = try flowerSpotClient.getFlowerSpotDetail(id: id)
-            async let bloomingResult = try bloomingClient.getBloomingState(id: id)
-            async let verifyTodayResult = try await bloomingClient.verifyBloomingToday(id: id)
-            let (detail, blooming, verifyToday) = try await (detailResult, bloomingResult, verifyTodayResult)
-            await MainActor.run {
-              send(.detailResponse(detail))
-              send(.bloomingResponse(blooming))
-              send(.verifyTodayBlooming(verifyToday))
-            }
-          } catch let error as NetworkError {
-            print(error.errorDescription)
-          } catch let error as FoundationError {
-            print(error.errorDescription)
-          } catch {
-            print(error.localizedDescription)
-          }
-        }
+        return fetchDetailInfo(id: id)
         
       case let .detailResponse(item):
         state.detail.selectedItemDetail = item
@@ -156,6 +118,54 @@ extension MapFeature {
         
         // 부모 리듀서에 전달 할 액션
       case .presentToDetail, .fetchPathLines: return .none
+      }
+    }
+  }
+}
+
+extension MapFeature.DetailFeature {
+  private func requestDetailInfo(id: Int) -> Effect<Action> {
+    return .run { send in
+      do {
+        async let detailResult = try flowerSpotClient.getFlowerSpotDetail(id: id)
+        async let bloomingResult = try bloomingClient.getBloomingState(id: id)
+        let verifyTodayResult = UserDefaultsKeys.isLoggedIn == true
+        ? try await bloomingClient.verifyBloomingToday(id: id)
+        : VerifyBloomingStateEntity(isBlooming: false)
+        let (detail, blooming) = try await (detailResult, bloomingResult)
+        await MainActor.run {
+          send(.detailResponse(detail))
+          send(.bloomingResponse(blooming))
+          send(.verifyTodayBlooming(verifyTodayResult))
+        }
+      } catch let error as NetworkError {
+        print(error.errorDescription)
+      } catch let error as FoundationError {
+        print(error.errorDescription)
+      } catch {
+        print(error.localizedDescription)
+      }
+    }
+  }
+  
+  private func fetchDetailInfo(id: Int) -> Effect<Action> {
+    return .run { send in
+      do {
+        async let detailResult = try flowerSpotClient.getFlowerSpotDetail(id: id)
+        async let bloomingResult = try bloomingClient.getBloomingState(id: id)
+        async let verifyTodayResult = try await bloomingClient.verifyBloomingToday(id: id)
+        let (detail, blooming, verifyToday) = try await (detailResult, bloomingResult, verifyTodayResult)
+        await MainActor.run {
+          send(.detailResponse(detail))
+          send(.bloomingResponse(blooming))
+          send(.verifyTodayBlooming(verifyToday))
+        }
+      } catch let error as NetworkError {
+        print(error.errorDescription)
+      } catch let error as FoundationError {
+        print(error.errorDescription)
+      } catch {
+        print(error.localizedDescription)
       }
     }
   }
