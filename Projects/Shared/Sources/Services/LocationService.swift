@@ -14,7 +14,6 @@ import CoreLocation
 public class LocationService: NSObject, CLLocationManagerDelegate {
   
   public static let shared = LocationService()
-  public private(set) var userLocation: (Double, Double)? = nil
   
   private lazy var locationManager: CLLocationManager = {
     let manager = CLLocationManager()
@@ -23,13 +22,8 @@ public class LocationService: NSObject, CLLocationManagerDelegate {
     return manager
   }()
   
-  private var userLocationContinuation: AsyncStream<Void>.Continuation?
-  public var userLocationStream: AsyncStream<Void> {
-    AsyncStream(bufferingPolicy: .bufferingNewest(1)) { continuation in
-      self.userLocationContinuation = continuation
-    }
-  }
-  
+  private var singleLocationContinuation: CheckedContinuation<Coordinate?, Never>?
+
   // MARK: - Initialize
   
   private override init() {
@@ -37,50 +31,60 @@ public class LocationService: NSObject, CLLocationManagerDelegate {
   }
   
   // MARK: - Location Method
-  
-  public func requestUserLocation() {
-    let authorizationStatus = locationManager.authorizationStatus
-    switch authorizationStatus {
-    case .authorizedWhenInUse, .authorizedAlways:
-      userLocation = nil
-      locationManager.startUpdatingLocation()
-    case .notDetermined:
-      locationManager.requestWhenInUseAuthorization()
-    case .denied, .restricted:
-      userLocation = nil
-      userLocationContinuation?.yield(())
-      // TODO: - 위치 권한 거부 시 토스트?
-      break
-    @unknown default:
-      break
+  public func requestUserLocation() async -> Coordinate? {
+    return await withCheckedContinuation { continuation in
+      self.singleLocationContinuation = continuation
+      let status = locationManager.authorizationStatus
+      switch status {
+      case .authorizedAlways, .authorizedWhenInUse:
+        locationManager.startUpdatingLocation()
+      case .notDetermined:
+        locationManager.requestWhenInUseAuthorization()
+      case .denied, .restricted:
+        singleLocationContinuation = nil
+        continuation.resume(returning: nil)
+      default:
+        singleLocationContinuation = nil
+        continuation.resume(returning: nil)
+      }
     }
   }
   
-  private func setUserLocation(lat: Double, lng: Double) {
-    if userLocation != nil { return }
+    // MARK: - Delegate
     
-    userLocation = (lat, lng)
-    userLocationContinuation?.yield(())
-    locationManager.stopUpdatingLocation()
-  }
-  
-  // MARK: - Delegate
-  
-  nonisolated public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    guard let location = locations.last else { return }
-    let lat = location.coordinate.latitude
-    let lng = location.coordinate.longitude
-    Task {
-      await setUserLocation(lat: lat, lng: lng)
-    }
+    nonisolated public func locationManager(
+      _ manager: CLLocationManager,
+      didUpdateLocations locations: [CLLocation]
+    ) {
+      guard let location = locations.last else { return }
+      
+      let coord = Coordinate(
+        latitude: location.coordinate.latitude,
+        longitude: location.coordinate.longitude
+      )
+      
+      Task { @MainActor in
+        locationManager.stopUpdatingLocation()
+        singleLocationContinuation?.resume(with: .success(coord))
+        singleLocationContinuation = nil
+      }
+
   }
   
   nonisolated public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
     let status = manager.authorizationStatus
-    if status == .authorizedWhenInUse || status == .authorizedAlways {
-      Task {
-        await locationManager.startUpdatingLocation()
+    
+    Task { @MainActor in
+      switch status {
+      case .authorizedAlways, .authorizedWhenInUse:
+        locationManager.startUpdatingLocation()
+      case .notDetermined:
+        break
+      default:
+        singleLocationContinuation?.resume(returning: nil)
+        singleLocationContinuation = nil
       }
+      
     }
   }
 }

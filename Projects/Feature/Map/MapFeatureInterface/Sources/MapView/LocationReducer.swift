@@ -18,7 +18,6 @@ extension MapReducer {
   }
   
   public enum LocationAction: Equatable {
-    case fetchUserLocation
     case moveUserLocation
     case saveUserLocation(Coordinate)
     case moveLocation(Coordinate)

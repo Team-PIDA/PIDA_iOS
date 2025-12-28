@@ -61,13 +61,8 @@ public struct MapView: View {
     .ignoresSafeArea(edges: .bottom)
     .onAppear {
       if !store.isViewAppeared {
-        store.send(.location(.fetchUserLocation))
-        store.send(.viewDidAppear)
-      }
-    }
-    .task {
-      for await _ in LocationService.shared.userLocationStream {
         store.send(.location(.moveUserLocation))
+        store.send(.viewDidAppear)
       }
     }
   }

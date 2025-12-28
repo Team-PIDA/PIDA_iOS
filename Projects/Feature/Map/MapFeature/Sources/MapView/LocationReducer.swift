@@ -22,25 +22,12 @@ extension MapReducer {
     public func reduce(into state: inout State, action: LocationAction) -> Effect<LocationAction> {
       
       switch action {
-      case .fetchUserLocation:
-        let point = state.point
-        return .run { send in
-          await LocationService.shared.requestUserLocation()
-          if let point = point {
-            await MainActor.run {
-              send(.moveLocation(point))  // 현재 저장된 위치로 이동
-            }
-            
-          }
-        }
-        
       case .moveUserLocation:
         let isCurrentButtonTap = state.location.isCurrentButtonTap
         return .run { send in
-          if let location = await LocationService.shared.userLocation {
-            let userLocation = Coordinate(latitude: location.0, longitude: location.1)
-            await send(.saveUserLocation(userLocation))
-            await send(.moveLocation(userLocation))
+          if let location = await LocationService.shared.requestUserLocation() {
+            await send(.saveUserLocation(location))
+            await send(.moveLocation(location))
           } else {
             if isCurrentButtonTap {
               await send(.presentAlert(type: .locationPermission))
@@ -65,7 +52,7 @@ extension MapReducer {
       case let .currentButtonTapped(isTapped):
         state.location.isCurrentButtonTap = isTapped
         if isTapped {
-          return .send(.fetchUserLocation)
+          return .send(.moveUserLocation)
         }
         return .none
         
