@@ -16,7 +16,7 @@ import BloomingFeatureInterface
 import FlowerSpotDetailFeatureInterface
 
 struct PIDAView: View {
-  @Bindable var store: StoreOf<PIDAReducer> = Store(initialState: PIDAReducer.State()) { PIDAReducer()
+  @Bindable var store: StoreOf<PIDAFeature> = Store(initialState: PIDAFeature.State()) { PIDAFeature()
   }
   var body: some View {
     NavigationStack(path: $store.path) {

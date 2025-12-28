@@ -1,5 +1,5 @@
 //
-//  PIDAReducer.swift
+//  PIDAFeature.swift
 //  PIDA
 //
 //  Created by Jiyeon on 3/14/25.
@@ -34,7 +34,7 @@ enum Path: Hashable {
 }
 
 @Reducer
-struct PIDAReducer {
+struct PIDAFeature {
   
   @ObservableState
   struct State: Equatable {
