@@ -1,0 +1,7 @@
+EXCLUDE_RESOURCE = Resources/Dev/**
+OTHER_SWIFT_FLAGS[config=RELEASE][sdk=*] = $(inherited) -DRELEASE
+SWIFT_OPTIMIZATION_LEVEL = -Owholemodule
+
+#include? "Release-Secrets.xcconfig"
+NM_CLIENT_ID = ${NM_CLIENT_ID}
+BASE_URL = ${BASE_URL}

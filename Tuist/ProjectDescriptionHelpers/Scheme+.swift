@@ -56,12 +56,19 @@ public enum Scheme {
     }
   }
   
+  public var APP_ICON_NAME: String {
+    switch self {
+    case .dev: "AppIcon_dev"
+    case .release: "AppIcon"
+    }
+  }
+
   public var INFO_PLIST: [String: Plist.Value] {
     return [
       "CFBundleDevelopmentRegion": "ko_KR",
       "CFBundleShortVersionString": "1.0.1",
       "CFBundleVersion": "1",
-      "CFBundleIconName": "AppIcon",
+      "CFBundleIconName": .string(APP_ICON_NAME),
       "UILaunchStoryboardName": "LaunchScreen",
       "UIApplicationSceneManifest": [
         "UIApplicationSupportsMultipleScenes": false,
