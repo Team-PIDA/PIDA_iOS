@@ -1,5 +1,5 @@
 //
-//  DetailReducer.swift
+//  DetailFeature.swift
 //  MapFeature
 //
 //  Created by Jiyeon on 4/7/25.
@@ -10,8 +10,9 @@ import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
 import BloomingClient
+import Shared
 
-extension MapReducer {
+extension MapFeature {
   
   public struct DetailState: Equatable {
     public var selectedItem: FlowerSpotEntity? = nil
@@ -45,7 +46,7 @@ extension MapReducer {
     case verifyTodayBlooming(VerifyBloomingStateEntity)
     case allDataUpdated
     
-    case calculateDistance(MapPointEntity)
+    case calculateDistance(Coordinate)
     case updateMarkerStatus(BloomStatus, id: Int)
     case dismissBottomSheet
     case presentToDetail(

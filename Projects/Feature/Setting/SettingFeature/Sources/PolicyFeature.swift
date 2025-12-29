@@ -1,5 +1,5 @@
 //
-//  PolicyReducer.swift
+//  PolicyFeature.swift
 //  SettingFeature
 //
 //  Created by Jiyeon on 3/24/25.
@@ -9,9 +9,13 @@
 import ComposableArchitecture
 import SettingFeatureInterface
 
-extension PolicyReducer {
+extension PolicyFeature {
   public init() {
-    let reducer = Reduce<State, Action> { state, action in
+    self.init(reducer: Reduce(Core()))
+  }
+
+  struct Core: Reducer {
+    func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       case .pop:
         return .run { send in
@@ -20,14 +24,14 @@ extension PolicyReducer {
             send(.clearType)
           }
         }
+
       case .clearType:
         state.type = nil
         return .none
+
       case .delegate:
         return .none
       }
-      
     }
-    self.init(reducer: reducer)
   }
 }

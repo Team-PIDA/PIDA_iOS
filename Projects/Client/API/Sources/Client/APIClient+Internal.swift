@@ -100,7 +100,7 @@ extension APIClient {
   ) async throws -> Data {
     try await withThrowingTaskGroup(of: Data.self) { group in
       group.addTask {
-        var request = URLRequest(url: URL(string: url)!)
+        let request = URLRequest(url: URL(string: url)!)
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let response = response as? HTTPURLResponse else {

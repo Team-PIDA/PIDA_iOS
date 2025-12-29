@@ -11,9 +11,9 @@ import DesignKit
 import ComposableArchitecture
 
 public struct SearchView: View {
-  @Bindable var store: StoreOf<SearchReducer>
+  @Bindable var store: StoreOf<SearchFeature>
   
-  public init(store: StoreOf<SearchReducer>) {
+  public init(store: StoreOf<SearchFeature>) {
     self.store = store
   }
   

@@ -14,9 +14,9 @@ import FlowerSpotClient
 import BloomingClient
 
 public struct MapView: View {
-  @Bindable var store: StoreOf<MapReducer>
+  @Bindable var store: StoreOf<MapFeature>
   
-  public init(store: StoreOf<MapReducer>) {
+  public init(store: StoreOf<MapFeature>) {
     self.store = store
   }
   
@@ -38,7 +38,7 @@ public struct MapView: View {
         Spacer()
         ToastView(message: $store.toastMessage, buttonLabel: store.toastLabel)
           .action {
-            store.send(.toastActionTapped)
+            store.send(.moveToReportURL)
           }
         currentButton
       }
@@ -61,13 +61,8 @@ public struct MapView: View {
     .ignoresSafeArea(edges: .bottom)
     .onAppear {
       if !store.isViewAppeared {
-        store.send(.location(.fetchUserLocation))
-        store.send(.viewDidAppear)
-      }
-    }
-    .task {
-      for await _ in LocationService.shared.userLocationStream {
         store.send(.location(.moveUserLocation))
+        store.send(.viewDidAppear)
       }
     }
   }

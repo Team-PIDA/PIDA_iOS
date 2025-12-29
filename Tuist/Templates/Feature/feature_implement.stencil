@@ -9,11 +9,17 @@
 import {{ name }}FeatureInterface
 import ComposableArchitecture
 
-extension {{ name }}Reducer {
-  public static let {{ name }}Reducer = Reduce<State, Action> { state, action in
-    switch action {
-    default:
-      return .none
+extension {{ name }}Feature {
+  public init() {
+    self.init(reducer: Reduce(Core()))
+  }
+
+  struct Core: Reducer {
+    func reduce(into state: inout State, action: Action) -> Effect<Action> {
+      switch action {
+      default:
+        return .none
+      }
     }
   }
 }

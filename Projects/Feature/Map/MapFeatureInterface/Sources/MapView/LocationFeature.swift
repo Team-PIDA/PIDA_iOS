@@ -1,5 +1,5 @@
 //
-//  LocationReducer.swift
+//  LocationFeature.swift
 //  MapFeature
 //
 //  Created by Jiyeon on 4/7/25.
@@ -9,22 +9,22 @@
 import Foundation
 import DesignKit
 import FlowerSpotClient
+import Shared
 
-extension MapReducer {
+extension MapFeature {
   
   public struct LocationState: Equatable {
     public var isCurrentButtonTap: Bool = false
   }
   
   public enum LocationAction: Equatable {
-    case fetchUserLocation
     case moveUserLocation
-    case saveUserLocation(MapPointEntity)
-    case moveLocation(MapPointEntity)
+    case saveUserLocation(Coordinate)
+    case moveLocation(Coordinate)
     case requestMapBounds(Bool)
     case currentButtonTapped(Bool)
     
-    case fetchFlowers([MapPointEntity])
+    case fetchFlowers([Coordinate])
     case storeFlowerData([FlowerSpotEntity])
     
     case mapSearchError(String?)

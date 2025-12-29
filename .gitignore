@@ -76,6 +76,7 @@ fastlane/test_output
 fastlane/.env
 CLAUDE.md
 ARCHITECTURE_MIGRATION.md
+AGENTS.md
 
 Debug-Secrets.xcconfig
 Release-Secrets.xcconfig

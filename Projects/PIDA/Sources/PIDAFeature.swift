@@ -1,5 +1,5 @@
 //
-//  PIDAReducer.swift
+//  PIDAFeature.swift
 //  PIDA
 //
 //  Created by Jiyeon on 3/14/25.
@@ -34,19 +34,19 @@ enum Path: Hashable {
 }
 
 @Reducer
-struct PIDAReducer {
+struct PIDAFeature {
   
   @ObservableState
   struct State: Equatable {
-    var map = MapReducer.State()
-    var search = SearchReducer.State()
-    var setting = SettingReducer.State()
-    var policy = PolicyReducer.State()
-    var auth = AuthReducer.State()
-    var signUp = SignUpReducer.State()
-    var update = ProfileUpdateReducer.State()
-    var blooming = BloomingUpdateReducer.State()
-    var flowerSpotDetail = FlowerSpotDetailReducer.State()
+    var map = MapFeature.State()
+    var search = SearchFeature.State()
+    var setting = SettingFeature.State()
+    var policy = PolicyFeature.State()
+    var auth = AuthFeature.State()
+    var signUp = SignUpFeature.State()
+    var update = ProfileUpdateFeature.State()
+    var blooming = BloomingUpdateFeature.State()
+    var flowerSpotDetail = FlowerSpotDetailFeature.State()
     
     /// 네비게이션 이동 경로
     var path: [Path] = []
@@ -58,15 +58,15 @@ struct PIDAReducer {
   }
   
   enum Action: BindableAction {
-    case map(MapReducer.Action)
-    case search(SearchReducer.Action)
-    case setting(SettingReducer.Action)
-    case policy(PolicyReducer.Action)
-    case auth(AuthReducer.Action)
-    case signUp(SignUpReducer.Action)
-    case update(ProfileUpdateReducer.Action)
-    case blooming(BloomingUpdateReducer.Action)
-    case flowerSpotDetail(FlowerSpotDetailReducer.Action)
+    case map(MapFeature.Action)
+    case search(SearchFeature.Action)
+    case setting(SettingFeature.Action)
+    case policy(PolicyFeature.Action)
+    case auth(AuthFeature.Action)
+    case signUp(SignUpFeature.Action)
+    case update(ProfileUpdateFeature.Action)
+    case blooming(BloomingUpdateFeature.Action)
+    case flowerSpotDetail(FlowerSpotDetailFeature.Action)
     
     case binding(BindingAction<State>)
     case presentSearch(Bool)
@@ -78,31 +78,31 @@ struct PIDAReducer {
   var body: some ReducerOf<Self> {
     BindingReducer()
     Scope(state: \.map, action: \.map) {
-      MapReducer()
+      MapFeature()
     }
     Scope(state: \.search, action: \.search) {
-      SearchReducer()
+      SearchFeature()
     }
     Scope(state: \.setting, action: \.setting) {
-      SettingReducer()
+      SettingFeature()
     }
     Scope(state: \.policy, action: \.policy) {
-      PolicyReducer()
+      PolicyFeature()
     }
     Scope(state: \.auth, action: \.auth) {
-      AuthReducer()
+      AuthFeature()
     }
     Scope(state: \.signUp, action: \.signUp) {
-      SignUpReducer()
+      SignUpFeature()
     }
     Scope(state: \.update, action: \.update) {
-      ProfileUpdateReducer()
+      ProfileUpdateFeature()
     }
     Scope(state: \.blooming, action: \.blooming) {
-      BloomingUpdateReducer()
+      BloomingUpdateFeature()
     }
     Scope(state: \.flowerSpotDetail, action: \.flowerSpotDetail) {
-      FlowerSpotDetailReducer()
+      FlowerSpotDetailFeature()
     }
     
     Reduce {

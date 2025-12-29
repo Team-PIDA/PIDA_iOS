@@ -1,5 +1,5 @@
 //
-//  AuthReducer.swift
+//  AuthFeature.swift
 //
 //  Auth
 //
@@ -10,7 +10,7 @@ import Shared
 import ComposableArchitecture
 
 @Reducer
-public struct AuthReducer {
+public struct AuthFeature {
   private let reducer: Reduce<State, Action>
   
   public init(reducer: Reduce<State, Action>) {

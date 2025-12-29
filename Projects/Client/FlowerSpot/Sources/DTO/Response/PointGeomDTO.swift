@@ -8,9 +8,10 @@
 
 import Foundation
 import APIClient
+import Shared
 
 struct PointGeomDTO: DTO {
-  typealias Entity = MapPointEntity?
+  typealias Entity = Coordinate?
   var type: String
   var coordinates: [Double]
   
@@ -24,8 +25,8 @@ struct PointGeomDTO: DTO {
 }
 
 extension PointGeomDTO {
-  func toEntity() throws -> MapPointEntity? {
+  func toEntity() throws -> Coordinate? {
     if coordinates.count < 2 { return nil }
-    return MapPointEntity(latitude: coordinates[1], longitude: coordinates[0])
+    return Coordinate(latitude: coordinates[1], longitude: coordinates[0])
   }
 }

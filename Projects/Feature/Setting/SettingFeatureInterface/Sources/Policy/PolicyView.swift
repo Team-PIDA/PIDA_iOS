@@ -13,9 +13,9 @@ import ComposableArchitecture
 
 public struct PolicyView: View {
   
-  let store: StoreOf<PolicyReducer>
+  let store: StoreOf<PolicyFeature>
   
-  public init(store: StoreOf<PolicyReducer>) {
+  public init(store: StoreOf<PolicyFeature>) {
     self.store = store
   }
   public var body: some View {
@@ -44,4 +44,3 @@ public struct PolicyView: View {
     
   }
 }
-

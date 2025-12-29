@@ -1,5 +1,5 @@
 //
-//  SearchReducer.swift
+//  SearchFeature.swift
 //
 //  Search
 //
@@ -11,7 +11,7 @@ import SearchClient
 import FlowerSpotClient
 
 @Reducer
-public struct SearchReducer {
+public struct SearchFeature {
   private let reducer: Reduce<State, Action>
   
   public init(reducer: Reduce<State, Action>) {

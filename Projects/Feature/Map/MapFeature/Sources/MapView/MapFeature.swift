@@ -1,5 +1,5 @@
 //
-//  MapReducer.swift
+//  MapFeature.swift
 //
 //  Map
 //
@@ -13,40 +13,40 @@ import MapFeatureInterface
 import FlowerSpotClient
 
 
-extension MapReducer {
+extension MapFeature {
   public init() {
-    
+    self.init(
+      reducer: Reduce(Core()),
+      location: Reduce(LocationFeature()),
+      detail: Reduce(DetailFeature())
+    )
+  }
+  
+  struct Core: Reducer {
     @Dependency(\.flowerSpotClient) var flowerSpot
     @Dependency(\.openURL) var openURL
     
-    let mapReducer = Reduce<State, Action> { state, action in
+    func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
         
       case let .showToastView(message, buttonLabel):
         state.toastMessage = message
         state.toastLabel = buttonLabel
         return .none
-      case .toastActionTapped:
         
+      case .moveToReportURL:
         return .run { send in
           if let url = ExternalURL.report {
             await openURL(url)
           }
         }
+        
       case .viewDidAppear:
         state.isViewAppeared = true
-        return .run { send in
-          do {
-            try await flowerSpot.fetchAllFlowerAddress()
-          } catch let error as NetworkError {
-            print(error.localizedDescription)
-          } catch let error as FoundationError {
-            print(error.localizedDescription)
-          } catch {
-            print(error.localizedDescription)
-          }
-          await send(.location(.requestMapBounds(true)))
-        }
+        return .send(.fetchAllFlowerAddress)
+        
+      case .fetchAllFlowerAddress:
+        return fetchAllFlowerAddress()
         
         // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
       case let .markerTapped(id):
@@ -77,14 +77,7 @@ extension MapReducer {
         state.searchResult = result
         state.detail.selectedItemDetail = nil
         state.detail.isDetailLoading = true
-        return .run { send in
-          if let result = result {
-            await send(.setSearchBarText(result.streetName))
-            await send(.location(.moveLocation(result.pinPoint)))
-            await send(.fetchPathLines(result.id))
-            await send(.detail(.requestDetailInfo(result.id)))
-          }
-        }
+        return showSearchResult(result: result)
         
       case let .setSearchBarText(text):
         state.searchText = text
@@ -115,6 +108,7 @@ extension MapReducer {
             await send(.clearAlertState)
           }
         }
+        
       case .clearAlertState:
         state.alertType = nil
         return .none
@@ -127,38 +121,69 @@ extension MapReducer {
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
         
-      case let .detail(.presentToDetail(flowerSpot, bloomingStatus, distance, isVotedBlooming)):
-        return .send(
-          .delegate(
-            .presentToDetail(
-              flowerSpotData: flowerSpot,
-              bloomingStatus: bloomingStatus,
-              distance: distance,
-              isVotedBlooming: isVotedBlooming
+      case let .detail(action):
+        switch action {
+        case let .presentToDetail(flowerSpot, bloomingStatus, distance, isVotedBlooming):
+          return .send(
+            .delegate(
+              .presentToDetail(
+                flowerSpotData: flowerSpot,
+                bloomingStatus: bloomingStatus,
+                distance: distance,
+                isVotedBlooming: isVotedBlooming
+              )
             )
           )
-        )
+          
+        case let .fetchPathLines(id):
+          return .send(.fetchPathLines(id))
+          
+        default: return .none
+        }
         
-      case let .detail(.fetchPathLines(id)):
-        return .send(.fetchPathLines(id))
+      case let .location(action):
+        switch action {
+        case let .showToastView(message, label):
+          return .send(.showToastView(message: message, buttonLabel: label))
+          
+        case let .presentAlert(type):
+          return .send(.presentAlert(type: type))
+          
+        default: return .none
+        }
         
-      case let .location(.showToastView(message, label)):
-        return .send(.showToastView(message: message, buttonLabel: label))
-        
-      case let .location(.presentAlert(type)):
-        return .send(.presentAlert(type: type))
-        
-      case .binding, .delegate, .location, .detail, .alertAcceptTapped:
+      case .binding, .delegate, .alertAcceptTapped:
         return .none
         
       }
-    
     }
-    self.init(
-      reducer: mapReducer,
-      location: Reduce(LocationReducer()),
-      detail: Reduce(DetailReducer())
-    )
-    
+  }
+}
+
+extension MapFeature.Core {
+  private func fetchAllFlowerAddress() -> Effect<Action> {
+    return .run { send in
+      do {
+        try await flowerSpot.fetchAllFlowerAddress()
+      } catch let error as NetworkError {
+        print(error.localizedDescription)
+      } catch let error as FoundationError {
+        print(error.localizedDescription)
+      } catch {
+        print(error.localizedDescription)
+      }
+      await send(.location(.requestMapBounds(true)))
+    }
+  }
+  
+  private func showSearchResult(result: FlowerSpotEntity?) -> Effect<Action> {
+    return .run { send in
+      if let result = result {
+        await send(.setSearchBarText(result.streetName))
+        await send(.location(.moveLocation(result.pinPoint)))
+        await send(.fetchPathLines(result.id))
+        await send(.detail(.requestDetailInfo(result.id)))
+      }
+    }
   }
 }

@@ -10,13 +10,13 @@ import UIKit
 import SwiftUI
 import DesignKit
 import NMapsMap
-import FlowerSpotClient
+import Shared
 
 @MainActor
 struct DetailMapViewRepresentable: UIViewRepresentable {
   
-  var location: MapPointEntity
-  var pathMarkers: [MapPointEntity]
+  var location: Coordinate
+  var pathMarkers: [Coordinate]
   var state: BloomStatus
   
   @Binding var isNeedDrawPath: Bool
@@ -82,7 +82,7 @@ struct DetailMapViewRepresentable: UIViewRepresentable {
 
 fileprivate extension DetailMapViewRepresentable {
   /// 카메라 이동
-  private func moveCamera(_ view: NMFNaverMapView, to point: MapPointEntity?) {
+  private func moveCamera(_ view: NMFNaverMapView, to point: Coordinate?) {
     if let point = point {
       let coord = NMGLatLng(lat: point.latitude, lng: point.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: coord)
@@ -94,7 +94,7 @@ fileprivate extension DetailMapViewRepresentable {
   /// 경로 그리기
   private func drawPathLine(
     _ view: NMFNaverMapView,
-    for newPath: [MapPointEntity],
+    for newPath: [Coordinate],
     context: Context
   ) {
     if !context.coordinator.pathMarkers.isEmpty {
@@ -136,7 +136,7 @@ fileprivate extension DetailMapViewRepresentable {
   /// 마커 그리기
   private func presentMarker(
     _ view: NMFNaverMapView,
-    location: MapPointEntity,
+    location: Coordinate,
     context: Context
   ) {
     let point = NMGLatLng(lat: location.latitude, lng: location.longitude)
@@ -208,8 +208,8 @@ extension DetailMapViewRepresentable {
   
   class Coordinator: NSObject {
     var parent: DetailMapViewRepresentable
-    var location: MapPointEntity? = nil
-    var pathMarkers: [MapPointEntity] = []
+    var location: Coordinate? = nil
+    var pathMarkers: [Coordinate] = []
     
     var activeMarker: NMFMarker? = nil
     var path: NMFPath? = nil

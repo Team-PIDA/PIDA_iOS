@@ -1,5 +1,5 @@
 //
-//  MapReducer.swift
+//  MapFeature.swift
 //  MapFeatureInterface
 //
 //  Created by Jiyeon on 3/14/25.
@@ -11,9 +11,10 @@ import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
 import BloomingClient
+import Shared
 
 @Reducer
-public struct MapReducer {
+public struct MapFeature {
   private let reducer: Reduce<State, Action>
   private let location: Reduce<State, LocationAction>
   private let detail: Reduce<State, DetailAction>
@@ -31,14 +32,14 @@ public struct MapReducer {
   @ObservableState
   public struct State: Equatable {
     /// 특정 지점으로 이동하기 위한 위치정보
-    public var point: MapPointEntity? = nil
+    public var point: Coordinate? = nil
     /// 유저의 현재 위치
-    public var userLocation: MapPointEntity? = nil
+    public var userLocation: Coordinate? = nil
     
     /// 현재 지도에 보여 줄 FlowerSpot 데이터
     public var flowerSpots: [Int: FlowerSpotEntity] = [:]
     /// 현재 그려져있는 경로
-    public var selectedPathLines: [MapPointEntity] = []
+    public var selectedPathLines: [Coordinate] = []
     /// 지도에 마커 및 경로 비활성화 트리거
     public var isNeedDeleteMarker: Bool = false
     /// 지도에 마커 및 경로 그리기 트리거
@@ -74,9 +75,10 @@ public struct MapReducer {
     case detail(DetailAction)
     
     case showToastView(message: String?, buttonLabel: String?)
-    case toastActionTapped
+    case moveToReportURL
     case viewDidAppear
     
+    case fetchAllFlowerAddress
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
     case fetchDetailInfo(Int)

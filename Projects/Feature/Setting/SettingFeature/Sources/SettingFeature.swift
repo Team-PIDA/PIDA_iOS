@@ -1,5 +1,5 @@
 //
-//  SettingReducer.swift
+//  SettingFeature.swift
 //
 //  Setting
 //
@@ -14,29 +14,36 @@ import SettingFeatureInterface
 import UserClient
 import AuthClient
 
-extension SettingReducer {
+extension SettingFeature {
   public init() {
+    self.init(reducer: Reduce(Core()))
+  }
+
+  struct Core: Reducer {
     @Dependency(\.openURL) var openURL
     @Dependency(\.userClient) var userClient
     @Dependency(\.authClient) var authClient
-    
-    let reducer = Reduce<State, Action> { state, action in
+
+    func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       case .onAppear:
         return .run { send in
           await send(.checkLoggedIn)
           await send(.checkVersion)
         }
+
       case .checkVersion:
         return .run { send in
           let versionInfo = await AppVersionManager.shared.getVersionInfo()
           let version = "v\(versionInfo.appStore)/v\(versionInfo.current)"
           await send(.configVersionInfo(version, versionInfo.updateNeeded))
         }
+
       case let .configVersionInfo(version, inNeedUpdate):
         state.version = version
         state.isNeedUpdate = inNeedUpdate
         return .none
+
       case .checkLoggedIn:
         let isLoggedIn = UserDefaultsKeys.isLoggedIn ?? false
         state.isLoggedIn = isLoggedIn
@@ -44,40 +51,40 @@ extension SettingReducer {
           return .send(.checkUserInfo)
         }
         return .none
-        
+
       case .checkUserInfo:
         if let username = UserDefaultsKeys.username {
           state.username = username
         }
         return .none
+
       case .profileTapped:
-        if !state.isLoggedIn {
-          return .send(.delegate(.presentToLogin))
-        } else {
-          return .send(.delegate(.presentToUpdateProfile))
-        }
-        
+        return .send(
+          state.isLoggedIn ? .delegate(.presentToUpdateProfile) : .delegate(.presentToLogin)
+        )
+
       case .deleteToken:
         return .run { send in
           try await authClient.deleteTokenInfo()
           await send(.checkLoggedIn)
         }
-        
-        // MARK: - SettingList Events
-        
+
+      // MARK: - SettingList Events
       case .settingListTapped(.feedback):
-        return .run { send in
+        return .run {
+          _ in
           if let url = ExternalURL.feedBack {
             await openURL(url)
           }
         }
-        
+
       case .settingListTapped(.report):
-        return .run { send in
+        return .run { _ in
           if let url = ExternalURL.report {
             await openURL(url)
           }
         }
+
       case .settingListTapped(.update):
         if state.isNeedUpdate {
           return .run { _ in
@@ -89,22 +96,25 @@ extension SettingReducer {
           }
         }
         return .none
-        
+
       case .settingListTapped(.terms):
         return .send(.delegate(.pushToPolicy(.terms)))
+
       case .settingListTapped(.privacy):
         return .send(.delegate(.pushToPolicy(.privacy)))
+
       case .settingListTapped(.logout):
         state.alertType = .logout
         return .none
+
       case .settingListTapped(.withdraw):
         state.alertType = .withdraw
         return .none
-        
-        // MARK: - Alert
-        
+
+      // MARK: - Alert
       case .alertCancelTapped:
         return .send(.clearAlertState)
+
       case .alertAcceptTapped(.withdraw):
         return .run { send in
           do {
@@ -114,6 +124,7 @@ extension SettingReducer {
           await send(.deleteToken)
           await send(.clearAlertState)
         }
+
       case .alertAcceptTapped(.logout):
         return .run { send in
           do {
@@ -123,22 +134,19 @@ extension SettingReducer {
           await send(.deleteToken)
           await send(.clearAlertState)
         }
-        
+
       case .clearAlertState:
         state.alertType = nil
         return .none
-        
-        // MARK: - Delegate
-        
+
+      // MARK: - Delegate
       case .pop:
         return .send(.delegate(.pop))
-        
-        // MARK: - None
-        
+
+      // MARK: - None
       case .delegate, .settingListTapped, .binding, .alertAcceptTapped:
         return .none
       }
     }
-    self.init(reducer: reducer)
   }
 }

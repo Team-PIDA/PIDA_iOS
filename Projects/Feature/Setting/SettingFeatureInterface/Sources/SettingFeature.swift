@@ -1,5 +1,5 @@
 //
-//  SettingReducer.swift
+//  SettingFeature.swift
 //
 //  Setting
 //
@@ -10,7 +10,7 @@ import ComposableArchitecture
 import DesignKit
 
 @Reducer
-public struct SettingReducer {
+public struct SettingFeature {
   private let reducer: Reduce<State, Action>
   
   public init(reducer: Reduce<State, Action>) {
