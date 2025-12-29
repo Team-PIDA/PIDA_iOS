@@ -15,21 +15,23 @@ extension Settings {
             "DEVELOPMENT_TEAM": "6NXQDZ68FD",
             "CODE_SIGN_STYLE": "Manual",
             "PROVISIONING_PROFILE_SPECIFIER": "match Development com.pida.me.ios",
-            "CODE_SIGN_IDENTITY": "Apple Development: yongin cho (B2J2829PJ5)"
+            "CODE_SIGN_IDENTITY": "Apple Development: yongin cho (B2J2829PJ5)",
+            "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon"
         ],
         configurations: [
             .debug(name: "Debug", xcconfig: .relativeToRoot("Config/Debug.xcconfig")),
             .release(name: "Release", xcconfig: .relativeToRoot("Config/Release.xcconfig")),
         ]
     )
-    
+
     public static let dev = Self.settings(
         base: [
             "OTHER_LDFLAGS": ["-ObjC"],
             "DEVELOPMENT_TEAM": "6NXQDZ68FD",
             "CODE_SIGN_STYLE": "Manual",
             "PROVISIONING_PROFILE_SPECIFIER": "match Development com.pida.me.ios-dev",
-            "CODE_SIGN_IDENTITY": "Apple Development: yongin cho (B2J2829PJ5)"
+            "CODE_SIGN_IDENTITY": "Apple Development: yongin cho (B2J2829PJ5)",
+            "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon_dev"
         ],
         configurations: [
             .debug(name: "Debug", xcconfig: .relativeToRoot("Config/Debug.xcconfig")),
