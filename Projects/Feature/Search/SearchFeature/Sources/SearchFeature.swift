@@ -15,10 +15,10 @@ import FlowerSpotClient
 
 extension SearchFeature {
   public init() {
-    self.init(reducer: Reduce(SearchFeature()))
+    self.init(reducer: Reduce(Core()))
   }
 
-  struct SearchFeature: Reducer {
+  struct Core: Reducer {
     @Dependency(\.searchClient) var searchClient
     @Dependency(\.flowerSpotClient) var flowerSpotClient
 
@@ -107,7 +107,7 @@ extension SearchFeature {
   }
 }
 
-extension SearchFeature.SearchFeature {
+extension SearchFeature.Core {
   private func searchItem(with searchQuery: String) -> Effect<Action> {
     return .run { send in
       do {

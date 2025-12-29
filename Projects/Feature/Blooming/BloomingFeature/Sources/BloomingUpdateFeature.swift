@@ -14,10 +14,10 @@ import DesignKit
 
 extension BloomingUpdateFeature {
   public init() {
-    self.init(reducer: Reduce(BloomingUpdateFeature()))
+    self.init(reducer: Reduce(Core()))
   }
 
-  struct BloomingUpdateFeature: Reducer {
+  struct Core: Reducer {
     @Dependency(\.bloomingClient) var bloomingClient
     @Dependency(\.mainQueue) var mainQueue
 
@@ -75,7 +75,7 @@ extension BloomingUpdateFeature {
   }
 }
 
-extension BloomingUpdateFeature.BloomingUpdateFeature {
+extension BloomingUpdateFeature.Core {
   private func updateBloomingRequest(id: Int, status: BloomStatus) -> Effect<Action> {
     return .run { send in
       do {

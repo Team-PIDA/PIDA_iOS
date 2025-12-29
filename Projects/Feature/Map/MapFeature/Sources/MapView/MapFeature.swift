@@ -16,13 +16,13 @@ import FlowerSpotClient
 extension MapFeature {
   public init() {
     self.init(
-      reducer: Reduce(MapFeature()),
+      reducer: Reduce(Core()),
       location: Reduce(LocationFeature()),
       detail: Reduce(DetailFeature())
     )
   }
   
-  struct MapFeature: Reducer {
+  struct Core: Reducer {
     @Dependency(\.flowerSpotClient) var flowerSpot
     @Dependency(\.openURL) var openURL
     
@@ -160,7 +160,7 @@ extension MapFeature {
   }
 }
 
-extension MapFeature.MapFeature {
+extension MapFeature.Core {
   private func fetchAllFlowerAddress() -> Effect<Action> {
     return .run { send in
       do {

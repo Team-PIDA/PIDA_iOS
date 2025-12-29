@@ -11,10 +11,10 @@ import SettingFeatureInterface
 
 extension PolicyFeature {
   public init() {
-    self.init(reducer: Reduce(PolicyFeature()))
+    self.init(reducer: Reduce(Core()))
   }
 
-  struct PolicyFeature: Reducer {
+  struct Core: Reducer {
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       case .pop:

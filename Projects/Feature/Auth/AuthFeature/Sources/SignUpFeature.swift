@@ -14,10 +14,10 @@ import UserClient
 
 extension SignUpFeature {
   public init() {
-    self.init(reducer: Reduce(SignUpFeature()))
+    self.init(reducer: Reduce(Core()))
   }
 
-  struct SignUpFeature: Reducer {
+  struct Core: Reducer {
     @Dependency(\.authClient) var authClient
     @Dependency(\.userClient) var userClient
     @Dependency(\.mainQueue) var mainQueue
@@ -86,7 +86,7 @@ extension SignUpFeature {
   }
 }
 
-extension SignUpFeature.SignUpFeature {
+extension SignUpFeature.Core {
   private func checkValidNickname(nickname: String) -> Effect<Action> {
     let inputValid: NickNameInputValid
     if nickname.count < 2 {

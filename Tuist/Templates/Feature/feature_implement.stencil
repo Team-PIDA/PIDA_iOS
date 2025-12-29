@@ -11,12 +11,15 @@ import ComposableArchitecture
 
 extension {{ name }}Feature {
   public init() {
-    let reducer = Reduce<State, Action> { state, action in
+    self.init(reducer: Reduce(Core()))
+  }
+
+  struct Core: Reducer {
+    func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       default:
         return .none
       }
     }
-    self.init(reducer: reducer)
   }
 }

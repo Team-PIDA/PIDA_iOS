@@ -14,10 +14,10 @@ import UserClient
 
 extension AuthFeature {
   public init() {
-    self.init(reducer: Reduce(AuthFeature()))
+    self.init(reducer: Reduce(Core()))
   }
 
-  struct AuthFeature: Reducer {
+  struct Core: Reducer {
     @Dependency(\.authClient) var authClient
     @Dependency(\.userClient) var userClient
     @Dependency(\.mainQueue) var mainQueue
@@ -60,7 +60,7 @@ extension AuthFeature {
   }
 }
 
-extension AuthFeature.AuthFeature {
+extension AuthFeature.Core {
   private func appleLoginRequest() -> Effect<Action> {
     return .run { send in
       do {

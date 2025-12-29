@@ -13,10 +13,10 @@ import UserClient
 
 extension ProfileUpdateFeature {
   public init() {
-    self.init(reducer: Reduce(ProfileUpdateFeature()))
+    self.init(reducer: Reduce(Core()))
   }
 
-  struct ProfileUpdateFeature: Reducer {
+  struct Core: Reducer {
     @Dependency(\.userClient) var userClient
     @Dependency(\.mainQueue) var mainQueue
 
@@ -86,7 +86,7 @@ extension ProfileUpdateFeature {
   }
 }
 
-extension ProfileUpdateFeature.ProfileUpdateFeature {
+extension ProfileUpdateFeature.Core {
   private func changeNickname(nickname: String) -> Effect<Action> {
     return .run { send in
       await send(.isLoading(true))

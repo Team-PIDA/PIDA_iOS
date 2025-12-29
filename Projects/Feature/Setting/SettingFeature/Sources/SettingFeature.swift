@@ -16,10 +16,10 @@ import AuthClient
 
 extension SettingFeature {
   public init() {
-    self.init(reducer: Reduce(SettingFeature()))
+    self.init(reducer: Reduce(Core()))
   }
 
-  struct SettingFeature: Reducer {
+  struct Core: Reducer {
     @Dependency(\.openURL) var openURL
     @Dependency(\.userClient) var userClient
     @Dependency(\.authClient) var authClient

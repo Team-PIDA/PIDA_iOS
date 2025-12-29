@@ -12,10 +12,10 @@ import FlowerSpotDetailFeatureInterface
 
 extension FlowerSpotDetailFeature {
   public init() {
-    self.init(reducer: Reduce(FlowerSpotDetailFeature()))
+    self.init(reducer: Reduce(Core()))
   }
 
-  struct FlowerSpotDetailFeature: Reducer {
+  struct Core: Reducer {
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       // MARK: - Delegate
