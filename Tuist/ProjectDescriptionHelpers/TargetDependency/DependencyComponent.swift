@@ -28,6 +28,7 @@ extension TargetDependency {
     public static let Auth = Self.project(.client(.Auth))
     public static let User = Self.project(.client(.User))
     public static let Blooming = Self.project(.client(.Blooming))
+    public static let Location = Self.project(.client(.Location))
   }
 }
 

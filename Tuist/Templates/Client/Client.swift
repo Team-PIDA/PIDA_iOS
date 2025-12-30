@@ -39,15 +39,15 @@ let dataTemplate = Template(
     ),
     .file(
       path: "\(ClientPath)/\(name)/Sources/DTO/Request/dummy.swift",
-      templatePath: "dummy.stencil"
+      templatePath: "client_dummy.stencil"
     ),
     .file(
       path: "\(ClientPath)/\(name)/Sources/DTO/Response/dummy.swift",
-      templatePath: "dummy.stencil"
+      templatePath: "client_dummy.stencil"
     ),
     .file(
       path: "\(ClientPath)/\(name)/Sources/Entity/dummy.swift",
-      templatePath: "dummy.stencil"
+      templatePath: "client_dummy.stencil"
     ),
   ]
 )
