@@ -92,7 +92,6 @@ extension MapFeature.LocationFeature {
     return .run { send in
       do {
         let query = GetFlowerSpotQuery(
-          region: "SEOUL",
           swLat: positions[0].latitude,
           swLng: positions[0].longitude,
           neLat: positions[1].latitude,
