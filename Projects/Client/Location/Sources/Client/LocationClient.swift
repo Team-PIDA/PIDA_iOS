@@ -7,14 +7,15 @@
 //
 
 import ComposableArchitecture
+import Shared
 
 @DependencyClient
 public struct LocationClient: Sendable {
-  public var execute: @Sendable () async throws -> Void
+  public var reqeustUserLocation: @Sendable () async throws -> Coordinate?
 }
 
 public extension DependencyValues {
-  var LocationClient /*<- 카멜케이스 적용*/ : LocationClient {
+  var locationClient : LocationClient {
     get { self[LocationClient.self] }
     set { self[LocationClient.self] = newValue }
   }

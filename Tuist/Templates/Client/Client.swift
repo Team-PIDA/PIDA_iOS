@@ -22,7 +22,7 @@ let dataTemplate = Template(
   ],
   items: [
     .file(
-      path: "\(ClientPath)/\(name)/Project.swift",
+      path: "\(ClientPath)/Project.swift",
       templatePath: "client_project.stencil"
     ),
     .file(
