@@ -10,6 +10,10 @@ import ComposableArchitecture
 
 extension LocationClient: DependencyKey {
   public static var liveValue: Self {
-    return .init()
+    return .init(
+      requestUserLocation: { 
+        await LocationService().requestUserLocation()
+      }
+    )
   }
 }
