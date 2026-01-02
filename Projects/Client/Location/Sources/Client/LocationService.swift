@@ -32,6 +32,10 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
   // MARK: - Location Method
   func requestUserLocation() async -> Coordinate? {
     return await withCheckedContinuation { continuation in
+      guard self.continuation == nil else {
+        continuation.resume(returning: nil)
+        return
+      }
       self.continuation = continuation
       let status = locationManager.authorizationStatus
       switch status {
