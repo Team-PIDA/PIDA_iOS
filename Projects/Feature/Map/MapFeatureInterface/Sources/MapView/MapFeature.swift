@@ -17,12 +17,12 @@ import Shared
 public struct MapFeature {
   private let reducer: Reduce<State, Action>
   private let location: Reduce<LocationFeature.State, LocationFeature.Action>
-  private let detail: Reduce<State, DetailAction>
+  private let detail: Reduce<DetailFeature.State, DetailFeature.Action>
   
   public init(
     reducer: Reduce<State, Action>,
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
-    detail: Reduce<State, DetailAction>
+    detail: Reduce<DetailFeature.State, DetailFeature.Action>
   ) {
     self.reducer = reducer
     self.location = location
@@ -60,7 +60,7 @@ public struct MapFeature {
     
     public var alertType: AlertType? = nil
     
-    public var detail: DetailState = .init()
+    public var detail: DetailFeature.State = .init()
     
 //    public var location: LocationState = .init()
     public var location: LocationFeature.State = .init()
@@ -72,7 +72,7 @@ public struct MapFeature {
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case location(LocationFeature.Action)
-    case detail(DetailAction)
+    case detail(DetailFeature.Action)
     
     case showToastView(message: String?, buttonLabel: String?)
     case moveToReportURL
@@ -117,7 +117,7 @@ public struct MapFeature {
     Scope(state: \.location, action: \.location) {
       location
     }
-    Scope(state: \.self, action: \.detail) {
+    Scope(state: \.detail, action: \.detail) {
       detail
     }
     reducer

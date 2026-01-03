@@ -15,12 +15,13 @@ import FlowerSpotClient
 
 extension MapFeature {
   public init(
-    location: Reduce<LocationFeature.State, LocationFeature.Action>
+    location: Reduce<LocationFeature.State, LocationFeature.Action>,
+    detail: Reduce<DetailFeature.State, DetailFeature.Action>
   ) {
     self.init(
       reducer: Reduce(Core()),
       location: location,
-      detail: Reduce(DetailFeature())
+      detail: detail
     )
   }
   
@@ -142,6 +143,18 @@ extension MapFeature {
           
         case let .presentAlert(type):
           return .send(.presentAlert(type: type))
+        }
+        
+      case let .detail(.delegate(action)):
+        switch action {
+        case let .updateMarkerStatus(status, id):
+          if state.flowerSpots[id] != .none {
+            state.flowerSpots[id]?.bloomingStatus = status.rawValue
+          } else if state.searchResult != .none {
+            state.searchResult?.bloomingStatus = status.rawValue
+          }
+          state.detail.updateMarkerStatus = status
+          return .none
         }
         
         // MARK: - Delegate
