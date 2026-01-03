@@ -14,6 +14,7 @@ import MapFeatureInterface
 import FlowerSpotClient
 import BloomingClient
 import CacheClient
+import LocationClient
 
 extension MapFeature {
   
@@ -89,7 +90,7 @@ extension MapFeature {
         return .none
         
       case let .calculateDistance(pinPoint):
-        guard let userPoint = state.userLocation else {
+        guard let userPoint = state.detail.userLocation else {
           state.detail.distance = .zero
           return .none
         }

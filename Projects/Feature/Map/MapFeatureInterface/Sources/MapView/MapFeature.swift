@@ -16,12 +16,12 @@ import Shared
 @Reducer
 public struct MapFeature {
   private let reducer: Reduce<State, Action>
-  private let location: Reduce<State, LocationAction>
+  private let location: Reduce<LocationFeature.State, LocationFeature.Action>
   private let detail: Reduce<State, DetailAction>
   
   public init(
     reducer: Reduce<State, Action>,
-    location: Reduce<State, LocationAction>,
+    location: Reduce<LocationFeature.State, LocationFeature.Action>,
     detail: Reduce<State, DetailAction>
   ) {
     self.reducer = reducer
@@ -31,8 +31,7 @@ public struct MapFeature {
   
   @ObservableState
   public struct State: Equatable {
-    /// 특정 지점으로 이동하기 위한 위치정보
-    public var point: Coordinate? = nil
+    
     /// 유저의 현재 위치
     public var userLocation: Coordinate? = nil
     
@@ -63,7 +62,8 @@ public struct MapFeature {
     
     public var detail: DetailState = .init()
     
-    public var location: LocationState = .init()
+//    public var location: LocationState = .init()
+    public var location: LocationFeature.State = .init()
     
     public init() {}
   }
@@ -71,13 +71,14 @@ public struct MapFeature {
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
-    case location(LocationAction)
+    case location(LocationFeature.Action)
     case detail(DetailAction)
     
     case showToastView(message: String?, buttonLabel: String?)
     case moveToReportURL
     case viewDidAppear
     
+    case requestMapBounds(Bool)
     case fetchAllFlowerAddress
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
@@ -113,7 +114,7 @@ public struct MapFeature {
   
   public var body: some ReducerOf<Self> {
     BindingReducer()
-    Scope(state: \.self, action: \.location) {
+    Scope(state: \.location, action: \.location) {
       location
     }
     Scope(state: \.self, action: \.detail) {

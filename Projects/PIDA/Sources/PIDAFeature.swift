@@ -35,6 +35,7 @@ enum Path: Hashable {
 
 @Reducer
 struct PIDAFeature {
+  let locationReducer = Reduce(LocationFeature())
   
   @ObservableState
   struct State: Equatable {
@@ -77,8 +78,9 @@ struct PIDAFeature {
   
   var body: some ReducerOf<Self> {
     BindingReducer()
+    
     Scope(state: \.map, action: \.map) {
-      MapFeature()
+      MapFeature(location: locationReducer)
     }
     Scope(state: \.search, action: \.search) {
       SearchFeature()

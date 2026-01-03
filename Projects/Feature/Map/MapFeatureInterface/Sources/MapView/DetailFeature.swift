@@ -15,6 +15,8 @@ import Shared
 extension MapFeature {
   
   public struct DetailState: Equatable {
+    public var userLocation: Coordinate? = nil
+    
     public var selectedItem: FlowerSpotEntity? = nil
     /// 네트워크로 받아온 상세 데이터
     public var selectedItemDetail: FlowerSpotEntity? = nil

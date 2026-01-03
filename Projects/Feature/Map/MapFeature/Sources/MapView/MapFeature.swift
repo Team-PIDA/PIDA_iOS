@@ -14,10 +14,12 @@ import FlowerSpotClient
 
 
 extension MapFeature {
-  public init() {
+  public init(
+    location: Reduce<LocationFeature.State, LocationFeature.Action>
+  ) {
     self.init(
       reducer: Reduce(Core()),
-      location: Reduce(LocationFeature()),
+      location: location,
       detail: Reduce(DetailFeature())
     )
   }
@@ -44,6 +46,11 @@ extension MapFeature {
       case .viewDidAppear:
         state.isViewAppeared = true
         return .send(.fetchAllFlowerAddress)
+        
+      case let .requestMapBounds(isRequest):
+        state.requestMapBound = isRequest
+        state.researchButtonEnable = false
+        return .none
         
       case .fetchAllFlowerAddress:
         return fetchAllFlowerAddress()
@@ -113,6 +120,30 @@ extension MapFeature {
         state.alertType = nil
         return .none
         
+        // MARK: - LocationFeature Delegate
+        
+      case let .location(.delegate(action)):
+        switch action {
+        case let .storeFlowerData(data):
+          state.flowerSpots.removeAll()
+          data.forEach {
+            state.flowerSpots[$0.id] = $0
+          }
+          return .none
+          
+        case let .storeUserLocation(location):
+          state.userLocation = location
+          state.detail.userLocation = location
+          state.location.userLocation = location
+          return .none
+          
+        case let .showToastView(message, label):
+          return .send(.showToastView(message: message, buttonLabel: label))
+          
+        case let .presentAlert(type):
+          return .send(.presentAlert(type: type))
+        }
+        
         // MARK: - Delegate
         
       case .presentToSearch:
@@ -141,18 +172,7 @@ extension MapFeature {
         default: return .none
         }
         
-      case let .location(action):
-        switch action {
-        case let .showToastView(message, label):
-          return .send(.showToastView(message: message, buttonLabel: label))
-          
-        case let .presentAlert(type):
-          return .send(.presentAlert(type: type))
-          
-        default: return .none
-        }
-        
-      case .binding, .delegate, .alertAcceptTapped:
+      case .binding, .delegate, .alertAcceptTapped, .location:
         return .none
         
       }
@@ -172,7 +192,7 @@ extension MapFeature.Core {
       } catch {
         print(error.localizedDescription)
       }
-      await send(.location(.requestMapBounds(true)))
+      await send(.requestMapBounds(true))
     }
   }
   
