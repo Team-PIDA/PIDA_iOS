@@ -37,7 +37,18 @@ public struct FlowerSpotDetailFeature {
     public var isNeedDeletePath: Bool = false
     public var isShowLoginAlert: Bool = false
     public var isVotedBlooming: VerifyBloomingStateEntity = .init(isBlooming: false)
-    public init() {}
+    
+    public init(
+      flowerSpotData: FlowerSpotEntity,
+      bloomingStatus: BloomStatusEntity,
+      distance: Double,
+      isVotedBlooming: VerifyBloomingStateEntity
+    ) {
+      self.flowerSpotData = flowerSpotData
+      self.bloomingStatus = bloomingStatus
+      self.distance = distance
+      self.isVotedBlooming = isVotedBlooming
+    }
   }
 
   public enum Action: BindableAction, Equatable {

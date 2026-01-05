@@ -18,7 +18,9 @@ public struct PolicyFeature {
   @ObservableState
   public struct State: Equatable {
     public var type: PolicyType? = nil
-    public init(){}
+    public init(type: PolicyType?){
+      self.type = type
+    }
   }
   
   public enum Action: Equatable {

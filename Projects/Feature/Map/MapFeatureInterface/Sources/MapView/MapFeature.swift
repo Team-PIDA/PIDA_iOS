@@ -62,7 +62,6 @@ public struct MapFeature {
     
     public var detail: DetailFeature.State = .init()
     
-//    public var location: LocationState = .init()
     public var location: LocationFeature.State = .init()
     
     public init() {}

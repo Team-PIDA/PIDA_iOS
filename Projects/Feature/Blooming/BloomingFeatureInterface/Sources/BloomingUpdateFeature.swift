@@ -25,7 +25,10 @@ public struct BloomingUpdateFeature {
     public var buttonTittle: String = "개화 상태를 선택해주세요"
     public var selectedStatus: BloomStatus? = nil
     public var toastMessage: String? = nil
-    public init() {}
+    public init(spotId: Int?, streetName: String) {
+      self.spotId = spotId
+      self.streetName = streetName
+    }
   }
   
   public enum Action: BindableAction, Equatable {

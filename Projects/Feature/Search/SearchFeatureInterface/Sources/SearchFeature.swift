@@ -25,7 +25,9 @@ public struct SearchFeature {
     public var searchList: [SearchListCellEntity] = []
     public var recentList: [SearchListCellEntity] = []
     public var showRecentList: Bool = true
-    public init() {}
+    public init(initText: String?) {
+      self.searchWord = initText ?? ""
+    }
   }
   
   public enum Action: BindableAction, Equatable {
