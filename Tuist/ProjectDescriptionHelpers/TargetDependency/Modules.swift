@@ -34,6 +34,7 @@ public enum Client: ModuleRepresentable {
   case Auth
   case User
   case Blooming
+  case Location
 }
 
 public enum SPM: ModuleRepresentable {

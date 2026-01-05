@@ -13,11 +13,13 @@ import ComposableArchitecture
 import MapFeatureInterface
 import FlowerSpotClient
 import CacheClient
+import LocationClient
 
 extension MapFeature {
   struct LocationFeature: Reducer {
     typealias Action = LocationAction
     
+    @Dependency(\.locationClient) var locationClient
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.cache) var cache
 
@@ -74,7 +76,7 @@ extension MapFeature {
 extension MapFeature.LocationFeature {
   private func moveUserLocation(isCurrentButtonTap: Bool) -> Effect<Action> {
     return .run { send in
-      if let location = await LocationService.shared.requestUserLocation() {
+      if let location = await locationClient.requestUserLocation() {
         await send(.saveUserLocation(location))
         await send(.moveLocation(location))
       } else {
@@ -90,7 +92,6 @@ extension MapFeature.LocationFeature {
     return .run { send in
       do {
         let query = GetFlowerSpotQuery(
-          region: "SEOUL",
           swLat: positions[0].latitude,
           swLng: positions[0].longitude,
           neLat: positions[1].latitude,

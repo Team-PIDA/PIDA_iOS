@@ -22,32 +22,32 @@ let dataTemplate = Template(
   ],
   items: [
     .file(
-      path: "\(ClientPath)/\(name)/Project.swift",
+      path: "\(ClientPath)/Project.swift",
       templatePath: "client_project.stencil"
     ),
     .file(
-      path: "\(ClientPath)/\(name)/Sources/Client/\(name)Client.swift",
+      path: "\(ClientPath)/Sources/Client/\(name)Client.swift",
       templatePath: "client_base.stencil"
     ),
     .file(
-      path: "\(ClientPath)/\(name)/Sources/Client/\(name)Client+Endpoint.swift",
+      path: "\(ClientPath)/Sources/Client/\(name)Client+Endpoint.swift",
       templatePath: "client_endpoint.stencil"
     ),
     .file(
-      path: "\(ClientPath)/\(name)/Sources/Client/\(name)Client+Live.swift",
+      path: "\(ClientPath)/Sources/Client/\(name)Client+Live.swift",
       templatePath: "client_live.stencil"
     ),
     .file(
-      path: "\(ClientPath)/\(name)/Sources/DTO/Request/dummy.swift",
-      templatePath: "dummy.stencil"
+      path: "\(ClientPath)/Sources/DTO/Request/request_dummy.swift",
+      templatePath: "client_dummy.stencil"
     ),
     .file(
-      path: "\(ClientPath)/\(name)/Sources/DTO/Response/dummy.swift",
-      templatePath: "dummy.stencil"
+      path: "\(ClientPath)/Sources/DTO/Response/response_dummy.swift",
+      templatePath: "client_dummy.stencil"
     ),
     .file(
-      path: "\(ClientPath)/\(name)/Sources/Entity/dummy.swift",
-      templatePath: "dummy.stencil"
+      path: "\(ClientPath)/Sources/Entity/entity_dummy.swift",
+      templatePath: "client_dummy.stencil"
     ),
   ]
 )
