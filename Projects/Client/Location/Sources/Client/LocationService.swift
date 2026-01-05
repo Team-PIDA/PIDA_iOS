@@ -33,7 +33,7 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
   func requestUserLocation() async -> Coordinate? {
     return await withCheckedContinuation { continuation in
       guard self.continuation == nil else {
-        continuation.resume(returning: nil)
+        finish(nil)
         return
       }
       self.continuation = continuation
