@@ -109,7 +109,7 @@ public struct MapFeature {
   }
   
   // MARK: - Delegate
-  
+
   public enum Delegate: Equatable {
     case presentToSearch(String?)
     case pushToSetting
@@ -120,6 +120,9 @@ public struct MapFeature {
       distance: Double,
       isVotedBlooming: VerifyBloomingStateEntity
     )
+    // MARK: - 신규 Delegate (FlowerSpotDetailFeature 통합용)
+    case presentToBlooming(id: Int, streetName: String)
+    case presentToLogin(id: Int)
   }
   
   public var body: some ReducerOf<Self> {

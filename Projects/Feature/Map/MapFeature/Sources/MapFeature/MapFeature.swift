@@ -188,7 +188,23 @@ extension MapFeature {
         default: return .none
         }
         
-      case let .flowerSpotDetail(action):
+      // MARK: - FlowerSpotDetailFeature Delegate 처리
+      case let .flowerSpotDetail(.delegate(action)):
+        switch action {
+        case .dismiss:
+          // 바텀시트 닫기: Optional State를 nil로 설정
+          state.flowerSpotDetail = nil
+          state.isNeedDeleteMarker = true
+          return .none
+
+        case let .presentToBlooming(id, streetName):
+          return .send(.delegate(.presentToBlooming(id: id, streetName: streetName)))
+
+        case let .presentToLogin(id):
+          return .send(.delegate(.presentToLogin(id: id)))
+        }
+
+      case .flowerSpotDetail:
         return .none
         
       case .binding, .delegate, .alertAcceptTapped, .location:
