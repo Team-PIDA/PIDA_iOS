@@ -9,6 +9,7 @@
 import ComposableArchitecture
 import SearchClient
 import FlowerSpotClient
+import Shared
 
 @Reducer
 public struct SearchFeature {
@@ -58,7 +59,7 @@ public struct SearchFeature {
   
   public enum Delegate: Equatable {
     case dismiss
-    case selectResult(FlowerSpotEntity)
+    case selectResult(FlowerSpotEntity, type: SearchType)
   }
 
   public var body: some Reducer<State, Action> {

@@ -11,7 +11,7 @@ import ComposableArchitecture
 import SearchFeatureInterface
 import SearchClient
 import FlowerSpotClient
-
+import Shared
 
 extension SearchFeature {
   public init() {
@@ -77,7 +77,7 @@ extension SearchFeature {
 
       case let .fetchSearchResult(result):
         return .run { send in
-          await MainActor.run { send(.delegate(.selectResult(result))) }
+          await MainActor.run { send(.delegate(.selectResult(result, type: .region))) }
         }
 
       case let .searchBarFocused(isFocused):

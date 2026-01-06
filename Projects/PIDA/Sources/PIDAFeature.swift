@@ -169,6 +169,7 @@ struct PIDAFeature {
 
         // MARK: - Map <-> Search
 
+        
       case let .presentSearch(isShow, keyword):
         if isShow {
           state.search = .init(initText: keyword)
