@@ -13,7 +13,6 @@ import SearchFeatureInterface
 import SettingFeatureInterface
 import AuthFeatureInterface
 import BloomingFeatureInterface
-import FlowerSpotDetailFeatureInterface
 
 struct PIDAView: View {
   @Bindable var store: StoreOf<PIDAFeature> = Store(initialState: PIDAFeature.State()) { PIDAFeature()
@@ -55,11 +54,6 @@ struct PIDAView: View {
         .fullScreenCover(isPresented: $store.isShowSearch) {
           IfLetStore(store.scope(state: \.search, action: \.search)) { store in
             SearchView(store: store)
-          }
-        }
-        .fullScreenCover(isPresented: $store.isPresentFlowerSpotDetail) {
-          IfLetStore(store.scope(state: \.flowerSpotDetail, action: \.flowerSpotDetail)) { store in
-            FlowerSpotDetailView(store: store)
           }
         }
         .transaction { transaction in

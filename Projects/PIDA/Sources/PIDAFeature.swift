@@ -47,15 +47,13 @@ struct PIDAFeature {
     var signUp: SignUpFeature.State? = nil
     var update: ProfileUpdateFeature.State? = nil
     var blooming: BloomingUpdateFeature.State? = nil
-    var flowerSpotDetail: FlowerSpotDetailFeature.State? = nil
-    
+
     /// 네비게이션 이동 경로
     var path: [Path] = []
     var isShowSearch: Bool = false
     var isPresentAuth: Bool = false
     var isPresentSignUp: Bool = false
     var isPresentBlooming: Bool = false
-    var isPresentFlowerSpotDetail: Bool = false
   }
   
   enum Action: BindableAction {
@@ -67,11 +65,9 @@ struct PIDAFeature {
     case signUp(SignUpFeature.Action)
     case update(ProfileUpdateFeature.Action)
     case blooming(BloomingUpdateFeature.Action)
-    case flowerSpotDetail(FlowerSpotDetailFeature.Action)
-    
+
     case binding(BindingAction<State>)
     case presentSearch(Bool, keyword: String?)
-    case presentFlowerSpotDetail(Bool, state: FlowerSpotDetailFeature.State?)
     case presentBloomingUpdate(Bool, id: Int?, streetName: String)
     case presentToLogin(Bool)
     case presentSignUp(Bool)
@@ -94,12 +90,7 @@ struct PIDAFeature {
         state.search = isShow ? .init(initText: keyword) : nil
         state.isShowSearch = isShow
         return .none
-        
-      case let .presentFlowerSpotDetail(isPresent, flowerSpotDetail):
-        state.flowerSpotDetail = flowerSpotDetail
-        state.isPresentFlowerSpotDetail = isPresent
-        return .none
-        
+
       case let .presentBloomingUpdate(isPresent, id, streetName):
         state.blooming = isPresent ? .init(spotId: id, streetName: streetName) : nil
         state.isPresentBlooming = isPresent
@@ -139,39 +130,18 @@ struct PIDAFeature {
           }
         }
         
-        // MARK: - Spot Detail (fullScreenCover용)
+        // MARK: - Blooming Delegate
 
-      case .flowerSpotDetail(.delegate(.dismiss)):
-        return .send(.presentFlowerSpotDetail(false, state: nil))
-        
-      case let .flowerSpotDetail(.delegate(.presentToBlooming(id, streetName))):
-        return .run { send in
-          await MainActor.run {
-            send(.presentBloomingUpdate(true, id: id, streetName: streetName))
-          }
-        }
-      case let .flowerSpotDetail(.delegate(.presentToLogin(id))):
-        return .run { send in
-          await MainActor.run {
-            send(.presentToLogin(true))
-            send(.auth(.setSpotId(id: id)))
-          }
-        }
       case let .blooming(.delegate(.dismiss(didUpdate, spotId))):
         return .run { send in
           await send(.presentBloomingUpdate(false, id: nil, streetName: ""))
           if didUpdate {
-            // 기존 fullScreenCover용
-            await send(.map(.fetchDetailInfo(spotId)))
-            try? await Task.sleep(for: .seconds(0.3))
-            await send(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다.")))
-            // 신규 바텀시트용 (map 내부)
             await send(.map(.flowerSpotDetail(.fetchDetailInfo(spotId))))
             await send(.map(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다."))))
           }
         }
-        
-        // MARK: - Map Delegate (신규 바텀시트용)
+
+        // MARK: - Map Delegate
 
       case let .map(.delegate(.presentToBlooming(id, streetName))):
         return .run { send in
@@ -272,8 +242,7 @@ struct PIDAFeature {
           .auth,
           .signUp,
           .update,
-          .blooming,
-          .flowerSpotDetail:
+          .blooming:
         return .none
       }
     }
@@ -292,6 +261,5 @@ extension Reducer where State == PIDAFeature.State, Action == PIDAFeature.Action
       .ifLet(\.signUp, action: \.signUp) { SignUpFeature() }
       .ifLet(\.update, action: \.update) { ProfileUpdateFeature() }
       .ifLet(\.blooming, action: \.blooming) { BloomingUpdateFeature() }
-      .ifLet(\.flowerSpotDetail, action: \.flowerSpotDetail) { FlowerSpotDetailFeature() }
   }
 }
