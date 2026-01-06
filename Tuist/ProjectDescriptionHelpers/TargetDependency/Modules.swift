@@ -12,7 +12,7 @@ public protocol ModuleRepresentable { var root: String { get } }
 extension ModuleRepresentable { public var root: String { String(describing: Self.self) } }
 
 public enum Folder {
-  case feature(Feature)
+  case feature(Feature, Bool)
   case client(Client)
   case spm(SPM)
 }
