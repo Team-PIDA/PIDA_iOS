@@ -12,10 +12,14 @@ import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
 import BloomingClient
+import FlowerSpotDetailFeatureInterface
 
 public struct MapView: View {
   @Bindable var store: StoreOf<MapFeature>
-  
+
+  /// 바텀시트 드래그 활성화 여부 (스크롤 ↔ 드래그 충돌 제어)
+  @State private var isDragEnabled: Bool = true
+
   public init(store: StoreOf<MapFeature>) {
     self.store = store
   }
@@ -48,12 +52,12 @@ public struct MapView: View {
     }
     .overlay(
         Group {
-          if store.detail.isBottomSheetPresented {
-            if let item = store.detail.selectedItemDetail,
-               let bloomingStatus = store.detail.selectedItemBlooming,
-               let isVotedBlooming = store.detail.selectedItemVote {
-              BottomSheet(item: item, bloomingStatus: bloomingStatus, isVotedBlooming: isVotedBlooming)
-            }
+          // MARK: - 신규 BottomSheet (FlowerSpotDetailFeature 통합)
+          if let detailStore = store.scope(
+            state: \.flowerSpotDetail,
+            action: \.flowerSpotDetail
+          ) {
+            newBottomSheet(detailStore: detailStore)
           }
         },
         alignment: .bottom
@@ -226,5 +230,33 @@ extension MapView {
       acceptAction: { store.send(.alertAcceptTapped(type)) }
     )
     .isErrorType(false)
+  }
+
+  // MARK: - 신규 BottomSheet (FlowerSpotDetailFeature 통합)
+
+  @ViewBuilder
+  private func newBottomSheet(detailStore: StoreOf<FlowerSpotDetailFeature>) -> some View {
+    CherryBlossomBottomSheet(
+      isDragEnabled: $isDragEnabled,
+      smallContent: {
+        if detailStore.isDetailLoading {
+          FlowerSpotDetailSmallContentLoadingView()
+        } else {
+          FlowerSpotDetailSmallContentView(
+            flowerSpotData: detailStore.flowerSpotData,
+            bloomingStatus: detailStore.bloomingStatus
+          )
+        }
+      },
+      largeContent: {
+        FlowerSpotDetailLargeContentView(
+          store: detailStore,
+          isDragEnabled: $isDragEnabled
+        )
+      },
+      onDismiss: {
+        store.send(.flowerSpotDetail(.dismiss))
+      }
+    )
   }
 }

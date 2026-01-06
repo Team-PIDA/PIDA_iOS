@@ -25,6 +25,8 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
   let smallContent: () -> SmallContent
   /// 확장 상태에서 보여줄 콘텐츠
   let largeContent: () -> LargeContent
+  /// dismiss 시 호출되는 콜백
+  let onDismiss: (() -> Void)?
 
   // MARK: - Internal State (View 전용)
 
@@ -38,18 +40,20 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
   // MARK: - Init
 
   public init(
-    minHeight: CGFloat,
-    maxHeight: CGFloat,
+    minHeight: CGFloat = 140,
+    maxHeight: CGFloat = UIScreen.main.bounds.height - 100,
     midHeight: CGFloat? = nil,
     isDragEnabled: Binding<Bool>,
     @ViewBuilder smallContent: @escaping () -> SmallContent,
-    @ViewBuilder largeContent: @escaping () -> LargeContent
+    @ViewBuilder largeContent: @escaping () -> LargeContent,
+    onDismiss: (() -> Void)? = nil
   ) {
     self.minHeight = minHeight
     self.maxHeight = maxHeight
     self.midHeight = midHeight ?? (minHeight + maxHeight) / 2
     self.smallContent = smallContent
     self.largeContent = largeContent
+    self.onDismiss = onDismiss
     self._currentHeight = State(initialValue: minHeight)
     self._isDragEnabled = isDragEnabled
   }
@@ -142,6 +146,12 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
 
         // 드래그 속도 계산
         let velocity = value.predictedEndLocation.y - value.location.y
+
+        // 빠른 아래 스와이프 → dismiss
+        if velocity > 450 && currentHeight <= minHeight + 50 {
+          onDismiss?()
+          return
+        }
 
         // 빠른 스와이프 감지 (threshold: 450)
         if abs(velocity) > 450 {
