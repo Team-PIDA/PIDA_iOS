@@ -19,6 +19,8 @@ public struct MapView: View {
 
   /// 바텀시트 드래그 활성화 여부 (스크롤 ↔ 드래그 충돌 제어)
   @State private var isDragEnabled: Bool = true
+  /// 바텀시트 확장 상태 여부
+  @State private var isBottomSheetExpanded: Bool = false
 
   public init(store: StoreOf<MapFeature>) {
     self.store = store
@@ -238,6 +240,7 @@ extension MapView {
   private func newBottomSheet(detailStore: StoreOf<FlowerSpotDetailFeature>) -> some View {
     CherryBlossomBottomSheet(
       isDragEnabled: $isDragEnabled,
+      isExpanded: $isBottomSheetExpanded,
       smallContent: {
         if detailStore.isDetailLoading {
           FlowerSpotDetailSmallContentLoadingView()
@@ -251,7 +254,10 @@ extension MapView {
       largeContent: {
         FlowerSpotDetailLargeContentView(
           store: detailStore,
-          isDragEnabled: $isDragEnabled
+          isDragEnabled: $isDragEnabled,
+          onBackTapped: {
+            isBottomSheetExpanded = false
+          }
         )
       },
       onDismiss: {

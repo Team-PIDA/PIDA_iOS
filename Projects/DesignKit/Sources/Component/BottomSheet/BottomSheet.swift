@@ -36,14 +36,17 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
 
   /// 외부에서 드래그 가능 여부를 제어 (스크롤 ↔ 드래그 충돌 제어용)
   @Binding private var isDragEnabled: Bool
+  /// 외부에서 확장/축소 상태를 제어
+  @Binding private var isExpanded: Bool
 
   // MARK: - Init
 
   public init(
     minHeight: CGFloat = 140,
-    maxHeight: CGFloat = UIScreen.main.bounds.height - 100,
+    maxHeight: CGFloat = UIScreen.main.bounds.height,
     midHeight: CGFloat? = nil,
     isDragEnabled: Binding<Bool>,
+    isExpanded: Binding<Bool> = .constant(false),
     @ViewBuilder smallContent: @escaping () -> SmallContent,
     @ViewBuilder largeContent: @escaping () -> LargeContent,
     onDismiss: (() -> Void)? = nil
@@ -56,6 +59,7 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
     self.onDismiss = onDismiss
     self._currentHeight = State(initialValue: minHeight)
     self._isDragEnabled = isDragEnabled
+    self._isExpanded = isExpanded
   }
 
   // MARK: - Body
@@ -69,6 +73,18 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
       sheetView
     }
     .ignoresSafeArea()
+    .onChange(of: isExpanded) { _, newValue in
+      withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+        currentHeight = newValue ? maxHeight : minHeight
+      }
+    }
+    .onChange(of: currentHeight) { _, newValue in
+      // currentHeight 변화에 따라 isExpanded 동기화
+      let expanded = newValue >= midHeight
+      if isExpanded != expanded {
+        isExpanded = expanded
+      }
+    }
   }
 
   // MARK: - Sheet View
@@ -99,6 +115,7 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
     .frame(maxWidth: .infinity)
     .contentShape(Rectangle())
     .frame(height: .Number20)
+    .offset(y: currentHeight >= midHeight ? -UIApplication.shared.safeAreaTopInset : 0)
     .onTapGesture {
       withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
         currentHeight = currentHeight < midHeight ? maxHeight : minHeight

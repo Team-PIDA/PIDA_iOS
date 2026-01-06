@@ -45,8 +45,7 @@ struct DetailMapViewRepresentable: UIViewRepresentable {
     view.mapView.isIndoorMapEnabled = false
     view.mapView.locationOverlay.hidden = true
     view.mapView.mapType = .basic
-    
-    view.frame = CGRect(x: 0, y: 0, width: .zero, height: 160)
+
     view.clipsToBounds = true
     view.mapView.symbolScale = 0.8
     

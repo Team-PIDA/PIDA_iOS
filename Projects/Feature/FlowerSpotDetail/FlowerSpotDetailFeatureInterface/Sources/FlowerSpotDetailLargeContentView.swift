@@ -18,19 +18,25 @@ public struct FlowerSpotDetailLargeContentView: View {
   /// 바텀시트 드래그 활성화 여부 (스크롤 ↔ 드래그 충돌 제어)
   @Binding var isDragEnabled: Bool
 
+  /// 뒤로가기 버튼 탭 시 호출되는 콜백 (바텀시트 축소용)
+  let onBackTapped: (() -> Void)?
+
   @State private var scrollOffset: CGPoint = .zero
 
   public init(
     store: StoreOf<FlowerSpotDetailFeature>,
-    isDragEnabled: Binding<Bool>
+    isDragEnabled: Binding<Bool>,
+    onBackTapped: (() -> Void)? = nil
   ) {
     self.store = store
     self._isDragEnabled = isDragEnabled
+    self.onBackTapped = onBackTapped
   }
 
   public var body: some View {
     ZStack {
       VStack(spacing: .Number0) {
+        navigationBar
         mainScrollContent
         floatingButton
       }
@@ -51,6 +57,22 @@ public struct FlowerSpotDetailLargeContentView: View {
       // 스크롤이 최상단(offset.y <= 0)일 때만 바텀시트 드래그 허용
       isDragEnabled = newValue.y <= 0
     }
+  }
+
+  // MARK: - Navigation Bar
+
+  @ViewBuilder
+  private var navigationBar: some View {
+    NavigationBar(
+      backContent: {
+        TouchArea(image: .pullDown)
+          .size(.superLarge)
+          .action {
+            onBackTapped?()
+          }
+      }
+    )
+    .padding(.top, .Number20)
   }
 
   // MARK: - Main Scroll Content
@@ -260,12 +282,7 @@ public struct FlowerSpotDetailLargeContentView: View {
 
   @ViewBuilder
   private var floatingButton: some View {
-    ZStack(alignment: .bottom) {
-      Rectangle()
-        .fill(.white)
-        .shadow(color: .black.opacity(0.16), radius: 8)
-        .ignoresSafeArea()
-
+    VStack(spacing: .Number0) {
       PIDButton(
         title: "오늘의 개화 상태 기록하기",
         size: .large
@@ -274,9 +291,13 @@ public struct FlowerSpotDetailLargeContentView: View {
         store.send(.chechAuth)
       }
       .isActive(!store.isVotedBlooming.isBlooming)
-      .padding(.Number16)
+      .padding(.horizontal, .Number16)
+      .padding(.vertical, .Number16)
+      .padding(.bottom, UIApplication.shared.safeAreaBottomInset)
     }
-    .frame(height: 80)
-    .background(Color.white)
+    .background(
+      Color.white
+        .shadow(color: .black.opacity(0.1), radius: 8, y: -4)
+    )
   }
 }
