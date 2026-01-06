@@ -18,8 +18,10 @@ extension FlowerSpotClient: DependencyKey {
     
     return .init(
       fetchAllFlowerAddress: {
+        guard await cache.get(.allFlowerSpots, as: [SearchAddressCacheModel].self) == .none else { return }
+        // 캐시에 없을 때만 api 요청
         let endpoint = FlowerSpotEndpoint.getFlowerSpotWithArea(getFlowerSpotQuery: .init())
-        let result = try await apiClient.execute(endpoint).toEntity()
+        let result = try await apiClient.execute(endpoint).toCacheModel()
         try await cache.set(.allFlowerSpots, result)
       },
       fetchAllFlowerPin: { query in

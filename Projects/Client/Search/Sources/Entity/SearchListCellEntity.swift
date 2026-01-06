@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CacheClient
 
 public struct SearchListCellEntity: Equatable, Sendable, Codable {
   public let id: Int
@@ -25,4 +26,12 @@ public struct SearchListCellEntity: Equatable, Sendable, Codable {
     self.streetName = streetName
     self.subInfo = subInfo
   }
+  
+  public init(_ entity: SearchAddressCacheModel) {
+    self.id = entity.id
+    self.address = entity.address
+    self.streetName = entity.streetName
+    self.subInfo = entity.subInfo
+  }
+  
 }
