@@ -11,6 +11,7 @@ import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
 import BloomingClient
+import FlowerSpotDetailFeatureInterface
 import Shared
 
 @Reducer
@@ -61,9 +62,13 @@ public struct MapFeature {
     public var alertType: AlertType? = nil
     
     public var detail: DetailFeature.State = .init()
-    
+
     public var location: LocationFeature.State = .init()
-    
+
+    // MARK: - 신규 State (FlowerSpotDetailFeature 통합용)
+    /// Optional State 패턴: nil이면 바텀시트 숨김, 값이 있으면 바텀시트 표시
+    public var flowerSpotDetail: FlowerSpotDetailFeature.State? = nil
+
     public init() {}
   }
   
