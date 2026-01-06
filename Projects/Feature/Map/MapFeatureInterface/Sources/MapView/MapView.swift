@@ -91,7 +91,10 @@ extension MapView {
       focusData: $store.searchResult,
       isNeedDeleteMarker: $store.isNeedDeleteMarker,
       isNeedDrawMarker: $store.isNeedDrawMarker,
-      updateMarkerStatus: $store.detail.updateMarkerStatus
+      updateMarkerStatus: Binding(
+        get: { store.flowerSpotDetail?.updateMarkerStatus },
+        set: { _ in }
+      )
     )
     .onReceiveMapBounds {
       if store.requestMapBound {
@@ -100,9 +103,6 @@ extension MapView {
     }
     .onMarkerTapped { id in
       store.send(.markerTapped(id: id))
-      if id == .none {
-        store.send(.detail(.dismissBottomSheet))
-      }
     }
     .ignoresSafeArea()
   }
@@ -119,7 +119,6 @@ extension MapView {
             .size(.extraLarge)
             .action {
               store.send(.resetSearchBar)
-              store.send(.detail(.dismissBottomSheet))
               store.send(.markerTapped(id: nil))
             }
         }
@@ -139,60 +138,6 @@ extension MapView {
         store.send(.presentToSearch)
       }
     }
-  }
-  
-  @ViewBuilder
-  private func BottomSheet(
-    item: FlowerSpotEntity,
-    bloomingStatus: BloomStatusEntity,
-    isVotedBlooming: VerifyBloomingStateEntity
-  ) -> some View {
-    CherryBlossomBottomSheetLegacy(
-      title: item.streetName,
-      description: item.address,
-      tags: [
-        .district(value: item.district),
-        .recentVisitCount(value: item.recentlyVisitedCountString),
-        bloomingStatus.nickname == nil ? nil : .informant(value: bloomingStatus.nickname!)
-      ],
-      blossomState: BloomStatus(rawValue: item.bloomingStatus),
-      isLoading: store.detail.isDetailLoading,
-      onPullUp: {
-        return await MainActor.run {
-          store.send(
-            .detail(
-              .presentToDetail(
-                flowerSpotData: item,
-                bloomingStatus: bloomingStatus,
-                distance: store.detail.distance,
-                isVotedBlooming: isVotedBlooming
-              )
-            )
-          )
-        }
-      },
-      onPullDown:  {
-        return await MainActor.run {
-          store.send(.resetSearchBar)
-          store.send(.detail(.dismissBottomSheet))
-          store.send(.markerTapped(id: nil))
-        }
-      },
-      onTap: {
-        return await MainActor.run {
-          store.send(
-            .detail(
-              .presentToDetail(
-                flowerSpotData: item,
-                bloomingStatus: bloomingStatus,
-                distance: store.detail.distance,
-                isVotedBlooming: isVotedBlooming
-              )
-            )
-          )
-        }
-      }
-    )
   }
   
   @ViewBuilder
@@ -222,7 +167,7 @@ extension MapView {
       .elevation(cornerRadius: .Number24)
     }
     .padding(.trailing, .Number16)
-    .padding(.bottom, store.detail.selectedItemDetail != nil ? 180 : 40)
+    .padding(.bottom, store.flowerSpotDetail != nil ? 180 : 40)
   }
   
   private func alertView(type: AlertType) -> some View {

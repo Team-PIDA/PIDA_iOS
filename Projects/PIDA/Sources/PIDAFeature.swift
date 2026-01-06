@@ -36,7 +36,6 @@ enum Path: Hashable {
 @Reducer
 struct PIDAFeature {
   let locationReducer = Reduce(LocationFeature())
-  let detailReducer = Reduce(DetailFeature())
   
   @ObservableState
   struct State: Equatable {
@@ -84,13 +83,10 @@ struct PIDAFeature {
     Scope(state: \.map, action: \.map) {
       MapFeature(
         location: locationReducer,
-        detail: detailReducer,
         flowerSpotDetail: FlowerSpotDetailFeature()
       )
     }
-    Reduce {
-      state,
-      action in
+    Reduce<State, Action> { state, action in
       switch action {
         // MARK: - Map <-> Search
         
@@ -143,29 +139,8 @@ struct PIDAFeature {
           }
         }
         
-        // MARK: - Spot Detail
-        
-      case let .map(
-        .delegate(
-          .presentToDetail(
-            flowerSpotData,
-            bloomingData,
-            distance,
-            isVotedBlooming
-          )
-        )
-      ):
-        let detailState: FlowerSpotDetailFeature.State = .init(
-          flowerSpotData: flowerSpotData,
-          bloomingStatus: bloomingData,
-          distance: distance,
-          isVotedBlooming: isVotedBlooming
-        )
-        return .run { send in
-          await MainActor.run {
-            send(.presentFlowerSpotDetail(true, state: detailState))
-          }
-        }
+        // MARK: - Spot Detail (fullScreenCover용)
+
       case .flowerSpotDetail(.delegate(.dismiss)):
         return .send(.presentFlowerSpotDetail(false, state: nil))
         

@@ -17,13 +17,11 @@ import FlowerSpotDetailFeatureInterface
 extension MapFeature {
   public init(
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
-    detail: Reduce<DetailFeature.State, DetailFeature.Action>,
     flowerSpotDetail: FlowerSpotDetailFeature
   ) {
     self.init(
       reducer: Reduce(Core()),
       location: location,
-      detail: detail,
       flowerSpotDetail: flowerSpotDetail
     )
   }
@@ -83,7 +81,7 @@ extension MapFeature {
         return .none
       
       case let .fetchDetailInfo(id):
-        return .send(.detail(.fetchDetailInfo(id)))
+        return .send(.flowerSpotDetail(.fetchDetailInfo(id)))
         
         // MARK: - Search
         
@@ -144,7 +142,6 @@ extension MapFeature {
           
         case let .storeUserLocation(location):
           state.userLocation = location
-          state.detail.userLocation = location
           state.location.userLocation = location
           return .none
           
@@ -155,46 +152,14 @@ extension MapFeature {
           return .send(.presentAlert(type: type))
         }
         
-      case let .detail(.delegate(action)):
-        switch action {
-        case let .updateMarkerStatus(status, id):
-          if state.flowerSpots[id] != .none {
-            state.flowerSpots[id]?.bloomingStatus = status.rawValue
-          } else if state.searchResult != .none {
-            state.searchResult?.bloomingStatus = status.rawValue
-          }
-          state.detail.updateMarkerStatus = status
-          return .none
-        }
-        
         // MARK: - Delegate
-        
+
       case .presentToSearch:
         return .send(.delegate(.presentToSearch(state.searchText)))
-        
+
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
-        
-      case let .detail(action):
-        switch action {
-        case let .presentToDetail(flowerSpot, bloomingStatus, distance, isVotedBlooming):
-          return .send(
-            .delegate(
-              .presentToDetail(
-                flowerSpotData: flowerSpot,
-                bloomingStatus: bloomingStatus,
-                distance: distance,
-                isVotedBlooming: isVotedBlooming
-              )
-            )
-          )
-          
-        case let .fetchPathLines(id):
-          return .send(.fetchPathLines(id))
-          
-        default: return .none
-        }
-        
+
       // MARK: - FlowerSpotDetailFeature Delegate 처리
       case let .flowerSpotDetail(.delegate(action)):
         switch action {
