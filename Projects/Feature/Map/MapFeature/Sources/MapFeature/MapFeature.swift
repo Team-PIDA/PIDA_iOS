@@ -63,11 +63,14 @@ extension MapFeature {
       case let .markerTapped(id):
         guard let id = id else {
           state.isNeedDeleteMarker = true
+          state.flowerSpotDetail = nil  // 바텀시트 닫기
           return .none
         }
+        // flowerSpotDetail State 설정 (빈 상태로 시작하여 바텀시트 표시)
+        state.flowerSpotDetail = .init()
         return .run { send in
           await send(.fetchPathLines(id))
-          await send(.detail(.requestDetailInfo(id)))
+          await send(.flowerSpotDetail(.requestDetailInfo(id)))
         }
         
       case let .fetchPathLines(id):
@@ -86,8 +89,12 @@ extension MapFeature {
         
       case let .showSearchResult(result):
         state.searchResult = result
-        state.detail.selectedItemDetail = nil
-        state.detail.isDetailLoading = true
+        if result != nil {
+          // flowerSpotDetail State 설정 (빈 상태로 시작하여 바텀시트 표시)
+          state.flowerSpotDetail = .init()
+        } else {
+          state.flowerSpotDetail = nil
+        }
         return showSearchResult(result: result)
         
       case let .setSearchBarText(text):
@@ -237,7 +244,7 @@ extension MapFeature.Core {
         await send(.setSearchBarText(result.streetName))
         await send(.location(.moveLocation(result.pinPoint)))
         await send(.fetchPathLines(result.id))
-        await send(.detail(.requestDetailInfo(result.id)))
+        await send(.flowerSpotDetail(.requestDetailInfo(result.id)))
       }
     }
   }
