@@ -19,7 +19,6 @@ extension FlowerSpotDetailFeature {
   }
 
   struct Core: Reducer {
-    // MARK: - Client Dependencies (신규 추가)
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.bloomingClient) var bloomingClient
 
@@ -78,8 +77,6 @@ extension FlowerSpotDetailFeature {
         state.isShowLoginAlert = true
         return .none
 
-      // MARK: - 신규 Action (DetailFeature에서 흡수)
-
       case let .requestDetailInfo(id):
         state.spotId = id
         state.isDetailLoading = true
@@ -116,11 +113,7 @@ extension FlowerSpotDetailFeature {
       }
     }
 
-    // MARK: - Helper Methods
-
-    /// 모든 데이터가 로드되었는지 확인하고 로딩 상태 업데이트
     private func checkLoadingComplete(_ state: inout State) {
-      // flowerSpotData.id가 0이 아니면 데이터가 로드된 것으로 판단
       if state.flowerSpotData.id != 0 && state.bloomingStatus.totalCount >= 0 {
         state.isDetailLoading = false
         // 마커 상태 업데이트
@@ -132,10 +125,7 @@ extension FlowerSpotDetailFeature {
   }
 }
 
-// MARK: - API Methods
-
 extension FlowerSpotDetailFeature.Core {
-  /// 초기 데이터 로딩 (바텀시트 표시 시)
   private func requestDetailInfo(id: Int) -> Effect<Action> {
     return .run { send in
       do {
@@ -162,7 +152,6 @@ extension FlowerSpotDetailFeature.Core {
     }
   }
 
-  /// 데이터 재로딩 (Blooming 완료 후)
   private func fetchDetailInfo(id: Int) -> Effect<Action> {
     return .run { send in
       do {

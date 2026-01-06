@@ -22,7 +22,6 @@ public struct FlowerSpotDetailFeature {
 
   @ObservableState
   public struct State: Equatable {
-    // MARK: - 기존 필드 (유지)
     public var flowerSpotData: FlowerSpotEntity = .init(
       id: 0,
       recentlyVisitedCount: 0,
@@ -40,30 +39,10 @@ public struct FlowerSpotDetailFeature {
     public var isNeedDeletePath: Bool = false
     public var isShowLoginAlert: Bool = false
     public var isVotedBlooming: VerifyBloomingStateEntity = .init(isBlooming: false)
-
-    // MARK: - 신규 필드 (DetailFeature에서 흡수)
-    /// 데이터 로딩 중 여부
     public var isDetailLoading: Bool = false
-    /// 마커 상태 업데이트용
     public var updateMarkerStatus: BloomStatus? = nil
-    /// 유저 위치 (distance 계산용)
     public var userLocation: Coordinate? = nil
 
-    // MARK: - 기존 init (PIDAFeature에서 사용 - 유지)
-    public init(
-      flowerSpotData: FlowerSpotEntity,
-      bloomingStatus: BloomStatusEntity,
-      distance: Double,
-      isVotedBlooming: VerifyBloomingStateEntity
-    ) {
-      self.flowerSpotData = flowerSpotData
-      self.bloomingStatus = bloomingStatus
-      self.distance = distance
-      self.isVotedBlooming = isVotedBlooming
-    }
-
-    // MARK: - 신규 init (MapFeature에서 사용 - Phase 3-4)
-    /// 빈 초기화 (데이터 로딩 전 상태)
     public init(userLocation: Coordinate? = nil) {
       self.userLocation = userLocation
     }
@@ -84,12 +63,8 @@ public struct FlowerSpotDetailFeature {
     case alertCancelTapped
     case alertAcceptTapped
 
-    // MARK: - 신규 Action (DetailFeature에서 흡수)
-    /// 바텀시트 표시 + 데이터 로딩 시작
     case requestDetailInfo(Int)
-    /// 데이터만 재로딩 (Blooming 완료 후)
     case fetchDetailInfo(Int)
-    /// API 응답 처리
     case detailResponse(FlowerSpotEntity)
     case bloomingResponse(BloomStatusEntity)
     case verifyTodayBlooming(VerifyBloomingStateEntity)

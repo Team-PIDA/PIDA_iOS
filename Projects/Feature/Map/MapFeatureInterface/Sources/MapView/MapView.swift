@@ -10,8 +10,6 @@ import SwiftUI
 import Shared
 import DesignKit
 import ComposableArchitecture
-import FlowerSpotClient
-import BloomingClient
 import FlowerSpotDetailFeatureInterface
 
 public struct MapView: View {
@@ -54,7 +52,6 @@ public struct MapView: View {
     }
     .overlay(
         Group {
-          // MARK: - 신규 BottomSheet (FlowerSpotDetailFeature 통합)
           if let detailStore = store.scope(
             state: \.flowerSpotDetail,
             action: \.flowerSpotDetail
@@ -179,7 +176,7 @@ extension MapView {
     .isErrorType(false)
   }
 
-  // MARK: - 신규 BottomSheet (FlowerSpotDetailFeature 통합)
+  // MARK: - BottomSheet
 
   @ViewBuilder
   private func newBottomSheet(detailStore: StoreOf<FlowerSpotDetailFeature>) -> some View {

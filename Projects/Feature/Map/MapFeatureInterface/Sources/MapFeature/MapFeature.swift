@@ -10,7 +10,6 @@ import Foundation
 import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
-import BloomingClient
 import FlowerSpotDetailFeatureInterface
 import Shared
 
