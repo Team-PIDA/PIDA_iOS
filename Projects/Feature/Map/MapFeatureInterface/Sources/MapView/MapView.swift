@@ -141,7 +141,7 @@ extension MapView {
     bloomingStatus: BloomStatusEntity,
     isVotedBlooming: VerifyBloomingStateEntity
   ) -> some View {
-    CherryBlossomBottomSheet(
+    CherryBlossomBottomSheetLegacy(
       title: item.streetName,
       description: item.address,
       tags: [
