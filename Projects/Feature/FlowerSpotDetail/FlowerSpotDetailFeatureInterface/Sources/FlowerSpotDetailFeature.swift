@@ -10,6 +10,7 @@ import ComposableArchitecture
 import FlowerSpotClient
 import BloomingClient
 import DesignKit
+import Shared
 
 @Reducer
 public struct FlowerSpotDetailFeature {
@@ -45,6 +46,8 @@ public struct FlowerSpotDetailFeature {
     public var isDetailLoading: Bool = false
     /// 마커 상태 업데이트용
     public var updateMarkerStatus: BloomStatus? = nil
+    /// 유저 위치 (distance 계산용)
+    public var userLocation: Coordinate? = nil
 
     // MARK: - 기존 init (PIDAFeature에서 사용 - 유지)
     public init(
@@ -61,7 +64,9 @@ public struct FlowerSpotDetailFeature {
 
     // MARK: - 신규 init (MapFeature에서 사용 - Phase 3-4)
     /// 빈 초기화 (데이터 로딩 전 상태)
-    public init() {}
+    public init(userLocation: Coordinate? = nil) {
+      self.userLocation = userLocation
+    }
   }
 
   public enum Action: BindableAction, Equatable {

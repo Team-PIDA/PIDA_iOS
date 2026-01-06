@@ -139,7 +139,7 @@ public struct FlowerSpotDetailLargeContentView: View {
           Icon(image: .distance)
             .size(.small)
             .foregroundColor(ColorSet.Icon.Secondary)
-          Text("내 위치로부터 \(store.distance) km")
+          Text("내 위치로부터 \(String(format: "%.1f", store.distance)) km")
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }

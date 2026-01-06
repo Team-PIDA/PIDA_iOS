@@ -92,7 +92,12 @@ extension FlowerSpotDetailFeature {
       case let .detailResponse(item):
         state.flowerSpotData = item
         state.spotId = item.id
-        // distance 계산은 MapFeature에서 userLocation 기반으로 처리
+        // distance 계산
+        if let userLocation = state.userLocation {
+          state.distance = item.pinPoint.distance(from: userLocation)
+        } else {
+          state.distance = .zero
+        }
         checkLoadingComplete(&state)
         return .none
 

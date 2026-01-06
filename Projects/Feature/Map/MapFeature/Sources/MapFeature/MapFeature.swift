@@ -66,8 +66,8 @@ extension MapFeature {
           state.flowerSpotDetail = nil  // 바텀시트 닫기
           return .none
         }
-        // flowerSpotDetail State 설정 (빈 상태로 시작하여 바텀시트 표시)
-        state.flowerSpotDetail = .init()
+        // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
+        state.flowerSpotDetail = .init(userLocation: state.userLocation)
         return .run { send in
           await send(.fetchPathLines(id))
           await send(.flowerSpotDetail(.requestDetailInfo(id)))
@@ -90,8 +90,8 @@ extension MapFeature {
       case let .showSearchResult(result):
         state.searchResult = result
         if result != nil {
-          // flowerSpotDetail State 설정 (빈 상태로 시작하여 바텀시트 표시)
-          state.flowerSpotDetail = .init()
+          // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
+          state.flowerSpotDetail = .init(userLocation: state.userLocation)
         } else {
           state.flowerSpotDetail = nil
         }
