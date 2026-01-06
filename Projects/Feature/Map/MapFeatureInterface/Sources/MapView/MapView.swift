@@ -30,7 +30,7 @@ public struct MapView: View {
         if store.researchButtonEnable {
           ResearchButton(
             action: {
-              store.send(.location(.requestMapBounds(true)))
+              store.send(.requestMapBounds(true))
             }
           )
         }
@@ -77,7 +77,7 @@ extension MapView {
   @ViewBuilder
   private var mapView: some View {
     MapViewRepresentable(
-      userLocation: $store.point,
+      userLocation: $store.location.point,
       flowerPositions: $store.state.flowerSpots,
       newPath: $store.state.selectedPathLines,
       requestBounds: $store.requestMapBound,

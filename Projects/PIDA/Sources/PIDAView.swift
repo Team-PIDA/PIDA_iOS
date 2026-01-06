@@ -24,32 +24,48 @@ struct PIDAView: View {
         .navigationDestination(for: Path.self) { path in
           switch path {
           case .setting:
-            SettingView(store: store.scope(state: \.setting, action: \.setting))
+            IfLetStore(store.scope(state: \.setting, action: \.setting)) { store in
+              SettingView(store: store)
+            }
           case .policy:
-            PolicyView(store: store.scope(state: \.policy, action: \.policy))
+            IfLetStore(store.scope(state: \.policy, action: \.policy)) { store in
+              PolicyView(store: store)
+            }
           case .update:
-            ProfileUpdateView(store: store.scope(state: \.update, action: \.update))
+            IfLetStore(store.scope(state: \.update, action: \.update)) { store in
+              ProfileUpdateView(store: store)
+            }
           }
         }
-        .fullScreenCover(isPresented: $store.isPresentBlooming, content: {
-          BloomingUpdateView(store: store.scope(state: \.blooming, action: \.blooming))
-        })
-        .fullScreenCover(isPresented: $store.isPresentSignUp, content: {
-          SignUpView(store: store.scope(state: \.signUp, action: \.signUp))
-        })
-        .fullScreenCover(isPresented: $store.isPresentAuth, content: {
-          AuthView(store: store.scope(state: \.auth, action: \.auth))
-        })
+        .fullScreenCover(isPresented: $store.isPresentBlooming) {
+          IfLetStore(store.scope(state: \.blooming, action: \.blooming)) { store in
+            BloomingUpdateView(store: store)
+          }
+        }
+        .fullScreenCover(isPresented: $store.isPresentSignUp) {
+          IfLetStore(store.scope(state: \.signUp, action: \.signUp)) { store in
+            SignUpView(store: store)
+          }
+        }
+        .fullScreenCover(isPresented: $store.isPresentAuth) {
+          IfLetStore(store.scope(state: \.auth, action: \.auth)) { store in
+            AuthView(store: store)
+          }
+        }
         .fullScreenCover(isPresented: $store.isShowSearch) {
-          SearchView(store: store.scope(state: \.search, action: \.search))
+          IfLetStore(store.scope(state: \.search, action: \.search)) { store in
+            SearchView(store: store)
+          }
         }
         .fullScreenCover(isPresented: $store.isPresentFlowerSpotDetail) {
-          FlowerSpotDetailView(store: store.scope(state: \.flowerSpotDetail, action: \.flowerSpotDetail))
+          IfLetStore(store.scope(state: \.flowerSpotDetail, action: \.flowerSpotDetail)) { store in
+            FlowerSpotDetailView(store: store)
+          }
         }
         .transaction { transaction in
           transaction.disablesAnimations = true
         }
     }
   }
-
+  
 }

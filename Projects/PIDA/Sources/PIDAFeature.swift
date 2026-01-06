@@ -35,18 +35,20 @@ enum Path: Hashable {
 
 @Reducer
 struct PIDAFeature {
+  let locationReducer = Reduce(LocationFeature())
+  let detailReducer = Reduce(DetailFeature())
   
   @ObservableState
   struct State: Equatable {
     var map = MapFeature.State()
-    var search = SearchFeature.State()
-    var setting = SettingFeature.State()
-    var policy = PolicyFeature.State()
-    var auth = AuthFeature.State()
-    var signUp = SignUpFeature.State()
-    var update = ProfileUpdateFeature.State()
-    var blooming = BloomingUpdateFeature.State()
-    var flowerSpotDetail = FlowerSpotDetailFeature.State()
+    var search: SearchFeature.State? = nil
+    var setting: SettingFeature.State? = nil
+    var policy: PolicyFeature.State? = nil
+    var auth: AuthFeature.State? = nil
+    var signUp: SignUpFeature.State? = nil
+    var update: ProfileUpdateFeature.State? = nil
+    var blooming: BloomingUpdateFeature.State? = nil
+    var flowerSpotDetail: FlowerSpotDetailFeature.State? = nil
     
     /// 네비게이션 이동 경로
     var path: [Path] = []
@@ -69,81 +71,65 @@ struct PIDAFeature {
     case flowerSpotDetail(FlowerSpotDetailFeature.Action)
     
     case binding(BindingAction<State>)
-    case presentSearch(Bool)
-    case presentFlowerSpotDetail(Bool)
-    case presentBloomingUpdate(Bool)
+    case presentSearch(Bool, keyword: String?)
+    case presentFlowerSpotDetail(Bool, state: FlowerSpotDetailFeature.State?)
+    case presentBloomingUpdate(Bool, id: Int?, streetName: String)
     case presentToLogin(Bool)
+    case presentSignUp(Bool)
   }
   
   var body: some ReducerOf<Self> {
     BindingReducer()
-    Scope(state: \.map, action: \.map) {
-      MapFeature()
-    }
-    Scope(state: \.search, action: \.search) {
-      SearchFeature()
-    }
-    Scope(state: \.setting, action: \.setting) {
-      SettingFeature()
-    }
-    Scope(state: \.policy, action: \.policy) {
-      PolicyFeature()
-    }
-    Scope(state: \.auth, action: \.auth) {
-      AuthFeature()
-    }
-    Scope(state: \.signUp, action: \.signUp) {
-      SignUpFeature()
-    }
-    Scope(state: \.update, action: \.update) {
-      ProfileUpdateFeature()
-    }
-    Scope(state: \.blooming, action: \.blooming) {
-      BloomingUpdateFeature()
-    }
-    Scope(state: \.flowerSpotDetail, action: \.flowerSpotDetail) {
-      FlowerSpotDetailFeature()
-    }
     
+    Scope(state: \.map, action: \.map) {
+      MapFeature(
+        location: locationReducer,
+        detail: detailReducer
+      )
+    }
     Reduce {
       state,
       action in
       switch action {
         // MARK: - Map <-> Search
         
-      case let .presentSearch(isShow):
+      case let .presentSearch(isShow, keyword):
+        state.search = isShow ? .init(initText: keyword) : nil
         state.isShowSearch = isShow
         return .none
-      case let .presentFlowerSpotDetail(isPresent):
+        
+      case let .presentFlowerSpotDetail(isPresent, flowerSpotDetail):
+        state.flowerSpotDetail = flowerSpotDetail
         state.isPresentFlowerSpotDetail = isPresent
         return .none
-      case let .presentBloomingUpdate(isPresent):
+        
+      case let .presentBloomingUpdate(isPresent, id, streetName):
+        state.blooming = isPresent ? .init(spotId: id, streetName: streetName) : nil
         state.isPresentBlooming = isPresent
         return .none
+        
       case let .presentToLogin(isPresent):
+        state.auth = isPresent ? .init() : nil
         state.isPresentAuth = isPresent
         return .none
+        
+      case let .presentSignUp(isPresent):
+        state.signUp = isPresent ? .init() : nil
+        state.isPresentSignUp = isPresent
+        return .none
+        
         // map -> search
       case let .map(.delegate(.presentToSearch(keyword))):
-        
         return .run { send in
           await MainActor.run {
-            send(.search(.initialSearchBar(keyword)))
-            send(.presentSearch(true))
-          }
-        }
-        // 검색 후 main에서 뒤로가기 시 search의 searchbar 비우기
-      case .map(.delegate(.resetSearchView)):
-        return .run { send in
-          await MainActor.run {
-            send(.search(.initialSearchBar("")))
+            send(.presentSearch(true, keyword: keyword))
           }
         }
         // search dismiss
       case .search(.delegate(.dismiss)):
         return .run { send in
           await MainActor.run {
-            send(.presentSearch(false))
+            send(.presentSearch(false, keyword: nil))
           }
         }
         
@@ -152,7 +138,7 @@ struct PIDAFeature {
         return .run { send in
           await MainActor.run {
             send(.map(.showSearchResult(result)))
-            send(.presentSearch(false))
+            send(.presentSearch(false, keyword: nil))
           }
         }
         
@@ -168,25 +154,24 @@ struct PIDAFeature {
           )
         )
       ):
-        // TODO: - 상세화면연결 및 flowerSpotData 전달
+        let detailState: FlowerSpotDetailFeature.State = .init(
+          flowerSpotData: flowerSpotData,
+          bloomingStatus: bloomingData,
+          distance: distance,
+          isVotedBlooming: isVotedBlooming
+        )
         return .run { send in
           await MainActor.run {
-            send(.flowerSpotDetail(.setFlowerSpotData(flowerSpotData)))
-            send(.flowerSpotDetail(.setBloomingStatus(bloomingData)))
-            send(.flowerSpotDetail(.setDistance(distance)))
-            send(.flowerSpotDetail(.setVerifyBloomingStatus(isVotedBlooming)))
-            send(.presentFlowerSpotDetail(true))
+            send(.presentFlowerSpotDetail(true, state: detailState))
           }
         }
       case .flowerSpotDetail(.delegate(.dismiss)):
-        return .send(.presentFlowerSpotDetail(false))
+        return .send(.presentFlowerSpotDetail(false, state: nil))
         
       case let .flowerSpotDetail(.delegate(.presentToBlooming(id, streetName))):
         return .run { send in
           await MainActor.run {
-            send(.blooming(.setSpodtId(id)))
-            send(.blooming(.setStreetName(streetName)))
-            send(.presentBloomingUpdate(true))
+            send(.presentBloomingUpdate(true, id: id, streetName: streetName))
           }
         }
       case let .flowerSpotDetail(.delegate(.presentToLogin(id))):
@@ -198,7 +183,7 @@ struct PIDAFeature {
         }
       case let .blooming(.delegate(.dismiss(didUpdate, spotId))):
         return .run { send in
-          await send(.presentBloomingUpdate(false))
+          await send(.presentBloomingUpdate(false, id: nil, streetName: ""))
           if didUpdate {
             await send(.map(.fetchDetailInfo(spotId)))
             try? await Task.sleep(for: .seconds(0.3))
@@ -210,34 +195,38 @@ struct PIDAFeature {
         
         // map -> setting
       case .map(.delegate(.pushToSetting)):
+        state.setting = .init()
         state.path.append(.setting)
         return .none
         
       case .setting(.delegate(.pop)):
+        state.setting = nil
         state.path.removeLast()
         return .none
         
         // MARK: - Setting
         
       case let .setting(.delegate(.pushToPolicy(type))):
-        state.policy.type = type
+        state.policy = .init(type: type)
         state.path.append(.policy)
         return .none
         
       case .setting(.delegate(.presentToLogin)):
-        state.isPresentAuth = true
-        return .none
+        return .send(.presentToLogin(true))
         
       case .setting(.delegate(.presentToUpdateProfile)):
+        state.update = .init()
         state.path.append(.update)
         return .none
         
       case .policy(.delegate(.pop)):
         state.path.removeLast()
+        state.update = nil
         return .none
         
       case .update(.delegate(.pop)):
         state.path.removeLast()
+        state.update = nil
         return .run { send in
           await MainActor.run {
             send(.setting(.checkLoggedIn))
@@ -247,7 +236,6 @@ struct PIDAFeature {
         // MARK: - Auth
         
       case .auth(.delegate(.dismiss)):
-        state.isPresentAuth = false
         return .run { send in
           await MainActor.run {
             send(.presentToLogin(false))
@@ -262,24 +250,51 @@ struct PIDAFeature {
           }
         }
       case .auth(.delegate(.presentToSignUp)):
-        state.isPresentSignUp = true
-        state.isPresentAuth = false
-        return .none
-        
-      case .signUp(.delegate(.dismiss)):
-        state.isPresentSignUp = false
         return .run { send in
           await MainActor.run {
+            send(.presentSignUp(true))
+            send(.presentToLogin(false))
+          }
+        }
+        
+      case .signUp(.delegate(.dismiss)):
+        return .run { send in
+          await MainActor.run {
+            send(.presentSignUp(false))
             send(.setting(.checkLoggedIn))
           }
         }
         
         // MARK: - None
         
-      case .binding, .map, .search, .setting, .policy, .auth, .signUp, .update, .blooming, .flowerSpotDetail:
+      case .binding,
+          .map,
+          .search,
+          .setting,
+          .policy,
+          .auth,
+          .signUp,
+          .update,
+          .blooming,
+          .flowerSpotDetail:
         return .none
       }
     }
-    
+    .subFeatures()
+  }
+}
+
+
+extension Reducer where State == PIDAFeature.State, Action == PIDAFeature.Action {
+  func subFeatures() -> some ReducerOf<Self> {
+    self
+      .ifLet(\.search, action: \.search) { SearchFeature() }
+      .ifLet(\.setting, action: \.setting) { SettingFeature() }
+      .ifLet(\.policy, action: \.policy) { PolicyFeature() }
+      .ifLet(\.auth, action: \.auth) { AuthFeature() }
+      .ifLet(\.signUp, action: \.signUp) { SignUpFeature() }
+      .ifLet(\.update, action: \.update) { ProfileUpdateFeature() }
+      .ifLet(\.blooming, action: \.blooming) { BloomingUpdateFeature() }
+      .ifLet(\.flowerSpotDetail, action: \.flowerSpotDetail) { FlowerSpotDetailFeature() }
   }
 }
