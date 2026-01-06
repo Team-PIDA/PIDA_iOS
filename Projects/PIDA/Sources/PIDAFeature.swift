@@ -186,14 +186,35 @@ struct PIDAFeature {
         return .run { send in
           await send(.presentBloomingUpdate(false, id: nil, streetName: ""))
           if didUpdate {
+            // 기존 fullScreenCover용
             await send(.map(.fetchDetailInfo(spotId)))
             try? await Task.sleep(for: .seconds(0.3))
             await send(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다.")))
+            // 신규 바텀시트용 (map 내부)
+            await send(.map(.flowerSpotDetail(.fetchDetailInfo(spotId))))
+            await send(.map(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다."))))
           }
         }
         
+        // MARK: - Map Delegate (신규 바텀시트용)
+
+      case let .map(.delegate(.presentToBlooming(id, streetName))):
+        return .run { send in
+          await MainActor.run {
+            send(.presentBloomingUpdate(true, id: id, streetName: streetName))
+          }
+        }
+
+      case let .map(.delegate(.presentToLogin(id))):
+        return .run { send in
+          await MainActor.run {
+            send(.presentToLogin(true))
+            send(.auth(.setSpotId(id: id)))
+          }
+        }
+
         // MARK: - Map <-> Setting
-        
+
         // map -> setting
       case .map(.delegate(.pushToSetting)):
         state.setting = .init()
