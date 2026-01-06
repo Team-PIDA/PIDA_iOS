@@ -185,6 +185,9 @@ extension MapFeature {
         default: return .none
         }
         
+      case let .flowerSpotDetail(action):
+        return .none
+        
       case .binding, .delegate, .alertAcceptTapped, .location:
         return .none
         

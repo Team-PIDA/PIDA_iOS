@@ -77,6 +77,8 @@ public struct MapFeature {
     case binding(BindingAction<State>)
     case location(LocationFeature.Action)
     case detail(DetailFeature.Action)
+    // MARK: - 신규 Action (FlowerSpotDetailFeature 통합용)
+    case flowerSpotDetail(FlowerSpotDetailFeature.Action)
     
     case showToastView(message: String?, buttonLabel: String?)
     case moveToReportURL
