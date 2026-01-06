@@ -19,15 +19,19 @@ public struct MapFeature {
   private let reducer: Reduce<State, Action>
   private let location: Reduce<LocationFeature.State, LocationFeature.Action>
   private let detail: Reduce<DetailFeature.State, DetailFeature.Action>
-  
+  // MARK: - 신규 Reducer (FlowerSpotDetailFeature 통합용)
+  private let flowerSpotDetail: FlowerSpotDetailFeature
+
   public init(
     reducer: Reduce<State, Action>,
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
-    detail: Reduce<DetailFeature.State, DetailFeature.Action>
+    detail: Reduce<DetailFeature.State, DetailFeature.Action>,
+    flowerSpotDetail: FlowerSpotDetailFeature
   ) {
     self.reducer = reducer
     self.location = location
     self.detail = detail
+    self.flowerSpotDetail = flowerSpotDetail
   }
   
   @ObservableState
@@ -126,7 +130,10 @@ public struct MapFeature {
     Scope(state: \.detail, action: \.detail) {
       detail
     }
+    // MARK: - 신규 Reducer 연결 (Optional State 패턴)
+    .ifLet(\.flowerSpotDetail, action: \.flowerSpotDetail) {
+      flowerSpotDetail
+    }
     reducer
-    
   }
 }

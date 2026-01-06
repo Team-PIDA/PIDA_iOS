@@ -84,7 +84,8 @@ struct PIDAFeature {
     Scope(state: \.map, action: \.map) {
       MapFeature(
         location: locationReducer,
-        detail: detailReducer
+        detail: detailReducer,
+        flowerSpotDetail: FlowerSpotDetailFeature()
       )
     }
     Reduce {

@@ -11,17 +11,20 @@ import Shared
 import ComposableArchitecture
 import MapFeatureInterface
 import FlowerSpotClient
+import FlowerSpotDetailFeatureInterface
 
 
 extension MapFeature {
   public init(
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
-    detail: Reduce<DetailFeature.State, DetailFeature.Action>
+    detail: Reduce<DetailFeature.State, DetailFeature.Action>,
+    flowerSpotDetail: FlowerSpotDetailFeature
   ) {
     self.init(
       reducer: Reduce(Core()),
       location: location,
-      detail: detail
+      detail: detail,
+      flowerSpotDetail: flowerSpotDetail
     )
   }
   
