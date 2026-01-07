@@ -3,7 +3,7 @@
 //
 //  FlowerSpotDetail
 //
-//  Created by Claude
+//  Created by 조용인
 //
 
 import SwiftUI
@@ -25,9 +25,20 @@ public struct FlowerSpotDetailSmallContentView: View {
   }
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: .Number8) {
-      titleSection
-      tagSection
+    HStack(alignment: .top, spacing: .Number12) {
+      VStack(alignment: .leading, spacing: .Number8) {
+        titleSection
+        tagSection
+      }
+
+      Spacer()
+
+      if let firstImageUrl = flowerSpotData.imageUrls.first {
+        RemoteImageView(urlString: firstImageUrl)
+          .frame(width: 80, height: 80)
+          .clipped()
+          .cornerRadius(16)
+      }
     }
     .padding(.horizontal, .Number16)
     .padding(.top, .Number8)
