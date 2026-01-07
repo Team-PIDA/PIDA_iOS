@@ -62,19 +62,22 @@ public struct PhotoGalleryView: View {
 
   @ViewBuilder
   private var gridContent: some View {
-    ScrollView {
-      LazyVGrid(columns: columns, spacing: 12) {
-        ForEach(0..<imageUrls.count, id: \.self) { index in
-          RemoteImageView(urlString: imageUrls[index]) {
-            onImageTapped?(index)
+    GeometryReader { geometry in
+      let itemWidth = (geometry.size.width - 16 * 2 - 12) / 2
+      ScrollView {
+        LazyVGrid(columns: columns, spacing: 12) {
+          ForEach(0..<imageUrls.count, id: \.self) { index in
+            RemoteImageView(urlString: imageUrls[index]) {
+              onImageTapped?(index)
+            }
+            .frame(width: itemWidth, height: itemWidth)
+            .clipped()
+            .cornerRadius(16)
           }
-          .aspectRatio(1, contentMode: .fill)
-          .clipped()
-          .cornerRadius(16)
         }
+        .padding(.horizontal, .Number16)
+        .padding(.top, .Number12)
       }
-      .padding(.horizontal, .Number16)
-      .padding(.top, .Number12)
     }
   }
 }
