@@ -23,6 +23,10 @@ public struct PhotoViewerView: View {
   @State private var scale: CGFloat = 1.0
   @GestureState private var gestureScale: CGFloat = 1.0
 
+  // Pan gesture 상태
+  @State private var offset: CGSize = .zero
+  @GestureState private var gestureOffset: CGSize = .zero
+
   private let minScale: CGFloat = 1.0
   private let maxScale: CGFloat = 10.0
 
@@ -48,6 +52,13 @@ public struct PhotoViewerView: View {
     min(max(scale * gestureScale, minScale), maxScale)
   }
 
+  private var currentOffset: CGSize {
+    CGSize(
+      width: offset.width + gestureOffset.width,
+      height: offset.height + gestureOffset.height
+    )
+  }
+
   public var body: some View {
     ZStack {
       Color.black.ignoresSafeArea()
@@ -57,12 +68,14 @@ public struct PhotoViewerView: View {
         RemoteImageView(urlString: imageUrls[currentIndex])
           .aspectRatio(contentMode: .fit)
           .scaleEffect(currentScale)
-          .gesture(magnificationGesture)
+          .offset(currentOffset)
+          .gesture(combinedGesture)
           .onTapGesture(count: 2) {
             // 더블탭으로 확대/축소 토글
             withAnimation(.easeInOut(duration: 0.2)) {
               if scale > 1.0 {
                 scale = 1.0
+                offset = .zero
               } else {
                 scale = 2.5
               }
@@ -82,13 +95,18 @@ public struct PhotoViewerView: View {
       }
     }
     .onChange(of: currentIndex) { _, _ in
-      // 이미지 전환 시 scale 초기화
+      // 이미지 전환 시 초기화
       scale = 1.0
+      offset = .zero
       onScaleChanged?(scale)
     }
   }
 
-  // MARK: - Magnification Gesture
+  // MARK: - Gestures
+
+  private var combinedGesture: some Gesture {
+    SimultaneousGesture(magnificationGesture, dragGesture)
+  }
 
   private var magnificationGesture: some Gesture {
     MagnificationGesture()
@@ -100,7 +118,29 @@ public struct PhotoViewerView: View {
       }
       .onEnded { value in
         scale = min(max(scale * value, minScale), maxScale)
+        // 축소되면 offset 초기화
+        if scale <= 1.0 {
+          offset = .zero
+        }
         onScaleChanged?(scale)
+      }
+  }
+
+  private var dragGesture: some Gesture {
+    DragGesture()
+      .updating($gestureOffset) { value, state, _ in
+        // 확대 상태에서만 드래그 허용
+        if scale > 1.0 {
+          state = value.translation
+        }
+      }
+      .onEnded { value in
+        if scale > 1.0 {
+          offset = CGSize(
+            width: offset.width + value.translation.width,
+            height: offset.height + value.translation.height
+          )
+        }
       }
   }
 
