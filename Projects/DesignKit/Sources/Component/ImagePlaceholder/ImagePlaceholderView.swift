@@ -2,7 +2,7 @@
 //  ImagePlaceholderView.swift
 //  DesignKit
 //
-//  Created by Claude on 1/7/26.
+//  Created by 조용인 on 1/7/26.
 //  Copyright © 2026 com.yongin.pida. All rights reserved.
 //
 
