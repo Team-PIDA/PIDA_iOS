@@ -20,6 +20,28 @@ public struct FlowerSpotDetailFeature {
     self.reducer = reducer
   }
 
+  // MARK: - Path (내부 NavigationStack용)
+
+  public enum Path: Hashable {
+    case photoGallery
+  }
+
+  // MARK: - PhotoViewer State
+
+  public struct PhotoViewerState: Equatable {
+    public var imageUrls: [String]
+    public var currentIndex: Int
+    public var scale: CGFloat
+    public var isUIHidden: Bool
+
+    public init(imageUrls: [String], currentIndex: Int) {
+      self.imageUrls = imageUrls
+      self.currentIndex = currentIndex
+      self.scale = 1.0
+      self.isUIHidden = false
+    }
+  }
+
   @ObservableState
   public struct State: Equatable {
     public var flowerSpotData: FlowerSpotEntity = .init(
@@ -42,6 +64,12 @@ public struct FlowerSpotDetailFeature {
     public var isDetailLoading: Bool = false
     public var updateMarkerStatus: BloomStatus? = nil
     public var userLocation: Coordinate? = nil
+
+    // MARK: - Navigation State
+
+    public var path: [Path] = []
+    public var photoViewer: PhotoViewerState? = nil
+    public var isPresentPhotoViewer: Bool = false
 
     public init(userLocation: Coordinate? = nil) {
       self.userLocation = userLocation
@@ -68,6 +96,18 @@ public struct FlowerSpotDetailFeature {
     case detailResponse(FlowerSpotEntity)
     case bloomingResponse(BloomStatusEntity)
     case verifyTodayBlooming(VerifyBloomingStateEntity)
+
+    // MARK: - Navigation (PhotoGallery)
+    case pushToPhotoGallery
+    case popFromPhotoGallery
+
+    // MARK: - Presentation (PhotoViewer)
+    case presentPhotoViewer(index: Int)
+    case dismissPhotoViewer
+    case cleanupPhotoViewer
+    case photoViewerPreviousTapped
+    case photoViewerNextTapped
+    case photoViewerScaleChanged(CGFloat)
 
     // MARK: - Delegate
     case delegate(Delegate)

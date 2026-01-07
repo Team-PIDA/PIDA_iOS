@@ -77,6 +77,57 @@ extension FlowerSpotDetailFeature {
         state.isShowLoginAlert = true
         return .none
 
+      // MARK: - Navigation (PhotoGallery)
+
+      case .pushToPhotoGallery:
+        state.path.append(.photoGallery)
+        return .none
+
+      case .popFromPhotoGallery:
+        state.path.removeLast()
+        return .none
+
+      // MARK: - Presentation (PhotoViewer)
+
+      case let .presentPhotoViewer(index):
+        state.photoViewer = .init(
+          imageUrls: state.flowerSpotData.imageUrls,
+          currentIndex: index
+        )
+        state.isPresentPhotoViewer = true
+        return .none
+
+      case .dismissPhotoViewer:
+        state.isPresentPhotoViewer = false
+        return .none
+
+      case .cleanupPhotoViewer:
+        state.photoViewer = nil
+        return .none
+
+      case .photoViewerPreviousTapped:
+        guard var viewer = state.photoViewer else { return .none }
+        if viewer.currentIndex > 0 {
+          viewer.currentIndex -= 1
+          state.photoViewer = viewer
+        }
+        return .none
+
+      case .photoViewerNextTapped:
+        guard var viewer = state.photoViewer else { return .none }
+        if viewer.currentIndex < viewer.imageUrls.count - 1 {
+          viewer.currentIndex += 1
+          state.photoViewer = viewer
+        }
+        return .none
+
+      case let .photoViewerScaleChanged(scale):
+        guard var viewer = state.photoViewer else { return .none }
+        viewer.scale = scale
+        viewer.isUIHidden = scale > 1.0
+        state.photoViewer = viewer
+        return .none
+
       case let .requestDetailInfo(id):
         state.spotId = id
         state.isDetailLoading = true
