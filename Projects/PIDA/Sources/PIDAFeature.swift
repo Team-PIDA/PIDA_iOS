@@ -33,6 +33,11 @@ enum Path: Hashable {
   case update
 }
 
+enum LoginSource: Equatable {
+  case setting
+  case flowerSpotDetail(spotId: Int)
+}
+
 @Reducer
 struct PIDAFeature {
   let locationReducer = Reduce(LocationFeature())
@@ -54,6 +59,7 @@ struct PIDAFeature {
     var isPresentAuth: Bool = false
     var isPresentSignUp: Bool = false
     var isPresentBlooming: Bool = false
+    var loginSource: LoginSource? = nil
   }
   
   enum Action: BindableAction {
@@ -151,6 +157,7 @@ struct PIDAFeature {
         }
 
       case let .map(.delegate(.presentToLogin(id))):
+        state.loginSource = .flowerSpotDetail(spotId: id)
         return .run { send in
           await MainActor.run {
             send(.presentToLogin(true))
@@ -179,6 +186,7 @@ struct PIDAFeature {
         return .none
         
       case .setting(.delegate(.presentToLogin)):
+        state.loginSource = .setting
         return .send(.presentToLogin(true))
         
       case .setting(.delegate(.presentToUpdateProfile)):
@@ -203,10 +211,14 @@ struct PIDAFeature {
         // MARK: - Auth
         
       case .auth(.delegate(.dismiss)):
+        let source = state.loginSource
+        state.loginSource = nil
         return .run { send in
           await MainActor.run {
             send(.presentToLogin(false))
-            send(.setting(.checkLoggedIn))
+            if case .setting = source {
+              send(.setting(.checkLoggedIn))
+            }
           }
         }
       case let .auth(.delegate(.dismissWithVerifyBloomState(id))):
@@ -225,10 +237,14 @@ struct PIDAFeature {
         }
         
       case .signUp(.delegate(.dismiss)):
+        let source = state.loginSource
+        state.loginSource = nil
         return .run { send in
           await MainActor.run {
             send(.presentSignUp(false))
-            send(.setting(.checkLoggedIn))
+            if case .setting = source {
+              send(.setting(.checkLoggedIn))
+            }
           }
         }
         
