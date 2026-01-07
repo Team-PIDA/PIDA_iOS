@@ -291,7 +291,7 @@ public struct FlowerSpotDetailLargeContentView: View {
         size: .large
       )
       .action {
-        store.send(.chechAuth)
+        store.send(.checkAuth)
       }
       .isActive(!store.isVotedBlooming.isBlooming)
       .padding(.horizontal, .Number16)

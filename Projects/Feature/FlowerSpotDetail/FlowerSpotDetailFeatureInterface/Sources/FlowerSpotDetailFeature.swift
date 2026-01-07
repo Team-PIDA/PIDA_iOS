@@ -52,7 +52,7 @@ public struct FlowerSpotDetailFeature {
     case binding(BindingAction<State>)
     case showToastView(message: String?)
     case showLoginAlert
-    case chechAuth
+    case checkAuth
     case onAppear
 
     case setFlowerSpotData(FlowerSpotEntity)
