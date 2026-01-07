@@ -105,9 +105,7 @@ public struct PhotoViewerView: View {
           TapGesture(count: 1)
             .onEnded {
               // 싱글 탭으로 UI 토글
-              withAnimation(.easeInOut(duration: 0.2)) {
-                isUIVisible.toggle()
-              }
+              isUIVisible.toggle()
             }
         )
         .id(currentIndex)
