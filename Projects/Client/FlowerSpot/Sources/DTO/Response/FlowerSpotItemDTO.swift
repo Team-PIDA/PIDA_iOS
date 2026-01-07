@@ -53,7 +53,7 @@ extension FlowerSpotItemDTO {
       path: path,
       pinPoint: pinPoint,
       region: region,
-      imageUrls: /*imageUrls*/["https://picsum.photos/400/300", "https://picsum.photos/400/300",/* "https://picsum.photos/400/300"*/] //테스트용 임시 이미지
+      imageUrls: imageUrls /*["https://picsum.photos/400/300"]*/
     )
   }
 }
