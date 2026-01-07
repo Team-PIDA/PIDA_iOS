@@ -19,6 +19,13 @@ public struct PhotoViewerView: View {
   private let onNextTapped: (() -> Void)?
   private let onScaleChanged: ((CGFloat) -> Void)?
 
+  // Pinch gesture 상태
+  @State private var scale: CGFloat = 1.0
+  @GestureState private var gestureScale: CGFloat = 1.0
+
+  private let minScale: CGFloat = 1.0
+  private let maxScale: CGFloat = 10.0
+
   public init(
     imageUrls: [String],
     currentIndex: Int,
@@ -37,6 +44,10 @@ public struct PhotoViewerView: View {
     self.onScaleChanged = onScaleChanged
   }
 
+  private var currentScale: CGFloat {
+    min(max(scale * gestureScale, minScale), maxScale)
+  }
+
   public var body: some View {
     ZStack {
       Color.black.ignoresSafeArea()
@@ -45,6 +56,19 @@ public struct PhotoViewerView: View {
       if currentIndex < imageUrls.count {
         RemoteImageView(urlString: imageUrls[currentIndex])
           .aspectRatio(contentMode: .fit)
+          .scaleEffect(currentScale)
+          .gesture(magnificationGesture)
+          .onTapGesture(count: 2) {
+            // 더블탭으로 확대/축소 토글
+            withAnimation(.easeInOut(duration: 0.2)) {
+              if scale > 1.0 {
+                scale = 1.0
+              } else {
+                scale = 2.5
+              }
+            }
+            onScaleChanged?(scale)
+          }
       }
 
       // UI 오버레이 (확대 시 숨김)
@@ -57,6 +81,27 @@ public struct PhotoViewerView: View {
         chevronButtons
       }
     }
+    .onChange(of: currentIndex) { _, _ in
+      // 이미지 전환 시 scale 초기화
+      scale = 1.0
+      onScaleChanged?(scale)
+    }
+  }
+
+  // MARK: - Magnification Gesture
+
+  private var magnificationGesture: some Gesture {
+    MagnificationGesture()
+      .updating($gestureScale) { value, state, _ in
+        state = value
+      }
+      .onChanged { _ in
+        onScaleChanged?(currentScale)
+      }
+      .onEnded { value in
+        scale = min(max(scale * value, minScale), maxScale)
+        onScaleChanged?(scale)
+      }
   }
 
   // MARK: - Top Bar
