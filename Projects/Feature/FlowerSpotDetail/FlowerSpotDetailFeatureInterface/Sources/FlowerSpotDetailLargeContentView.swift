@@ -77,7 +77,6 @@ public struct FlowerSpotDetailLargeContentView: View {
         PhotoViewerView(
           imageUrls: viewer.imageUrls,
           currentIndex: viewer.currentIndex,
-          isUIHidden: viewer.isUIHidden,
           onDismiss: {
             store.send(.dismissPhotoViewer)
           },
@@ -86,9 +85,6 @@ public struct FlowerSpotDetailLargeContentView: View {
           },
           onNextTapped: {
             store.send(.photoViewerNextTapped)
-          },
-          onScaleChanged: { scale in
-            store.send(.photoViewerScaleChanged(scale))
           }
         )
       }

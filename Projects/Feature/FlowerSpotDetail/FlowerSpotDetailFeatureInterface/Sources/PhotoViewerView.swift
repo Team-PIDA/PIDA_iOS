@@ -13,11 +13,9 @@ import DesignKit
 public struct PhotoViewerView: View {
   private let imageUrls: [String]
   private let currentIndex: Int
-  private let isUIHidden: Bool
   private let onDismiss: (() -> Void)?
   private let onPreviousTapped: (() -> Void)?
   private let onNextTapped: (() -> Void)?
-  private let onScaleChanged: ((CGFloat) -> Void)?
 
   // Pinch gesture 상태
   @State private var scale: CGFloat = 1.0
@@ -27,25 +25,24 @@ public struct PhotoViewerView: View {
   @State private var offset: CGSize = .zero
   @GestureState private var gestureOffset: CGSize = .zero
 
+  // UI 표시 상태
+  @State private var isUIVisible: Bool = true
+
   private let minScale: CGFloat = 1.0
   private let maxScale: CGFloat = 10.0
 
   public init(
     imageUrls: [String],
     currentIndex: Int,
-    isUIHidden: Bool = false,
     onDismiss: (() -> Void)? = nil,
     onPreviousTapped: (() -> Void)? = nil,
-    onNextTapped: (() -> Void)? = nil,
-    onScaleChanged: ((CGFloat) -> Void)? = nil
+    onNextTapped: (() -> Void)? = nil
   ) {
     self.imageUrls = imageUrls
     self.currentIndex = currentIndex
-    self.isUIHidden = isUIHidden
     self.onDismiss = onDismiss
     self.onPreviousTapped = onPreviousTapped
     self.onNextTapped = onNextTapped
-    self.onScaleChanged = onScaleChanged
   }
 
   private var currentScale: CGFloat {
@@ -61,7 +58,13 @@ public struct PhotoViewerView: View {
 
   public var body: some View {
     ZStack {
+      // 배경 (싱글 탭으로 UI 토글)
       Color.black.ignoresSafeArea()
+        .onTapGesture {
+          withAnimation(.easeInOut(duration: 0.2)) {
+            isUIVisible.toggle()
+          }
+        }
 
       // 이미지
       if currentIndex < imageUrls.count {
@@ -70,22 +73,35 @@ public struct PhotoViewerView: View {
           .scaleEffect(currentScale)
           .offset(currentOffset)
           .gesture(combinedGesture)
-          .onTapGesture(count: 2) {
-            // 더블탭으로 확대/축소 토글
-            withAnimation(.easeInOut(duration: 0.2)) {
-              if scale > 1.0 {
-                scale = 1.0
-                offset = .zero
-              } else {
-                scale = 2.5
+          .highPriorityGesture(
+            TapGesture(count: 2)
+              .onEnded {
+                // 더블탭으로 확대/축소 토글
+                withAnimation(.easeInOut(duration: 0.2)) {
+                  if scale > 1.0 {
+                    scale = 1.0
+                    offset = .zero
+                    isUIVisible = true
+                  } else {
+                    scale = 2.5
+                    isUIVisible = false
+                  }
+                }
               }
-            }
-            onScaleChanged?(scale)
-          }
+          )
+          .simultaneousGesture(
+            TapGesture(count: 1)
+              .onEnded {
+                // 싱글 탭으로 UI 토글
+                withAnimation(.easeInOut(duration: 0.2)) {
+                  isUIVisible.toggle()
+                }
+              }
+          )
       }
 
-      // UI 오버레이 (확대 시 숨김)
-      if !isUIHidden {
+      // UI 오버레이
+      if isUIVisible {
         VStack {
           topBar
           Spacer()
@@ -98,7 +114,19 @@ public struct PhotoViewerView: View {
       // 이미지 전환 시 초기화
       scale = 1.0
       offset = .zero
-      onScaleChanged?(scale)
+      isUIVisible = true
+    }
+    .onChange(of: scale) { _, newScale in
+      // 확대 시 UI 숨김, 축소 시 UI 표시
+      if newScale > 1.0 && isUIVisible {
+        withAnimation(.easeInOut(duration: 0.2)) {
+          isUIVisible = false
+        }
+      } else if newScale <= 1.0 && !isUIVisible {
+        withAnimation(.easeInOut(duration: 0.2)) {
+          isUIVisible = true
+        }
+      }
     }
   }
 
@@ -113,16 +141,12 @@ public struct PhotoViewerView: View {
       .updating($gestureScale) { value, state, _ in
         state = value
       }
-      .onChanged { _ in
-        onScaleChanged?(currentScale)
-      }
       .onEnded { value in
         scale = min(max(scale * value, minScale), maxScale)
         // 축소되면 offset 초기화
         if scale <= 1.0 {
           offset = .zero
         }
-        onScaleChanged?(scale)
       }
   }
 
