@@ -16,6 +16,11 @@ public struct PhotoGalleryView: View {
   private let onImageTapped: ((Int) -> Void)?
   private let onBackTapped: (() -> Void)?
 
+  private let columns = [
+    GridItem(.flexible(), spacing: 12),
+    GridItem(.flexible(), spacing: 12)
+  ]
+
   public init(
     imageUrls: [String],
     title: String,
@@ -29,8 +34,47 @@ public struct PhotoGalleryView: View {
   }
 
   public var body: some View {
-    // TODO: 다음 Phase에서 구현
-    Text("PhotoGalleryView - \(imageUrls.count)장")
-      .navigationBarBackButtonHidden(true)
+    VStack(spacing: .Number0) {
+      navigationBar
+      gridContent
+    }
+    .background(ColorSet.Background.Primary)
+    .navigationBarBackButtonHidden(true)
+  }
+
+  // MARK: - Navigation Bar
+
+  @ViewBuilder
+  private var navigationBar: some View {
+    NavigationBar(
+      backContent: {
+        TouchArea(image: .back)
+          .size(.superLarge)
+          .action {
+            onBackTapped?()
+          }
+      },
+      title: title
+    )
+  }
+
+  // MARK: - Grid Content
+
+  @ViewBuilder
+  private var gridContent: some View {
+    ScrollView {
+      LazyVGrid(columns: columns, spacing: 12) {
+        ForEach(0..<imageUrls.count, id: \.self) { index in
+          RemoteImageView(urlString: imageUrls[index]) {
+            onImageTapped?(index)
+          }
+          .aspectRatio(1, contentMode: .fill)
+          .clipped()
+          .cornerRadius(16)
+        }
+      }
+      .padding(.horizontal, .Number16)
+      .padding(.top, .Number12)
+    }
   }
 }
