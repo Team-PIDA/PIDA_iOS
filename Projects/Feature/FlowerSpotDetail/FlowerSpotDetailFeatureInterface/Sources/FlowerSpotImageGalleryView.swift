@@ -105,21 +105,30 @@ public struct FlowerSpotImageGalleryView: View {
 
   @ViewBuilder
   private var moreButton: some View {
-    Button {
-      onMoreTapped?()
-    } label: {
-      VStack(spacing: .Number4) {
+    VStack(spacing: 10) {
+      Spacer()
+
+      Button {
+        onMoreTapped?()
+      } label: {
         Icon(image: .chevronRight)
           .size(.large)
           .foregroundColor(ColorSet.Icon.Secondary)
-
-        Text("더보기")
-          .fontStyle(FontSet.Caption.caption1)
-          .foregroundColor(ColorSet.Text.Secondary)
+          .frame(width: 48, height: 48)
+          .background(ColorSet.Background.Primary)
+          .clipShape(Circle())
+          .overlay(
+            Circle()
+              .stroke(ColorSet.Border.Secondary, lineWidth: 1)
+          )
       }
-      .frame(width: 60, height: imageHeight)
-      .background(ColorSet.Background.Tertiary)
-      .cornerRadius(10)
+
+      Text("더보기")
+        .fontStyle(FontSet.Caption.caption1)
+        .foregroundColor(ColorSet.Text.Secondary)
+
+      Spacer()
     }
+    .frame(width: 80)
   }
 }
