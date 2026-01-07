@@ -69,6 +69,7 @@ public struct PhotoViewerView: View {
       // 이미지
       if currentIndex < imageUrls.count {
         RemoteImageView(urlString: imageUrls[currentIndex])
+          .placeholderStyle(.dark)
           .aspectRatio(contentMode: .fit)
           .scaleEffect(currentScale)
           .offset(currentOffset)

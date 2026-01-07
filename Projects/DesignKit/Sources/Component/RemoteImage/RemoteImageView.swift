@@ -15,6 +15,7 @@ import SwiftUI
 public struct RemoteImageView: View {
   private let url: URL?
   private let onTap: (() -> Void)?
+  private var placeholderStyle: ImagePlaceholderView.Style = .light
 
   public init(
     url: URL?,
@@ -37,20 +38,31 @@ public struct RemoteImageView: View {
       switch phase {
       case .empty:
         ImagePlaceholderView(state: .loading)
+          .style(placeholderStyle)
       case .success(let image):
         image
           .resizable()
           .aspectRatio(contentMode: .fill)
       case .failure:
         ImagePlaceholderView(state: .failure)
+          .style(placeholderStyle)
       @unknown default:
         ImagePlaceholderView(state: .loading)
+          .style(placeholderStyle)
       }
     }
     .contentShape(Rectangle())
     .onTapGesture {
       onTap?()
     }
+  }
+
+  // MARK: - Style Modifier
+
+  public func placeholderStyle(_ style: ImagePlaceholderView.Style) -> Self {
+    var copy = self
+    copy.placeholderStyle = style
+    return copy
   }
 }
 
