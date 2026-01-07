@@ -136,10 +136,21 @@ public struct PhotoViewerView: View {
       }
       .onEnded { value in
         if scale > 1.0 {
+          // 확대 상태: 이미지 이동
           offset = CGSize(
             width: offset.width + value.translation.width,
             height: offset.height + value.translation.height
           )
+        } else {
+          // 1x 상태: 좌우 스와이프로 이미지 전환
+          let threshold: CGFloat = 50
+          if value.translation.width > threshold {
+            // 오른쪽 스와이프 → 이전 이미지
+            onPreviousTapped?()
+          } else if value.translation.width < -threshold {
+            // 왼쪽 스와이프 → 다음 이미지
+            onNextTapped?()
+          }
         }
       }
   }
