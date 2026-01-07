@@ -200,10 +200,10 @@ public struct FlowerSpotDetailLargeContentView: View {
       FlowerSpotImageGalleryView(
         imageUrls: store.flowerSpotData.imageUrls,
         onImageTapped: { index in
-          // TODO: 이미지 상세 보기
+          store.send(.presentPhotoViewer(index: index))
         },
         onMoreTapped: {
-          // TODO: 갤러리 화면으로 이동
+          store.send(.pushToPhotoGallery)
         }
       )
     }
