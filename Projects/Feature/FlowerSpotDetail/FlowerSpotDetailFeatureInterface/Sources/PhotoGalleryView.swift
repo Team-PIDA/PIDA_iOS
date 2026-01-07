@@ -53,6 +53,7 @@ public struct PhotoGalleryView: View {
           .action {
             onBackTapped?()
           }
+          .color(ColorSet.Icon.Primary)
       },
       title: title
     )

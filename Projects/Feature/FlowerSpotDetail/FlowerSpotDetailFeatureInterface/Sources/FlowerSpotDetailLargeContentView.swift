@@ -77,6 +77,7 @@ public struct FlowerSpotDetailLargeContentView: View {
         PhotoViewerView(
           imageUrls: viewer.imageUrls,
           currentIndex: viewer.currentIndex,
+          isUIHidden: viewer.isUIHidden,
           onDismiss: {
             store.send(.dismissPhotoViewer)
           },

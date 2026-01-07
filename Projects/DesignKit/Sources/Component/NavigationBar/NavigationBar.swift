@@ -9,11 +9,14 @@
 import SwiftUI
 
 public struct NavigationBar<BackContent: View, CloseContent: View>: View {
-  
+
   public let backContent: (() -> BackContent)?
   public let closeContent: (() -> CloseContent)?
   public let title: String?
-  
+
+  private var backgroundColor: Color = ColorSet.Background.Primary
+  private var titleColor: Color = ColorSet.Text.Primary
+
   public init(
     @ViewBuilder backContent: @escaping () -> BackContent = { Spacer().frame(width: .Number48, height: .Number48) },
     title: String? = nil,
@@ -23,11 +26,11 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
     self.title = title
     self.closeContent = closeContent
   }
-  
+
   public var body: some View {
     content
   }
-  
+
   @ViewBuilder
   private var content: some View {
     HStack {
@@ -38,14 +41,28 @@ public struct NavigationBar<BackContent: View, CloseContent: View>: View {
       if let title = title {
         Text(title)
           .fontStyle(FontSet.Title.title3)
-          .foregroundStyle(ColorSet.Text.Primary)
+          .foregroundStyle(titleColor)
       }
       Spacer()
       closeContent.map {
         $0().padding(.leading, .Number4)
       }
     }
-    .background(ColorSet.Background.Primary)
+    .background(backgroundColor)
+  }
+
+  // MARK: - Style Modifiers
+
+  public func backgroundColor(_ color: Color) -> Self {
+    var copy = self
+    copy.backgroundColor = color
+    return copy
+  }
+
+  public func titleColor(_ color: Color) -> Self {
+    var copy = self
+    copy.titleColor = color
+    return copy
   }
 }
 
