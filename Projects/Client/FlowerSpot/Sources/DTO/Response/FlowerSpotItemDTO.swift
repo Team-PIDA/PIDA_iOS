@@ -22,8 +22,9 @@ struct FlowerSpotItemDTO: DTO {
   var geom: LineStringGeomDTO?
   var pinPoint: PointGeomDTO?
   var region: String?
+  var imageUrls: [String]?
   var deletedAt: String?
-  
+
 }
 
 extension FlowerSpotItemDTO {
