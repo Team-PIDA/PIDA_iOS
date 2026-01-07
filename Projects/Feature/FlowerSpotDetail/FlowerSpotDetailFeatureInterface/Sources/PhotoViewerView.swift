@@ -133,13 +133,9 @@ public struct PhotoViewerView: View {
     .onChange(of: scale) { _, newScale in
       // 확대 시 UI 숨김, 축소 시 UI 표시
       if newScale > 1.0 && isUIVisible {
-        withAnimation(.easeInOut(duration: 0.2)) {
-          isUIVisible = false
-        }
+        isUIVisible = false
       } else if newScale <= 1.0 && !isUIVisible {
-        withAnimation(.easeInOut(duration: 0.2)) {
-          isUIVisible = true
-        }
+        isUIVisible = true
       }
     }
   }
