@@ -130,6 +130,7 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
     if currentHeight < midHeight {
       ScrollView(.vertical, showsIndicators: false) {
         smallContent()
+          .frame(maxWidth: .infinity, alignment: .leading)
       }
       .scrollDisabled(true)
       .frame(height: currentHeight - .Number20)
