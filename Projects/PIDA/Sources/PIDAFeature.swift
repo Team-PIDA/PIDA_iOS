@@ -77,6 +77,12 @@ struct PIDAFeature {
     case presentBloomingUpdate(Bool, id: Int?, streetName: String)
     case presentToLogin(Bool)
     case presentSignUp(Bool)
+
+    // onDismiss cleanup actions (fullScreenCover용)
+    case cleanupSearch
+    case cleanupBlooming
+    case cleanupAuth
+    case cleanupSignUp
   }
   
   var body: some ReducerOf<Self> {
@@ -93,77 +99,90 @@ struct PIDAFeature {
         // MARK: - Map <-> Search
         
       case let .presentSearch(isShow, keyword):
-        state.search = isShow ? .init(initText: keyword) : nil
+        if isShow {
+          state.search = .init(initText: keyword)
+        }
         state.isShowSearch = isShow
         return .none
 
       case let .presentBloomingUpdate(isPresent, id, streetName):
-        state.blooming = isPresent ? .init(spotId: id, streetName: streetName) : nil
+        if isPresent {
+          state.blooming = .init(spotId: id, streetName: streetName)
+        }
         state.isPresentBlooming = isPresent
         return .none
-        
+
       case let .presentToLogin(isPresent):
-        state.auth = isPresent ? .init() : nil
+        if isPresent {
+          state.auth = .init()
+        }
         state.isPresentAuth = isPresent
         return .none
-        
+
       case let .presentSignUp(isPresent):
-        state.signUp = isPresent ? .init() : nil
+        if isPresent {
+          state.signUp = .init()
+        }
         state.isPresentSignUp = isPresent
         return .none
-        
+
+        // MARK: - Cleanup Actions (called from onDismiss)
+
+      case .cleanupSearch:
+        state.search = nil
+        return .none
+
+      case .cleanupBlooming:
+        state.blooming = nil
+        return .none
+
+      case .cleanupAuth:
+        state.auth = nil
+        return .none
+
+      case .cleanupSignUp:
+        state.signUp = nil
+        return .none
+
         // map -> search
       case let .map(.delegate(.presentToSearch(keyword))):
-        return .run { send in
-          await MainActor.run {
-            send(.presentSearch(true, keyword: keyword))
-          }
-        }
+        return .send(.presentSearch(true, keyword: keyword))
+
         // search dismiss
       case .search(.delegate(.dismiss)):
-        return .run { send in
-          await MainActor.run {
-            send(.presentSearch(false, keyword: nil))
-          }
-        }
-        
+        return .send(.presentSearch(false, keyword: nil))
+
         // search dismiss with result
       case let .search(.delegate(.selectResult(result))):
-        return .run { send in
-          await MainActor.run {
-            send(.map(.showSearchResult(result)))
-            send(.presentSearch(false, keyword: nil))
-          }
-        }
+        return .concatenate(
+          .send(.map(.showSearchResult(result))),
+          .send(.presentSearch(false, keyword: nil))
+        )
         
         // MARK: - Blooming Delegate
 
       case let .blooming(.delegate(.dismiss(didUpdate, spotId))):
-        return .run { send in
-          await send(.presentBloomingUpdate(false, id: nil, streetName: ""))
-          if didUpdate {
-            await send(.map(.flowerSpotDetail(.fetchDetailInfo(spotId))))
-            await send(.map(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다."))))
-          }
+        if didUpdate {
+          return .concatenate(
+            .send(.presentBloomingUpdate(false, id: nil, streetName: "")),
+            .send(.map(.flowerSpotDetail(.fetchDetailInfo(spotId)))),
+            .send(.map(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다."))))
+          )
+        } else {
+          return .send(.presentBloomingUpdate(false, id: nil, streetName: ""))
         }
 
         // MARK: - Map Delegate
 
       case let .map(.delegate(.presentToBlooming(id, streetName))):
-        return .run { send in
-          await MainActor.run {
-            send(.presentBloomingUpdate(true, id: id, streetName: streetName))
-          }
-        }
+        return .send(.presentBloomingUpdate(true, id: id, streetName: streetName))
 
       case let .map(.delegate(.presentToLogin(id))):
         state.loginSource = .flowerSpotDetail(spotId: id)
-        return .run { send in
-          await MainActor.run {
-            send(.presentToLogin(true))
-            send(.auth(.setSpotId(id: id)))
-          }
-        }
+        return .concatenate(
+          .send(.presentToLogin(true)),
+          .send(.auth(.setSpotId(id: id)))
+        )
 
         // MARK: - Map <-> Setting
 
@@ -174,78 +193,69 @@ struct PIDAFeature {
         return .none
         
       case .setting(.delegate(.pop)):
-        state.setting = nil
         state.path.removeLast()
         return .none
-        
+
         // MARK: - Setting
-        
+
       case let .setting(.delegate(.pushToPolicy(type))):
         state.policy = .init(type: type)
         state.path.append(.policy)
         return .none
-        
+
       case .setting(.delegate(.presentToLogin)):
         state.loginSource = .setting
         return .send(.presentToLogin(true))
-        
+
       case .setting(.delegate(.presentToUpdateProfile)):
         state.update = .init()
         state.path.append(.update)
         return .none
-        
+
       case .policy(.delegate(.pop)):
         state.path.removeLast()
-        state.update = nil
         return .none
-        
+
       case .update(.delegate(.pop)):
         state.path.removeLast()
-        state.update = nil
-        return .run { send in
-          await MainActor.run {
-            send(.setting(.checkLoggedIn))
-          }
-        }
-        
+        return .send(.setting(.checkLoggedIn))
+
         // MARK: - Auth
-        
+
       case .auth(.delegate(.dismiss)):
         let source = state.loginSource
         state.loginSource = nil
-        return .run { send in
-          await MainActor.run {
-            send(.presentToLogin(false))
-            if case .setting = source {
-              send(.setting(.checkLoggedIn))
-            }
-          }
+        if case .setting = source {
+          return .concatenate(
+            .send(.presentToLogin(false)),
+            .send(.setting(.checkLoggedIn))
+          )
+        } else {
+          return .send(.presentToLogin(false))
         }
+
       case let .auth(.delegate(.dismissWithVerifyBloomState(id))):
-        return .run { send in
-          await MainActor.run {
-            send(.presentToLogin(false))
-            send(.map(.fetchDetailInfo(id)))
-          }
-        }
+        return .concatenate(
+          .send(.presentToLogin(false)),
+          .send(.map(.fetchDetailInfo(id)))
+        )
+
       case .auth(.delegate(.presentToSignUp)):
-        return .run { send in
-          await MainActor.run {
-            send(.presentSignUp(true))
-            send(.presentToLogin(false))
-          }
-        }
-        
+        return .concatenate(
+          .send(.presentSignUp(true)),
+          .send(.presentToLogin(false))
+        )
+
       case .signUp(.delegate(.dismiss)):
         let source = state.loginSource
         state.loginSource = nil
-        return .run { send in
-          await MainActor.run {
-            send(.presentSignUp(false))
-            if case .setting = source {
-              send(.setting(.checkLoggedIn))
-            }
-          }
+        if case .setting = source {
+          return .concatenate(
+            .send(.presentSignUp(false)),
+            .send(.setting(.checkLoggedIn))
+          )
+        } else {
+          return .send(.presentSignUp(false))
         }
         
         // MARK: - None
