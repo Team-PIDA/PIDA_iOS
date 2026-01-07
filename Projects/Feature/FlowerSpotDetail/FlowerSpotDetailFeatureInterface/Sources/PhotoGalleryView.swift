@@ -16,6 +16,7 @@ public struct PhotoGalleryView: View {
   private let title: String
   private let onImageTapped: ((Int) -> Void)?
   private let onBackTapped: (() -> Void)?
+  private let onImageLoaded: ((String, Data) -> Void)?
 
   private let columns = [
     GridItem(.flexible(), spacing: 12),
@@ -27,13 +28,15 @@ public struct PhotoGalleryView: View {
     prefetchedImages: [String: Data] = [:],
     title: String,
     onImageTapped: ((Int) -> Void)? = nil,
-    onBackTapped: (() -> Void)? = nil
+    onBackTapped: (() -> Void)? = nil,
+    onImageLoaded: ((String, Data) -> Void)? = nil
   ) {
     self.imageUrls = imageUrls
     self.prefetchedImages = prefetchedImages
     self.title = title
     self.onImageTapped = onImageTapped
     self.onBackTapped = onBackTapped
+    self.onImageLoaded = onImageLoaded
   }
 
   public var body: some View {
@@ -74,10 +77,10 @@ public struct PhotoGalleryView: View {
             let url = imageUrls[index]
             RemoteImageView(
               imageData: prefetchedImages[url],
-              fallbackUrlString: url
-            ) {
-              onImageTapped?(index)
-            }
+              fallbackUrlString: url,
+              onTap: { onImageTapped?(index) },
+              onImageLoaded: { data in onImageLoaded?(url, data) }
+            )
             .frame(width: itemWidth, height: itemWidth)
             .clipped()
             .cornerRadius(16)

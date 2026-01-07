@@ -19,6 +19,7 @@ public struct FlowerSpotImageGalleryView: View {
   private let prefetchedImages: [String: Data]
   private let onImageTapped: ((Int) -> Void)?
   private let onMoreTapped: (() -> Void)?
+  private let onImageLoaded: ((String, Data) -> Void)?
 
   private let imageHeight: CGFloat = 160
   private let spacing: CGFloat = 12
@@ -27,12 +28,14 @@ public struct FlowerSpotImageGalleryView: View {
     imageUrls: [String],
     prefetchedImages: [String: Data] = [:],
     onImageTapped: ((Int) -> Void)? = nil,
-    onMoreTapped: (() -> Void)? = nil
+    onMoreTapped: (() -> Void)? = nil,
+    onImageLoaded: ((String, Data) -> Void)? = nil
   ) {
     self.imageUrls = imageUrls
     self.prefetchedImages = prefetchedImages
     self.onImageTapped = onImageTapped
     self.onMoreTapped = onMoreTapped
+    self.onImageLoaded = onImageLoaded
   }
 
   public var body: some View {
@@ -57,10 +60,10 @@ public struct FlowerSpotImageGalleryView: View {
     let url = imageUrls[0]
     RemoteImageView(
       imageData: prefetchedImages[url],
-      fallbackUrlString: url
-    ) {
-      onImageTapped?(0)
-    }
+      fallbackUrlString: url,
+      onTap: { onImageTapped?(0) },
+      onImageLoaded: { data in onImageLoaded?(url, data) }
+    )
     .frame(height: imageHeight)
     .frame(maxWidth: .infinity)
     .clipped()
@@ -78,10 +81,10 @@ public struct FlowerSpotImageGalleryView: View {
           let url = imageUrls[index]
           RemoteImageView(
             imageData: prefetchedImages[url],
-            fallbackUrlString: url
-          ) {
-            onImageTapped?(index)
-          }
+            fallbackUrlString: url,
+            onTap: { onImageTapped?(index) },
+            onImageLoaded: { data in onImageLoaded?(url, data) }
+          )
           .frame(width: imageWidth, height: imageHeight)
           .clipped()
           .cornerRadius(10)
@@ -101,10 +104,10 @@ public struct FlowerSpotImageGalleryView: View {
           let url = imageUrls[index]
           RemoteImageView(
             imageData: prefetchedImages[url],
-            fallbackUrlString: url
-          ) {
-            onImageTapped?(index)
-          }
+            fallbackUrlString: url,
+            onTap: { onImageTapped?(index) },
+            onImageLoaded: { data in onImageLoaded?(url, data) }
+          )
           .frame(width: imageHeight, height: imageHeight)
           .clipped()
           .cornerRadius(10)

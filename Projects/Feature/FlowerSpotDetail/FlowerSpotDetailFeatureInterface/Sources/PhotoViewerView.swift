@@ -17,6 +17,7 @@ public struct PhotoViewerView: View {
   private let onDismiss: (() -> Void)?
   private let onPreviousTapped: (() -> Void)?
   private let onNextTapped: (() -> Void)?
+  private let onImageLoaded: ((String, Data) -> Void)?
 
   // Pinch gesture 상태
   @State private var scale: CGFloat = 1.0
@@ -38,7 +39,8 @@ public struct PhotoViewerView: View {
     currentIndex: Int,
     onDismiss: (() -> Void)? = nil,
     onPreviousTapped: (() -> Void)? = nil,
-    onNextTapped: (() -> Void)? = nil
+    onNextTapped: (() -> Void)? = nil,
+    onImageLoaded: ((String, Data) -> Void)? = nil
   ) {
     self.imageUrls = imageUrls
     self.prefetchedImages = prefetchedImages
@@ -46,6 +48,7 @@ public struct PhotoViewerView: View {
     self.onDismiss = onDismiss
     self.onPreviousTapped = onPreviousTapped
     self.onNextTapped = onNextTapped
+    self.onImageLoaded = onImageLoaded
   }
 
   private var currentScale: CGFloat {
@@ -74,7 +77,8 @@ public struct PhotoViewerView: View {
         let url = imageUrls[currentIndex]
         RemoteImageView(
           imageData: prefetchedImages[url],
-          fallbackUrlString: url
+          fallbackUrlString: url,
+          onImageLoaded: { data in onImageLoaded?(url, data) }
         )
         .placeholderStyle(.dark)
         .aspectRatio(contentMode: .fit)

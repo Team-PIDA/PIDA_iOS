@@ -142,6 +142,14 @@ extension FlowerSpotDetailFeature {
         state.prefetchedImages = images
         return .none
 
+      case let .cacheImage(url, data):
+        // State에 추가
+        state.prefetchedImages[url] = data
+        // 캐시에 저장 (백그라운드)
+        return .run { [cache] _ in
+          try? await cache.set(.remoteImage(url: url), data)
+        }
+
       case let .requestDetailInfo(id):
         state.spotId = id
         state.isDetailLoading = true

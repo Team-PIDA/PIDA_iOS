@@ -118,6 +118,7 @@ public struct FlowerSpotDetailFeature {
     // MARK: - Image Prefetch
     case prefetchImages
     case imagesPrefetched([String: Data])
+    case cacheImage(url: String, data: Data)
 
     // MARK: - Delegate
     case delegate(Delegate)

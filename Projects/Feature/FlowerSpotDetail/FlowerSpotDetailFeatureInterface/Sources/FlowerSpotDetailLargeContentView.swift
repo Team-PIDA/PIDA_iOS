@@ -66,6 +66,9 @@ public struct FlowerSpotDetailLargeContentView: View {
             },
             onBackTapped: {
               store.send(.popFromPhotoGallery)
+            },
+            onImageLoaded: { url, data in
+              store.send(.cacheImage(url: url, data: data))
             }
           )
         }
@@ -87,6 +90,9 @@ public struct FlowerSpotDetailLargeContentView: View {
           },
           onNextTapped: {
             store.send(.photoViewerNextTapped)
+          },
+          onImageLoaded: { url, data in
+            store.send(.cacheImage(url: url, data: data))
           }
         )
       }
@@ -204,6 +210,9 @@ public struct FlowerSpotDetailLargeContentView: View {
         },
         onMoreTapped: {
           store.send(.pushToPhotoGallery)
+        },
+        onImageLoaded: { url, data in
+          store.send(.cacheImage(url: url, data: data))
         }
       )
     }
