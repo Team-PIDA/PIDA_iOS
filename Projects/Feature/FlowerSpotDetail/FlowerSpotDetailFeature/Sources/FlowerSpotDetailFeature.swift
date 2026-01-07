@@ -116,7 +116,7 @@ extension FlowerSpotDetailFeature {
     private func checkLoadingComplete(_ state: inout State) {
       if state.flowerSpotData.id != 0 && state.bloomingStatus.totalCount >= 0 {
         state.isDetailLoading = false
-        // 마커 상태 업데이트
+        state.isNeedDrawPath = true
         if let bloomStatus = BloomStatus(rawValue: state.flowerSpotData.bloomingStatus) {
           state.updateMarkerStatus = bloomStatus
         }

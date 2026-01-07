@@ -57,6 +57,9 @@ public struct FlowerSpotDetailLargeContentView: View {
       // 스크롤이 최상단(offset.y <= 0)일 때만 바텀시트 드래그 허용
       isDragEnabled = newValue.y <= 0
     }
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
 
   // MARK: - Navigation Bar
