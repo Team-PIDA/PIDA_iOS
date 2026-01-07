@@ -16,6 +16,7 @@ import DesignKit
 /// - 3장+: 수평 스크롤 (160x160) + 더보기 버튼
 public struct FlowerSpotImageGalleryView: View {
   private let imageUrls: [String]
+  private let prefetchedImages: [String: Data]
   private let onImageTapped: ((Int) -> Void)?
   private let onMoreTapped: (() -> Void)?
 
@@ -24,10 +25,12 @@ public struct FlowerSpotImageGalleryView: View {
 
   public init(
     imageUrls: [String],
+    prefetchedImages: [String: Data] = [:],
     onImageTapped: ((Int) -> Void)? = nil,
     onMoreTapped: (() -> Void)? = nil
   ) {
     self.imageUrls = imageUrls
+    self.prefetchedImages = prefetchedImages
     self.onImageTapped = onImageTapped
     self.onMoreTapped = onMoreTapped
   }
@@ -51,7 +54,11 @@ public struct FlowerSpotImageGalleryView: View {
 
   @ViewBuilder
   private var singleImageView: some View {
-    RemoteImageView(urlString: imageUrls[0]) {
+    let url = imageUrls[0]
+    RemoteImageView(
+      imageData: prefetchedImages[url],
+      fallbackUrlString: url
+    ) {
       onImageTapped?(0)
     }
     .frame(height: imageHeight)
@@ -68,7 +75,11 @@ public struct FlowerSpotImageGalleryView: View {
       let imageWidth = (geometry.size.width - spacing) / 2
       HStack(spacing: spacing) {
         ForEach(0..<2, id: \.self) { index in
-          RemoteImageView(urlString: imageUrls[index]) {
+          let url = imageUrls[index]
+          RemoteImageView(
+            imageData: prefetchedImages[url],
+            fallbackUrlString: url
+          ) {
             onImageTapped?(index)
           }
           .frame(width: imageWidth, height: imageHeight)
@@ -87,7 +98,11 @@ public struct FlowerSpotImageGalleryView: View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: spacing) {
         ForEach(0..<min(3, imageUrls.count), id: \.self) { index in
-          RemoteImageView(urlString: imageUrls[index]) {
+          let url = imageUrls[index]
+          RemoteImageView(
+            imageData: prefetchedImages[url],
+            fallbackUrlString: url
+          ) {
             onImageTapped?(index)
           }
           .frame(width: imageHeight, height: imageHeight)

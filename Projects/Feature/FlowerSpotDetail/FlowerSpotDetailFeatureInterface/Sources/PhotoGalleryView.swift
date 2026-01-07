@@ -12,6 +12,7 @@ import DesignKit
 /// 이미지 갤러리 화면 (2열 그리드)
 public struct PhotoGalleryView: View {
   private let imageUrls: [String]
+  private let prefetchedImages: [String: Data]
   private let title: String
   private let onImageTapped: ((Int) -> Void)?
   private let onBackTapped: (() -> Void)?
@@ -23,11 +24,13 @@ public struct PhotoGalleryView: View {
 
   public init(
     imageUrls: [String],
+    prefetchedImages: [String: Data] = [:],
     title: String,
     onImageTapped: ((Int) -> Void)? = nil,
     onBackTapped: (() -> Void)? = nil
   ) {
     self.imageUrls = imageUrls
+    self.prefetchedImages = prefetchedImages
     self.title = title
     self.onImageTapped = onImageTapped
     self.onBackTapped = onBackTapped
@@ -68,7 +71,11 @@ public struct PhotoGalleryView: View {
       ScrollView {
         LazyVGrid(columns: columns, spacing: 12) {
           ForEach(0..<imageUrls.count, id: \.self) { index in
-            RemoteImageView(urlString: imageUrls[index]) {
+            let url = imageUrls[index]
+            RemoteImageView(
+              imageData: prefetchedImages[url],
+              fallbackUrlString: url
+            ) {
               onImageTapped?(index)
             }
             .frame(width: itemWidth, height: itemWidth)

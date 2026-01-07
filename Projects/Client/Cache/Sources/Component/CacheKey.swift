@@ -57,6 +57,13 @@ public enum CacheKey: Sendable {
   /// - Parameter id: 꽃 명소의 고유 식별자
   case flowerSpotDetail(id: Int)
 
+  // MARK: - Image (이미지)
+
+  /// 원격 이미지 데이터 캐시
+  /// - Parameter url: 이미지 URL
+  /// - Note: URL을 해시값으로 변환하여 키로 사용
+  case remoteImage(url: String)
+
   // MARK: - Search (검색)
 
   /// 최근 검색어 목록
@@ -105,6 +112,9 @@ public extension CacheKey {
     case let .flowerSpotDetail(id):
       return "flowerspot_detail_\(id)"
 
+    case let .remoteImage(url):
+      return "image_\(url.hashValue)"
+
     case .recentSearches:
       return "search_recent"
 
@@ -148,6 +158,10 @@ public extension CacheKey {
     case .flowerSpotDetail:
       // 상세 정보도 1시간 캐시 (개화 상태 변경 가능)
       return .hours(1)
+
+    case .remoteImage:
+      // 이미지는 7일 캐시 (거의 변경되지 않음)
+      return .days(7)
 
     case .recentSearches:
       // 검색 기록은 오래 보관 (30일)

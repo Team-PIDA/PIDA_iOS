@@ -13,42 +13,83 @@ import SwiftUI
 /// - 실패 시: 에러 플레이스홀더 표시
 /// - 성공 시: 이미지를 fill 모드로 표시 (가운데 크롭)
 public struct RemoteImageView: View {
-  private let url: URL?
+  private let imageData: Data?
+  private let fallbackUrl: URL?
   private let onTap: (() -> Void)?
   private var placeholderStyle: ImagePlaceholderView.Style = .light
 
+  /// Data 기반 초기화 (프리페치된 이미지 사용)
+  /// - Parameters:
+  ///   - imageData: 프리페치된 이미지 Data (nil이면 fallbackUrl 사용)
+  ///   - fallbackUrl: Data가 없을 때 사용할 URL
+  ///   - onTap: 탭 콜백
+  public init(
+    imageData: Data?,
+    fallbackUrl: URL? = nil,
+    onTap: (() -> Void)? = nil
+  ) {
+    self.imageData = imageData
+    self.fallbackUrl = fallbackUrl
+    self.onTap = onTap
+  }
+
+  /// Data 기반 초기화 (문자열 URL)
+  public init(
+    imageData: Data?,
+    fallbackUrlString: String?,
+    onTap: (() -> Void)? = nil
+  ) {
+    self.imageData = imageData
+    self.fallbackUrl = fallbackUrlString.flatMap { URL(string: $0) }
+    self.onTap = onTap
+  }
+
+  /// URL 기반 초기화 (기존 호환성 유지)
   public init(
     url: URL?,
     onTap: (() -> Void)? = nil
   ) {
-    self.url = url
+    self.imageData = nil
+    self.fallbackUrl = url
     self.onTap = onTap
   }
 
+  /// URL 문자열 기반 초기화 (기존 호환성 유지)
   public init(
     urlString: String,
     onTap: (() -> Void)? = nil
   ) {
-    self.url = URL(string: urlString)
+    self.imageData = nil
+    self.fallbackUrl = URL(string: urlString)
     self.onTap = onTap
   }
 
   public var body: some View {
-    AsyncImage(url: url) { phase in
-      switch phase {
-      case .empty:
-        ImagePlaceholderView(state: .loading)
-          .style(placeholderStyle)
-      case .success(let image):
-        image
+    Group {
+      if let data = imageData, let uiImage = UIImage(data: data) {
+        // 프리페치된 Data가 있으면 즉시 표시
+        Image(uiImage: uiImage)
           .resizable()
           .aspectRatio(contentMode: .fill)
-      case .failure:
-        ImagePlaceholderView(state: .failure)
-          .style(placeholderStyle)
-      @unknown default:
-        ImagePlaceholderView(state: .loading)
-          .style(placeholderStyle)
+      } else {
+        // Data가 없으면 AsyncImage로 fallback
+        AsyncImage(url: fallbackUrl) { phase in
+          switch phase {
+          case .empty:
+            ImagePlaceholderView(state: .loading)
+              .style(placeholderStyle)
+          case .success(let image):
+            image
+              .resizable()
+              .aspectRatio(contentMode: .fill)
+          case .failure:
+            ImagePlaceholderView(state: .failure)
+              .style(placeholderStyle)
+          @unknown default:
+            ImagePlaceholderView(state: .loading)
+              .style(placeholderStyle)
+          }
+        }
       }
     }
     .contentShape(Rectangle())

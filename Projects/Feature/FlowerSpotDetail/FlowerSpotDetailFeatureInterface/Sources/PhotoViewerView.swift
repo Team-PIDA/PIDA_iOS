@@ -12,6 +12,7 @@ import DesignKit
 /// 이미지 상세 뷰어 (전체화면, Pinch 확대)
 public struct PhotoViewerView: View {
   private let imageUrls: [String]
+  private let prefetchedImages: [String: Data]
   private let currentIndex: Int
   private let onDismiss: (() -> Void)?
   private let onPreviousTapped: (() -> Void)?
@@ -33,12 +34,14 @@ public struct PhotoViewerView: View {
 
   public init(
     imageUrls: [String],
+    prefetchedImages: [String: Data] = [:],
     currentIndex: Int,
     onDismiss: (() -> Void)? = nil,
     onPreviousTapped: (() -> Void)? = nil,
     onNextTapped: (() -> Void)? = nil
   ) {
     self.imageUrls = imageUrls
+    self.prefetchedImages = prefetchedImages
     self.currentIndex = currentIndex
     self.onDismiss = onDismiss
     self.onPreviousTapped = onPreviousTapped
@@ -68,39 +71,43 @@ public struct PhotoViewerView: View {
 
       // 이미지
       if currentIndex < imageUrls.count {
-        RemoteImageView(urlString: imageUrls[currentIndex])
-          .placeholderStyle(.dark)
-          .aspectRatio(contentMode: .fit)
-          .scaleEffect(currentScale)
-          .offset(currentOffset)
-          .gesture(combinedGesture)
-          .highPriorityGesture(
-            TapGesture(count: 2)
-              .onEnded {
-                // 더블탭으로 확대/축소 토글
-                withAnimation(.easeInOut(duration: 0.2)) {
-                  if scale > 1.0 {
-                    scale = 1.0
-                    offset = .zero
-                    isUIVisible = true
-                  } else {
-                    scale = 2.5
-                    isUIVisible = false
-                  }
+        let url = imageUrls[currentIndex]
+        RemoteImageView(
+          imageData: prefetchedImages[url],
+          fallbackUrlString: url
+        )
+        .placeholderStyle(.dark)
+        .aspectRatio(contentMode: .fit)
+        .scaleEffect(currentScale)
+        .offset(currentOffset)
+        .gesture(combinedGesture)
+        .highPriorityGesture(
+          TapGesture(count: 2)
+            .onEnded {
+              // 더블탭으로 확대/축소 토글
+              withAnimation(.easeInOut(duration: 0.2)) {
+                if scale > 1.0 {
+                  scale = 1.0
+                  offset = .zero
+                  isUIVisible = true
+                } else {
+                  scale = 2.5
+                  isUIVisible = false
                 }
               }
-          )
-          .simultaneousGesture(
-            TapGesture(count: 1)
-              .onEnded {
-                // 싱글 탭으로 UI 토글
-                withAnimation(.easeInOut(duration: 0.2)) {
-                  isUIVisible.toggle()
-                }
+            }
+        )
+        .simultaneousGesture(
+          TapGesture(count: 1)
+            .onEnded {
+              // 싱글 탭으로 UI 토글
+              withAnimation(.easeInOut(duration: 0.2)) {
+                isUIVisible.toggle()
               }
-          )
-          .id(currentIndex)
-          .transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            }
+        )
+        .id(currentIndex)
+        .transition(.opacity.animation(.easeInOut(duration: 0.2)))
       }
 
       // UI 오버레이

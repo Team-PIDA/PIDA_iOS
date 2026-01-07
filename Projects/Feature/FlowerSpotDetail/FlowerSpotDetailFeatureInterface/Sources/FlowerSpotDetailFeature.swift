@@ -72,6 +72,11 @@ public struct FlowerSpotDetailFeature {
     public var photoViewer: PhotoViewerState? = nil
     public var isPresentPhotoViewer: Bool = false
 
+    // MARK: - Image Prefetch State
+
+    /// URL -> Data 매핑 (프리페치된 이미지)
+    public var prefetchedImages: [String: Data] = [:]
+
     public init(userLocation: Coordinate? = nil) {
       self.userLocation = userLocation
     }
@@ -109,6 +114,10 @@ public struct FlowerSpotDetailFeature {
     case photoViewerPreviousTapped
     case photoViewerNextTapped
     case photoViewerScaleChanged(CGFloat)
+
+    // MARK: - Image Prefetch
+    case prefetchImages
+    case imagesPrefetched([String: Data])
 
     // MARK: - Delegate
     case delegate(Delegate)
