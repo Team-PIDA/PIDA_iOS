@@ -64,17 +64,20 @@ public struct FlowerSpotImageGalleryView: View {
 
   @ViewBuilder
   private var twoImagesView: some View {
-    HStack(spacing: spacing) {
-      ForEach(0..<2, id: \.self) { index in
-        RemoteImageView(urlString: imageUrls[index]) {
-          onImageTapped?(index)
+    GeometryReader { geometry in
+      let imageWidth = (geometry.size.width - spacing) / 2
+      HStack(spacing: spacing) {
+        ForEach(0..<2, id: \.self) { index in
+          RemoteImageView(urlString: imageUrls[index]) {
+            onImageTapped?(index)
+          }
+          .frame(width: imageWidth, height: imageHeight)
+          .clipped()
+          .cornerRadius(10)
         }
-        .frame(height: imageHeight)
-        .frame(maxWidth: .infinity)
-        .clipped()
-        .cornerRadius(10)
       }
     }
+    .frame(height: imageHeight)
   }
 
   // MARK: - Multiple Images (3장 이상)
