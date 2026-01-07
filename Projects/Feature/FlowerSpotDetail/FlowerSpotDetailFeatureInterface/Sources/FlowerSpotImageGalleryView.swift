@@ -86,7 +86,7 @@ public struct FlowerSpotImageGalleryView: View {
   private var multipleImagesView: some View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: spacing) {
-        ForEach(0..<imageUrls.count, id: \.self) { index in
+        ForEach(0..<min(3, imageUrls.count), id: \.self) { index in
           RemoteImageView(urlString: imageUrls[index]) {
             onImageTapped?(index)
           }
