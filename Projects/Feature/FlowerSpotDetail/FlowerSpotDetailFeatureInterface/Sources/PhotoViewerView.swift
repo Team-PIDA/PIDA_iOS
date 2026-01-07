@@ -99,6 +99,8 @@ public struct PhotoViewerView: View {
                 }
               }
           )
+          .id(currentIndex)
+          .transition(.opacity.animation(.easeInOut(duration: 0.2)))
       }
 
       // UI 오버레이
@@ -107,8 +109,10 @@ public struct PhotoViewerView: View {
           topBar
           Spacer()
         }
+        .transition(.opacity)
 
         chevronButtons
+          .transition(.opacity)
       }
     }
     .onChange(of: currentIndex) { _, _ in
