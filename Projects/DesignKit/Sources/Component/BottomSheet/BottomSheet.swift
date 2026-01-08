@@ -40,7 +40,6 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
   @Binding private var isExpanded: Bool
 
   // MARK: - Init
-
   public init(
     minHeight: CGFloat = 140,
     maxHeight: CGFloat = UIScreen.main.bounds.height,

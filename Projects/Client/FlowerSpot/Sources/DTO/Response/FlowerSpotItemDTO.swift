@@ -22,8 +22,9 @@ struct FlowerSpotItemDTO: DTO {
   var geom: LineStringGeomDTO?
   var pinPoint: PointGeomDTO?
   var region: String?
+  var imageUrls: [String]?
   var deletedAt: String?
-  
+
 }
 
 extension FlowerSpotItemDTO {
@@ -40,6 +41,7 @@ extension FlowerSpotItemDTO {
     let description = self.description ?? "나무 정보 없음"
     let district = self.district ?? ""
     let region = self.region ?? ""
+    let imageUrls = self.imageUrls ?? []
     return .init(
       id: self.id,
       address: address,
@@ -50,7 +52,8 @@ extension FlowerSpotItemDTO {
       description: description,
       path: path,
       pinPoint: pinPoint,
-      region: region
+      region: region,
+      imageUrls: imageUrls /*["https://picsum.photos/400/300"]*/
     )
   }
 }

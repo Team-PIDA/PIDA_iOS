@@ -3,7 +3,7 @@
 //
 //  FlowerSpotDetail
 //
-//  Created by Claude
+//  Created by 조용인
 //
 
 import SwiftUI
@@ -156,6 +156,17 @@ public struct FlowerSpotDetailLargeContentView: View {
             .foregroundColor(ColorSet.Text.Primary)
         }
       }
+      
+      // Image Gallery
+      FlowerSpotImageGalleryView(
+        imageUrls: store.flowerSpotData.imageUrls,
+        onImageTapped: { index in
+          // TODO: 이미지 상세 보기
+        },
+        onMoreTapped: {
+          // TODO: 갤러리 화면으로 이동
+        }
+      )
     }
     .padding([.horizontal, .bottom], .Number16)
     .padding(.top, .Number8)
