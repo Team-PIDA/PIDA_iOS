@@ -9,7 +9,7 @@
 import UIKit
 
 public extension UIImage {
-  /// 최대 크기(픽셀)로 리사이징 (비율 유지)
+  /// 최대 크기(픽셀)로 리사이징 (비율 유지, Thread-safe)
   func resized(maxSize: CGFloat) -> UIImage? {
     let originalSize = self.size
 
@@ -25,11 +25,10 @@ public extension UIImage {
       height: originalSize.height * ratio
     )
 
-    // 리사이징
-    UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-    defer { UIGraphicsEndImageContext() }
-
-    draw(in: CGRect(origin: .zero, size: newSize))
-    return UIGraphicsGetImageFromCurrentImageContext()
+    // UIGraphicsImageRenderer는 Thread-safe
+    let renderer = UIGraphicsImageRenderer(size: newSize)
+    return renderer.image { _ in
+      draw(in: CGRect(origin: .zero, size: newSize))
+    }
   }
 }
