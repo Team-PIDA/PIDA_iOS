@@ -69,7 +69,6 @@ public struct BloomingUpdateView: View {
   @ViewBuilder
   private var navigationBar: some View {
     NavigationBar(
-      title: "오늘의 개화상태",
       closeContent:  {
       TouchArea(image: .close)
         .size(.superLarge)
@@ -122,41 +121,40 @@ public struct BloomingUpdateView: View {
       if let imageData = store.selectedImageData,
          let uiImage = UIImage(data: imageData) {
         // 사진 있음: 이미지 + X버튼 + 교체 버튼 + 라벨
-        VStack(spacing: .Number12) {
-          // 이미지 + X 버튼
-          VStack(spacing: .Number8) {
-            Image(uiImage: uiImage)
-              .resizable()
-              .scaledToFill()
-              .frame(width: .Number100, height: .Number100)
-              .clipShape(RoundedRectangle(cornerRadius: .Number16))
-              .overlay(alignment: .topTrailing) {
-                PIDIconButton {
-                  Icon(image: .close)
-                    .size(.medium)
-                    .foregroundColor(ColorSet.Icon.Primary)
-                }
-                .buttonSize(.Number24)
-                .backgroundColor(ColorSet.Gray._0)
-                .action{
-                  store.send(.photoRemoveButtonTapped)
-                }
-                .offset(x: -.Number4, y: .Number4)
+        // 이미지 + X 버튼
+        VStack(spacing: .Number8) {
+          Image(uiImage: uiImage)
+            .resizable()
+            .scaledToFill()
+            .frame(width: .Number100, height: .Number100)
+            .clipShape(RoundedRectangle(cornerRadius: .Number16))
+            .overlay(alignment: .topTrailing) {
+              PIDIconButton {
+                Icon(image: .close)
+                  .size(.medium)
+                  .foregroundColor(ColorSet.Icon.Primary)
               }
-            
-            // 사진 교체 버튼
-            PIDUnderLineButton(
-              title: "사진 교체",
-              style: .primary
-            ) {
-              store.send(.photoButtonTapped)
+              .buttonSize(.Number24)
+              .backgroundColor(ColorSet.Gray._0)
+              .action{
+                store.send(.photoRemoveButtonTapped)
+              }
+              .padding(.top, .Number4)
+              .padding(.trailing, .Number4)
             }
+          
+          // 사진 교체 버튼
+          PIDUnderLineButton(
+            title: "사진 교체",
+            style: .primary
+          ) {
+            store.send(.photoButtonTapped)
           }
-          // 하단 라벨
-          Text("공유해주신 사진은 상세 페이지에 첨부돼요")
-            .fontStyle(FontSet.Body.body3)
-            .foregroundStyle(ColorSet.Text.Secondary)
         }
+        // 하단 라벨
+        Text("공유해주신 사진은 상세 페이지에 첨부돼요")
+          .fontStyle(FontSet.Body.body3)
+          .foregroundStyle(ColorSet.Text.Secondary)
       } else {
         // 사진 없음: "한 컷 공유하기" 버튼 + 하단 라벨
         VStack(spacing: .Number12) {
@@ -178,7 +176,5 @@ public struct BloomingUpdateView: View {
         }
       }
     }
-    .padding(.horizontal, .Number16)
-    .padding(.top, .Number24)
   }
 }
