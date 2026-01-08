@@ -68,4 +68,22 @@ public extension PIDButton {
     button.backgroundColor = color
     return button
   }
+
+  /// 버튼의 텍스트 색상을 설정합니다.
+  /// - Parameter color: 텍스트에 적용할 색상입니다.
+  /// - Returns: 지정된 텍스트 색상이 적용된 수정된 버튼을 반환합니다.
+  func textColor(_ color: Color) -> Self {
+    var button = self
+    button.textColor = color
+    return button
+  }
+
+  /// 버튼의 너비를 전체 너비로 설정할지 여부를 지정합니다.
+  /// - Parameter isFullWidth: true면 전체 너비, false면 컨텐츠에 맞춤 (Hug)
+  /// - Returns: 지정된 너비 설정이 적용된 수정된 버튼을 반환합니다.
+  func isFullWidth(_ isFullWidth: Bool) -> Self {
+    var button = self
+    button.isFullWidth = isFullWidth
+    return button
+  }
 }

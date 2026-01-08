@@ -125,12 +125,24 @@ public struct BloomingUpdateView: View {
           Spacer()
         }
       } else {
-        // 사진 없음: "한 컷 공유하기" 버튼
-        PIDButton(title: "한 컷 공유하기", size: .medium)
+        // 사진 없음: "한 컷 공유하기" 버튼 + 하단 라벨
+        VStack(spacing: .Number12) {
+          PIDButton(title: "한 컷 공유하기", size: .medium) {
+            Icon(image: .camera)
+              .size(.medium)
+              .foregroundColor(ColorSet.Icon.Accent)
+          }
           .isSecondary(true)
+          .textColor(ColorSet.Text.Accent)
+          .isFullWidth(false)
           .action {
             store.send(.photoButtonTapped)
           }
+
+          Text("공유해주신 사진은 상세 페이지에 첨부돼요")
+            .fontStyle(FontSet.Body.body3)
+            .foregroundStyle(ColorSet.Text.Secondary)
+        }
       }
     }
     .padding(.horizontal, .Number16)

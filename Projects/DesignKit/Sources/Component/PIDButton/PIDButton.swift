@@ -19,7 +19,9 @@ public struct PIDButton<IconContent: View>: View {
   public var iconContent: (() -> IconContent)?
   
   public var backgroundColor: Color = ColorSet.Component.Primary
-  
+  public var textColor: Color? = nil
+  public var isFullWidth: Bool = true
+
   @State private var isPressed: Bool = false
   
   public init(
@@ -64,14 +66,11 @@ public struct PIDButton<IconContent: View>: View {
     HStack(spacing: .Number6) {
       iconContent.map { $0() }
       Text(title)
-        .foregroundColor(
-          isDisabled
-          ? ColorSet.Text.Disabled
-          : isSecondary ? ColorSet.Text.Primary : ColorSet.Text.Inverse
-        )
+        .foregroundColor(resolvedTextColor)
         .fontStyle(size.font)
     }
-    .frame(maxWidth: .infinity)
+    .frame(maxWidth: isFullWidth ? .infinity : nil)
+    .padding(.horizontal, isFullWidth ? .Number0 : size.padding.horizonal)
     .padding(.vertical, size.padding.vertical)
     .background(
       RoundedRectangle(cornerRadius: size.cornerRadius)
@@ -93,6 +92,16 @@ public struct PIDButton<IconContent: View>: View {
           .fill(ColorSet.Component.Pressed)
       }
     }
+  }
+
+  private var resolvedTextColor: Color {
+    if let textColor {
+      return textColor
+    }
+    if isDisabled {
+      return ColorSet.Text.Disabled
+    }
+    return isSecondary ? ColorSet.Text.Primary : ColorSet.Text.Inverse
   }
 }
 
