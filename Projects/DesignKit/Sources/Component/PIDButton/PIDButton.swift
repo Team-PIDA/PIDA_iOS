@@ -7,7 +7,6 @@
 //
 
 import SwiftUI
-import UIKit
 
 public struct PIDButton<IconContent: View>: View {
   
@@ -46,21 +45,11 @@ public struct PIDButton<IconContent: View>: View {
   
   public var body: some View {
     content
-      .gesture(
-        DragGesture(minimumDistance: .Number0)
-          .onChanged { _ in isPressed = true }
-          .onEnded { _ in
-            isPressed = false
-            if let action = action {
-              let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-              impactFeedback.impactOccurred()
-              Task { @MainActor in
-                await action()
-              }
-            }
-          }
+      .buttonPress(
+        isPressed: $isPressed,
+        isDisabled: isDisabled,
+        action: action
       )
-      .disabled(isDisabled)
   }
   
   @ViewBuilder

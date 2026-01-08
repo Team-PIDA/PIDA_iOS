@@ -26,18 +26,9 @@ public struct PIDIconButton<IconContent: View>: View {
   
   public var body: some View {
     content
-      .gesture(
-        DragGesture(minimumDistance: .Number0)
-          .onChanged { _ in isPressed = true }
-          .onEnded {
-            _ in
-            isPressed = false
-            if let action = action {
-              Task { @MainActor in
-                await action()
-              }
-            }
-          }
+      .buttonPress(
+        isPressed: $isPressed,
+        action: action
       )
   }
   
