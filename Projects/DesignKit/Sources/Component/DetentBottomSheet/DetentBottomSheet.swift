@@ -16,6 +16,8 @@ public struct DetentBottomSheet<Content: View>: View {
   // 외부에서 주입받는 시트 콘텐츠
   private let content: Content
   
+  // 초기 detent 설정 값
+  private let initialDetent: BottomSheetDetent
   // 현재 시트 높이 단계(detent)
   @Binding private var detent: BottomSheetDetent
   // 시트 표시 여부
@@ -53,6 +55,7 @@ public struct DetentBottomSheet<Content: View>: View {
     self.minHeight = minHeight
     self.cornerRadius = cornerRadius
     self._detent = detent
+    self.initialDetent = detent.wrappedValue
     self.content = content()
   }
   
@@ -82,6 +85,13 @@ public struct DetentBottomSheet<Content: View>: View {
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
       .animation(presentAnimation, value: isPresent)
+      .onChange(of: isPresent) { _, newValue in
+        guard newValue else { return }
+
+        // 다시 나타날 때 항상 초기 detent로 리셋
+        detent = initialDetent
+        syncToDetent(screenHeight: screenHeight, maxHeight: maxHeight)
+      }
       .onChange(of: detent) { _, _ in
         // 외부에서 detent 변경 시 시트 위치 갱신
         guard isPresent else { return }
