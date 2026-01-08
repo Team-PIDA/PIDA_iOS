@@ -34,23 +34,67 @@ public struct FlowerSpotDetailLargeContentView: View {
   }
 
   public var body: some View {
-    ZStack {
-      VStack(spacing: .Number0) {
-        navigationBar
-        mainScrollContent
-        floatingButton
+    NavigationStack(path: $store.path) {
+      ZStack {
+        VStack(spacing: .Number0) {
+          navigationBar
+          mainScrollContent
+          floatingButton
+        }
+
+        ToastView(message: $store.toastMessage)
+          .padding(.bottom, .Number80)
+
+        if store.isShowLoginAlert {
+          PIDAlert(
+            type: .login,
+            closeAction: { store.send(.alertCancelTapped) },
+            acceptAction: { store.send(.alertAcceptTapped) }
+          )
+          .isErrorType(false)
+        }
       }
-
-      ToastView(message: $store.toastMessage)
-        .padding(.bottom, .Number80)
-
-      if store.isShowLoginAlert {
-        PIDAlert(
-          type: .login,
-          closeAction: { store.send(.alertCancelTapped) },
-          acceptAction: { store.send(.alertAcceptTapped) }
+      .navigationDestination(for: FlowerSpotDetailFeature.Path.self) { path in
+        switch path {
+        case .photoGallery:
+          PhotoGalleryView(
+            imageUrls: store.flowerSpotData.imageUrls,
+            prefetchedImages: store.prefetchedImages,
+            title: store.flowerSpotData.streetName,
+            onImageTapped: { index in
+              store.send(.presentPhotoViewer(index: index))
+            },
+            onBackTapped: {
+              store.send(.popFromPhotoGallery)
+            },
+            onImageLoaded: { url, data in
+              store.send(.cacheImage(url: url, data: data))
+            }
+          )
+        }
+      }
+    }
+    .fullScreenCover(isPresented: $store.isPresentPhotoViewer, onDismiss: {
+      store.send(.cleanupPhotoViewer)
+    }) {
+      if let viewer = store.photoViewer {
+        PhotoViewerView(
+          imageUrls: viewer.imageUrls,
+          prefetchedImages: store.prefetchedImages,
+          currentIndex: viewer.currentIndex,
+          onDismiss: {
+            store.send(.dismissPhotoViewer)
+          },
+          onPreviousTapped: {
+            store.send(.photoViewerPreviousTapped)
+          },
+          onNextTapped: {
+            store.send(.photoViewerNextTapped)
+          },
+          onImageLoaded: { url, data in
+            store.send(.cacheImage(url: url, data: data))
+          }
         )
-        .isErrorType(false)
       }
     }
     .onChange(of: scrollOffset) { _, newValue in
@@ -156,15 +200,19 @@ public struct FlowerSpotDetailLargeContentView: View {
             .foregroundColor(ColorSet.Text.Primary)
         }
       }
-      
+
       // Image Gallery
       FlowerSpotImageGalleryView(
         imageUrls: store.flowerSpotData.imageUrls,
+        prefetchedImages: store.prefetchedImages,
         onImageTapped: { index in
-          // TODO: 이미지 상세 보기
+          store.send(.presentPhotoViewer(index: index))
         },
         onMoreTapped: {
-          // TODO: 갤러리 화면으로 이동
+          store.send(.pushToPhotoGallery)
+        },
+        onImageLoaded: { url, data in
+          store.send(.cacheImage(url: url, data: data))
         }
       )
     }

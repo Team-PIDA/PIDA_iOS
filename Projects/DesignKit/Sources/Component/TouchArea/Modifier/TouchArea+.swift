@@ -30,4 +30,15 @@ public extension TouchArea {
     button.size = size
     return button
   }
+  
+  /// 버튼 이미지의 색상을 설정합니다.
+  /// - Parameter color: 버튼 이미지에 적용될 색상입니다.
+  /// - Returns: 지정된 색상이 적용된 수정된 버튼을 반환합니다.
+  func color(
+    _ color: Color
+  ) -> Self {
+    var button = self
+    button.color = color
+    return button
+  }
 }

@@ -6,12 +6,14 @@
 //  Created by yongin
 //
 
+import Foundation
 import Shared
 import DesignKit
 import ComposableArchitecture
 import FlowerSpotDetailFeatureInterface
 import FlowerSpotClient
 import BloomingClient
+import CacheClient
 
 extension FlowerSpotDetailFeature {
   public init() {
@@ -21,6 +23,7 @@ extension FlowerSpotDetailFeature {
   struct Core: Reducer {
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.bloomingClient) var bloomingClient
+    @Dependency(\.cache) var cache
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
@@ -77,6 +80,76 @@ extension FlowerSpotDetailFeature {
         state.isShowLoginAlert = true
         return .none
 
+      // MARK: - Navigation (PhotoGallery)
+
+      case .pushToPhotoGallery:
+        state.path.append(.photoGallery)
+        return .none
+
+      case .popFromPhotoGallery:
+        state.path.removeLast()
+        return .none
+
+      // MARK: - Presentation (PhotoViewer)
+
+      case let .presentPhotoViewer(index):
+        state.photoViewer = .init(
+          imageUrls: state.flowerSpotData.imageUrls,
+          currentIndex: index
+        )
+        state.isPresentPhotoViewer = true
+        return .none
+
+      case .dismissPhotoViewer:
+        state.isPresentPhotoViewer = false
+        return .none
+
+      case .cleanupPhotoViewer:
+        state.photoViewer = nil
+        return .none
+
+      case .photoViewerPreviousTapped:
+        guard var viewer = state.photoViewer else { return .none }
+        if viewer.currentIndex > 0 {
+          viewer.currentIndex -= 1
+          state.photoViewer = viewer
+        }
+        return .none
+
+      case .photoViewerNextTapped:
+        guard var viewer = state.photoViewer else { return .none }
+        if viewer.currentIndex < viewer.imageUrls.count - 1 {
+          viewer.currentIndex += 1
+          state.photoViewer = viewer
+        }
+        return .none
+
+      case let .photoViewerScaleChanged(scale):
+        guard var viewer = state.photoViewer else { return .none }
+        viewer.scale = scale
+        viewer.isUIHidden = scale > 1.0
+        state.photoViewer = viewer
+        return .none
+
+      // MARK: - Image Prefetch
+
+      case .prefetchImages:
+        let urls = state.flowerSpotData.imageUrls
+        guard !urls.isEmpty else { return .none }
+        return prefetchImages(urls: urls)
+
+      case let .imagesPrefetched(images):
+        state.prefetchedImages = images
+        return .none
+
+      case let .cacheImage(url, data):
+        // State에 추가
+        state.prefetchedImages[url] = data
+        // 캐시에 저장 (백그라운드)
+        return .run { [cache] _ in
+          try? await cache.set(.remoteImage(url: url), data)
+        }
+
       case let .requestDetailInfo(id):
         state.spotId = id
         state.isDetailLoading = true
@@ -96,7 +169,8 @@ extension FlowerSpotDetailFeature {
           state.distance = .zero
         }
         checkLoadingComplete(&state)
-        return .none
+        // 이미지 프리페치 시작
+        return .send(.prefetchImages)
 
       case let .bloomingResponse(item):
         state.bloomingStatus = item
@@ -173,6 +247,41 @@ extension FlowerSpotDetailFeature.Core {
       } catch {
         print("[FlowerSpotDetailFeature] Error: \(error.localizedDescription)")
       }
+    }
+  }
+
+  private func prefetchImages(urls: [String]) -> Effect<Action> {
+    return .run { [cache] send in
+      var result: [String: Data] = [:]
+
+      await withTaskGroup(of: (String, Data?).self) { group in
+        for url in urls {
+          group.addTask {
+            // 1. 캐시 확인
+            if let cached: Data = await cache.get(.remoteImage(url: url)) {
+              return (url, cached)
+            }
+
+            // 2. 네트워크에서 fetch
+            guard let imageUrl = URL(string: url),
+                  let (data, _) = try? await URLSession.shared.data(from: imageUrl) else {
+              return (url, nil)
+            }
+
+            // 3. 캐시에 저장
+            try? await cache.set(.remoteImage(url: url), data)
+            return (url, data)
+          }
+        }
+
+        for await (url, data) in group {
+          if let data {
+            result[url] = data
+          }
+        }
+      }
+
+      await send(.imagesPrefetched(result))
     }
   }
 }

@@ -31,6 +31,7 @@ public struct TouchArea: View {
       .overlay {
         Icon(image: image)
           .size(size)
+          .foregroundColor(color)
       }
       .padding(.Number12)
       .onTapGesture {

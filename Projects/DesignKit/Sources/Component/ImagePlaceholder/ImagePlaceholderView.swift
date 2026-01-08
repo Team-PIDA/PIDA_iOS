@@ -15,7 +15,13 @@ public struct ImagePlaceholderView: View {
     case failure
   }
 
+  public enum Style {
+    case light
+    case dark
+  }
+
   private let state: State
+  private var style: Style = .light
 
   public init(state: State = .loading) {
     self.state = state
@@ -23,18 +29,47 @@ public struct ImagePlaceholderView: View {
 
   public var body: some View {
     ZStack {
-      ColorSet.Background.Tertiary
+      backgroundColor
 
       switch state {
       case .loading:
         ProgressView()
-          .progressViewStyle(CircularProgressViewStyle(tint: ColorSet.Gray._300))
+          .progressViewStyle(CircularProgressViewStyle(tint: progressTint))
       case .failure:
         Icon(image: .placeholder)
           .size(.superLarge)
-          .foregroundColor(ColorSet.Icon.Secondary)
+          .foregroundColor(iconColor)
       }
     }
+  }
+
+  private var backgroundColor: Color {
+    switch style {
+    case .light: return ColorSet.Background.Tertiary
+    case .dark: return Color.black
+    }
+  }
+
+  private var progressTint: Color {
+    switch style {
+    case .light: return ColorSet.Gray._300
+    case .dark: return .white
+    }
+  }
+
+  private var iconColor: Color {
+    switch style {
+    case .light: return ColorSet.Icon.Secondary
+    case .dark: return .white.opacity(0.6)
+    }
+  }
+
+  // MARK: - Style Modifier
+
+  public func style(_ style: Style) -> Self {
+    var copy = self
+    copy.style = style
+    return copy
   }
 }
 

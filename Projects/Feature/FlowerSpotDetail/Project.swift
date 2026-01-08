@@ -14,6 +14,7 @@ let project = Project.buildFeature(
   interfaceDependencies: [
     .Client.FlowerSpot,
     .Client.Blooming,
+    .Client.Cache,
     .SPM.NMap
   ]
 )
