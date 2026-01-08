@@ -13,7 +13,7 @@ protocol TargetDependencyFactory { }
 extension TargetDependencyFactory {
   public static func project(_ folder: Folder) -> TargetDependency {
     switch folder {
-    case let .feature(feature): buildTargetDependency(for: feature)
+    case let .feature(feature, isInterface): buildTargetDependency(for: feature, isInterface: isInterface)
     case let .client(client): buildTargetDependency(for: client)
     case let .spm(spm): .external(name: String(describing: spm))
     }
@@ -28,7 +28,7 @@ extension TargetDependencyFactory {
     isInterface: Bool = false
   ) -> TargetDependency {
     let root = target.root
-    let module = String(describing: target) + target.root
+    let module = String(describing: target) + target.root + (isInterface ? "Interface" : "")
     return .project(
       target: module,
       path: .relativeToRoot("./Projects/\(root)/\(String(describing: target))")

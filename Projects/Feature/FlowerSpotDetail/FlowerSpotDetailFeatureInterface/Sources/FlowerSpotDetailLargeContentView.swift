@@ -1,9 +1,9 @@
 //
-//  FlowerSpotDetailView.swift
+//  FlowerSpotDetailLargeContentView.swift
 //
 //  FlowerSpotDetail
 //
-//  Created by yongin
+//  Created by Claude
 //
 
 import SwiftUI
@@ -11,17 +11,28 @@ import Shared
 import DesignKit
 import ComposableArchitecture
 
-public struct FlowerSpotDetailView: View {
+/// 바텀시트 확장 상태에서 보여줄 콘텐츠
+public struct FlowerSpotDetailLargeContentView: View {
   @Bindable var store: StoreOf<FlowerSpotDetailFeature>
-  @State private var offsetY: CGPoint = .zero
-  
-  @State var isNeedDrawPath: Bool = true
-  @State var isNeedDeletePath: Bool = false
-  
-  public init(store: StoreOf<FlowerSpotDetailFeature>) {
+
+  /// 바텀시트 드래그 활성화 여부 (스크롤 ↔ 드래그 충돌 제어)
+  @Binding var isDragEnabled: Bool
+
+  /// 뒤로가기 버튼 탭 시 호출되는 콜백 (바텀시트 축소용)
+  let onBackTapped: (() -> Void)?
+
+  @State private var scrollOffset: CGPoint = .zero
+
+  public init(
+    store: StoreOf<FlowerSpotDetailFeature>,
+    isDragEnabled: Binding<Bool>,
+    onBackTapped: (() -> Void)? = nil
+  ) {
     self.store = store
+    self._isDragEnabled = isDragEnabled
+    self.onBackTapped = onBackTapped
   }
-  
+
   public var body: some View {
     ZStack {
       VStack(spacing: .Number0) {
@@ -29,8 +40,10 @@ public struct FlowerSpotDetailView: View {
         mainScrollContent
         floatingButton
       }
+
       ToastView(message: $store.toastMessage)
         .padding(.bottom, .Number80)
+
       if store.isShowLoginAlert {
         PIDAlert(
           type: .login,
@@ -40,11 +53,17 @@ public struct FlowerSpotDetailView: View {
         .isErrorType(false)
       }
     }
+    .onChange(of: scrollOffset) { _, newValue in
+      // 스크롤이 최상단(offset.y <= 0)일 때만 바텀시트 드래그 허용
+      isDragEnabled = newValue.y <= 0
+    }
     .onAppear {
       store.send(.onAppear)
     }
   }
-  
+
+  // MARK: - Navigation Bar
+
   @ViewBuilder
   private var navigationBar: some View {
     NavigationBar(
@@ -52,33 +71,39 @@ public struct FlowerSpotDetailView: View {
         TouchArea(image: .pullDown)
           .size(.superLarge)
           .action {
-            return await MainActor.run {
-              store.send(.dismiss)
-            }
+            onBackTapped?()
           }
-      },
-      title: offsetY.y > 36 ? store.flowerSpotData.streetName : ""
+      }
     )
+    .padding(.top, .Number20)
   }
-  
+
+  // MARK: - Main Scroll Content
+
   @ViewBuilder
   private var mainScrollContent: some View {
-    OffsetObservableScrollView(.vertical, scrollOffset: $offsetY) { _ in
+    OffsetObservableScrollView(.vertical, scrollOffset: $scrollOffset) { _ in
       VStack(alignment: .leading, spacing: .Number0) {
         mainInfoSection
-        Rectangle()
-          .frame(height: .Number8)
-          .foregroundStyle(ColorSet.Background.Tertiary)
+        sectionDivider
         locationSection
-        Rectangle()
-          .frame(height: .Number8)
-          .foregroundStyle(ColorSet.Background.Tertiary)
+        sectionDivider
         flowerInfoSection
       }
     }
     .background(ColorSet.Background.Primary)
   }
-  
+
+  // MARK: - Section Divider
+
+  private var sectionDivider: some View {
+    Rectangle()
+      .frame(height: .Number8)
+      .foregroundStyle(ColorSet.Background.Tertiary)
+  }
+
+  // MARK: - Main Info Section
+
   @ViewBuilder
   private var mainInfoSection: some View {
     VStack(alignment: .leading, spacing: .Number14) {
@@ -86,15 +111,18 @@ public struct FlowerSpotDetailView: View {
         Text(store.flowerSpotData.streetName)
           .fontStyle(FontSet.Heading.heading1)
           .foregroundColor(ColorSet.Text.Primary)
+
         HStack(spacing: .Number4) {
           Text(store.flowerSpotData.recentlyVisitedCountString)
             .fontStyle(FontSet.Label.label2)
             .foregroundColor(ColorSet.Text.Primary)
+
           Text("·")
             .fontStyle(FontSet.Label.label2)
             .foregroundColor(ColorSet.Text.Secondary)
-          HStack(spacing: .Number4) {
-            if let blooming = BloomStatus(rawValue: store.flowerSpotData.bloomingStatus) {
+
+          if let blooming = BloomStatus(rawValue: store.flowerSpotData.bloomingStatus) {
+            HStack(spacing: .Number4) {
               GradiantIcon(image: .flower)
                 .size(.large)
                 .foregroundStyle(blooming.gradiant)
@@ -105,17 +133,20 @@ public struct FlowerSpotDetailView: View {
           }
         }
       }
+
       Divider()
         .background(ColorSet.Border.Secondary)
+
       VStack(alignment: .leading, spacing: .Number6) {
         HStack(spacing: .Number4) {
           Icon(image: .distance)
             .size(.small)
             .foregroundColor(ColorSet.Icon.Secondary)
-          Text("내 위치로부터 " + "\(store.distance) km")
+          Text("내 위치로부터 \(String(format: "%.1f", store.distance)) km")
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }
+
         HStack(spacing: 4) {
           Icon(image: .forest)
             .size(.small)
@@ -129,7 +160,9 @@ public struct FlowerSpotDetailView: View {
     .padding([.horizontal, .bottom], .Number16)
     .padding(.top, .Number8)
   }
-  
+
+  // MARK: - Location Section
+
   @ViewBuilder
   private var locationSection: some View {
     VStack(alignment: .leading, spacing: .Number14) {
@@ -137,10 +170,12 @@ public struct FlowerSpotDetailView: View {
         Text("위치")
           .fontStyle(FontSet.Heading.heading2)
           .foregroundColor(ColorSet.Text.Primary)
+
         HStack(spacing: .Number4) {
           Text(store.flowerSpotData.address)
             .fontStyle(FontSet.Body.body2)
             .foregroundColor(ColorSet.Text.Primary)
+
           HStack(spacing: .Number0) {
             Icon(image: .copy)
               .size(.small)
@@ -154,11 +189,14 @@ public struct FlowerSpotDetailView: View {
             store.send(.showToastView(message: "주소가 복사되었습니다."))
           }
         }
+
         let walkingMinutes = Int((store.distance / 5.0) * 60)
         Text("현재 위치에서 걸어서 약 \(walkingMinutes)분 (\(String(format: "%.1f", store.distance))km)")
           .fontStyle(FontSet.Title.title4)
           .foregroundColor(ColorSet.Text.Accent)
       }
+
+      // Mini Map
       if let blooming = BloomStatus(rawValue: store.flowerSpotData.bloomingStatus) {
         DetailMapViewRepresentable(
           location: store.flowerSpotData.pinPoint,
@@ -170,12 +208,15 @@ public struct FlowerSpotDetailView: View {
         .frame(height: 160)
         .cornerRadius(10)
       }
+
+      // Informant Info
       if let nickname = store.bloomingStatus.nickname,
          let updateAt = store.bloomingStatus.updatedAt {
         HStack(spacing: .Number8) {
           Icon(image: .verified)
             .size(.extremeLarge)
             .foregroundColor(ColorSet.Icon.Accent)
+
           VStack(alignment: .leading, spacing: .Number2) {
             (Text(nickname)
               .foregroundColor(ColorSet.Text.Accent) +
@@ -183,6 +224,7 @@ public struct FlowerSpotDetailView: View {
               .foregroundColor(ColorSet.Text.Primary))
             .fontStyle(FontSet.Title.title4)
             .frame(maxWidth: .infinity, alignment: .leading)
+
             Text("\(updateAt) 업데이트")
               .fontStyle(FontSet.Caption.caption1)
               .foregroundColor(ColorSet.Text.Secondary)
@@ -196,7 +238,9 @@ public struct FlowerSpotDetailView: View {
     }
     .padding(.Number16)
   }
-  
+
+  // MARK: - Flower Info Section
+
   @ViewBuilder
   private var flowerInfoSection: some View {
     VStack(alignment: .leading, spacing: .Number28) {
@@ -204,20 +248,23 @@ public struct FlowerSpotDetailView: View {
         Text("나무 종류")
           .fontStyle(FontSet.Heading.heading3)
           .foregroundColor(ColorSet.Text.Primary)
-        
+
         Text(store.flowerSpotData.description)
           .fontStyle(FontSet.Body.body2)
           .foregroundColor(ColorSet.Text.Primary)
       }
+
       VStack(alignment: .leading, spacing: .Number12) {
         VStack(alignment: .leading, spacing: .Number8) {
           Text("개화 상태")
             .fontStyle(FontSet.Heading.heading3)
             .foregroundColor(ColorSet.Text.Primary)
+
           Text("최근 5일 동안 \(store.bloomingStatus.totalCount)명이 기록했어요")
             .fontStyle(FontSet.Body.body2)
             .foregroundColor(ColorSet.Text.Primary)
         }
+
         LazyVStack(alignment: .leading, spacing: .Number6) {
           ForEach(store.bloomingStatus.dayStatuses, id: \.id) { status in
             BloomStatusGraph(
@@ -233,26 +280,27 @@ public struct FlowerSpotDetailView: View {
     }
     .padding(.Number16)
   }
-  
+
+  // MARK: - Floating Button
+
   @ViewBuilder
   private var floatingButton: some View {
-    ZStack(alignment: .bottom) {
-      Rectangle()
-        .fill(.white)
-        .shadow(color: .black.opacity(0.16), radius: 8)
-        .ignoresSafeArea()
+    VStack(spacing: .Number0) {
       PIDButton(
         title: "오늘의 개화 상태 기록하기",
         size: .large
       )
       .action {
-        print("오늘의 개화 상태 기록하기")
         store.send(.checkAuth)
       }
       .isActive(!store.isVotedBlooming.isBlooming)
-      .padding(.Number16)
+      .padding(.horizontal, .Number16)
+      .padding(.vertical, .Number16)
+      .padding(.bottom, UIApplication.shared.safeAreaBottomInset)
     }
-    .frame(height: 80)
-    .background(Color.white)
+    .background(
+      Color.white
+        .shadow(color: .black.opacity(0.1), radius: 8, y: -4)
+    )
   }
 }

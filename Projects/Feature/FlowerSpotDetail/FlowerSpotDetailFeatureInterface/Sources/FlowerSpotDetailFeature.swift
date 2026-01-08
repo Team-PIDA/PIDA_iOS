@@ -9,15 +9,17 @@
 import ComposableArchitecture
 import FlowerSpotClient
 import BloomingClient
+import DesignKit
+import Shared
 
 @Reducer
 public struct FlowerSpotDetailFeature {
   private let reducer: Reduce<State, Action>
-  
+
   public init(reducer: Reduce<State, Action>) {
     self.reducer = reducer
   }
-  
+
   @ObservableState
   public struct State: Equatable {
     public var flowerSpotData: FlowerSpotEntity = .init(
@@ -37,17 +39,12 @@ public struct FlowerSpotDetailFeature {
     public var isNeedDeletePath: Bool = false
     public var isShowLoginAlert: Bool = false
     public var isVotedBlooming: VerifyBloomingStateEntity = .init(isBlooming: false)
-    
-    public init(
-      flowerSpotData: FlowerSpotEntity,
-      bloomingStatus: BloomStatusEntity,
-      distance: Double,
-      isVotedBlooming: VerifyBloomingStateEntity
-    ) {
-      self.flowerSpotData = flowerSpotData
-      self.bloomingStatus = bloomingStatus
-      self.distance = distance
-      self.isVotedBlooming = isVotedBlooming
+    public var isDetailLoading: Bool = false
+    public var updateMarkerStatus: BloomStatus? = nil
+    public var userLocation: Coordinate? = nil
+
+    public init(userLocation: Coordinate? = nil) {
+      self.userLocation = userLocation
     }
   }
 
@@ -55,23 +52,29 @@ public struct FlowerSpotDetailFeature {
     case binding(BindingAction<State>)
     case showToastView(message: String?)
     case showLoginAlert
-    case chechAuth
+    case checkAuth
     case onAppear
-    
+
     case setFlowerSpotData(FlowerSpotEntity)
     case setBloomingStatus(BloomStatusEntity)
     case setDistance(Double)
     case setVerifyBloomingStatus(VerifyBloomingStateEntity)
-    
+
     case alertCancelTapped
     case alertAcceptTapped
-    
+
+    case requestDetailInfo(Int)
+    case fetchDetailInfo(Int)
+    case detailResponse(FlowerSpotEntity)
+    case bloomingResponse(BloomStatusEntity)
+    case verifyTodayBlooming(VerifyBloomingStateEntity)
+
     // MARK: - Delegate
     case delegate(Delegate)
     case dismiss
     case presentToBlooming(id: Int, streetName: String)
   }
-  
+
   public enum Delegate: Equatable {
     case dismiss
     case presentToBlooming(id: Int, streetName: String)

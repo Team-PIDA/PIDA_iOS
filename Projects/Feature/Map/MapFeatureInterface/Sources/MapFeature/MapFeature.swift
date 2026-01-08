@@ -10,23 +10,23 @@ import Foundation
 import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
-import BloomingClient
+import FlowerSpotDetailFeatureInterface
 import Shared
 
 @Reducer
 public struct MapFeature {
   private let reducer: Reduce<State, Action>
   private let location: Reduce<LocationFeature.State, LocationFeature.Action>
-  private let detail: Reduce<DetailFeature.State, DetailFeature.Action>
-  
+  private let flowerSpotDetail: FlowerSpotDetailFeature
+
   public init(
     reducer: Reduce<State, Action>,
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
-    detail: Reduce<DetailFeature.State, DetailFeature.Action>
+    flowerSpotDetail: FlowerSpotDetailFeature
   ) {
     self.reducer = reducer
     self.location = location
-    self.detail = detail
+    self.flowerSpotDetail = flowerSpotDetail
   }
   
   @ObservableState
@@ -59,11 +59,12 @@ public struct MapFeature {
     public var isViewAppeared: Bool = false
     
     public var alertType: AlertType? = nil
-    
-    public var detail: DetailFeature.State = .init()
-    
+
     public var location: LocationFeature.State = .init()
-    
+
+    /// Optional State 패턴: nil이면 바텀시트 숨김, 값이 있으면 바텀시트 표시
+    public var flowerSpotDetail: FlowerSpotDetailFeature.State? = nil
+
     public init() {}
   }
   
@@ -71,7 +72,7 @@ public struct MapFeature {
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case location(LocationFeature.Action)
-    case detail(DetailFeature.Action)
+    case flowerSpotDetail(FlowerSpotDetailFeature.Action)
     
     case showToastView(message: String?, buttonLabel: String?)
     case moveToReportURL
@@ -98,17 +99,13 @@ public struct MapFeature {
   }
   
   // MARK: - Delegate
-  
+
   public enum Delegate: Equatable {
     case presentToSearch(String?)
     case pushToSetting
     case resetSearchView
-    case presentToDetail(
-      flowerSpotData: FlowerSpotEntity,
-      bloomingStatus: BloomStatusEntity,
-      distance: Double,
-      isVotedBlooming: VerifyBloomingStateEntity
-    )
+    case presentToBlooming(id: Int, streetName: String)
+    case presentToLogin(id: Int)
   }
   
   public var body: some ReducerOf<Self> {
@@ -116,10 +113,9 @@ public struct MapFeature {
     Scope(state: \.location, action: \.location) {
       location
     }
-    Scope(state: \.detail, action: \.detail) {
-      detail
+    .ifLet(\.flowerSpotDetail, action: \.flowerSpotDetail) {
+      flowerSpotDetail
     }
     reducer
-    
   }
 }

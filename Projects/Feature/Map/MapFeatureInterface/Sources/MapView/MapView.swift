@@ -10,12 +10,16 @@ import SwiftUI
 import Shared
 import DesignKit
 import ComposableArchitecture
-import FlowerSpotClient
-import BloomingClient
+import FlowerSpotDetailFeatureInterface
 
 public struct MapView: View {
   @Bindable var store: StoreOf<MapFeature>
-  
+
+  /// 바텀시트 드래그 활성화 여부 (스크롤 ↔ 드래그 충돌 제어)
+  @State private var isDragEnabled: Bool = true
+  /// 바텀시트 확장 상태 여부
+  @State private var isBottomSheetExpanded: Bool = false
+
   public init(store: StoreOf<MapFeature>) {
     self.store = store
   }
@@ -48,12 +52,11 @@ public struct MapView: View {
     }
     .overlay(
         Group {
-          if store.detail.isBottomSheetPresented {
-            if let item = store.detail.selectedItemDetail,
-               let bloomingStatus = store.detail.selectedItemBlooming,
-               let isVotedBlooming = store.detail.selectedItemVote {
-              BottomSheet(item: item, bloomingStatus: bloomingStatus, isVotedBlooming: isVotedBlooming)
-            }
+          if let detailStore = store.scope(
+            state: \.flowerSpotDetail,
+            action: \.flowerSpotDetail
+          ) {
+            newBottomSheet(detailStore: detailStore)
           }
         },
         alignment: .bottom
@@ -85,7 +88,10 @@ extension MapView {
       focusData: $store.searchResult,
       isNeedDeleteMarker: $store.isNeedDeleteMarker,
       isNeedDrawMarker: $store.isNeedDrawMarker,
-      updateMarkerStatus: $store.detail.updateMarkerStatus
+      updateMarkerStatus: Binding(
+        get: { store.flowerSpotDetail?.updateMarkerStatus },
+        set: { _ in }
+      )
     )
     .onReceiveMapBounds {
       if store.requestMapBound {
@@ -94,9 +100,6 @@ extension MapView {
     }
     .onMarkerTapped { id in
       store.send(.markerTapped(id: id))
-      if id == .none {
-        store.send(.detail(.dismissBottomSheet))
-      }
     }
     .ignoresSafeArea()
   }
@@ -113,7 +116,6 @@ extension MapView {
             .size(.extraLarge)
             .action {
               store.send(.resetSearchBar)
-              store.send(.detail(.dismissBottomSheet))
               store.send(.markerTapped(id: nil))
             }
         }
@@ -133,60 +135,6 @@ extension MapView {
         store.send(.presentToSearch)
       }
     }
-  }
-  
-  @ViewBuilder
-  private func BottomSheet(
-    item: FlowerSpotEntity,
-    bloomingStatus: BloomStatusEntity,
-    isVotedBlooming: VerifyBloomingStateEntity
-  ) -> some View {
-    CherryBlossomBottomSheet(
-      title: item.streetName,
-      description: item.address,
-      tags: [
-        .district(value: item.district),
-        .recentVisitCount(value: item.recentlyVisitedCountString),
-        bloomingStatus.nickname == nil ? nil : .informant(value: bloomingStatus.nickname!)
-      ],
-      blossomState: BloomStatus(rawValue: item.bloomingStatus),
-      isLoading: store.detail.isDetailLoading,
-      onPullUp: {
-        return await MainActor.run {
-          store.send(
-            .detail(
-              .presentToDetail(
-                flowerSpotData: item,
-                bloomingStatus: bloomingStatus,
-                distance: store.detail.distance,
-                isVotedBlooming: isVotedBlooming
-              )
-            )
-          )
-        }
-      },
-      onPullDown:  {
-        return await MainActor.run {
-          store.send(.resetSearchBar)
-          store.send(.detail(.dismissBottomSheet))
-          store.send(.markerTapped(id: nil))
-        }
-      },
-      onTap: {
-        return await MainActor.run {
-          store.send(
-            .detail(
-              .presentToDetail(
-                flowerSpotData: item,
-                bloomingStatus: bloomingStatus,
-                distance: store.detail.distance,
-                isVotedBlooming: isVotedBlooming
-              )
-            )
-          )
-        }
-      }
-    )
   }
   
   @ViewBuilder
@@ -216,7 +164,7 @@ extension MapView {
       .elevation(cornerRadius: .Number24)
     }
     .padding(.trailing, .Number16)
-    .padding(.bottom, store.detail.selectedItemDetail != nil ? 180 : 40)
+    .padding(.bottom, store.flowerSpotDetail != nil ? 180 : 40)
   }
   
   private func alertView(type: AlertType) -> some View {
@@ -226,5 +174,37 @@ extension MapView {
       acceptAction: { store.send(.alertAcceptTapped(type)) }
     )
     .isErrorType(false)
+  }
+
+  // MARK: - BottomSheet
+
+  @ViewBuilder
+  private func newBottomSheet(detailStore: StoreOf<FlowerSpotDetailFeature>) -> some View {
+    CherryBlossomBottomSheet(
+      isDragEnabled: $isDragEnabled,
+      isExpanded: $isBottomSheetExpanded,
+      smallContent: {
+        if detailStore.isDetailLoading {
+          FlowerSpotDetailSmallContentLoadingView()
+        } else {
+          FlowerSpotDetailSmallContentView(
+            flowerSpotData: detailStore.flowerSpotData,
+            bloomingStatus: detailStore.bloomingStatus
+          )
+        }
+      },
+      largeContent: {
+        FlowerSpotDetailLargeContentView(
+          store: detailStore,
+          isDragEnabled: $isDragEnabled,
+          onBackTapped: {
+            isBottomSheetExpanded = false
+          }
+        )
+      },
+      onDismiss: {
+        store.send(.flowerSpotDetail(.dismiss))
+      }
+    )
   }
 }

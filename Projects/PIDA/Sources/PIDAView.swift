@@ -13,7 +13,6 @@ import SearchFeatureInterface
 import SettingFeatureInterface
 import AuthFeatureInterface
 import BloomingFeatureInterface
-import FlowerSpotDetailFeatureInterface
 
 struct PIDAView: View {
   @Bindable var store: StoreOf<PIDAFeature> = Store(initialState: PIDAFeature.State()) { PIDAFeature()
@@ -37,29 +36,32 @@ struct PIDAView: View {
             }
           }
         }
-        .fullScreenCover(isPresented: $store.isPresentBlooming) {
+        .fullScreenCover(isPresented: $store.isPresentBlooming, onDismiss: {
+          store.send(.cleanupBlooming)
+        }) {
           IfLetStore(store.scope(state: \.blooming, action: \.blooming)) { store in
             BloomingUpdateView(store: store)
           }
         }
-        .fullScreenCover(isPresented: $store.isPresentSignUp) {
+        .fullScreenCover(isPresented: $store.isPresentSignUp, onDismiss: {
+          store.send(.cleanupSignUp)
+        }) {
           IfLetStore(store.scope(state: \.signUp, action: \.signUp)) { store in
             SignUpView(store: store)
           }
         }
-        .fullScreenCover(isPresented: $store.isPresentAuth) {
+        .fullScreenCover(isPresented: $store.isPresentAuth, onDismiss: {
+          store.send(.cleanupAuth)
+        }) {
           IfLetStore(store.scope(state: \.auth, action: \.auth)) { store in
             AuthView(store: store)
           }
         }
-        .fullScreenCover(isPresented: $store.isShowSearch) {
+        .fullScreenCover(isPresented: $store.isShowSearch, onDismiss: {
+          store.send(.cleanupSearch)
+        }) {
           IfLetStore(store.scope(state: \.search, action: \.search)) { store in
             SearchView(store: store)
-          }
-        }
-        .fullScreenCover(isPresented: $store.isPresentFlowerSpotDetail) {
-          IfLetStore(store.scope(state: \.flowerSpotDetail, action: \.flowerSpotDetail)) { store in
-            FlowerSpotDetailView(store: store)
           }
         }
         .transaction { transaction in

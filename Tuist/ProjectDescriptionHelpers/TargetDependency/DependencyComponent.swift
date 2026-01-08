@@ -10,12 +10,13 @@ import ProjectDescription
 
 extension TargetDependency {
   public struct Feature: TargetDependencyFactory {
-    public static let Map = Self.project(.feature(.Map))
-    public static let Search = Self.project(.feature(.Search))
-    public static let Setting = Self.project(.feature(.Setting))
-    public static let FlowerSpotDetail = Self.project(.feature(.FlowerSpotDetail))
-    public static let Auth = Self.project(.feature(.Auth))
-    public static let Blooming = Self.project(.feature(.Blooming))
+    public static let Map = Self.project(.feature(.Map, false))
+    public static let Search = Self.project(.feature(.Search, false))
+    public static let Setting = Self.project(.feature(.Setting, false))
+    public static let FlowerSpotDetail = Self.project(.feature(.FlowerSpotDetail, false))
+    public static let FlowerSpotDetail_interface = Self.project(.feature(.FlowerSpotDetail, true))
+    public static let Auth = Self.project(.feature(.Auth, false))
+    public static let Blooming = Self.project(.feature(.Blooming, false))
   }
 }
 
