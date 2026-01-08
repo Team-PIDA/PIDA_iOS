@@ -6,6 +6,7 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
+import Foundation
 import DesignKit
 import ComposableArchitecture
 
@@ -25,6 +26,11 @@ public struct BloomingUpdateFeature {
     public var buttonTittle: String = "개화 상태를 선택해주세요"
     public var selectedStatus: BloomStatus? = nil
     public var toastMessage: String? = nil
+
+    // 이미지 관련 상태
+    public var selectedImageData: Data? = nil
+    public var isPhotoPickerPresented: Bool = false
+
     public init(spotId: Int?, streetName: String) {
       self.spotId = spotId
       self.streetName = streetName
@@ -33,17 +39,22 @@ public struct BloomingUpdateFeature {
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
-    
+
     case changeStatus
     case initialState
     case sendToastMessage(String)
-    
+
     case updateButtonTapped
     case updateBloomingRequest
-    
+
     case setSpodtId(Int)
     case setStreetName(String)
-    
+
+    // 이미지 관련 액션
+    case photoButtonTapped
+    case photoSelected(Data?)
+    case uploadImage(url: String, data: Data)
+
     case delegate(Delegate)
     case dismiss(didUpdate: Bool, spotId: Int) // 상태 기록 완료 여부
   }
