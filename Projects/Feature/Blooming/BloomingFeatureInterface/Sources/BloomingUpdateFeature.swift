@@ -6,7 +6,7 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import DesignKit
 import ComposableArchitecture
 
@@ -29,6 +29,7 @@ public struct BloomingUpdateFeature {
 
     // 이미지 관련 상태
     public var selectedImageData: Data? = nil
+    public var selectedUIImage: UIImage? = nil
     public var isPhotoPickerPresented: Bool = false
 
     public init(spotId: Int?, streetName: String) {

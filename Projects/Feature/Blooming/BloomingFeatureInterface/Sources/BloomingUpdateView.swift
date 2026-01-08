@@ -118,8 +118,7 @@ public struct BloomingUpdateView: View {
   @ViewBuilder
   private var photoSection: some View {
     VStack(spacing: .Number12) {
-      if let imageData = store.selectedImageData,
-         let uiImage = UIImage(data: imageData) {
+      if let uiImage = store.selectedUIImage {
         // 사진 있음: 이미지 + X버튼 + 교체 버튼 + 라벨
         // 이미지 + X 버튼
         VStack(spacing: .Number8) {

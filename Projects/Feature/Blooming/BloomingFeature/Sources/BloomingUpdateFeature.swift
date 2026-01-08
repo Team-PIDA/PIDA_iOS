@@ -83,6 +83,7 @@ extension BloomingUpdateFeature {
 
       case .photoRemoveButtonTapped:
         state.selectedImageData = nil
+        state.selectedUIImage = nil
         return .none
 
       case let .photoSelected(data):
@@ -91,10 +92,12 @@ extension BloomingUpdateFeature {
               let resizedImage = originalImage.resized(maxSize: 1024),
               let resizedData = resizedImage.jpegData(compressionQuality: 0.8) else {
           state.selectedImageData = nil
+          state.selectedUIImage = nil
           state.isPhotoPickerPresented = false
           return .none
         }
         state.selectedImageData = resizedData
+        state.selectedUIImage = resizedImage
         state.isPhotoPickerPresented = false
         return .none
 
