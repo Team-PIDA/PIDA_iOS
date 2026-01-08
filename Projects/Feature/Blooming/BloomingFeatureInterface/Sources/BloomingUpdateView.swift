@@ -7,16 +7,17 @@
 //
 
 import SwiftUI
+import PhotosUI
 import DesignKit
 import ComposableArchitecture
 
 public struct BloomingUpdateView: View {
   @Bindable var store: StoreOf<BloomingUpdateFeature>
-  
+  @State private var photosPickerItem: PhotosPickerItem? = nil
+
   public init(store: StoreOf<BloomingUpdateFeature>) {
     self.store = store
   }
-  @State var selectedStatus: BloomStatus? = nil
   
   public var body: some View {
     ZStack {
@@ -30,12 +31,24 @@ public struct BloomingUpdateView: View {
             mainTitle
             StateRadioButton(status: $store.selectedStatus)
           }
+          photoSection
           Spacer()
           saveButton
         }
         ToastView(message: $store.toastMessage)
       }
-      
+    }
+    .photosPicker(
+      isPresented: $store.isPhotoPickerPresented,
+      selection: $photosPickerItem,
+      matching: .images
+    )
+    .onChange(of: photosPickerItem) { _, newItem in
+      Task {
+        if let data = try? await newItem?.loadTransferable(type: Data.self) {
+          store.send(.photoSelected(data))
+        }
+      }
     }
   }
   
@@ -85,5 +98,42 @@ public struct BloomingUpdateView: View {
       }
       .isActive(store.isButtonEnable)
       .padding(.Number16)
+  }
+
+  // MARK: - Photo Section
+
+  @ViewBuilder
+  private var photoSection: some View {
+    VStack(spacing: .Number12) {
+      if let imageData = store.selectedImageData,
+         let uiImage = UIImage(data: imageData) {
+        // 사진 있음: 썸네일 + 교체 버튼
+        HStack(spacing: .Number12) {
+          Image(uiImage: uiImage)
+            .resizable()
+            .scaledToFill()
+            .frame(width: 100, height: 100)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+          PIDUnderLineButton(
+            title: "사진 교체",
+            style: .secondary
+          ) {
+            store.send(.photoButtonTapped)
+          }
+
+          Spacer()
+        }
+      } else {
+        // 사진 없음: "한 컷 공유하기" 버튼
+        PIDButton(title: "한 컷 공유하기", size: .medium)
+          .isSecondary(true)
+          .action {
+            store.send(.photoButtonTapped)
+          }
+      }
+    }
+    .padding(.horizontal, .Number16)
+    .padding(.top, .Number24)
   }
 }
