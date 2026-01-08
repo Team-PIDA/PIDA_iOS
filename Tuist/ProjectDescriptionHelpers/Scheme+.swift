@@ -66,7 +66,7 @@ public enum Scheme {
   public var INFO_PLIST: [String: Plist.Value] {
     return [
       "CFBundleDevelopmentRegion": "ko_KR",
-      "CFBundleShortVersionString": "1.0.1",
+      "CFBundleShortVersionString": "1.2.0",
       "CFBundleVersion": "1",
       "CFBundleIconName": .string(APP_ICON_NAME),
       "UILaunchStoryboardName": "LaunchScreen",
@@ -80,6 +80,7 @@ public enum Scheme {
       "NSLocationWhenInUseUsageDescription": "지도에서 내 위치를 확인하여 길찾기, 네비게이션 기능을 이용하기 위해 권한이 필요합니다.(필수권한)",
       "NMCLIENTID": "$(NM_CLIENT_ID)",
       "BASE_URL": "$(BASE_URL)",
+      "ITSAppUsesNonExemptEncryption": false,
     ]
   }
 }

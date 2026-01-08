@@ -247,7 +247,7 @@ public struct FlowerSpotDetailView: View {
       )
       .action {
         print("오늘의 개화 상태 기록하기")
-        store.send(.chechAuth)
+        store.send(.checkAuth)
       }
       .isActive(!store.isVotedBlooming.isBlooming)
       .padding(.Number16)

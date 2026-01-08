@@ -36,7 +36,7 @@ extension FlowerSpotDetailFeature {
         state.isNeedDrawPath = true
         return .none
 
-      case .chechAuth:
+      case .checkAuth:
         if UserDefaultsKeys.isLoggedIn == true {
           let streetName = state.flowerSpotData.streetName
           let id = state.flowerSpotData.id
