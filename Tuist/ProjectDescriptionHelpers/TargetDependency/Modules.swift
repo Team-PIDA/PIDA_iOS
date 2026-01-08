@@ -24,6 +24,7 @@ public enum Feature: ModuleRepresentable {
   case FlowerSpotDetail
   case Auth
   case Blooming
+  case SearchRegionList
 }
 
 public enum Client: ModuleRepresentable {

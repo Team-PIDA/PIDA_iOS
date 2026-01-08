@@ -17,6 +17,8 @@ extension TargetDependency {
     public static let FlowerSpotDetail_interface = Self.project(.feature(.FlowerSpotDetail, true))
     public static let Auth = Self.project(.feature(.Auth, false))
     public static let Blooming = Self.project(.feature(.Blooming, false))
+    public static let SearchRegionList = Self.project(.feature(.SearchRegionList, false))
+    public static let SearchRegionList_interface = Self.project(.feature(.SearchRegionList, true))
   }
 }
 

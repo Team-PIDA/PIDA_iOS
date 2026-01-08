@@ -20,6 +20,7 @@ let project = Project.buildApp(
     .Client.User,
     .Client.DeepLink,
     .SPM.FirebaseCore,
-    .SPM.FirebaseMessaging
+    .SPM.FirebaseMessaging,
+    .Feature.SearchRegionList
   ]
 )
