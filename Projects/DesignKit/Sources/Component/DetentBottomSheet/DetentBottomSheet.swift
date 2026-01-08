@@ -46,9 +46,9 @@ public struct DetentBottomSheet<Content: View>: View {
   
   public init(
     isPresented: Binding<Bool>,
-    minHeight: CGFloat = 100,
-    cornerRadius: CGFloat = 30,
-    detent: Binding<BottomSheetDetent> = .constant(.twoThirds),
+    minHeight: CGFloat = 115,
+    cornerRadius: CGFloat = .Number16,
+    detent: Binding<BottomSheetDetent> = .constant(.medium),
     @ViewBuilder content: () -> Content
   ) {
     self._isPresent = isPresented
@@ -110,9 +110,10 @@ public struct DetentBottomSheet<Content: View>: View {
       
       VStack(spacing: 0) {
         Capsule()
-          .fill(Color.gray)
-          .frame(width: 80, height: 4)
-          .padding(.top)
+          .fill(ColorSet.Gray._200)
+          .frame(width: .Number80, height: .Number4)
+          .padding(.top, 13)
+          .padding(.bottom, 3)
         
         // 외부에서 주입된 콘텐츠
         content
@@ -239,12 +240,12 @@ public struct DetentBottomSheet<Content: View>: View {
 
 // MARK: - fileprivate BottomSheetDetent Extension
 extension BottomSheetDetent {
-  fileprivate static let ordered: [BottomSheetDetent] = [.low, .twoThirds, .high]
+  fileprivate static let ordered: [BottomSheetDetent] = [.low, .medium, .high]
   
   fileprivate func visibleHeight(minHeight: CGFloat, screenHeight: CGFloat) -> CGFloat {
     switch self {
     case .low:       return minHeight
-    case .twoThirds: return screenHeight * (2.0 / 3.0)
+    case .medium: return (screenHeight - 64.0) * (3.0 / 5.0)
     case .high:      return screenHeight
     }
   }

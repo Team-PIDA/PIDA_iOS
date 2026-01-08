@@ -9,6 +9,6 @@
 import Foundation
 public enum BottomSheetDetent: CaseIterable, Equatable {
   case low
-  case twoThirds
+  case medium
   case high
 }
