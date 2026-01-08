@@ -156,7 +156,7 @@ public struct FlowerSpotDetailLargeContentView: View {
             .foregroundColor(ColorSet.Text.Primary)
         }
       }
-
+      
       // Image Gallery
       FlowerSpotImageGalleryView(
         imageUrls: store.flowerSpotData.imageUrls,
@@ -302,7 +302,7 @@ public struct FlowerSpotDetailLargeContentView: View {
         size: .large
       )
       .action {
-        store.send(.chechAuth)
+        store.send(.checkAuth)
       }
       .isActive(!store.isVotedBlooming.isBlooming)
       .padding(.horizontal, .Number16)
