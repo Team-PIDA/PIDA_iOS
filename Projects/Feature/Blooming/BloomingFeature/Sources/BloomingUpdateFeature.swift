@@ -98,15 +98,9 @@ extension BloomingUpdateFeature {
         state.isPhotoPickerPresented = false
         return .none
 
-      case let .uploadImage(url, data):
-        return .run { [apiClient] _ in
-          do {
-            try await apiClient.upload(url: url, data: data)
-          } catch {
-            // 실패해도 무시 - 개화 상태는 이미 기록됨
-            print("[BloomingFeature] Image upload failed: \(error)")
-          }
-        }
+      case .uploadImage:
+        // Task.detached로 직접 처리하므로 여기서는 아무것도 하지 않음
+        return .none
 
       case .binding, .delegate:
         return .none
@@ -121,22 +115,28 @@ extension BloomingUpdateFeature.Core {
     status: BloomStatus,
     imageData: Data?
   ) -> Effect<Action> {
-    return .run { send in
+    return .run { [apiClient] send in
       do {
         let result = try await bloomingClient.updateBloomingState(
           id: id,
           status: status.rawValue
         )
 
-        // 즉시 화면 dismiss + Toast 표시
-        await send(.dismiss(didUpdate: true, spotId: id))
-        await send(.sendToastMessage(result.message))
-
-        // 이미지가 있고 uploadUrl이 있으면 백그라운드 업로드
+        // 이미지 업로드를 독립적인 Task로 실행 (dismiss 후에도 계속 실행)
         if let imageData,
            let uploadUrl = result.uploadUrl {
-          await send(.uploadImage(url: uploadUrl, data: imageData))
+          Task.detached {
+            do {
+              try await apiClient.upload(url: uploadUrl, data: imageData)
+            } catch {
+              print("[BloomingFeature] Image upload failed: \(error)")
+            }
+          }
         }
+
+        // 화면 dismiss + Toast 표시
+        await send(.dismiss(didUpdate: true, spotId: id))
+        await send(.sendToastMessage(result.message))
       } catch {
         await send(.sendToastMessage("기록에 실패했어요"))
       }
