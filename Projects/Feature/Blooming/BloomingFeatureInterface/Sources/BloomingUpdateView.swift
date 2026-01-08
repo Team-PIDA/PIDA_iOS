@@ -27,10 +27,19 @@ public struct BloomingUpdateView: View {
         VStack(spacing: .Number0) {
           navigationBar
           Spacer()
+            .frame(height: .Number54)
           VStack(spacing: .Number48) {
             mainTitle
             StateRadioButton(status: $store.selectedStatus)
           }
+          Spacer()
+            .frame(height: .Number32)
+          Rectangle()
+            .fill(ColorSet.Background.Secondary)
+            .frame(height: .Number2)
+            .padding(.horizontal, .Number16)
+          Spacer()
+            .frame(height: .Number32)
           photoSection
           Spacer()
           saveButton

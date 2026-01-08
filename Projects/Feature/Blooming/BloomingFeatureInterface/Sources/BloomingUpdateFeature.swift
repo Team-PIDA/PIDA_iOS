@@ -23,7 +23,7 @@ public struct BloomingUpdateFeature {
     public var streetName: String = ""
     public var spotId: Int? = nil
     public var isButtonEnable: Bool = false
-    public var buttonTittle: String = "개화 상태를 선택해주세요"
+    public var buttonTittle: String = "기록하기"
     public var selectedStatus: BloomStatus? = nil
     public var toastMessage: String? = nil
 
