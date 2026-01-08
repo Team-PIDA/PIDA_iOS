@@ -34,7 +34,7 @@ public struct PIDUnderLineButton: View {
   public var body: some View {
     Button(action: action) {
       Text(title)
-        .fontStyle(FontSet.Body.body1)
+        .fontStyle(FontSet.Body.body3)
         .foregroundColor(textColor)
         .underline(true, color: textColor)
     }
