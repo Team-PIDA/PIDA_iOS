@@ -50,6 +50,11 @@ public struct BloomingUpdateView: View {
         }
       }
     }
+    .onChange(of: store.selectedImageData) { _, newValue in
+      if newValue == nil {
+        photosPickerItem = nil
+      }
+    }
   }
   
   @ViewBuilder
