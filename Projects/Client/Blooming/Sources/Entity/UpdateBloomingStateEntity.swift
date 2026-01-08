@@ -10,8 +10,16 @@ import Foundation
 
 public struct UpdateBloomingStateEntity: Sendable, Equatable {
   public let message: String
-  
-  public init(message: String) {
+  public let uploadUrl: String?
+  public let imageUrl: String?
+
+  public init(
+    message: String,
+    uploadUrl: String? = nil,
+    imageUrl: String? = nil
+  ) {
     self.message = message
+    self.uploadUrl = uploadUrl
+    self.imageUrl = imageUrl
   }
 }
