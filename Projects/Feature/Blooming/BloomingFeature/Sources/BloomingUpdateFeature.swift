@@ -81,6 +81,10 @@ extension BloomingUpdateFeature {
         state.isPhotoPickerPresented = true
         return .none
 
+      case .photoRemoveButtonTapped:
+        state.selectedImageData = nil
+        return .none
+
       case let .photoSelected(data):
         guard let data,
               let originalImage = UIImage(data: data),

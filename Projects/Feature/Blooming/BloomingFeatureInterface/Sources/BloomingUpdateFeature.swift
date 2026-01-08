@@ -52,6 +52,7 @@ public struct BloomingUpdateFeature {
 
     // 이미지 관련 액션
     case photoButtonTapped
+    case photoRemoveButtonTapped
     case photoSelected(Data?)
     case uploadImage(url: String, data: Data)
 

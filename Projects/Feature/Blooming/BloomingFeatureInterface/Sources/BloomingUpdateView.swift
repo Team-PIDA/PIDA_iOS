@@ -107,22 +107,40 @@ public struct BloomingUpdateView: View {
     VStack(spacing: .Number12) {
       if let imageData = store.selectedImageData,
          let uiImage = UIImage(data: imageData) {
-        // 사진 있음: 썸네일 + 교체 버튼
-        HStack(spacing: .Number12) {
+        // 사진 있음: 이미지 + X버튼 + 교체 버튼 + 라벨
+        VStack(spacing: .Number12) {
+          // 이미지 + X 버튼
           Image(uiImage: uiImage)
             .resizable()
             .scaledToFill()
-            .frame(width: 100, height: 100)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .frame(width: .Number100, height: .Number100)
+            .clipShape(RoundedRectangle(cornerRadius: .Number16))
+            .overlay(alignment: .topTrailing) {
+              PIDIconButton {
+                Icon(image: .close)
+                  .size(.medium)
+                  .foregroundColor(ColorSet.Icon.Primary)
+              }
+              .buttonSize(.Number24)
+              .backgroundColor(ColorSet.Gray._0)
+              .action{
+                store.send(.photoRemoveButtonTapped)
+              }
+              .offset(x: -.Number4, y: .Number4)
+            }
 
+          // 사진 교체 버튼
           PIDUnderLineButton(
             title: "사진 교체",
-            style: .secondary
+            style: .primary
           ) {
             store.send(.photoButtonTapped)
           }
 
-          Spacer()
+          // 하단 라벨
+          Text("공유해주신 사진은 상세 페이지에 첨부돼요")
+            .fontStyle(FontSet.Body.body3)
+            .foregroundStyle(ColorSet.Text.Secondary)
         }
       } else {
         // 사진 없음: "한 컷 공유하기" 버튼 + 하단 라벨

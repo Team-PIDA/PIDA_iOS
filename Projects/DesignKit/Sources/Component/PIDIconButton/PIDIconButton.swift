@@ -9,10 +9,13 @@
 import SwiftUI
 
 public struct PIDIconButton<IconContent: View>: View {
-  
+
   public var action: (() async -> Void)? = nil
   public var iconContent: (() -> IconContent)
+  public var buttonSize: CGFloat = .Number48
   
+  var backgroundColor: Color = ColorSet.Background.Primary
+
   @State private var isPressed: Bool = false
   
   public init(
@@ -40,19 +43,18 @@ public struct PIDIconButton<IconContent: View>: View {
   
   @ViewBuilder
   private var content: some View {
-    Circle()
-      .fill(ColorSet.Background.Primary)
-      .overlay {
-        iconContent()
+    ZStack {
+      Circle()
+        .fill(backgroundColor)
+      iconContent()
+    }
+    .overlay {
+      if isPressed {
+        Circle()
+          .fill(ColorSet.Component.Pressed)
       }
-      .padding(12)
-      .overlay {
-        if isPressed {
-          Circle()
-            .fill(ColorSet.Component.Pressed)
-        }
-      }
-      .frame(width: .Number48, height: .Number48)
+    }
+    .frame(width: buttonSize, height: buttonSize)
   }
 }
 
