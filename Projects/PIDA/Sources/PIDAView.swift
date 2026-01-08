@@ -17,6 +17,7 @@ import BloomingFeatureInterface
 struct PIDAView: View {
   @Bindable var store: StoreOf<PIDAFeature> = Store(initialState: PIDAFeature.State()) { PIDAFeature()
   }
+  
   var body: some View {
     NavigationStack(path: $store.path) {
       MapView(store: store.scope(state: \.map, action: \.map))
@@ -70,6 +71,7 @@ struct PIDAView: View {
         .onAppear {
           store.send(.onAppear)
         }
+        
     }
   }
 

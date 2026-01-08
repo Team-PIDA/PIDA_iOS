@@ -60,7 +60,6 @@ struct PIDAFeature {
     var signUp: SignUpFeature.State? = nil
     var update: ProfileUpdateFeature.State? = nil
     var blooming: BloomingUpdateFeature.State? = nil
-
     /// 네비게이션 이동 경로
     var path: [Path] = []
     var isShowSearch: Bool = false
