@@ -20,6 +20,8 @@ public struct MapView: View {
   /// 바텀시트 확장 상태 여부
   @State private var isBottomSheetExpanded: Bool = false
 
+  
+  
   public init(store: StoreOf<MapFeature>) {
     self.store = store
   }
@@ -61,6 +63,7 @@ public struct MapView: View {
         },
         alignment: .bottom
       )
+    .overlay(content: regionListSheet)
     .ignoresSafeArea(edges: .bottom)
     .onAppear {
       if !store.isViewAppeared {
@@ -206,5 +209,14 @@ extension MapView {
         store.send(.flowerSpotDetail(.dismiss))
       }
     )
+  }
+  
+  private func regionListSheet() -> some View {
+    DetentBottomSheet(isPresented: $store.isShowRegionList) {
+      VStack {
+        Text("hello")
+        Spacer()
+      }
+    }
   }
 }

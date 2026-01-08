@@ -66,6 +66,7 @@ struct PIDAFeature {
     var isPresentAuth: Bool = false
     var isPresentSignUp: Bool = false
     var isPresentBlooming: Bool = false
+    var isPresentRegionList: Bool = false
     var loginSource: LoginSource? = nil
 
     /// 구독 상태 플래그 (중복 구독 방지)
@@ -224,9 +225,10 @@ struct PIDAFeature {
         return .send(.presentSearch(false, keyword: nil))
 
         // search dismiss with result
-      case let .search(.delegate(.selectResult(result))):
+      case let .search(.delegate(.selectResult(result, type))):
         return .concatenate(
-          .send(.map(.showSearchResult(result))),
+//          .send(.map(.showSearchResult(result))),
+          .send(.map(.showRegionList(true))),
           .send(.presentSearch(false, keyword: nil))
         )
         

@@ -16,7 +16,7 @@ public enum BottomSheetDetent: CaseIterable, Equatable {
   fileprivate static var ordered: [BottomSheetDetent] { [.low, .twoThirds, .high] }
 }
 
-public struct CustomBottomSheet<Content: View>: View {
+public struct DetentBottomSheet<Content: View>: View {
   private let minHeight: CGFloat
   private let cornerRadius: CGFloat
   private let content: Content
@@ -42,7 +42,7 @@ public struct CustomBottomSheet<Content: View>: View {
     isPresented: Binding<Bool>,
     minHeight: CGFloat = 100,
     cornerRadius: CGFloat = 30,
-    detent: Binding<BottomSheetDetent>,
+    detent: Binding<BottomSheetDetent> = .constant(.twoThirds),
     @ViewBuilder content: () -> Content
   ) {
     self._isPresent = isPresented

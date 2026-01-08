@@ -115,6 +115,10 @@ extension MapFeature {
           }
         }
         
+      case let .showRegionList(isPresent):
+        state.isShowRegionList = isPresent
+        return .none
+        
         // MARK: - Alert
         
       case let .presentAlert(type):
