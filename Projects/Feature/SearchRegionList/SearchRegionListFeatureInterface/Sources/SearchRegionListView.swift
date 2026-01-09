@@ -17,6 +17,9 @@ public struct SearchRegionListView: View {
   }
 
   public var body: some View {
-    EmptyView()
+    VStack {
+      Text("Hello")
+      Spacer()
+    }
   }
 }

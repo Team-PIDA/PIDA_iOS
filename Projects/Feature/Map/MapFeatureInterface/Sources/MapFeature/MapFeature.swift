@@ -11,6 +11,7 @@ import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
 import FlowerSpotDetailFeatureInterface
+import SearchRegionListFeatureInterface
 import Shared
 
 @Reducer
@@ -18,15 +19,18 @@ public struct MapFeature {
   private let reducer: Reduce<State, Action>
   private let location: Reduce<LocationFeature.State, LocationFeature.Action>
   private let flowerSpotDetail: FlowerSpotDetailFeature
+  private let searchRegionList: SearchRegionListFeature
 
   public init(
     reducer: Reduce<State, Action>,
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
-    flowerSpotDetail: FlowerSpotDetailFeature
+    flowerSpotDetail: FlowerSpotDetailFeature,
+    searchRegionList: SearchRegionListFeature
   ) {
     self.reducer = reducer
     self.location = location
     self.flowerSpotDetail = flowerSpotDetail
+    self.searchRegionList = searchRegionList
   }
   
   @ObservableState
@@ -66,6 +70,7 @@ public struct MapFeature {
 
     /// Optional State 패턴: nil이면 바텀시트 숨김, 값이 있으면 바텀시트 표시
     public var flowerSpotDetail: FlowerSpotDetailFeature.State? = nil
+    public var searchRegionList: SearchRegionListFeature.State? = nil
 
     public init() {}
   }
@@ -75,6 +80,7 @@ public struct MapFeature {
     case binding(BindingAction<State>)
     case location(LocationFeature.Action)
     case flowerSpotDetail(FlowerSpotDetailFeature.Action)
+    case searchRegionList(SearchRegionListFeature.Action)
     
     case showToastView(message: String?, buttonLabel: String?)
     case moveToReportURL
@@ -119,6 +125,9 @@ public struct MapFeature {
     }
     .ifLet(\.flowerSpotDetail, action: \.flowerSpotDetail) {
       flowerSpotDetail
+    }
+    .ifLet(\.searchRegionList, action: \.searchRegionList) {
+      searchRegionList
     }
     reducer
   }

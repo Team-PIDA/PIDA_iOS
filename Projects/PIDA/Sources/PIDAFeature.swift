@@ -27,6 +27,9 @@ import BloomingFeatureInterface
 import FlowerSpotDetailFeature
 import FlowerSpotDetailFeatureInterface
 
+import SearchRegionListFeature
+import SearchRegionListFeatureInterface
+
 import PushClient
 import UserClient
 import DeepLinkClient
@@ -120,7 +123,8 @@ struct PIDAFeature {
     Scope(state: \.map, action: \.map) {
       MapFeature(
         location: locationReducer,
-        flowerSpotDetail: FlowerSpotDetailFeature()
+        flowerSpotDetail: FlowerSpotDetailFeature(),
+        searchRegionList: SearchRegionListFeature()
       )
     }
     Reduce<State, Action> { state, action in

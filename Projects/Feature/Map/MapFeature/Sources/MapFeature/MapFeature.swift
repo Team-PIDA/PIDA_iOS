@@ -12,17 +12,20 @@ import ComposableArchitecture
 import MapFeatureInterface
 import FlowerSpotClient
 import FlowerSpotDetailFeatureInterface
+import SearchRegionListFeatureInterface
 
 
 extension MapFeature {
   public init(
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
-    flowerSpotDetail: FlowerSpotDetailFeature
+    flowerSpotDetail: FlowerSpotDetailFeature,
+    searchRegionList: SearchRegionListFeature
   ) {
     self.init(
       reducer: Reduce(Core()),
       location: location,
-      flowerSpotDetail: flowerSpotDetail
+      flowerSpotDetail: flowerSpotDetail,
+      searchRegionList: searchRegionList
     )
   }
   
@@ -116,6 +119,7 @@ extension MapFeature {
         }
         
       case let .showRegionList(isPresent):
+        state.searchRegionList = .init()
         state.isShowRegionList = isPresent
         return .none
         
@@ -194,7 +198,7 @@ extension MapFeature {
       case .flowerSpotDetail:
         return .none
         
-      case .binding, .delegate, .alertAcceptTapped, .location:
+      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList:
         return .none
         
       }

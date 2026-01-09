@@ -11,6 +11,7 @@ import Shared
 import DesignKit
 import ComposableArchitecture
 import FlowerSpotDetailFeatureInterface
+import SearchRegionListFeatureInterface
 
 public struct MapView: View {
   @Bindable var store: StoreOf<MapFeature>
@@ -63,7 +64,13 @@ public struct MapView: View {
         },
         alignment: .bottom
       )
-    .overlay(content: regionListSheet)
+    .overlay {
+      Group {
+        if let store = store.scope(state: \.searchRegionList, action: \.searchRegionList) {
+          regionListSheet(store: store)
+        }
+      }
+    }
     .ignoresSafeArea(edges: .bottom)
     .onAppear {
       if !store.isViewAppeared {
@@ -211,12 +218,9 @@ extension MapView {
     )
   }
   
-  private func regionListSheet() -> some View {
+  private func regionListSheet(store: StoreOf<SearchRegionListFeature>) -> some View {
     DetentBottomSheet(isPresented: $store.isShowRegionList) {
-      VStack {
-        Text("hello")
-        Spacer()
-      }
+      SearchRegionListView(store: store)
     }
   }
 }
