@@ -69,6 +69,20 @@ public extension BloomStatus {
     }
   }
   
+  // BloomStateTagView의 background color
+  var backgroundColor: Color {
+    switch self {
+    case .little:
+      ColorSet.Mint._50
+    case .bloomed:
+      ColorSet.Pink._50
+    case .withered:
+      ColorSet.Orange._50
+    case .notBloomed:
+      ColorSet.Background.Tertiary
+    }
+  }
+  
   var activeColor: Color {
     switch self {
     case .little:

@@ -35,8 +35,8 @@ public struct RegionListItemView: View {
         Text("서울 송파구 송파나루길")
           .fontStyle(FontSet.Caption.caption1)
           .foregroundStyle(ColorSet.Text.Tertiary)
-        HStack(spacing: .Number14) {
-          TagView(text: "만개예요")
+        HStack(spacing: .Number4) {
+          BloomStateTagView(state: .bloomed)
           TagView(text: "최근 방문 0회")
         }
         .padding(.top, 8)
