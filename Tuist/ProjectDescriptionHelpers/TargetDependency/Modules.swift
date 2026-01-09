@@ -41,4 +41,6 @@ public enum SPM: ModuleRepresentable {
   case ComposableArchitecture
   case NMapsMap
   case DotLottie
+  case FirebaseCore
+  case FirebaseMessaging
 }

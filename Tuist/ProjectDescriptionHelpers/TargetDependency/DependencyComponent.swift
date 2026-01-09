@@ -47,6 +47,8 @@ extension TargetDependency {
     public static let TCA = Self.project(.spm(.ComposableArchitecture))
     public static let NMap = Self.project(.spm(.NMapsMap))
     public static let DotLottie = Self.project(.spm(.DotLottie))
+    public static let FirebaseCore = Self.project(.spm(.FirebaseCore))
+    public static let FirebaseMessaging = Self.project(.spm(.FirebaseMessaging))
   }
 }
 

@@ -15,6 +15,8 @@ let project = Project.buildApp(
     .Feature.Setting,
     .Feature.FlowerSpotDetail,
     .Feature.Auth,
-    .Feature.Blooming
+    .Feature.Blooming,
+    .SPM.FirebaseCore,
+    .SPM.FirebaseMessaging
   ]
 )

@@ -20,7 +20,16 @@ let packageSettings = PackageSettings(
     "CasePaths": .framework,
     "CustomDump": .framework,
     "XCTestDynamicOverlay": .framework,
-    "PerceptionCore": .framework
+    "PerceptionCore": .framework,
+    // Firebase
+    "FirebaseCore": .framework,
+    "FirebaseMessaging": .framework,
+    "FirebaseCoreInternal": .framework,
+    "FirebaseInstallations": .framework,
+    "GoogleUtilities": .framework,
+    "GoogleDataTransport": .framework,
+    "nanopb": .framework,
+    "FBLPromises": .framework
   ]
 )
 
@@ -32,6 +41,7 @@ let package = Package(
     .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.23.1"),
     .package(url: "https://github.com/swiftlang/swift-syntax", exact: "601.0.1"),
     .package(url: "https://github.com/navermaps/SPM-NMapsMap.git", exact: "3.23.0"),
-    .package(url: "https://github.com/LottieFiles/dotlottie-ios", exact: "0.8.0")
+    .package(url: "https://github.com/LottieFiles/dotlottie-ios", exact: "0.8.0"),
+    .package(url: "https://github.com/firebase/firebase-ios-sdk", exact: "12.7.0")
   ]
 )
