@@ -123,6 +123,12 @@ extension MapFeature {
         state.isShowRegionList = isPresent
         return .none
         
+      case .changeRegionSheetDetent:
+        if state.isShowRegionList {
+          state.regionSheetDetent = .low
+        }
+        return .none
+        
         // MARK: - Alert
         
       case let .presentAlert(type):

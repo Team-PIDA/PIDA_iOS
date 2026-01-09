@@ -64,6 +64,8 @@ public struct MapFeature {
     
     public var isShowRegionList: Bool = false
     
+    public var regionSheetDetent: BottomSheetDetent = .medium
+    
     public var alertType: AlertType? = nil
 
     public var location: LocationFeature.State = .init()
@@ -96,6 +98,7 @@ public struct MapFeature {
     case setSearchBarText(String?)
     case resetSearchBar
     case showRegionList(Bool)
+    case changeRegionSheetDetent
     
     case presentAlert(type: AlertType)
     case alertCancelTapped

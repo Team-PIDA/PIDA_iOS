@@ -22,4 +22,9 @@ extension MapViewRepresentable {
     map.onMarkerTapped = action
     return map
   }
+  func cameraMoveEvent(_ action: @escaping () -> Void) -> Self {
+    var map = self
+    map.cameraMoveEvent = action
+    return map
+  }
 }

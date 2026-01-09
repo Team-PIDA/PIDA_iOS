@@ -111,6 +111,9 @@ extension MapView {
     .onMarkerTapped { id in
       store.send(.markerTapped(id: id))
     }
+    .cameraMoveEvent {
+      store.send(.changeRegionSheetDetent)
+    }
     .ignoresSafeArea()
   }
   
@@ -219,7 +222,7 @@ extension MapView {
   }
   
   private func regionListSheet(store: StoreOf<SearchRegionListFeature>) -> some View {
-    DetentBottomSheet(isPresented: $store.isShowRegionList) {
+    DetentBottomSheet(isPresented: $store.isShowRegionList, detent: $store.regionSheetDetent) {
       SearchRegionListView(store: store)
     }
   }
