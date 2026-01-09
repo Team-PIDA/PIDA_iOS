@@ -257,7 +257,7 @@ struct PIDAFeature {
         if didUpdate {
           return .concatenate(
             .send(.presentBloomingUpdate(false, id: nil, streetName: "")),
-            .send(.map(.flowerSpotDetail(.fetchDetailInfo(spotId)))),
+            .send(.map(.fetchDetailInfo(spotId))),
             .send(.map(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다."))))
           )
         } else {
