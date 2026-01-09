@@ -18,6 +18,7 @@ let project = Project.buildApp(
     .Feature.Blooming,
     .Client.Push,
     .Client.User,
+    .Client.DeepLink,
     .SPM.FirebaseCore,
     .SPM.FirebaseMessaging
   ]

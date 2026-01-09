@@ -31,6 +31,7 @@ extension TargetDependency {
     public static let Blooming = Self.project(.client(.Blooming))
     public static let Location = Self.project(.client(.Location))
     public static let Push = Self.project(.client(.Push))
+    public static let DeepLink = Self.project(.client(.DeepLink))
   }
 }
 

@@ -36,6 +36,7 @@ public enum Client: ModuleRepresentable {
   case Blooming
   case Location
   case Push
+  case DeepLink
 }
 
 public enum SPM: ModuleRepresentable {

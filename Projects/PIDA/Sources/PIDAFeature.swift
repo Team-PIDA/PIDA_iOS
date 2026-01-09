@@ -29,6 +29,7 @@ import FlowerSpotDetailFeatureInterface
 
 import PushClient
 import UserClient
+import DeepLinkClient
 import Shared
 
 enum Path: Hashable {
@@ -46,6 +47,7 @@ enum LoginSource: Equatable {
 struct PIDAFeature {
   @Dependency(\.pushNotificationClient) var pushNotificationClient
   @Dependency(\.userClient) var userClient
+  @Dependency(\.deepLinkClient) var deepLinkClient
 
   let locationReducer = Reduce(LocationFeature())
   
@@ -97,6 +99,10 @@ struct PIDAFeature {
     case fcmTokenReceived(String)
     case sendFCMTokenToServer(String)
     case sendFCMTokenIfNeeded
+
+    // DeepLink 관련
+    case subscribeDeepLink
+    case deepLinkReceived(DeepLink)
   }
   
   var body: some ReducerOf<Self> {
@@ -121,6 +127,8 @@ struct PIDAFeature {
           }
           // FCM 토큰 구독 시작
           await send(.subscribeFCMToken)
+          // DeepLink 구독 시작
+          await send(.subscribeDeepLink)
         }
 
       case .subscribeFCMToken:
@@ -154,6 +162,30 @@ struct PIDAFeature {
           if let token = await pushNotificationClient.getFCMToken() {
             await send(.sendFCMTokenToServer(token))
           }
+        }
+
+      case .subscribeDeepLink:
+        return .run { send in
+          for await deepLink in deepLinkClient.observe() {
+            await send(.deepLinkReceived(deepLink))
+          }
+        }
+
+      case let .deepLinkReceived(deepLink):
+        switch deepLink {
+        case let .flowerSpotDetail(spotId):
+          // 꽃 명소 상세 화면으로 이동
+          return .send(.map(.fetchDetailInfo(spotId)))
+
+        case .mapLocation:
+          // TODO: MapFeature에 moveToLocation 액션 추가 필요
+          return .none
+
+        case .setting:
+          // 설정 화면으로 이동
+          state.setting = .init()
+          state.path.append(.setting)
+          return .none
         }
 
         // MARK: - Map <-> Search

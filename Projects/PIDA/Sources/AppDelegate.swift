@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  PIDA
 //
-//  Created by Claude on 1/9/26.
+//  Created by 조용인 on 1/9/26.
 //  Copyright © 2026 com.pida.me. All rights reserved.
 //
 
@@ -10,6 +10,8 @@ import UIKit
 import FirebaseCore
 import FirebaseMessaging
 import Shared
+import DeepLinkClient
+import ComposableArchitecture
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
@@ -80,6 +82,10 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     let userInfo = response.notification.request.content.userInfo
     print("🔔 Push notification tapped: \(userInfo)")
 
-    // TODO: Step 8에서 DeepLinkClient를 통해 처리
+    // DeepLink 파싱 및 발송
+    if let deepLink = DeepLink.from(userInfo: userInfo) {
+      @Dependency(\.deepLinkClient) var deepLinkClient
+      await deepLinkClient.send(deepLink)
+    }
   }
 }
