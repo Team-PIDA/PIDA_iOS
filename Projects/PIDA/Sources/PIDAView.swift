@@ -67,7 +67,10 @@ struct PIDAView: View {
         .transaction { transaction in
           transaction.disablesAnimations = true
         }
+        .onAppear {
+          store.send(.onAppear)
+        }
     }
   }
-  
+
 }

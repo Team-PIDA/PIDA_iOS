@@ -27,6 +27,10 @@ import BloomingFeatureInterface
 import FlowerSpotDetailFeature
 import FlowerSpotDetailFeatureInterface
 
+import PushClient
+import UserClient
+import Shared
+
 enum Path: Hashable {
   case setting
   case policy
@@ -40,6 +44,9 @@ enum LoginSource: Equatable {
 
 @Reducer
 struct PIDAFeature {
+  @Dependency(\.pushNotificationClient) var pushNotificationClient
+  @Dependency(\.userClient) var userClient
+
   let locationReducer = Reduce(LocationFeature())
   
   @ObservableState
@@ -83,6 +90,13 @@ struct PIDAFeature {
     case cleanupBlooming
     case cleanupAuth
     case cleanupSignUp
+
+    // FCM 관련
+    case onAppear
+    case subscribeFCMToken
+    case fcmTokenReceived(String)
+    case sendFCMTokenToServer(String)
+    case sendFCMTokenIfNeeded
   }
   
   var body: some ReducerOf<Self> {
@@ -96,8 +110,54 @@ struct PIDAFeature {
     }
     Reduce<State, Action> { state, action in
       switch action {
+        // MARK: - App Lifecycle
+
+      case .onAppear:
+        return .run { send in
+          // 푸시 알림 권한 요청
+          let status = await pushNotificationClient.checkAuthorizationStatus()
+          if status == .notDetermined {
+            _ = await pushNotificationClient.requestAuthorization()
+          }
+          // FCM 토큰 구독 시작
+          await send(.subscribeFCMToken)
+        }
+
+      case .subscribeFCMToken:
+        return .run { send in
+          // NotificationCenter에서 FCM 토큰 수신 대기
+          for await notification in NotificationCenter.default.notifications(named: .didReceiveFCMToken) {
+            if let token = notification.userInfo?["token"] as? String {
+              await send(.fcmTokenReceived(token))
+            }
+          }
+        }
+
+      case let .fcmTokenReceived(token):
+        // 로그인된 경우에만 서버로 토큰 전송
+        guard UserDefaultsKeys.accessToken != nil else { return .none }
+        return .send(.sendFCMTokenToServer(token))
+
+      case let .sendFCMTokenToServer(token):
+        return .run { _ in
+          do {
+            try await userClient.updateFCMToken(token)
+            print("✅ FCM 토큰 서버 전송 성공")
+          } catch {
+            print("❌ FCM 토큰 서버 전송 실패: \(error)")
+          }
+        }
+
+      case .sendFCMTokenIfNeeded:
+        // 로그인 성공 후 호출 - 현재 FCM 토큰을 가져와 서버로 전송
+        return .run { send in
+          if let token = await pushNotificationClient.getFCMToken() {
+            await send(.sendFCMTokenToServer(token))
+          }
+        }
+
         // MARK: - Map <-> Search
-        
+
       case let .presentSearch(isShow, keyword):
         if isShow {
           state.search = .init(initText: keyword)
@@ -227,15 +287,20 @@ struct PIDAFeature {
         state.loginSource = nil
         if case .setting = source {
           return .concatenate(
+            .send(.sendFCMTokenIfNeeded),
             .send(.presentToLogin(false)),
             .send(.setting(.checkLoggedIn))
           )
         } else {
-          return .send(.presentToLogin(false))
+          return .concatenate(
+            .send(.sendFCMTokenIfNeeded),
+            .send(.presentToLogin(false))
+          )
         }
 
       case let .auth(.delegate(.dismissWithVerifyBloomState(id))):
         return .concatenate(
+          .send(.sendFCMTokenIfNeeded),
           .send(.presentToLogin(false)),
           .send(.map(.fetchDetailInfo(id)))
         )
@@ -251,11 +316,15 @@ struct PIDAFeature {
         state.loginSource = nil
         if case .setting = source {
           return .concatenate(
+            .send(.sendFCMTokenIfNeeded),
             .send(.presentSignUp(false)),
             .send(.setting(.checkLoggedIn))
           )
         } else {
-          return .send(.presentSignUp(false))
+          return .concatenate(
+            .send(.sendFCMTokenIfNeeded),
+            .send(.presentSignUp(false))
+          )
         }
         
         // MARK: - None

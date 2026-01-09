@@ -21,15 +21,6 @@ let packageSettings = PackageSettings(
     "CustomDump": .framework,
     "XCTestDynamicOverlay": .framework,
     "PerceptionCore": .framework,
-    // Firebase
-    "FirebaseCore": .framework,
-    "FirebaseMessaging": .framework,
-    "FirebaseCoreInternal": .framework,
-    "FirebaseInstallations": .framework,
-    "GoogleUtilities": .framework,
-    "GoogleDataTransport": .framework,
-    "nanopb": .framework,
-    "FBLPromises": .framework
   ]
 )
 
