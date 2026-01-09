@@ -18,21 +18,32 @@ public struct SearchRegionListView: View {
   }
 
   public var body: some View {
-    VStack {
+    VStack(alignment: .leading, spacing: 0) {
       headerView
-      Spacer()
+      
+      ScrollView {
+        LazyVStack(spacing: .Number12) {
+          ForEach(0..<20, id: \.self) { _ in
+            RegionListItemView()
+              .padding(.horizontal, .Number16)
+          }
+        }
+        .padding(.top, .Number8)
+        .padding(.bottom, .Number16)
+      }
     }
   }
   
   @ViewBuilder
   private var headerView: some View {
-    VStack {
+    VStack(alignment: .leading) {
       Text(store.regionName + " 근처 벚꽃길")
         .fontStyle(FontSet.Heading.heading3)
         .foregroundStyle(ColorSet.Text.Primary)
         .padding(.horizontal, .Number16)
         .padding(.top, .Number16)
         .padding(.bottom, .Number12)
+      
     }
   }
 }
