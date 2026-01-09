@@ -47,7 +47,6 @@ enum LoginSource: Equatable {
 struct PIDAFeature {
   @Dependency(\.pushNotificationClient) var pushNotificationClient
   @Dependency(\.userClient) var userClient
-  @Dependency(\.deepLinkClient) var deepLinkClient
 
   let locationReducer = Reduce(LocationFeature())
   
@@ -69,6 +68,15 @@ struct PIDAFeature {
     var isPresentSignUp: Bool = false
     var isPresentBlooming: Bool = false
     var loginSource: LoginSource? = nil
+
+    /// 구독 상태 플래그 (중복 구독 방지)
+    var isSubscribed: Bool = false
+  }
+
+  /// Effect 취소를 위한 ID
+  enum CancelID: Hashable {
+    case fcmTokenSubscription
+    case deepLinkSubscription
   }
   
   enum Action: BindableAction {
@@ -119,6 +127,10 @@ struct PIDAFeature {
         // MARK: - App Lifecycle
 
       case .onAppear:
+        // 이미 구독 중이면 중복 구독 방지
+        guard !state.isSubscribed else { return .none }
+        state.isSubscribed = true
+
         return .run { send in
           // 푸시 알림 권한 요청
           let status = await pushNotificationClient.checkAuthorizationStatus()
@@ -140,6 +152,7 @@ struct PIDAFeature {
             }
           }
         }
+        .cancellable(id: CancelID.fcmTokenSubscription)
 
       case let .fcmTokenReceived(token):
         // 로그인된 경우에만 서버로 토큰 전송
@@ -148,11 +161,19 @@ struct PIDAFeature {
 
       case let .sendFCMTokenToServer(token):
         return .run { _ in
-          do {
-            try await userClient.updateFCMToken(token)
-            print("✅ FCM 토큰 서버 전송 성공")
-          } catch {
-            print("❌ FCM 토큰 서버 전송 실패: \(error)")
+          // 최대 3회 재시도 (지수 백오프)
+          for attempt in 1...3 {
+            do {
+              try await userClient.updateFCMToken(token)
+              print("✅ FCM 토큰 서버 전송 성공")
+              return
+            } catch {
+              print("❌ FCM 토큰 서버 전송 실패 (시도 \(attempt)/3): \(error)")
+              if attempt < 3 {
+                // 지수 백오프: 1초, 2초, 4초
+                try? await Task.sleep(for: .seconds(pow(2.0, Double(attempt - 1))))
+              }
+            }
           }
         }
 
@@ -166,10 +187,14 @@ struct PIDAFeature {
 
       case .subscribeDeepLink:
         return .run { send in
-          for await deepLink in deepLinkClient.observe() {
-            await send(.deepLinkReceived(deepLink))
+          // NotificationCenter에서 DeepLink 이벤트 수신 대기
+          for await notification in NotificationCenter.default.notifications(named: .didReceiveDeepLink) {
+            if let deepLink = notification.userInfo?["deepLink"] as? DeepLink {
+              await send(.deepLinkReceived(deepLink))
+            }
           }
         }
+        .cancellable(id: CancelID.deepLinkSubscription)
 
       case let .deepLinkReceived(deepLink):
         switch deepLink {
@@ -177,9 +202,9 @@ struct PIDAFeature {
           // 꽃 명소 상세 화면으로 이동
           return .send(.map(.fetchDetailInfo(spotId)))
 
-        case .mapLocation:
-          // TODO: MapFeature에 moveToLocation 액션 추가 필요
-          return .none
+        case let .mapLocation(latitude, longitude):
+          let coordinate = Coordinate(latitude: latitude, longitude: longitude)
+          return .send(.map(.location(.moveLocation(coordinate))))
 
         case .setting:
           // 설정 화면으로 이동

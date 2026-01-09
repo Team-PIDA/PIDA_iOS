@@ -35,12 +35,15 @@ public extension DeepLink {
 
     switch type {
     case .flowerSpot:
-      guard let spotId = userInfo[DeepLinkKey.spotId.rawValue] as? Int else { return nil }
+      guard let spotId = userInfo[DeepLinkKey.spotId.rawValue] as? Int,
+            spotId > 0 else { return nil }
       return .flowerSpotDetail(spotId: spotId)
 
     case .mapLocation:
       guard let latitude = userInfo[DeepLinkKey.latitude.rawValue] as? Double,
-            let longitude = userInfo[DeepLinkKey.longitude.rawValue] as? Double else { return nil }
+            let longitude = userInfo[DeepLinkKey.longitude.rawValue] as? Double,
+            (-90...90).contains(latitude),
+            (-180...180).contains(longitude) else { return nil }
       return .mapLocation(latitude: latitude, longitude: longitude)
 
     case .setting:

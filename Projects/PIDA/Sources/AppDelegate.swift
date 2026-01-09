@@ -11,7 +11,6 @@ import FirebaseCore
 import FirebaseMessaging
 import Shared
 import DeepLinkClient
-import ComposableArchitecture
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
@@ -82,10 +81,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     let userInfo = response.notification.request.content.userInfo
     print("🔔 Push notification tapped: \(userInfo)")
 
-    // DeepLink 파싱 및 발송
+    // DeepLink 파싱 및 NotificationCenter로 발송
     if let deepLink = DeepLink.from(userInfo: userInfo) {
-      @Dependency(\.deepLinkClient) var deepLinkClient
-      await deepLinkClient.send(deepLink)
+      NotificationCenter.default.post(
+        name: .didReceiveDeepLink,
+        object: nil,
+        userInfo: ["deepLink": deepLink]
+      )
     }
   }
 }
