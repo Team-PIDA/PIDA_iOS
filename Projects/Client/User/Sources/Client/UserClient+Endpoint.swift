@@ -34,4 +34,13 @@ struct UserEndPoint: Sendable {
       parameters: .body(body)
     )
   }
+
+  static func updateFCMToken(body: UpdateFCMTokenBody) -> Endpoint<UpdateFCMTokenDTO> {
+    return Endpoint(
+      headers: .authorizationWithDeviceId,
+      method: .put,
+      path: "/users/fcm-token",
+      parameters: .body(body)
+    )
+  }
 }
