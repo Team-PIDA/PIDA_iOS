@@ -18,6 +18,7 @@ public struct SearchRegionListFeature {
   
   @ObservableState
   public struct State: Equatable {
+    public var regionName: String = "{ input }"
     
     public init() {}
   }
