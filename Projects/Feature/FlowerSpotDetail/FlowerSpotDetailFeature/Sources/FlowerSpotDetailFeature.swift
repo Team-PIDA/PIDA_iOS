@@ -231,14 +231,16 @@ extension FlowerSpotDetailFeature.Core {
       do {
         async let detailResult = try flowerSpotClient.getFlowerSpotDetail(id: id)
         async let bloomingResult = try bloomingClient.getBloomingState(id: id)
-        async let verifyTodayResult = try bloomingClient.verifyBloomingToday(id: id)
+        let verifyTodayResult = UserDefaultsKeys.isLoggedIn == true
+          ? try await bloomingClient.verifyBloomingToday(id: id)
+          : VerifyBloomingStateEntity(isBlooming: false)
 
-        let (detail, blooming, verifyToday) = try await (detailResult, bloomingResult, verifyTodayResult)
+        let (detail, blooming) = try await (detailResult, bloomingResult)
 
         await MainActor.run {
           send(.detailResponse(detail))
           send(.bloomingResponse(blooming))
-          send(.verifyTodayBlooming(verifyToday))
+          send(.verifyTodayBlooming(verifyTodayResult))
         }
       } catch let error as NetworkError {
         print("[FlowerSpotDetailFeature] Network Error: \(error.errorDescription)")
