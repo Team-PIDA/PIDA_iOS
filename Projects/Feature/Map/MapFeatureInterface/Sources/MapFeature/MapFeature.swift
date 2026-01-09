@@ -56,6 +56,11 @@ public struct MapFeature {
     /// 검색 결과 텍스트
     public var searchText: String? = nil
     
+    /// 상세 화면 진입 시 루트 화면
+    public var detailRoot: DetailRoot? = nil
+    /// 리전 검색 결과 저장
+    public var regionResult: FlowerSpotEntity? = nil // TODO: - 추후 타입 변경 필요
+    
     public var toastMessage: String? = nil
     
     public var toastLabel: String? = nil
@@ -97,8 +102,9 @@ public struct MapFeature {
     case showSearchResult(FlowerSpotEntity?)
     case setSearchBarText(String?)
     case resetSearchBar
-    case showRegionList(Bool)
+    case showRegionList(FlowerSpotEntity?, Bool) // TODO: - 리전 검색 결과에 따른 data 넘기기
     case changeRegionSheetDetent
+    case searchBackButtonTapped
     
     case presentAlert(type: AlertType)
     case alertCancelTapped
@@ -119,6 +125,11 @@ public struct MapFeature {
     case presentToBlooming(id: Int, streetName: String)
     case presentToLogin(id: Int)
     case mapDidLoad
+  }
+  
+  public enum DetailRoot: Equatable {
+    case region
+    case search
   }
   
   public var body: some ReducerOf<Self> {

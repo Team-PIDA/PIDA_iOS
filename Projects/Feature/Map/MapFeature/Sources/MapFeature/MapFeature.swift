@@ -97,6 +97,7 @@ extension MapFeature {
         
       case let .showSearchResult(result):
         state.searchResult = result
+        state.detailRoot = .search
         if result != nil {
           // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
           state.flowerSpotDetail = .init(userLocation: state.userLocation)
@@ -118,14 +119,30 @@ extension MapFeature {
           }
         }
         
-      case let .showRegionList(isPresent):
+      case let .showRegionList(regionResult, isPresent):
+        state.regionResult = regionResult
         state.searchRegionList = .init()
         state.isShowRegionList = isPresent
-        return .none
+        return showSearchRegionResult(result: regionResult)
         
       case .changeRegionSheetDetent:
         if state.isShowRegionList {
           state.regionSheetDetent = .low
+        }
+        return .none
+        
+      case .searchBackButtonTapped:
+        if state.isShowRegionList {
+          state.searchRegionList = nil
+          state.regionResult = nil 
+          state.isShowRegionList = false
+          return .send(.presentToSearch)
+        } else if state.detailRoot == .region {
+          state.flowerSpotDetail = nil
+          state.detailRoot = nil
+          return .send(.showRegionList(state.regionResult, true))
+        } else if state.detailRoot == .search {
+          return .send(.presentToSearch)
         }
         return .none
         
@@ -236,6 +253,15 @@ extension MapFeature.Core {
         await send(.location(.moveLocation(result.pinPoint)))
         await send(.fetchPathLines(result.id))
         await send(.flowerSpotDetail(.requestDetailInfo(result.id)))
+      }
+    }
+  }
+  
+  private func showSearchRegionResult(result: FlowerSpotEntity?) -> Effect<Action> {
+    return .run { send in
+      if let result = result {
+        await send(.setSearchBarText(result.streetName))
+        await send(.location(.moveLocation(result.pinPoint)))
       }
     }
   }

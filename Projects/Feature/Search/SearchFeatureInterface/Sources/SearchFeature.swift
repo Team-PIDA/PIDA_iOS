@@ -59,7 +59,8 @@ public struct SearchFeature {
   
   public enum Delegate: Equatable {
     case dismiss
-    case selectResult(FlowerSpotEntity, type: SearchType)
+    case selectResult(FlowerSpotEntity)
+    case selectRegionResult(FlowerSpotEntity)
   }
 
   public var body: some Reducer<State, Action> {

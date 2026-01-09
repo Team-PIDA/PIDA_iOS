@@ -76,9 +76,7 @@ extension SearchFeature {
         return .none
 
       case let .fetchSearchResult(result):
-        return .run { send in
-          await MainActor.run { send(.delegate(.selectResult(result, type: .region))) }
-        }
+        return .send(.delegate(.selectRegionResult(result)))
 
       case let .searchBarFocused(isFocused):
         state.isFocused = isFocused
@@ -87,18 +85,17 @@ extension SearchFeature {
       case let .initialSearchBar(text):
         state.searchWord = text ?? ""
         return .none
-
-      // MARK: - Delegate
-      case let .selectResult(item):
+        
+      case let .selectResult(item): // TODO: - 선택한 타입(리전, 거리)에 따라 분기처리 필요
         return fetchSelectedDetailInfo(item: item)
 
+      // MARK: - Delegate
+      
       case .dismiss:
-        return .run { send in
-          await MainActor.run {
-            send(.searchBarFocused(false))
-            send(.delegate(.dismiss))
-          }
-        }
+        return .concatenate(
+          .send(.searchBarFocused(false)),
+          .send(.delegate(.dismiss))
+        )
 
       case .binding, .delegate:
         return .none

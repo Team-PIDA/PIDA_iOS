@@ -220,19 +220,21 @@ struct PIDAFeature {
         state.signUp = nil
         return .none
 
-        // map -> search
-      case let .map(.delegate(.presentToSearch(keyword))):
-        return .send(.presentSearch(true, keyword: keyword))
-
-        // search dismiss
+      // MARK: - Search
+        
       case .search(.delegate(.dismiss)):
         return .send(.presentSearch(false, keyword: nil))
 
         // search dismiss with result
-      case let .search(.delegate(.selectResult(result, type))):
+      case let .search(.delegate(.selectResult(result))):
         return .concatenate(
-//          .send(.map(.showSearchResult(result))),
-          .send(.map(.showRegionList(true))),
+          .send(.map(.showSearchResult(result))),
+          .send(.presentSearch(false, keyword: nil))
+        )
+        
+      case let .search(.delegate(.selectRegionResult(result))):
+        return .concatenate(
+          .send(.map(.showRegionList(result, true))),
           .send(.presentSearch(false, keyword: nil))
         )
         
@@ -260,6 +262,9 @@ struct PIDAFeature {
           .send(.presentToLogin(true)),
           .send(.auth(.setSpotId(id: id)))
         )
+        
+      case let .map(.delegate(.presentToSearch(keyword))):
+        return .send(.presentSearch(true, keyword: keyword))
 
       case .map(.delegate(.mapDidLoad)):
         // 지도 로드 완료 후 pending 딥링크 처리

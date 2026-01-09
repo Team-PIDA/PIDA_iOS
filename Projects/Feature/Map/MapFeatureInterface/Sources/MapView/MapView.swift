@@ -128,6 +128,7 @@ extension MapView {
           TouchArea(image: .back)
             .size(.extraLarge)
             .action {
+              store.send(.searchBackButtonTapped)
               store.send(.resetSearchBar)
               store.send(.markerTapped(id: nil))
             }
