@@ -181,6 +181,10 @@ extension MapFeature {
 
         case let .presentToLogin(id):
           return .send(.delegate(.presentToLogin(id: id)))
+
+        case let .showOnMap(flowerSpot):
+          state.searchResult = flowerSpot
+          return .send(.location(.moveLocation(flowerSpot.pinPoint)))
         }
 
       case .flowerSpotDetail:

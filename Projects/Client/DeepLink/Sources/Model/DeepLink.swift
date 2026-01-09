@@ -11,11 +11,8 @@ import Foundation
 /// 앱 내 딥링크 목적지 정의
 /// 푸시 알림, URL Scheme 등에서 사용
 public enum DeepLink: Equatable, Sendable {
-  /// 꽃 명소 상세 화면
+  /// 꽃 명소 상세 화면 (위치 이동 + 마커 표시 + 상세 정보 로드)
   case flowerSpotDetail(spotId: Int)
-
-  /// 특정 위치로 지도 이동
-  case mapLocation(latitude: Double, longitude: Double)
 
   /// 설정 화면
   case setting
@@ -38,13 +35,6 @@ public extension DeepLink {
       guard let spotId = userInfo[DeepLinkKey.spotId.rawValue] as? Int,
             spotId > 0 else { return nil }
       return .flowerSpotDetail(spotId: spotId)
-
-    case .mapLocation:
-      guard let latitude = userInfo[DeepLinkKey.latitude.rawValue] as? Double,
-            let longitude = userInfo[DeepLinkKey.longitude.rawValue] as? Double,
-            (-90...90).contains(latitude),
-            (-180...180).contains(longitude) else { return nil }
-      return .mapLocation(latitude: latitude, longitude: longitude)
 
     case .setting:
       return .setting

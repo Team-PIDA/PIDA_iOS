@@ -169,8 +169,11 @@ extension FlowerSpotDetailFeature {
           state.distance = .zero
         }
         checkLoadingComplete(&state)
-        // 이미지 프리페치 시작
-        return .send(.prefetchImages)
+        // 이미지 프리페치 시작 및 지도에 표시 요청
+        return .concatenate(
+          .send(.prefetchImages),
+          .send(.delegate(.showOnMap(item)))
+        )
 
       case let .bloomingResponse(item):
         state.bloomingStatus = item

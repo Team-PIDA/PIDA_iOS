@@ -130,6 +130,7 @@ public struct FlowerSpotDetailFeature {
     case dismiss
     case presentToBlooming(id: Int, streetName: String)
     case presentToLogin(id: Int)
+    case showOnMap(FlowerSpotEntity)
   }
 
   public var body: some ReducerOf<Self> {

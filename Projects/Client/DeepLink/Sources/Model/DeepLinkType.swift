@@ -11,7 +11,6 @@ import Foundation
 /// 서버에서 전달하는 딥링크 타입 식별자
 public enum DeepLinkType: String, Sendable {
   case flowerSpot = "flower_spot"
-  case mapLocation = "map_location"
   case setting = "setting"
 }
 
@@ -19,6 +18,4 @@ public enum DeepLinkType: String, Sendable {
 public enum DeepLinkKey: String, Sendable {
   case type = "type"
   case spotId = "spot_id"
-  case latitude = "latitude"
-  case longitude = "longitude"
 }

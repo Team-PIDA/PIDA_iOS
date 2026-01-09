@@ -199,12 +199,8 @@ struct PIDAFeature {
       case let .deepLinkReceived(deepLink):
         switch deepLink {
         case let .flowerSpotDetail(spotId):
-          // 꽃 명소 상세 화면으로 이동
+          // 꽃 명소 상세 화면으로 이동 (위치 이동은 detailResponse에서 처리)
           return .send(.map(.fetchDetailInfo(spotId)))
-
-        case let .mapLocation(latitude, longitude):
-          let coordinate = Coordinate(latitude: latitude, longitude: longitude)
-          return .send(.map(.location(.moveLocation(coordinate))))
 
         case .setting:
           // 설정 화면으로 이동
