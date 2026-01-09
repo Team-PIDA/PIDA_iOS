@@ -111,6 +111,7 @@ struct PIDAFeature {
     // DeepLink 관련
     case subscribeDeepLink
     case deepLinkReceived(DeepLink)
+    case processPendingDeepLink
   }
   
   var body: some ReducerOf<Self> {
@@ -209,6 +210,16 @@ struct PIDAFeature {
           return .none
         }
 
+      case .processPendingDeepLink:
+        // Cold Start에서 푸시 알림으로 앱 실행 시 pending 딥링크 처리
+        guard let pendingDeepLink = AppDelegate.pendingDeepLink else {
+          print("📭 No pending DeepLink")
+          return .none
+        }
+        print("✅ Processing pending DeepLink: \(pendingDeepLink)")
+        AppDelegate.pendingDeepLink = nil
+        return .send(.deepLinkReceived(pendingDeepLink))
+
         // MARK: - Map <-> Search
 
       case let .presentSearch(isShow, keyword):
@@ -296,6 +307,10 @@ struct PIDAFeature {
           .send(.presentToLogin(true)),
           .send(.auth(.setSpotId(id: id)))
         )
+
+      case .map(.delegate(.mapDidLoad)):
+        // 지도 로드 완료 후 pending 딥링크 처리
+        return .send(.processPendingDeepLink)
 
         // MARK: - Map <-> Setting
 

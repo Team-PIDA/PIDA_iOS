@@ -211,6 +211,7 @@ extension MapFeature.Core {
         print(error.localizedDescription)
       }
       await send(.requestMapBounds(true))
+      await send(.delegate(.mapDidLoad))
     }
   }
   
