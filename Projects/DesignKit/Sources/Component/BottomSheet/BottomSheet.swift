@@ -98,7 +98,14 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
     .background(ColorSet.Background.Primary)
     .cornerRadius(.Number16, corners: [.topLeft, .topRight])
     .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
-    .gesture(isDragEnabled ? dragGesture() : nil)
+    .gesture(shouldEnableDrag ? dragGesture() : nil)
+  }
+
+  /// 드래그 활성화 여부 결정
+  /// - 축소 상태에서는 스크롤이 없으므로 항상 드래그 활성화
+  /// - 확장 상태에서는 외부 바인딩(isDragEnabled)에 따라 결정
+  private var shouldEnableDrag: Bool {
+    currentHeight < midHeight ? true : isDragEnabled
   }
 
   // MARK: - Handle Indicator
