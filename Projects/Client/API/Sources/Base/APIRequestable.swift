@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import Shared
 
 public typealias HTTPHeaders = [String: String]
@@ -16,6 +17,7 @@ public typealias HTTPParameters = [String: Any]
 public enum APIHeaderType {
   case plain
   case authorization
+  case authorizationWithDeviceId
 }
 
 public enum HTTPRequestParameter {
@@ -83,6 +85,24 @@ public extension APIRequestable {
         "Content-Type": "application/json",
         "Authorization": "Bearer \(token)"
       ]
+    case .authorizationWithDeviceId:
+      guard let token = UserDefaultsKeys.accessToken else { return ["Content-Type": "application/json"] }
+      let deviceId = getOrCreateDeviceId()
+      return [
+        "Content-Type": "application/json",
+        "Authorization": "Bearer \(token)",
+        "X-DEVICE-ID": deviceId
+      ]
     }
+  }
+
+  /// Device ID를 반환하며, 없으면 identifierForVendor로 생성하여 저장
+  private func getOrCreateDeviceId() -> String {
+    if let existingId = UserDefaultsKeys.deviceId {
+      return existingId
+    }
+    let newId = UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
+    UserDefaultsKeys.deviceId = newId
+    return newId
   }
 }
