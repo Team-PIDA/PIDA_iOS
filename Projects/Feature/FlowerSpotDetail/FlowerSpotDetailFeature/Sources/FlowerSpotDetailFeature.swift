@@ -159,7 +159,7 @@ extension FlowerSpotDetailFeature {
         state.isDetailLoading = true
         return fetchDetailInfo(id: id)
 
-      case let .detailResponse(item):
+      case let .detailResponse(item, shouldUpdateMap):
         state.flowerSpotData = item
         state.spotId = item.id
         // distance 계산
@@ -169,11 +169,17 @@ extension FlowerSpotDetailFeature {
           state.distance = .zero
         }
         checkLoadingComplete(&state)
-        // 이미지 프리페치 시작 및 지도에 표시 요청
-        return .concatenate(
-          .send(.prefetchImages),
-          .send(.delegate(.showOnMap(item)))
-        )
+        // 이미지 프리페치 시작
+        if shouldUpdateMap {
+          // 딥링크 진입: 지도 위치 이동 + 마커 표시
+          return .concatenate(
+            .send(.prefetchImages),
+            .send(.delegate(.showOnMap(item)))
+          )
+        } else {
+          // 마커 탭/검색: 프리페치만
+          return .send(.prefetchImages)
+        }
 
       case let .bloomingResponse(item):
         state.bloomingStatus = item
@@ -203,6 +209,7 @@ extension FlowerSpotDetailFeature {
 }
 
 extension FlowerSpotDetailFeature.Core {
+  /// 마커 탭, 검색 결과 선택 시 호출 (지도 위치 이동 안 함)
   private func requestDetailInfo(id: Int) -> Effect<Action> {
     return .run { send in
       do {
@@ -215,7 +222,7 @@ extension FlowerSpotDetailFeature.Core {
         let (detail, blooming) = try await (detailResult, bloomingResult)
 
         await MainActor.run {
-          send(.detailResponse(detail))
+          send(.detailResponse(detail, shouldUpdateMap: false))
           send(.bloomingResponse(blooming))
           send(.verifyTodayBlooming(verifyTodayResult))
         }
@@ -229,6 +236,7 @@ extension FlowerSpotDetailFeature.Core {
     }
   }
 
+  /// 딥링크, 외부 진입 시 호출 (지도 위치 이동 함)
   private func fetchDetailInfo(id: Int) -> Effect<Action> {
     return .run { send in
       do {
@@ -241,7 +249,7 @@ extension FlowerSpotDetailFeature.Core {
         let (detail, blooming) = try await (detailResult, bloomingResult)
 
         await MainActor.run {
-          send(.detailResponse(detail))
+          send(.detailResponse(detail, shouldUpdateMap: true))
           send(.bloomingResponse(blooming))
           send(.verifyTodayBlooming(verifyTodayResult))
         }
