@@ -76,7 +76,7 @@ extension SearchFeature {
         return .none
 
       case let .fetchSearchResult(result):
-        return .send(.delegate(.selectRegionResult(result)))
+        return .send(.delegate(.selectResult(result)))
 
       case let .searchBarFocused(isFocused):
         state.isFocused = isFocused
