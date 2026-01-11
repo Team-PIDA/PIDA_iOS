@@ -30,6 +30,8 @@ extension TargetDependency {
     public static let User = Self.project(.client(.User))
     public static let Blooming = Self.project(.client(.Blooming))
     public static let Location = Self.project(.client(.Location))
+    public static let Push = Self.project(.client(.Push))
+    public static let DeepLink = Self.project(.client(.DeepLink))
   }
 }
 
@@ -47,6 +49,8 @@ extension TargetDependency {
     public static let TCA = Self.project(.spm(.ComposableArchitecture))
     public static let NMap = Self.project(.spm(.NMapsMap))
     public static let DotLottie = Self.project(.spm(.DotLottie))
+    public static let FirebaseCore = Self.project(.spm(.FirebaseCore))
+    public static let FirebaseMessaging = Self.project(.spm(.FirebaseMessaging))
   }
 }
 

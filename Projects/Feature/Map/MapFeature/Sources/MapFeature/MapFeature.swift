@@ -81,7 +81,14 @@ extension MapFeature {
         return .none
       
       case let .fetchDetailInfo(id):
-        return .send(.flowerSpotDetail(.fetchDetailInfo(id)))
+        // flowerSpotDetail State가 nil이면 초기화 (이미 열려있으면 유지)
+        if state.flowerSpotDetail == nil {
+          state.flowerSpotDetail = .init(userLocation: state.userLocation)
+        }
+        return .concatenate(
+          .send(.fetchPathLines(id)),
+          .send(.flowerSpotDetail(.fetchDetailInfo(id)))
+        )
         
         // MARK: - Search
         
@@ -174,6 +181,10 @@ extension MapFeature {
 
         case let .presentToLogin(id):
           return .send(.delegate(.presentToLogin(id: id)))
+
+        case let .showOnMap(flowerSpot):
+          state.searchResult = flowerSpot
+          return .send(.location(.moveLocation(flowerSpot.pinPoint)))
         }
 
       case .flowerSpotDetail:
@@ -200,6 +211,7 @@ extension MapFeature.Core {
         print(error.localizedDescription)
       }
       await send(.requestMapBounds(true))
+      await send(.delegate(.mapDidLoad))
     }
   }
   

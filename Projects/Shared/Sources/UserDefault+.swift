@@ -54,18 +54,23 @@ public struct UserDefault<Value: Sendable & Codable> {
 }
 
 public struct UserDefaultsKeys {
-  
+
   // MARK: - User
-  
+
   @UserDefault("accessToken", default: nil)
   public static var accessToken: String?
-  
+
   @UserDefault("isLoggedIn", default: nil)
   public static var isLoggedIn: Bool?
-  
+
   @UserDefault("username", default: nil)
   public static var username: String?
-  
+
   @UserDefault("email", default: nil)
   public static var email: String?
+
+  // MARK: - Device
+
+  @UserDefault("deviceId", default: nil)
+  public static var deviceId: String?
 }

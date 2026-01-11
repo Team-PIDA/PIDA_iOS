@@ -106,6 +106,7 @@ public struct MapFeature {
     case resetSearchView
     case presentToBlooming(id: Int, streetName: String)
     case presentToLogin(id: Int)
+    case mapDidLoad
   }
   
   public var body: some ReducerOf<Self> {

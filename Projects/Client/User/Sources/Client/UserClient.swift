@@ -13,6 +13,7 @@ public struct UserClient: Sendable {
   public var changeNickname: @Sendable (_ nickname: String) async throws -> UserInfoEntity
   public var fetchUserInfo: @Sendable () async throws -> UserInfoEntity
   public var withdrawUser: @Sendable () async throws -> WithDrawEntity
+  public var updateFCMToken: @Sendable (_ fcmToken: String) async throws -> Void
 }
 
 public extension DependencyValues {

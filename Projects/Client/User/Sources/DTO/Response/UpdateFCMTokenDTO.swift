@@ -1,0 +1,13 @@
+//
+//  UpdateFCMTokenDTO.swift
+//  UserClient
+//
+//  Created by Claude on 1/9/26.
+//  Copyright © 2026 com.pida.me. All rights reserved.
+//
+
+import Foundation
+
+public struct UpdateFCMTokenDTO: Decodable, Sendable {
+  let message: String
+}

@@ -35,10 +35,14 @@ public enum Client: ModuleRepresentable {
   case User
   case Blooming
   case Location
+  case Push
+  case DeepLink
 }
 
 public enum SPM: ModuleRepresentable {
   case ComposableArchitecture
   case NMapsMap
   case DotLottie
+  case FirebaseCore
+  case FirebaseMessaging
 }

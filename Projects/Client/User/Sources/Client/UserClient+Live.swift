@@ -29,6 +29,11 @@ extension UserClient: DependencyKey {
         let endpoint = UserEndPoint.withDraw()
         let result = try await apiClient.execute(endpoint).toEntity()
         return result
+      },
+      updateFCMToken: { fcmToken in
+        let body = UpdateFCMTokenBody(fcmToken: fcmToken)
+        let endpoint = UserEndPoint.updateFCMToken(body: body)
+        _ = try await apiClient.execute(endpoint)
       }
     )
   }

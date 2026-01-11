@@ -27,6 +27,11 @@ import BloomingFeatureInterface
 import FlowerSpotDetailFeature
 import FlowerSpotDetailFeatureInterface
 
+import PushClient
+import UserClient
+import DeepLinkClient
+import Shared
+
 enum Path: Hashable {
   case setting
   case policy
@@ -40,6 +45,9 @@ enum LoginSource: Equatable {
 
 @Reducer
 struct PIDAFeature {
+  @Dependency(\.pushNotificationClient) var pushNotificationClient
+  @Dependency(\.userClient) var userClient
+
   let locationReducer = Reduce(LocationFeature())
   
   @ObservableState
@@ -60,6 +68,15 @@ struct PIDAFeature {
     var isPresentSignUp: Bool = false
     var isPresentBlooming: Bool = false
     var loginSource: LoginSource? = nil
+
+    /// 구독 상태 플래그 (중복 구독 방지)
+    var isSubscribed: Bool = false
+  }
+
+  /// Effect 취소를 위한 ID
+  enum CancelID: Hashable {
+    case fcmTokenSubscription
+    case deepLinkSubscription
   }
   
   enum Action: BindableAction {
@@ -83,6 +100,18 @@ struct PIDAFeature {
     case cleanupBlooming
     case cleanupAuth
     case cleanupSignUp
+
+    // FCM 관련
+    case onAppear
+    case subscribeFCMToken
+    case fcmTokenReceived(String)
+    case sendFCMTokenToServer(String)
+    case sendFCMTokenIfNeeded
+
+    // DeepLink 관련
+    case subscribeDeepLink
+    case deepLinkReceived(DeepLink)
+    case processPendingDeepLink
   }
   
   var body: some ReducerOf<Self> {
@@ -96,8 +125,50 @@ struct PIDAFeature {
     }
     Reduce<State, Action> { state, action in
       switch action {
+        // MARK: - App Lifecycle
+
+      case .onAppear:
+        // 이미 구독 중이면 중복 구독 방지
+        guard !state.isSubscribed else { return .none }
+        state.isSubscribed = true
+        return initializeAppLifecycle()
+
+      case .subscribeFCMToken:
+        return subscribeFCMToken()
+
+      case let .fcmTokenReceived(token):
+        // 로그인된 경우에만 서버로 토큰 전송
+        guard UserDefaultsKeys.accessToken != nil else { return .none }
+        return .send(.sendFCMTokenToServer(token))
+
+      case let .sendFCMTokenToServer(token):
+        return sendFCMTokenToServer(token: token)
+
+      case .sendFCMTokenIfNeeded:
+        return sendFCMTokenIfNeeded()
+
+      case .subscribeDeepLink:
+        return subscribeDeepLink()
+
+      case let .deepLinkReceived(deepLink):
+        switch deepLink {
+        case let .flowerSpotDetail(spotId):
+          // 꽃 명소 상세 화면으로 이동 (위치 이동은 detailResponse에서 처리)
+          return .send(.map(.fetchDetailInfo(spotId)))
+        }
+
+      case .processPendingDeepLink:
+        // Cold Start에서 푸시 알림으로 앱 실행 시 pending 딥링크 처리
+        guard let pendingDeepLink = AppDelegate.pendingDeepLink else {
+          print("📭 No pending DeepLink")
+          return .none
+        }
+        print("✅ Processing pending DeepLink: \(pendingDeepLink)")
+        AppDelegate.pendingDeepLink = nil
+        return .send(.deepLinkReceived(pendingDeepLink))
+
         // MARK: - Map <-> Search
-        
+
       case let .presentSearch(isShow, keyword):
         if isShow {
           state.search = .init(initText: keyword)
@@ -165,7 +236,7 @@ struct PIDAFeature {
         if didUpdate {
           return .concatenate(
             .send(.presentBloomingUpdate(false, id: nil, streetName: "")),
-            .send(.map(.flowerSpotDetail(.fetchDetailInfo(spotId)))),
+            .send(.map(.fetchDetailInfo(spotId))),
             .send(.map(.flowerSpotDetail(.showToastView(message: "오늘의 개화 상태가 기록되었습니다."))))
           )
         } else {
@@ -183,6 +254,10 @@ struct PIDAFeature {
           .send(.presentToLogin(true)),
           .send(.auth(.setSpotId(id: id)))
         )
+
+      case .map(.delegate(.mapDidLoad)):
+        // 지도 로드 완료 후 pending 딥링크 처리
+        return .send(.processPendingDeepLink)
 
         // MARK: - Map <-> Setting
 
@@ -227,15 +302,20 @@ struct PIDAFeature {
         state.loginSource = nil
         if case .setting = source {
           return .concatenate(
+            .send(.sendFCMTokenIfNeeded),
             .send(.presentToLogin(false)),
             .send(.setting(.checkLoggedIn))
           )
         } else {
-          return .send(.presentToLogin(false))
+          return .concatenate(
+            .send(.sendFCMTokenIfNeeded),
+            .send(.presentToLogin(false))
+          )
         }
 
       case let .auth(.delegate(.dismissWithVerifyBloomState(id))):
         return .concatenate(
+          .send(.sendFCMTokenIfNeeded),
           .send(.presentToLogin(false)),
           .send(.map(.fetchDetailInfo(id)))
         )
@@ -251,11 +331,15 @@ struct PIDAFeature {
         state.loginSource = nil
         if case .setting = source {
           return .concatenate(
+            .send(.sendFCMTokenIfNeeded),
             .send(.presentSignUp(false)),
             .send(.setting(.checkLoggedIn))
           )
         } else {
-          return .send(.presentSignUp(false))
+          return .concatenate(
+            .send(.sendFCMTokenIfNeeded),
+            .send(.presentSignUp(false))
+          )
         }
         
         // MARK: - None
@@ -287,5 +371,76 @@ extension Reducer where State == PIDAFeature.State, Action == PIDAFeature.Action
       .ifLet(\.signUp, action: \.signUp) { SignUpFeature() }
       .ifLet(\.update, action: \.update) { ProfileUpdateFeature() }
       .ifLet(\.blooming, action: \.blooming) { BloomingUpdateFeature() }
+  }
+}
+
+// MARK: - Private Effects
+
+extension PIDAFeature {
+  /// 앱 시작 시 푸시 알림 권한 요청 및 구독 초기화
+  private func initializeAppLifecycle() -> Effect<Action> {
+    return .run { [pushNotificationClient] send in
+      // 푸시 알림 권한 요청
+      let status = await pushNotificationClient.checkAuthorizationStatus()
+      if status == .notDetermined {
+        _ = await pushNotificationClient.requestAuthorization()
+      }
+      // FCM 토큰 구독 시작
+      await send(.subscribeFCMToken)
+      // DeepLink 구독 시작
+      await send(.subscribeDeepLink)
+    }
+  }
+
+  /// FCM 토큰 수신 구독
+  private func subscribeFCMToken() -> Effect<Action> {
+    return .run { send in
+      for await notification in NotificationCenter.default.notifications(named: .didReceiveFCMToken) {
+        if let token = notification.userInfo?["token"] as? String {
+          await send(.fcmTokenReceived(token))
+        }
+      }
+    }
+    .cancellable(id: CancelID.fcmTokenSubscription)
+  }
+
+  /// FCM 토큰을 서버로 전송 (최대 3회 재시도, 지수 백오프)
+  private func sendFCMTokenToServer(token: String) -> Effect<Action> {
+    return .run { [userClient] _ in
+      for attempt in 1...3 {
+        do {
+          try await userClient.updateFCMToken(token)
+          print("✅ FCM 토큰 서버 전송 성공")
+          return
+        } catch {
+          print("❌ FCM 토큰 서버 전송 실패 (시도 \(attempt)/3): \(error)")
+          if attempt < 3 {
+            // 지수 백오프: 1초, 2초, 4초
+            try? await Task.sleep(for: .seconds(pow(2.0, Double(attempt - 1))))
+          }
+        }
+      }
+    }
+  }
+
+  /// 로그인 성공 후 현재 FCM 토큰을 가져와 서버로 전송
+  private func sendFCMTokenIfNeeded() -> Effect<Action> {
+    return .run { [pushNotificationClient] send in
+      if let token = await pushNotificationClient.getFCMToken() {
+        await send(.sendFCMTokenToServer(token))
+      }
+    }
+  }
+
+  /// DeepLink 이벤트 구독
+  private func subscribeDeepLink() -> Effect<Action> {
+    return .run { send in
+      for await notification in NotificationCenter.default.notifications(named: .didReceiveDeepLink) {
+        if let deepLink = notification.userInfo?["deepLink"] as? DeepLink {
+          await send(.deepLinkReceived(deepLink))
+        }
+      }
+    }
+    .cancellable(id: CancelID.deepLinkSubscription)
   }
 }

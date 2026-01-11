@@ -81,6 +81,10 @@ public enum Scheme {
       "NMCLIENTID": "$(NM_CLIENT_ID)",
       "BASE_URL": "$(BASE_URL)",
       "ITSAppUsesNonExemptEncryption": false,
+      // Firebase
+      "FirebaseAppDelegateProxyEnabled": false,
+      // Push Notification Background Mode
+      "UIBackgroundModes": ["remote-notification"],
     ]
   }
 }

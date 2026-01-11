@@ -97,9 +97,11 @@ public struct FlowerSpotDetailFeature {
     case alertCancelTapped
     case alertAcceptTapped
 
+    /// 마커 탭, 검색 결과 선택 시 호출 (지도 위치 이동 안 함)
     case requestDetailInfo(Int)
+    /// 딥링크, 외부 진입 시 호출 (지도 위치 이동 함)
     case fetchDetailInfo(Int)
-    case detailResponse(FlowerSpotEntity)
+    case detailResponse(FlowerSpotEntity, shouldUpdateMap: Bool)
     case bloomingResponse(BloomStatusEntity)
     case verifyTodayBlooming(VerifyBloomingStateEntity)
 
@@ -130,6 +132,7 @@ public struct FlowerSpotDetailFeature {
     case dismiss
     case presentToBlooming(id: Int, streetName: String)
     case presentToLogin(id: Int)
+    case showOnMap(FlowerSpotEntity)
   }
 
   public var body: some ReducerOf<Self> {
