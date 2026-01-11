@@ -35,13 +35,11 @@ extension SearchFeature {
         }
 
       case .onAppear:
-        return .run { send in
-          await MainActor.run {
-            send(.configureSearchList)
-            send(.searchBarFocused(true))
-            send(.fetchRecentResult)
-          }
-        }
+        return .concatenate(
+          .send(.configureSearchList),
+          .send(.searchBarFocused(true)),
+          .send(.fetchRecentResult)
+        )
 
       case .configureSearchList:
         if state.searchWord.isEmpty {
