@@ -59,15 +59,7 @@ extension SearchFeature {
         return .none
 
       case .fetchRecentResult:
-        return .run { [searchKeyword = state.searchWord] send in
-          do {
-            let recent = try await searchClient.fetchRecentSearch()
-            await send(.storeRecentResult(recent))
-            if searchKeyword.isEmpty {
-              await send(.updateSearchResults(recent))
-            }
-          }
-        }
+        return fetchRecentResult(keyword: state.searchWord)
 
       case let .storeRecentResult(item):
         state.recentList = item
@@ -103,6 +95,19 @@ extension SearchFeature {
 }
 
 extension SearchFeature.Core {
+  
+  private func fetchRecentResult(keyword: String) -> Effect<Action> {
+    return .run { send in
+      do {
+        let recent = try await searchClient.fetchRecentSearch()
+        await send(.storeRecentResult(recent))
+        if keyword.isEmpty {
+          await send(.updateSearchResults(recent))
+        }
+      }
+    }
+  }
+  
   private func searchItem(with searchQuery: String) -> Effect<Action> {
     return .run { send in
       do {
