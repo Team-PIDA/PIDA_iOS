@@ -155,12 +155,6 @@ struct PIDAFeature {
         case let .flowerSpotDetail(spotId):
           // 꽃 명소 상세 화면으로 이동 (위치 이동은 detailResponse에서 처리)
           return .send(.map(.fetchDetailInfo(spotId)))
-
-        case .setting:
-          // 설정 화면으로 이동
-          state.setting = .init()
-          state.path.append(.setting)
-          return .none
         }
 
       case .processPendingDeepLink:

@@ -13,9 +13,6 @@ import Foundation
 public enum DeepLink: Equatable, Sendable {
   /// 꽃 명소 상세 화면 (위치 이동 + 마커 표시 + 상세 정보 로드)
   case flowerSpotDetail(spotId: Int)
-
-  /// 설정 화면
-  case setting
 }
 
 // MARK: - Push Notification Payload Parsing
@@ -35,9 +32,6 @@ public extension DeepLink {
       guard let spotId = userInfo[DeepLinkKey.spotId.rawValue] as? Int,
             spotId > 0 else { return nil }
       return .flowerSpotDetail(spotId: spotId)
-
-    case .setting:
-      return .setting
     }
   }
 }
