@@ -115,7 +115,6 @@ extension MapFeature {
           await MainActor.run {
             send(.showSearchResult(nil))
             send(.setSearchBarText(nil))
-            send(.delegate(.resetSearchView))
           }
         }
         

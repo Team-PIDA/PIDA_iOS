@@ -122,7 +122,6 @@ public struct MapFeature {
   public enum Delegate: Equatable {
     case presentToSearch(String?)
     case pushToSetting
-    case resetSearchView
     case presentToBlooming(id: Int, streetName: String)
     case presentToLogin(id: Int)
     case mapDidLoad
