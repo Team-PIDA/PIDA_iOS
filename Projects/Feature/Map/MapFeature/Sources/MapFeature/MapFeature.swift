@@ -111,12 +111,10 @@ extension MapFeature {
         return .none
         
       case .resetSearchBar:
-        return .run { send in
-          await MainActor.run {
-            send(.showSearchResult(nil))
-            send(.setSearchBarText(nil))
-          }
-        }
+        return .concatenate(
+          .send(.showSearchResult(nil)),
+          .send(.setSearchBarText(nil))
+        )
         
       case let .showRegionList(regionResult, isPresent):
         state.regionResult = regionResult
