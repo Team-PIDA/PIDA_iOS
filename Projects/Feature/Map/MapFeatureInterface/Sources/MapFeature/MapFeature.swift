@@ -105,6 +105,7 @@ public struct MapFeature {
     case showRegionList(FlowerSpotEntity?, Bool) // TODO: - 리전 검색 결과에 따른 data 넘기기
     case changeRegionSheetDetent
     case searchBackButtonTapped
+    case handleSearchBackNavigation
     
     case presentAlert(type: AlertType)
     case alertCancelTapped

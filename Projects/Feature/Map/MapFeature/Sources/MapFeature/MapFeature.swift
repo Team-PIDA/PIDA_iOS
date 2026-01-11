@@ -132,6 +132,13 @@ extension MapFeature {
         return .none
         
       case .searchBackButtonTapped:
+        return .concatenate(
+          .send(.handleSearchBackNavigation),
+          .send(.resetSearchBar),
+          .send(.markerTapped(id: nil))
+        )
+        
+      case .handleSearchBackNavigation:
         switch state.detailRoot {
         case .region:
           state.flowerSpotDetail = nil
