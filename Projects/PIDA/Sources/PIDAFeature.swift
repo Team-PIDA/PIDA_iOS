@@ -131,29 +131,10 @@ struct PIDAFeature {
         // 이미 구독 중이면 중복 구독 방지
         guard !state.isSubscribed else { return .none }
         state.isSubscribed = true
-
-        return .run { send in
-          // 푸시 알림 권한 요청
-          let status = await pushNotificationClient.checkAuthorizationStatus()
-          if status == .notDetermined {
-            _ = await pushNotificationClient.requestAuthorization()
-          }
-          // FCM 토큰 구독 시작
-          await send(.subscribeFCMToken)
-          // DeepLink 구독 시작
-          await send(.subscribeDeepLink)
-        }
+        return initializeAppLifecycle()
 
       case .subscribeFCMToken:
-        return .run { send in
-          // NotificationCenter에서 FCM 토큰 수신 대기
-          for await notification in NotificationCenter.default.notifications(named: .didReceiveFCMToken) {
-            if let token = notification.userInfo?["token"] as? String {
-              await send(.fcmTokenReceived(token))
-            }
-          }
-        }
-        .cancellable(id: CancelID.fcmTokenSubscription)
+        return subscribeFCMToken()
 
       case let .fcmTokenReceived(token):
         // 로그인된 경우에만 서버로 토큰 전송
@@ -161,41 +142,13 @@ struct PIDAFeature {
         return .send(.sendFCMTokenToServer(token))
 
       case let .sendFCMTokenToServer(token):
-        return .run { _ in
-          // 최대 3회 재시도 (지수 백오프)
-          for attempt in 1...3 {
-            do {
-              try await userClient.updateFCMToken(token)
-              print("✅ FCM 토큰 서버 전송 성공")
-              return
-            } catch {
-              print("❌ FCM 토큰 서버 전송 실패 (시도 \(attempt)/3): \(error)")
-              if attempt < 3 {
-                // 지수 백오프: 1초, 2초, 4초
-                try? await Task.sleep(for: .seconds(pow(2.0, Double(attempt - 1))))
-              }
-            }
-          }
-        }
+        return sendFCMTokenToServer(token: token)
 
       case .sendFCMTokenIfNeeded:
-        // 로그인 성공 후 호출 - 현재 FCM 토큰을 가져와 서버로 전송
-        return .run { send in
-          if let token = await pushNotificationClient.getFCMToken() {
-            await send(.sendFCMTokenToServer(token))
-          }
-        }
+        return sendFCMTokenIfNeeded()
 
       case .subscribeDeepLink:
-        return .run { send in
-          // NotificationCenter에서 DeepLink 이벤트 수신 대기
-          for await notification in NotificationCenter.default.notifications(named: .didReceiveDeepLink) {
-            if let deepLink = notification.userInfo?["deepLink"] as? DeepLink {
-              await send(.deepLinkReceived(deepLink))
-            }
-          }
-        }
-        .cancellable(id: CancelID.deepLinkSubscription)
+        return subscribeDeepLink()
 
       case let .deepLinkReceived(deepLink):
         switch deepLink {
@@ -424,5 +377,76 @@ extension Reducer where State == PIDAFeature.State, Action == PIDAFeature.Action
       .ifLet(\.signUp, action: \.signUp) { SignUpFeature() }
       .ifLet(\.update, action: \.update) { ProfileUpdateFeature() }
       .ifLet(\.blooming, action: \.blooming) { BloomingUpdateFeature() }
+  }
+}
+
+// MARK: - Private Effects
+
+extension PIDAFeature {
+  /// 앱 시작 시 푸시 알림 권한 요청 및 구독 초기화
+  private func initializeAppLifecycle() -> Effect<Action> {
+    return .run { [pushNotificationClient] send in
+      // 푸시 알림 권한 요청
+      let status = await pushNotificationClient.checkAuthorizationStatus()
+      if status == .notDetermined {
+        _ = await pushNotificationClient.requestAuthorization()
+      }
+      // FCM 토큰 구독 시작
+      await send(.subscribeFCMToken)
+      // DeepLink 구독 시작
+      await send(.subscribeDeepLink)
+    }
+  }
+
+  /// FCM 토큰 수신 구독
+  private func subscribeFCMToken() -> Effect<Action> {
+    return .run { send in
+      for await notification in NotificationCenter.default.notifications(named: .didReceiveFCMToken) {
+        if let token = notification.userInfo?["token"] as? String {
+          await send(.fcmTokenReceived(token))
+        }
+      }
+    }
+    .cancellable(id: CancelID.fcmTokenSubscription)
+  }
+
+  /// FCM 토큰을 서버로 전송 (최대 3회 재시도, 지수 백오프)
+  private func sendFCMTokenToServer(token: String) -> Effect<Action> {
+    return .run { [userClient] _ in
+      for attempt in 1...3 {
+        do {
+          try await userClient.updateFCMToken(token)
+          print("✅ FCM 토큰 서버 전송 성공")
+          return
+        } catch {
+          print("❌ FCM 토큰 서버 전송 실패 (시도 \(attempt)/3): \(error)")
+          if attempt < 3 {
+            // 지수 백오프: 1초, 2초, 4초
+            try? await Task.sleep(for: .seconds(pow(2.0, Double(attempt - 1))))
+          }
+        }
+      }
+    }
+  }
+
+  /// 로그인 성공 후 현재 FCM 토큰을 가져와 서버로 전송
+  private func sendFCMTokenIfNeeded() -> Effect<Action> {
+    return .run { [pushNotificationClient] send in
+      if let token = await pushNotificationClient.getFCMToken() {
+        await send(.sendFCMTokenToServer(token))
+      }
+    }
+  }
+
+  /// DeepLink 이벤트 구독
+  private func subscribeDeepLink() -> Effect<Action> {
+    return .run { send in
+      for await notification in NotificationCenter.default.notifications(named: .didReceiveDeepLink) {
+        if let deepLink = notification.userInfo?["deepLink"] as? DeepLink {
+          await send(.deepLinkReceived(deepLink))
+        }
+      }
+    }
+    .cancellable(id: CancelID.deepLinkSubscription)
   }
 }
