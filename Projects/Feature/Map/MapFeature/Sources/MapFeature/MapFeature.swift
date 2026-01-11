@@ -132,17 +132,20 @@ extension MapFeature {
         return .none
         
       case .searchBackButtonTapped:
-        if state.isShowRegionList {
-          state.searchRegionList = nil
-          state.regionResult = nil 
-          state.isShowRegionList = false
-          return .send(.presentToSearch)
-        } else if state.detailRoot == .region {
+        switch state.detailRoot {
+        case .region:
           state.flowerSpotDetail = nil
           state.detailRoot = nil
           return .send(.showRegionList(state.regionResult, true))
-        } else if state.detailRoot == .search {
+        case .search:
           return .send(.presentToSearch)
+        case nil:
+          if state.isShowRegionList {
+            state.searchRegionList = nil
+            state.regionResult = nil
+            state.isShowRegionList = false
+            return .send(.presentToSearch)
+          }
         }
         return .none
         
