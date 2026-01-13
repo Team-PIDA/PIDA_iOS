@@ -116,11 +116,11 @@ extension MapFeature {
           .send(.setSearchBarText(nil))
         )
         
-      case let .showRegionList(regionResult, isPresent):
-        state.regionResult = regionResult
+      case let .showRegionList(result):
+        state.regionResult = result
         state.searchRegionList = .init()
-        state.isShowRegionList = isPresent
-        return showSearchRegionResult(result: regionResult)
+        state.isShowRegionList = true
+        return showSearchRegionResult(name: result.name, coord: result.coordinate)
         
       case .changeRegionSheetDetent:
         if state.isShowRegionList {
@@ -140,8 +140,12 @@ extension MapFeature {
         case .region:
           state.flowerSpotDetail = nil
           state.detailRoot = nil
-          return .send(.showRegionList(state.regionResult, true))
+          if let result = state.regionResult {
+            return .send(.showRegionList(data: result))
+          }
+          return .none
         case .search:
+          state.detailRoot = nil
           return .send(.presentToSearch)
         case nil:
           if state.isShowRegionList {
@@ -264,12 +268,10 @@ extension MapFeature.Core {
     }
   }
   
-  private func showSearchRegionResult(result: FlowerSpotEntity?) -> Effect<Action> {
+  private func showSearchRegionResult(name: String, coord: Coordinate) -> Effect<Action> {
     return .run { send in
-      if let result = result {
-        await send(.setSearchBarText(result.streetName))
-        await send(.location(.moveLocation(result.pinPoint)))
-      }
+      await send(.setSearchBarText(name))
+      await send(.location(.moveLocation(coord)))
     }
   }
 }

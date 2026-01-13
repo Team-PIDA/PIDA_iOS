@@ -8,6 +8,7 @@
 
 import Foundation
 import CacheClient
+import Shared
 
 public enum SearchType: String, Codable, CaseIterable, Sendable {
   case region
@@ -20,19 +21,22 @@ public struct SearchListCellEntity: Equatable, Sendable, Codable {
   public let streetName: String?
   public let subInfo: String?
   public let searchType: SearchType
+  public let coord: Coordinate?
   
   public init(
     id: Int,
     address: String?,
     streetName: String?,
     subInfo: String? = nil,
-    searchType: SearchType = .street
+    searchType: SearchType = .street,
+    coord: Coordinate? = nil
   ) {
     self.id = id
     self.address = address
     self.streetName = streetName
     self.subInfo = subInfo
     self.searchType = searchType
+    self.coord = coord
   }
   
   public init(_ entity: SearchAddressCacheModel) {
@@ -41,6 +45,7 @@ public struct SearchListCellEntity: Equatable, Sendable, Codable {
     self.streetName = entity.streetName
     self.subInfo = entity.subInfo
     self.searchType = entity.searchType.flatMap { SearchType(rawValue: $0) } ?? .street
+    self.coord = nil
   }
   
 }

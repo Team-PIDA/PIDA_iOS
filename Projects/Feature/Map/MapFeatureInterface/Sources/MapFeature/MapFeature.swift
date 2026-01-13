@@ -10,6 +10,7 @@ import Foundation
 import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
+import SearchClient
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
 import Shared
@@ -59,7 +60,7 @@ public struct MapFeature {
     /// 상세 화면 진입 시 루트 화면
     public var detailRoot: DetailRoot? = nil
     /// 리전 검색 결과 저장
-    public var regionResult: FlowerSpotEntity? = nil // TODO: - 추후 타입 변경 필요
+    public var regionResult: RegionInfoEntity? = nil // TODO: - 추후 타입 변경 필요
     
     public var toastMessage: String? = nil
     
@@ -102,7 +103,7 @@ public struct MapFeature {
     case showSearchResult(FlowerSpotEntity?)
     case setSearchBarText(String?)
     case resetSearchBar
-    case showRegionList(FlowerSpotEntity?, Bool) // TODO: - 리전 검색 결과에 따른 data 넘기기
+    case showRegionList(data: RegionInfoEntity) // TODO: - 리전 검색 결과에 따른 data 넘기기
     case changeRegionSheetDetent
     case searchBackButtonTapped
     case handleSearchBackNavigation
