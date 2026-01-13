@@ -242,12 +242,4 @@ public struct DetentBottomSheet<Content: View>: View {
 // MARK: - fileprivate BottomSheetDetent Extension
 extension BottomSheetDetent {
   fileprivate static let ordered: [BottomSheetDetent] = [.low, .medium, .high]
-  
-  fileprivate func visibleHeight(minHeight: CGFloat, screenHeight: CGFloat) -> CGFloat {
-    switch self {
-    case .low:       return minHeight
-    case .medium: return (screenHeight - 64.0) * (3.0 / 5.0)
-    case .high:      return screenHeight
-    }
-  }
 }

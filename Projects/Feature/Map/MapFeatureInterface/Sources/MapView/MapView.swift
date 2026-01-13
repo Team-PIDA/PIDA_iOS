@@ -101,7 +101,8 @@ extension MapView {
       updateMarkerStatus: Binding(
         get: { store.flowerSpotDetail?.updateMarkerStatus },
         set: { _ in }
-      )
+      ),
+      hasBottomSheet: $store.isShowRegionList
     )
     .onReceiveMapBounds {
       if store.requestMapBound {

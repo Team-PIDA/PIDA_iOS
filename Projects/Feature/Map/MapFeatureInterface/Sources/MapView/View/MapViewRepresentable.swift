@@ -43,6 +43,9 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 활성화 된 마커 상태를 업데이트
   @Binding var updateMarkerStatus: BloomStatus?
   
+  /// 바텀시트 표시 여부 (카메라 중앙 위치 조정용)
+  @Binding var hasBottomSheet: Bool
+  
   /// 마커 탭 시 id값을 전달하기 위한 클로저
   var onMarkerTapped: ((Int?) -> Void)? = nil
   /// 지도 범위 좌표 값을 전달하기 위한 클로저
@@ -176,13 +179,44 @@ extension MapViewRepresentable {
   /// 카메라 이동 메서드
   private func moveCamera(_ view: NMFNaverMapView, to point: Coordinate?, zoomLevel: Double = 13) {
     if let point = point {
-      let coord = NMGLatLng(lat: point.latitude, lng: point.longitude)
+      var adjustedPoint = point
+      
+      // 바텀시트가 있을 때 중앙 위치 조정
+      if hasBottomSheet {
+        adjustedPoint = adjustCenterForBottomSheet(originalPoint: point, mapView: view.mapView)
+      }
+      
+      let coord = NMGLatLng(lat: adjustedPoint.latitude, lng: adjustedPoint.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: coord, zoomTo: zoomLevel)
       cameraUpdate.animation = .easeOut
       cameraUpdate.animationDuration = 1
       
       view.mapView.moveCamera(cameraUpdate)
     }
+  }
+  
+  /// 바텀시트를 고려한 중앙 위치 조정
+  private func adjustCenterForBottomSheet(originalPoint: Coordinate, mapView: NMFMapView) -> Coordinate {
+    let screenHeight = UIScreen.main.bounds.height
+    let bottomSheetHeight = BottomSheetDetent.medium.visibleHeight(minHeight: 0.0, screenHeight: screenHeight) 
+    let searchBarHeight: CGFloat = 60 // 대략적인 SearchBar 높이
+    
+    // SearchBar와 BottomSheet 사이 중앙 영역의 중점 계산
+    let availableMapHeight = screenHeight - searchBarHeight - bottomSheetHeight
+    
+    // 화면 중앙에서 위로 올릴 픽셀 오프셋
+    let offsetFromCenter = (bottomSheetHeight / 2) - (searchBarHeight / 2)
+    
+    // 위도 오프셋 계산 (대략 1도 ≈ 111km, 픽셀당 변환)
+    let projection = mapView.projection
+    let screenCenter = CGPoint(x: mapView.bounds.width / 2, y: mapView.bounds.height / 2)
+    
+    let originalLatLng = NMGLatLng(lat: originalPoint.latitude, lng: originalPoint.longitude)
+    let centerScreenPoint = projection.point(from: originalLatLng)
+    let adjustedScreenPoint = CGPoint(x: centerScreenPoint.x, y: centerScreenPoint.y + offsetFromCenter)
+    let adjustedLatLng = projection.latlng(from: adjustedScreenPoint)
+    
+    return Coordinate(latitude: adjustedLatLng.lat, longitude: adjustedLatLng.lng)
   }
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
