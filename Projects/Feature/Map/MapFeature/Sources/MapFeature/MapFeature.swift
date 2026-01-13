@@ -97,8 +97,8 @@ extension MapFeature {
         
       case let .showSearchResult(result):
         state.searchResult = result
-        state.detailRoot = .search
         if result != nil {
+          state.detailRoot = .search
           // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
           state.flowerSpotDetail = .init(userLocation: state.userLocation)
         } else {
