@@ -149,6 +149,7 @@ extension MapFeature {
           return .send(.presentToSearch)
         case nil:
           if state.isShowRegionList {
+            state.regionSheetDetent = .medium
             state.searchRegionList = nil
             state.regionResult = nil
             state.isShowRegionList = false
