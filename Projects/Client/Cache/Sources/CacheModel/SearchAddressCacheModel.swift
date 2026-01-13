@@ -13,16 +13,19 @@ public struct SearchAddressCacheModel: Equatable, Sendable, Codable {
   public let address: String?
   public let streetName: String?
   public let subInfo: String?
+  public let searchType: String?
   
   public init(
     id: Int,
     address: String?,
     streetName: String?,
-    subInfo: String? = nil
+    subInfo: String? = nil,
+    searchType: String? = nil
   ) {
     self.id = id
     self.address = address
     self.streetName = streetName
     self.subInfo = subInfo
+    self.searchType = searchType
   }
 }
