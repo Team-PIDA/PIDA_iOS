@@ -11,6 +11,7 @@ import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
 import FlowerSpotDetailFeatureInterface
+import SearchRegionListFeatureInterface
 import Shared
 
 @Reducer
@@ -18,15 +19,18 @@ public struct MapFeature {
   private let reducer: Reduce<State, Action>
   private let location: Reduce<LocationFeature.State, LocationFeature.Action>
   private let flowerSpotDetail: FlowerSpotDetailFeature
+  private let searchRegionList: SearchRegionListFeature
 
   public init(
     reducer: Reduce<State, Action>,
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
-    flowerSpotDetail: FlowerSpotDetailFeature
+    flowerSpotDetail: FlowerSpotDetailFeature,
+    searchRegionList: SearchRegionListFeature
   ) {
     self.reducer = reducer
     self.location = location
     self.flowerSpotDetail = flowerSpotDetail
+    self.searchRegionList = searchRegionList
   }
   
   @ObservableState
@@ -52,11 +56,20 @@ public struct MapFeature {
     /// 검색 결과 텍스트
     public var searchText: String? = nil
     
+    /// 상세 화면 진입 시 루트 화면
+    public var detailRoot: DetailRoot? = nil
+    /// 리전 검색 결과 저장
+    public var regionResult: FlowerSpotEntity? = nil // TODO: - 추후 타입 변경 필요
+    
     public var toastMessage: String? = nil
     
     public var toastLabel: String? = nil
     
     public var isViewAppeared: Bool = false
+    
+    public var isShowRegionList: Bool = false
+    
+    public var regionSheetDetent: BottomSheetDetent = .medium
     
     public var alertType: AlertType? = nil
 
@@ -64,6 +77,7 @@ public struct MapFeature {
 
     /// Optional State 패턴: nil이면 바텀시트 숨김, 값이 있으면 바텀시트 표시
     public var flowerSpotDetail: FlowerSpotDetailFeature.State? = nil
+    public var searchRegionList: SearchRegionListFeature.State? = nil
 
     public init() {}
   }
@@ -73,6 +87,7 @@ public struct MapFeature {
     case binding(BindingAction<State>)
     case location(LocationFeature.Action)
     case flowerSpotDetail(FlowerSpotDetailFeature.Action)
+    case searchRegionList(SearchRegionListFeature.Action)
     
     case showToastView(message: String?, buttonLabel: String?)
     case moveToReportURL
@@ -87,6 +102,10 @@ public struct MapFeature {
     case showSearchResult(FlowerSpotEntity?)
     case setSearchBarText(String?)
     case resetSearchBar
+    case showRegionList(FlowerSpotEntity?, Bool) // TODO: - 리전 검색 결과에 따른 data 넘기기
+    case changeRegionSheetDetent
+    case searchBackButtonTapped
+    case handleSearchBackNavigation
     
     case presentAlert(type: AlertType)
     case alertCancelTapped
@@ -103,10 +122,14 @@ public struct MapFeature {
   public enum Delegate: Equatable {
     case presentToSearch(String?)
     case pushToSetting
-    case resetSearchView
     case presentToBlooming(id: Int, streetName: String)
     case presentToLogin(id: Int)
     case mapDidLoad
+  }
+  
+  public enum DetailRoot: Equatable {
+    case region
+    case search
   }
   
   public var body: some ReducerOf<Self> {
@@ -116,6 +139,9 @@ public struct MapFeature {
     }
     .ifLet(\.flowerSpotDetail, action: \.flowerSpotDetail) {
       flowerSpotDetail
+    }
+    .ifLet(\.searchRegionList, action: \.searchRegionList) {
+      searchRegionList
     }
     reducer
   }

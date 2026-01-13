@@ -27,6 +27,9 @@ import BloomingFeatureInterface
 import FlowerSpotDetailFeature
 import FlowerSpotDetailFeatureInterface
 
+import SearchRegionListFeature
+import SearchRegionListFeatureInterface
+
 import PushClient
 import UserClient
 import DeepLinkClient
@@ -60,13 +63,13 @@ struct PIDAFeature {
     var signUp: SignUpFeature.State? = nil
     var update: ProfileUpdateFeature.State? = nil
     var blooming: BloomingUpdateFeature.State? = nil
-
     /// 네비게이션 이동 경로
     var path: [Path] = []
     var isShowSearch: Bool = false
     var isPresentAuth: Bool = false
     var isPresentSignUp: Bool = false
     var isPresentBlooming: Bool = false
+    var isPresentRegionList: Bool = false
     var loginSource: LoginSource? = nil
 
     /// 구독 상태 플래그 (중복 구독 방지)
@@ -120,7 +123,8 @@ struct PIDAFeature {
     Scope(state: \.map, action: \.map) {
       MapFeature(
         location: locationReducer,
-        flowerSpotDetail: FlowerSpotDetailFeature()
+        flowerSpotDetail: FlowerSpotDetailFeature(),
+        searchRegionList: SearchRegionListFeature()
       )
     }
     Reduce<State, Action> { state, action in
@@ -166,9 +170,7 @@ struct PIDAFeature {
         print("✅ Processing pending DeepLink: \(pendingDeepLink)")
         AppDelegate.pendingDeepLink = nil
         return .send(.deepLinkReceived(pendingDeepLink))
-
-        // MARK: - Map <-> Search
-
+        
       case let .presentSearch(isShow, keyword):
         if isShow {
           state.search = .init(initText: keyword)
@@ -215,20 +217,25 @@ struct PIDAFeature {
         state.signUp = nil
         return .none
 
-        // map -> search
-      case let .map(.delegate(.presentToSearch(keyword))):
-        return .send(.presentSearch(true, keyword: keyword))
-
-        // search dismiss
-      case .search(.delegate(.dismiss)):
-        return .send(.presentSearch(false, keyword: nil))
-
-        // search dismiss with result
-      case let .search(.delegate(.selectResult(result))):
-        return .concatenate(
-          .send(.map(.showSearchResult(result))),
-          .send(.presentSearch(false, keyword: nil))
-        )
+      // MARK: - Search Delegate
+        
+      case let .search(.delegate(action)):
+        switch action {
+        case .dismiss:
+          return .send(.presentSearch(false, keyword: nil))
+          
+        case let .selectResult(result):
+          return .concatenate(
+            .send(.map(.showSearchResult(result))),
+            .send(.presentSearch(false, keyword: nil))
+          )
+          
+        case let .selectRegionResult(result):
+          return .concatenate(
+            .send(.map(.showRegionList(result, true))),
+            .send(.presentSearch(false, keyword: nil))
+          )
+        }
         
         // MARK: - Blooming Delegate
 
@@ -244,49 +251,55 @@ struct PIDAFeature {
         }
 
         // MARK: - Map Delegate
-
-      case let .map(.delegate(.presentToBlooming(id, streetName))):
-        return .send(.presentBloomingUpdate(true, id: id, streetName: streetName))
-
-      case let .map(.delegate(.presentToLogin(id))):
-        state.loginSource = .flowerSpotDetail(spotId: id)
-        return .concatenate(
-          .send(.presentToLogin(true)),
-          .send(.auth(.setSpotId(id: id)))
-        )
-
-      case .map(.delegate(.mapDidLoad)):
-        // 지도 로드 완료 후 pending 딥링크 처리
-        return .send(.processPendingDeepLink)
-
-        // MARK: - Map <-> Setting
-
-        // map -> setting
-      case .map(.delegate(.pushToSetting)):
-        state.setting = .init()
-        state.path.append(.setting)
-        return .none
         
-      case .setting(.delegate(.pop)):
-        state.path.removeLast()
-        return .none
-
-        // MARK: - Setting
-
-      case let .setting(.delegate(.pushToPolicy(type))):
-        state.policy = .init(type: type)
-        state.path.append(.policy)
-        return .none
-
-      case .setting(.delegate(.presentToLogin)):
-        state.loginSource = .setting
-        return .send(.presentToLogin(true))
-
-      case .setting(.delegate(.presentToUpdateProfile)):
-        state.update = .init()
-        state.path.append(.update)
-        return .none
-
+      case let .map(.delegate(action)):
+        switch action {
+        case let .presentToBlooming(id, streetName):
+          return .send(.presentBloomingUpdate(true, id: id, streetName: streetName))
+          
+        case let .presentToLogin(id):
+          state.loginSource = .flowerSpotDetail(spotId: id)
+          return .concatenate(
+            .send(.presentToLogin(true)),
+            .send(.auth(.setSpotId(id: id)))
+          )
+          
+        case let .presentToSearch(keyword):
+          return .send(.presentSearch(true, keyword: keyword))
+          
+        case .mapDidLoad:
+          // 지도 로드 완료 후 pending 딥링크 처리
+          return .send(.processPendingDeepLink)
+          
+        case .pushToSetting:
+          state.setting = .init()
+          state.path.append(.setting)
+          return .none
+        }
+        
+        // MARK: - Setting Delegate
+        
+      case let .setting(.delegate(action)):
+        switch action {
+        case .pop:
+          state.path.removeLast()
+          return .none
+          
+        case let .pushToPolicy(type):
+          state.policy = .init(type: type)
+          state.path.append(.policy)
+          return .none
+          
+        case .presentToLogin:
+          state.loginSource = .setting
+          return .send(.presentToLogin(true))
+          
+        case .presentToUpdateProfile:
+          state.update = .init()
+          state.path.append(.update)
+          return .none
+        }
+        
       case .policy(.delegate(.pop)):
         state.path.removeLast()
         return .none
@@ -295,37 +308,42 @@ struct PIDAFeature {
         state.path.removeLast()
         return .send(.setting(.checkLoggedIn))
 
-        // MARK: - Auth
-
-      case .auth(.delegate(.dismiss)):
-        let source = state.loginSource
-        state.loginSource = nil
-        if case .setting = source {
+        // MARK: - Auth Delegate
+        
+      case let .auth(.delegate(action)):
+        switch action {
+        case .dismiss:
+          let source = state.loginSource
+          state.loginSource = nil
+          if case .setting = source {
+            return .concatenate(
+              .send(.sendFCMTokenIfNeeded),
+              .send(.presentToLogin(false)),
+              .send(.setting(.checkLoggedIn))
+            )
+          } else {
+            return .concatenate(
+              .send(.sendFCMTokenIfNeeded),
+              .send(.presentToLogin(false))
+            )
+          }
+          
+        case let .dismissWithVerifyBloomState(id):
           return .concatenate(
             .send(.sendFCMTokenIfNeeded),
             .send(.presentToLogin(false)),
-            .send(.setting(.checkLoggedIn))
+            .send(.map(.fetchDetailInfo(id)))
           )
-        } else {
+          
+        case .presentToSignUp:
           return .concatenate(
-            .send(.sendFCMTokenIfNeeded),
+            .send(.presentSignUp(true)),
             .send(.presentToLogin(false))
           )
         }
-
-      case let .auth(.delegate(.dismissWithVerifyBloomState(id))):
-        return .concatenate(
-          .send(.sendFCMTokenIfNeeded),
-          .send(.presentToLogin(false)),
-          .send(.map(.fetchDetailInfo(id)))
-        )
-
-      case .auth(.delegate(.presentToSignUp)):
-        return .concatenate(
-          .send(.presentSignUp(true)),
-          .send(.presentToLogin(false))
-        )
-
+        
+        // MARK: - SignUp Delegate
+        
       case .signUp(.delegate(.dismiss)):
         let source = state.loginSource
         state.loginSource = nil

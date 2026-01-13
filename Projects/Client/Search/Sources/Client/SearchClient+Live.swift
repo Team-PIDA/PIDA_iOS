@@ -65,9 +65,9 @@ extension SearchClient: DependencyKey {
       },
       // NOTE: 질문) 얘가 하는 역할이 뭔지?
       getSearchListFromCache: {
-        guard let items = await cache.get(.allFlowerSpots, as: [SearchListCellEntity].self)
+        guard let items = await cache.get(.allFlowerSpots, as: [SearchAddressCacheModel].self)
         else { return [] }
-        return items
+        return items.map { SearchListCellEntity($0) }
       },
       saveRecentSearchItem: { entity in
         guard let allList = await cache.get(.recentSearches, as: [SearchListCellEntity].self)

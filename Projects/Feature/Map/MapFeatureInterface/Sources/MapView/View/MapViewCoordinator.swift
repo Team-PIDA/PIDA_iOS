@@ -63,6 +63,7 @@ extension MapViewRepresentable {
     
     func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
       if reason == NMFMapChangedByGesture || reason == NMFMapChangedByControl {
+        parent.cameraMoveEvent?()
         if !isInitialBounds, !parent.isCameraMove {
           parent.isCameraMove = true
         }

@@ -48,6 +48,8 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 지도 범위 좌표 값을 전달하기 위한 클로저
   var mapBounds: (([Coordinate]) -> Void)? = nil
   
+  var cameraMoveEvent: (() -> Void)? = nil
+  
   /// 지도 초기 위치 설정 - 석촌호수 근처
   private let defaultPoint: Coordinate = .init(latitude: 37.50545, longitude: 127.10143)
   

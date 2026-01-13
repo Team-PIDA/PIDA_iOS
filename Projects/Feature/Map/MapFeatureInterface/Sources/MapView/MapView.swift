@@ -11,6 +11,7 @@ import Shared
 import DesignKit
 import ComposableArchitecture
 import FlowerSpotDetailFeatureInterface
+import SearchRegionListFeatureInterface
 
 public struct MapView: View {
   @Bindable var store: StoreOf<MapFeature>
@@ -20,6 +21,8 @@ public struct MapView: View {
   /// 바텀시트 확장 상태 여부
   @State private var isBottomSheetExpanded: Bool = false
 
+  
+  
   public init(store: StoreOf<MapFeature>) {
     self.store = store
   }
@@ -61,6 +64,13 @@ public struct MapView: View {
         },
         alignment: .bottom
       )
+    .overlay {
+      Group {
+        if let store = store.scope(state: \.searchRegionList, action: \.searchRegionList) {
+          regionListSheet(store: store)
+        }
+      }
+    }
     .ignoresSafeArea(edges: .bottom)
     .onAppear {
       if !store.isViewAppeared {
@@ -101,6 +111,9 @@ extension MapView {
     .onMarkerTapped { id in
       store.send(.markerTapped(id: id))
     }
+    .cameraMoveEvent {
+      store.send(.changeRegionSheetDetent)
+    }
     .ignoresSafeArea()
   }
   
@@ -115,8 +128,7 @@ extension MapView {
           TouchArea(image: .back)
             .size(.extraLarge)
             .action {
-              store.send(.resetSearchBar)
-              store.send(.markerTapped(id: nil))
+              store.send(.searchBackButtonTapped)
             }
         }
       )
@@ -206,5 +218,11 @@ extension MapView {
         store.send(.flowerSpotDetail(.dismiss))
       }
     )
+  }
+  
+  private func regionListSheet(store: StoreOf<SearchRegionListFeature>) -> some View {
+    DetentBottomSheet(isPresented: $store.isShowRegionList, detent: $store.regionSheetDetent) {
+      SearchRegionListView(store: store)
+    }
   }
 }

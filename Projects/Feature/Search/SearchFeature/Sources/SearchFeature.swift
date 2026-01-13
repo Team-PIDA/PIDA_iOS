@@ -11,7 +11,7 @@ import ComposableArchitecture
 import SearchFeatureInterface
 import SearchClient
 import FlowerSpotClient
-
+import Shared
 
 extension SearchFeature {
   public init() {
@@ -35,13 +35,11 @@ extension SearchFeature {
         }
 
       case .onAppear:
-        return .run { send in
-          await MainActor.run {
-            send(.configureSearchList)
-            send(.searchBarFocused(true))
-            send(.fetchRecentResult)
-          }
-        }
+        return .concatenate(
+          .send(.configureSearchList),
+          .send(.searchBarFocused(true)),
+          .send(.fetchRecentResult)
+        )
 
       case .configureSearchList:
         if state.searchWord.isEmpty {
@@ -61,24 +59,14 @@ extension SearchFeature {
         return .none
 
       case .fetchRecentResult:
-        return .run { [searchKeyword = state.searchWord] send in
-          do {
-            let recent = try await searchClient.fetchRecentSearch()
-            await send(.storeRecentResult(recent))
-            if searchKeyword.isEmpty {
-              await send(.updateSearchResults(recent))
-            }
-          }
-        }
+        return fetchRecentResult(keyword: state.searchWord)
 
       case let .storeRecentResult(item):
         state.recentList = item
         return .none
 
       case let .fetchSearchResult(result):
-        return .run { send in
-          await MainActor.run { send(.delegate(.selectResult(result))) }
-        }
+        return .send(.delegate(.selectResult(result)))
 
       case let .searchBarFocused(isFocused):
         state.isFocused = isFocused
@@ -87,18 +75,17 @@ extension SearchFeature {
       case let .initialSearchBar(text):
         state.searchWord = text ?? ""
         return .none
-
-      // MARK: - Delegate
-      case let .selectResult(item):
+        
+      case let .selectResult(item): // TODO: - 선택한 타입(리전, 거리)에 따라 분기처리 필요
         return fetchSelectedDetailInfo(item: item)
 
+      // MARK: - Delegate
+      
       case .dismiss:
-        return .run { send in
-          await MainActor.run {
-            send(.searchBarFocused(false))
-            send(.delegate(.dismiss))
-          }
-        }
+        return .concatenate(
+          .send(.searchBarFocused(false)),
+          .send(.delegate(.dismiss))
+        )
 
       case .binding, .delegate:
         return .none
@@ -108,6 +95,19 @@ extension SearchFeature {
 }
 
 extension SearchFeature.Core {
+  
+  private func fetchRecentResult(keyword: String) -> Effect<Action> {
+    return .run { send in
+      do {
+        let recent = try await searchClient.fetchRecentSearch()
+        await send(.storeRecentResult(recent))
+        if keyword.isEmpty {
+          await send(.updateSearchResults(recent))
+        }
+      }
+    }
+  }
+  
   private func searchItem(with searchQuery: String) -> Effect<Action> {
     return .run { send in
       do {

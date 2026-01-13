@@ -8,6 +8,7 @@
 
 import Foundation
 import APIClient
+import CacheClient
 
 struct GetFlowerSpotListDTO: DTO {
   typealias Entity = FlowerSpotListEntity
@@ -23,6 +24,18 @@ extension GetFlowerSpotListDTO {
       try? $0.toEntity()
     }
     return FlowerSpotListEntity(itemList: items)
+  }
+  
+  func toCacheModel() -> [SearchAddressCacheModel] {
+    guard let list = list else { return [] }
+    return list.compactMap { item in
+      SearchAddressCacheModel(
+        id: item.id,
+        address: item.address,
+        streetName: item.streetName,
+        subInfo: nil
+      )
+    }
   }
 }
 
