@@ -31,6 +31,9 @@ public struct SearchRegionListView: View {
         .padding(.top, .Number8)
         .padding(.bottom, .Number16)
       }
+      .onAppear {
+        store.send(.onAppear)
+      }
     }
   }
   

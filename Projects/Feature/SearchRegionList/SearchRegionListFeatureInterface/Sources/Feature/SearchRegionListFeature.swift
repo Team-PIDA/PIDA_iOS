@@ -8,6 +8,8 @@
 
 import ComposableArchitecture
 import SearchClient
+import Shared
+import FlowerSpotClient
 
 @Reducer
 public struct SearchRegionListFeature {
@@ -20,6 +22,7 @@ public struct SearchRegionListFeature {
   @ObservableState
   public struct State: Equatable {
     public var region: RegionInfoEntity
+    public var flowerSpots: [FlowerSpotEntity] = []
     
     public init(region: RegionInfoEntity) {
       self.region = region
@@ -27,6 +30,8 @@ public struct SearchRegionListFeature {
   }
 
   public enum Action: Equatable {
+    case onAppear
+    case storeFlowerSpots([FlowerSpotEntity])
   }
 
   public var body: some ReducerOf<Self> {

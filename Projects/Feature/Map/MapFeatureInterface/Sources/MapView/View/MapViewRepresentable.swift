@@ -82,8 +82,15 @@ struct MapViewRepresentable: UIViewRepresentable {
       moveUserLocation(uiView, to: userLocation, context: context)
     }
     
-    if context.coordinator.markers.isEmpty, !flowerPositions.isEmpty {
+    // 마커 데이터가 변경되었을 때 마커 업데이트
+    if !flowerPositions.isEmpty && context.coordinator.currentFlowerPositions != flowerPositions {
+      // 기존 마커 삭제
+      if !context.coordinator.markers.isEmpty {
+        context.coordinator.deleteAllMarkers()
+      }
+      // 새로운 마커 표시
       presentMarkers(uiView, flowers: flowerPositions, context: context)
+      context.coordinator.currentFlowerPositions = flowerPositions
     }
     
     // 마커 탭 이벤트 시
@@ -201,15 +208,11 @@ extension MapViewRepresentable {
     let bottomSheetHeight = BottomSheetDetent.medium.visibleHeight(minHeight: 0.0, screenHeight: screenHeight) 
     let searchBarHeight: CGFloat = 60 // 대략적인 SearchBar 높이
     
-    // SearchBar와 BottomSheet 사이 중앙 영역의 중점 계산
-    let availableMapHeight = screenHeight - searchBarHeight - bottomSheetHeight
-    
     // 화면 중앙에서 위로 올릴 픽셀 오프셋
     let offsetFromCenter = (bottomSheetHeight / 2) - (searchBarHeight / 2)
     
     // 위도 오프셋 계산 (대략 1도 ≈ 111km, 픽셀당 변환)
     let projection = mapView.projection
-    let screenCenter = CGPoint(x: mapView.bounds.width / 2, y: mapView.bounds.height / 2)
     
     let originalLatLng = NMGLatLng(lat: originalPoint.latitude, lng: originalPoint.longitude)
     let centerScreenPoint = projection.point(from: originalLatLng)

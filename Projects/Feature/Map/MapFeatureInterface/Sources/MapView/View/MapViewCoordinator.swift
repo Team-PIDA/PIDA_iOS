@@ -43,6 +43,8 @@ extension MapViewRepresentable {
     
     /// 지도에 그려진 경로의 좌표 데이터
     var drawPathPoints: [Coordinate] = []
+    /// 현재 표시된 꽃 명소 데이터 (마커 업데이트 감지용)
+    var currentFlowerPositions: [Int: FlowerSpotEntity] = [:]
     
     init(_ parent: MapViewRepresentable) {
       self.parent = parent

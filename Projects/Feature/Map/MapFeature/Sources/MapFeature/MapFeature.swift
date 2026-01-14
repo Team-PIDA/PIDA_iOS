@@ -188,6 +188,10 @@ extension MapFeature {
           data.forEach {
             state.flowerSpots[$0.id] = $0
           }
+          // SearchRegionListFeature가 활성화되어 있으면 데이터 전달
+          if state.searchRegionList != nil {
+            return .send(.searchRegionList(.storeFlowerSpots(data)))
+          }
           return .none
           
         case let .storeUserLocation(location):
@@ -273,6 +277,7 @@ extension MapFeature.Core {
     return .run { send in
       await send(.setSearchBarText(name))
       await send(.location(.moveLocation(coord)))
+      await send(.location(.fetchFlowersInRadius(coordinate: coord, radiusInKm: 3.0)))
     }
   }
 }
