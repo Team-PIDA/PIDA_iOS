@@ -37,7 +37,7 @@ public struct SearchRegionListView: View {
   @ViewBuilder
   private var headerView: some View {
     VStack(alignment: .leading) {
-      Text(store.regionName + " 근처 벚꽃길")
+      Text(store.region.name + " 근처 벚꽃길")
         .fontStyle(FontSet.Heading.heading3)
         .foregroundStyle(ColorSet.Text.Primary)
         .padding(.horizontal, .Number16)

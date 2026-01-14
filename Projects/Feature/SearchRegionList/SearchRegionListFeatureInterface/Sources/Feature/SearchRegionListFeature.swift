@@ -7,6 +7,7 @@
 //
 
 import ComposableArchitecture
+import SearchClient
 
 @Reducer
 public struct SearchRegionListFeature {
@@ -18,9 +19,11 @@ public struct SearchRegionListFeature {
   
   @ObservableState
   public struct State: Equatable {
-    public var regionName: String = "{ input }"
+    public var region: RegionInfoEntity
     
-    public init() {}
+    public init(region: RegionInfoEntity) {
+      self.region = region
+    }
   }
 
   public enum Action: Equatable {

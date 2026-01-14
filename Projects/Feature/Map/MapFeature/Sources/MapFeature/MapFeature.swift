@@ -118,7 +118,7 @@ extension MapFeature {
         
       case let .showRegionList(result):
         state.regionResult = result
-        state.searchRegionList = .init()
+        state.searchRegionList = .init(region: result)
         state.isShowRegionList = true
         return showSearchRegionResult(name: result.name, coord: result.coordinate)
         
