@@ -29,8 +29,9 @@ extension SearchRegionListFeature {
         return .none
         
       case let .flowerSpotTapped(flowerSpot):
-        print(flowerSpot.id)
-        return .none
+        return .send(.delegate(.showFlowerSpotDetail(flowerSpot)))
+        
+      case .delegate: return .none
       }
     }
   }

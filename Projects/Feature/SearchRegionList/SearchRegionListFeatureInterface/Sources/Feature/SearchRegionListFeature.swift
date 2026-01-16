@@ -33,6 +33,11 @@ public struct SearchRegionListFeature {
     case onAppear
     case storeFlowerSpots([FlowerSpotEntity])
     case flowerSpotTapped(FlowerSpotEntity)
+    case delegate(Delegate)
+  }
+  
+  public enum Delegate: Equatable {
+    case showFlowerSpotDetail(FlowerSpotEntity)
   }
 
   public var body: some ReducerOf<Self> {

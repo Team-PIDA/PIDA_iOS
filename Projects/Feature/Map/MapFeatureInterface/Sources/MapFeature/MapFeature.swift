@@ -103,7 +103,7 @@ public struct MapFeature {
     case showSearchResult(FlowerSpotEntity?)
     case setSearchBarText(String?)
     case resetSearchBar
-    case showRegionList(data: RegionInfoEntity) // TODO: - 리전 검색 결과에 따른 data 넘기기
+    case showRegionList(data: RegionInfoEntity?)
     case changeRegionSheetDetent
     case searchBackButtonTapped
     case handleSearchBackNavigation

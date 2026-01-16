@@ -117,10 +117,16 @@ extension MapFeature {
         )
         
       case let .showRegionList(result):
-        state.regionResult = result
-        state.searchRegionList = .init(region: result)
-        state.isShowRegionList = true
-        return showSearchRegionResult(name: result.name, coord: result.coordinate)
+        state.isShowRegionList = result != .none
+        if let result = result {
+          state.regionResult = result
+          state.searchRegionList = .init(region: result)
+          return showSearchRegionResult(name: result.name, coord: result.coordinate)
+        } else {
+          state.regionSheetDetent = .medium
+          state.searchRegionList = nil
+          return .none
+        }
         
       case .changeRegionSheetDetent:
         if state.isShowRegionList {
@@ -149,11 +155,11 @@ extension MapFeature {
           return .send(.presentToSearch)
         case nil:
           if state.isShowRegionList {
-            state.regionSheetDetent = .medium
-            state.searchRegionList = nil
             state.regionResult = nil
-            state.isShowRegionList = false
-            return .send(.presentToSearch)
+            return .concatenate(
+              .send(.showRegionList(data: nil)),
+              .send(.presentToSearch)
+            )
           }
         }
         return .none
@@ -232,6 +238,17 @@ extension MapFeature {
         case let .showOnMap(flowerSpot):
           state.searchResult = flowerSpot
           return .send(.location(.moveLocation(flowerSpot.pinPoint)))
+        }
+        
+      case let .searchRegionList(.delegate(action)):
+        switch action {
+        case let .showFlowerSpotDetail(data):
+          state.detailRoot = .region
+          return .concatenate(
+            .send(.showRegionList(data: nil)),
+            .send(.fetchDetailInfo(data.id)),
+            .send(.location(.moveLocation(data.pinPoint)))
+          )
         }
 
       case .flowerSpotDetail:
