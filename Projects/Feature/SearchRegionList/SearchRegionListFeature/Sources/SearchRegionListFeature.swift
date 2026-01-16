@@ -27,6 +27,10 @@ extension SearchRegionListFeature {
       case let .storeFlowerSpots(flowerSpots):
         state.flowerSpots = flowerSpots
         return .none
+        
+      case let .flowerSpotTapped(flowerSpot):
+        print(flowerSpot.id)
+        return .none
       }
     }
   }

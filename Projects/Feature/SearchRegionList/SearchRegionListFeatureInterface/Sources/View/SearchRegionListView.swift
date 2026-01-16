@@ -24,8 +24,13 @@ public struct SearchRegionListView: View {
       ScrollView {
         LazyVStack(spacing: .Number12) {
           ForEach(store.flowerSpots, id: \.id) { flowerSpot in
-            RegionListItemView(flowerSpot: flowerSpot)
-              .padding(.horizontal, .Number16)
+            RegionListItemView(
+              flowerSpot: flowerSpot,
+              onTap: { flowerSpot in
+                store.send(.flowerSpotTapped(flowerSpot))
+              }
+            )
+            .padding(.horizontal, .Number16)
           }
         }
         .padding(.top, .Number8)

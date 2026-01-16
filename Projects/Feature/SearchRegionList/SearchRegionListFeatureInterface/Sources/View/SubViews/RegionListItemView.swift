@@ -12,9 +12,11 @@ import FlowerSpotClient
 
 public struct RegionListItemView: View {
   private let flowerSpot: FlowerSpotEntity
+  private let onTap: (FlowerSpotEntity) -> Void
   
-  public init(flowerSpot: FlowerSpotEntity) {
+  public init(flowerSpot: FlowerSpotEntity, onTap: @escaping (FlowerSpotEntity) -> Void = { _ in }) {
     self.flowerSpot = flowerSpot
+    self.onTap = onTap
   }
   public var body: some View {
     VStack(spacing: .Number12) {
@@ -34,6 +36,10 @@ public struct RegionListItemView: View {
         .foregroundStyle(ColorSet.Border.Secondary)
     }
     .padding(.top, .Number12)
+    .contentShape(Rectangle())
+    .onTapGesture {
+      onTap(flowerSpot)
+    }
   }
   
   @ViewBuilder
