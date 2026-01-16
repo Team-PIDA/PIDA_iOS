@@ -20,8 +20,13 @@ public struct RegionListItemView: View {
     VStack(spacing: .Number12) {
       HStack(alignment: .center, spacing: .Number12) {
         contentView
-        Rectangle()
-          .frame(width: 72, height: 72)
+        
+        if let firstImageUrl = flowerSpot.imageUrls.first {
+          RemoteImageView(urlString: firstImageUrl)
+            .frame(width: 72, height: 72)
+            .clipped()
+            .cornerRadius(16)
+        }
       }
       
       Rectangle()
