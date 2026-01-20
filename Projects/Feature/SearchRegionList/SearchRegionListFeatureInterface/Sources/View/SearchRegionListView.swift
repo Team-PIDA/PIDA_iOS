@@ -9,6 +9,7 @@
 import SwiftUI
 import ComposableArchitecture
 import DesignKit
+import DotLottie
 
 public struct SearchRegionListView: View {
   let store: StoreOf<SearchRegionListFeature>
@@ -18,6 +19,27 @@ public struct SearchRegionListView: View {
   }
 
   public var body: some View {
+    if store.isLoading {
+      VStack(alignment: .center) {
+        Spacer()
+        DotLottieAnimation(
+          fileName: LottieSet.dot_loading.name,
+          config: AnimationConfig(autoplay: true, loop: true)
+        )
+        .view()
+        .frame(width: .Number100, height: .Number100)
+        Spacer()
+      }
+    } else {
+      content
+        .onAppear {
+          store.send(.onAppear)
+        }
+    }
+  }
+  
+  @ViewBuilder
+  private var content: some View {
     VStack(alignment: .leading, spacing: 0) {
       headerView
       
@@ -35,9 +57,6 @@ public struct SearchRegionListView: View {
         }
         .padding(.top, .Number8)
         .padding(.bottom, .Number16)
-      }
-      .onAppear {
-        store.send(.onAppear)
       }
     }
   }

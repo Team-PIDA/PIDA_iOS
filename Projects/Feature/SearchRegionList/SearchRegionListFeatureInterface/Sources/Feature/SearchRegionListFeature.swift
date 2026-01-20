@@ -23,6 +23,7 @@ public struct SearchRegionListFeature {
   public struct State: Equatable {
     public var region: RegionInfoEntity
     public var flowerSpots: [FlowerSpotEntity] = []
+    public var isLoading: Bool = true 
     
     public init(region: RegionInfoEntity) {
       self.region = region
