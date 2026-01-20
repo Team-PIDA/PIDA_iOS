@@ -14,7 +14,12 @@ public struct RegionListItemView: View {
   private let flowerSpot: FlowerSpotEntity
   private let onTap: (FlowerSpotEntity) -> Void
   
-  public init(flowerSpot: FlowerSpotEntity, onTap: @escaping (FlowerSpotEntity) -> Void = { _ in }) {
+  public init(
+    flowerSpot: FlowerSpotEntity,
+    onTap: @escaping (
+      FlowerSpotEntity
+    ) -> Void = { _ in }
+  ) {
     self.flowerSpot = flowerSpot
     self.onTap = onTap
   }
@@ -23,8 +28,8 @@ public struct RegionListItemView: View {
       HStack(alignment: .center, spacing: .Number12) {
         contentView
         
-        if let firstImageUrl = flowerSpot.imageUrls.first {
-          RemoteImageView(urlString: firstImageUrl)
+        if let previewUrl = flowerSpot.previewUrl {
+          RemoteImageView(urlString: previewUrl)
             .frame(width: 72, height: 72)
             .clipped()
             .cornerRadius(16)

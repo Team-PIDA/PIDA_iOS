@@ -31,6 +31,7 @@ public struct FlowerSpotEntity: Equatable, Sendable, Codable {
   public var pinPoint: Coordinate
   public var region: String
   public var imageUrls: [String]
+  public var previewUrl: String?
 
   public init(
     id: Int,
@@ -43,7 +44,8 @@ public struct FlowerSpotEntity: Equatable, Sendable, Codable {
     path: [Coordinate],
     pinPoint: Coordinate,
     region: String,
-    imageUrls: [String] = []
+    imageUrls: [String] = [],
+    previewUrl: String? = nil
   ) {
     self.id = id
     self.address = address ?? "주소 정보 없음"
@@ -57,5 +59,6 @@ public struct FlowerSpotEntity: Equatable, Sendable, Codable {
     self.pinPoint = pinPoint
     self.region = region
     self.imageUrls = imageUrls
+    self.previewUrl = previewUrl
   }
 }

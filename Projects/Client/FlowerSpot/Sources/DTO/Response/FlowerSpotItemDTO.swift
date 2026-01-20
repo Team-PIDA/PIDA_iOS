@@ -24,7 +24,7 @@ struct FlowerSpotItemDTO: DTO {
   var region: String?
   var imageUrls: [String]?
   var deletedAt: String?
-
+  var previewUrl: String?
 }
 
 extension FlowerSpotItemDTO {
@@ -53,7 +53,8 @@ extension FlowerSpotItemDTO {
       path: path,
       pinPoint: pinPoint,
       region: region,
-      imageUrls: imageUrls /*["https://picsum.photos/400/300"]*/
+      imageUrls: imageUrls, /*["https://picsum.photos/400/300"]*/
+      previewUrl: previewUrl
     )
   }
 }
