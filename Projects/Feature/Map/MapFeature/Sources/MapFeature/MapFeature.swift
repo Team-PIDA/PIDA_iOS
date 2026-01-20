@@ -69,7 +69,13 @@ extension MapFeature {
         }
         // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
         state.flowerSpotDetail = .init(userLocation: state.userLocation)
+        
+        if state.isShowRegionList { // 리전 검색 결과 리스트에서 마커 탭 시 바텀시트 정리
+          state.isShowRegionList = false
+          state.detailRoot = .region
+        }
         return .run { send in
+          await send(.showRegionList(data: nil))
           await send(.fetchPathLines(id))
           await send(.flowerSpotDetail(.requestDetailInfo(id)))
         }
