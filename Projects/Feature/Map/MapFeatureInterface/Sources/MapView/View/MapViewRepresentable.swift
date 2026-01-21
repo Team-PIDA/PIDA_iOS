@@ -252,6 +252,35 @@ extension MapViewRepresentable {
       longitude: total.lon / count
     )
   }
+  
+  /// 경로의 모든 포인트가 보이도록 카메라 조정
+  private func fitCameraToPath(_ view: NMFNaverMapView, path: [Coordinate]) {
+    guard !path.isEmpty else { return }
+    
+    let latitudes = path.map { $0.latitude }
+    let longitudes = path.map { $0.longitude }
+    
+    let minLat = latitudes.min() ?? 0
+    let maxLat = latitudes.max() ?? 0
+    let minLng = longitudes.min() ?? 0
+    let maxLng = longitudes.max() ?? 0
+    
+    let bounds = NMGLatLngBounds(
+      southWestLat: minLat,
+      southWestLng: minLng,
+      northEastLat: maxLat,
+      northEastLng: maxLng
+    )
+    
+    let cameraUpdate = NMFCameraUpdate(
+      fit: bounds,
+      paddingInsets: UIEdgeInsets(top: 200, left: 80, bottom: 250, right: 80)
+    )
+    cameraUpdate.animation = .easeOut
+    cameraUpdate.animationDuration = 1
+    
+    view.mapView.moveCamera(cameraUpdate)
+  }
 }
 
 // MARK: - Draw & Delete
@@ -325,6 +354,10 @@ extension MapViewRepresentable {
     end.globalZIndex = 2
     context.coordinator.startMarker = start
     context.coordinator.endMarker = end
+    
+    // 모든 경로 포인트가 보이도록 카메라 조정
+    fitCameraToPath(view, path: newPath)
+    
     isNeedDrawMarker = false
   }
   
