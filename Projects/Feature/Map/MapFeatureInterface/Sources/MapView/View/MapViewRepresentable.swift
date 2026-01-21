@@ -306,7 +306,7 @@ extension MapViewRepresentable {
     path.outlineColor = flowerState.color
     path.path = NMGLineString(points: lines)
     path.mapView = view.mapView
-    
+    path.globalZIndex = 1
     context.coordinator.paths = path
     
     // 양 끝 원 마커 추가
@@ -321,7 +321,8 @@ extension MapViewRepresentable {
                          to: lastPoint,
                          icon: flowerState.circleImage,
                          anchor: CGPoint(x: 0.5, y: 0.5))
-    
+    start.globalZIndex = 2
+    end.globalZIndex = 2
     context.coordinator.startMarker = start
     context.coordinator.endMarker = end
     isNeedDrawMarker = false

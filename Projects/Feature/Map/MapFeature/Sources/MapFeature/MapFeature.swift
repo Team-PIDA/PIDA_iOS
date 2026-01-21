@@ -300,7 +300,7 @@ extension MapFeature.Core {
     return .run { send in
       await send(.setSearchBarText(name))
       await send(.location(.moveLocation(coord)))
-      await send(.location(.fetchFlowersInRadius(coordinate: coord, radiusInKm: 3.0)))
+      await send(.location(.fetchFlowersInRadius(coordinate: coord, radiusInKm: 1.0)))
     }
   }
 }
