@@ -55,15 +55,11 @@ public struct MapFeature {
     public var requestMapBound: Bool = false
     /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
-    /// 검색 결과 데이터
-    public var searchResult: FlowerSpotEntity? = nil
-    /// 검색 결과 텍스트
-    public var searchText: String? = nil
     
     /// 상세 화면 진입 시 루트 화면
     public var detailRoot: DetailRoot? = nil
     /// 리전 검색 결과 저장
-    public var regionResult: RegionInfoEntity? = nil // TODO: - 추후 타입 변경 필요
+    public var regionResult: RegionInfoEntity? = nil 
     
     public var toastMessage: String? = nil
     
@@ -106,9 +102,6 @@ public struct MapFeature {
     case fetchPathLines(Int)
     case fetchDetailInfo(Int)
     
-    case showSearchResult(FlowerSpotEntity?)
-    case setSearchBarText(String?)
-    case resetSearchBar
     case showRegionList(data: RegionInfoEntity?)
     case changeRegionSheetDetent
     case searchBackButtonTapped
@@ -120,7 +113,6 @@ public struct MapFeature {
     case clearAlertState
     
     case delegate(Delegate)
-    case presentToSearch
     case pushToSetting
   }
   

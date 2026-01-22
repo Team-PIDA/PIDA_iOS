@@ -9,6 +9,7 @@
 import Foundation
 import ComposableArchitecture
 import Shared
+import FlowerSpotClient
 
 @Reducer
 public struct MapSearchFeature {
@@ -19,17 +20,27 @@ public struct MapSearchFeature {
   
   @ObservableState
   public struct State: Equatable {
-    
+    /// 검색 결과 데이터
+    public var searchResult: FlowerSpotEntity? = nil
+    /// 검색 결과 텍스트
+    public var searchText: String? = nil
     public init() {}
   }
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
+    
+    case showSearchResult(FlowerSpotEntity?)
+    case setSearchBarText(String?)
+    case resetSearchBar
+    case presentToSearch
+    
     case delegate(Delegate)
   }
   
   public enum Delegate: Equatable {
-    
+    case showSearchResult(FlowerSpotEntity?)
+    case presentToSearch(String?)
   }
   
   public var body: some ReducerOf<Self> {

@@ -95,7 +95,7 @@ extension MapView {
       newPath: $store.selectedPathLines,
       requestBounds: $store.requestMapBound,
       isCameraMove: $store.researchButtonEnable,
-      focusData: $store.searchResult,
+      focusData: $store.mapSearch.searchResult,
       isNeedDeleteMarker: $store.isNeedDeleteMarker,
       isNeedDrawMarker: $store.isNeedDrawMarker,
       updateMarkerStatus: Binding(
@@ -120,7 +120,7 @@ extension MapView {
   
   @ViewBuilder
   private func searchView() -> some View {
-    if let result = store.searchText { // 검색 결과
+    if let result = store.mapSearch.searchText { // 검색 결과
       SearchBar(
         text: .constant(result),
         placeholder: "",
@@ -134,7 +134,7 @@ extension MapView {
         }
       )
       .onTap {
-        store.send(.presentToSearch)
+        store.send(.mapSearch(.presentToSearch))
       }
     } else { // 검색
       SearchBar(
@@ -145,7 +145,7 @@ extension MapView {
         }
       )
       .onTap {
-        store.send(.presentToSearch)
+        store.send(.mapSearch(.presentToSearch))
       }
     }
   }

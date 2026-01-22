@@ -20,6 +20,25 @@ extension MapSearchFeature {
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
+        
+      case let .showSearchResult(result):
+        state.searchResult = result
+        return .send(.delegate(.showSearchResult(result)))
+        
+      case let .setSearchBarText(text):
+        state.searchText = text
+        return .none
+        
+      case .resetSearchBar:
+        return .concatenate(
+          .send(.showSearchResult(nil)),
+          .send(.setSearchBarText(nil))
+        )
+        
+      case .presentToSearch:
+        return .send(.delegate(.presentToSearch(state.searchText)))
+        
+        
       case .binding, .delegate: return .none
       }
     }

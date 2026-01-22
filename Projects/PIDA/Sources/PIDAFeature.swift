@@ -228,7 +228,7 @@ struct PIDAFeature {
           
         case let .selectResult(result):
           return .concatenate(
-            .send(.map(.showSearchResult(result))),
+            .send(.map(.mapSearch(.showSearchResult(result)))),
             .send(.presentSearch(false, keyword: nil))
           )
           
