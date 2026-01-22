@@ -18,12 +18,14 @@ import SearchRegionListFeatureInterface
 extension MapFeature {
   public init(
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
+    mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>,
     flowerSpotDetail: FlowerSpotDetailFeature,
     searchRegionList: SearchRegionListFeature
   ) {
     self.init(
       reducer: Reduce(Core()),
       location: location,
+      mapSearch: mapSearch,
       flowerSpotDetail: flowerSpotDetail,
       searchRegionList: searchRegionList
     )
@@ -100,6 +102,11 @@ extension MapFeature {
         )
         
         // MARK: - Search
+        
+      case let .mapSearch(.delegate(action)):
+        switch action {
+        default: return .none
+        }
         
       case let .showSearchResult(result):
         state.searchResult = result
@@ -260,7 +267,7 @@ extension MapFeature {
       case .flowerSpotDetail:
         return .none
         
-      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList:
+      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch:
         return .none
         
       }

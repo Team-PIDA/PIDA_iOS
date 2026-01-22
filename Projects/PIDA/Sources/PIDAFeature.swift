@@ -52,6 +52,7 @@ struct PIDAFeature {
   @Dependency(\.userClient) var userClient
 
   let locationReducer = Reduce(LocationFeature())
+  let mapSearchReducer = Reduce(MapSearchFeature())
   
   @ObservableState
   struct State: Equatable {
@@ -123,6 +124,7 @@ struct PIDAFeature {
     Scope(state: \.map, action: \.map) {
       MapFeature(
         location: locationReducer,
+        mapSearch: mapSearchReducer,
         flowerSpotDetail: FlowerSpotDetailFeature(),
         searchRegionList: SearchRegionListFeature()
       )

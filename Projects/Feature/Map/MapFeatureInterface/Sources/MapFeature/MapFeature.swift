@@ -19,17 +19,20 @@ import Shared
 public struct MapFeature {
   private let reducer: Reduce<State, Action>
   private let location: Reduce<LocationFeature.State, LocationFeature.Action>
+  private let mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>
   private let flowerSpotDetail: FlowerSpotDetailFeature
   private let searchRegionList: SearchRegionListFeature
 
   public init(
     reducer: Reduce<State, Action>,
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
+    mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>,
     flowerSpotDetail: FlowerSpotDetailFeature,
     searchRegionList: SearchRegionListFeature
   ) {
     self.reducer = reducer
     self.location = location
+    self.mapSearch = mapSearch
     self.flowerSpotDetail = flowerSpotDetail
     self.searchRegionList = searchRegionList
   }
@@ -75,6 +78,8 @@ public struct MapFeature {
     public var alertType: AlertType? = nil
 
     public var location: LocationFeature.State = .init()
+    
+    public var mapSearch: MapSearchFeature.State = .init()
 
     /// Optional State 패턴: nil이면 바텀시트 숨김, 값이 있으면 바텀시트 표시
     public var flowerSpotDetail: FlowerSpotDetailFeature.State? = nil
@@ -87,6 +92,7 @@ public struct MapFeature {
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case location(LocationFeature.Action)
+    case mapSearch(MapSearchFeature.Action)
     case flowerSpotDetail(FlowerSpotDetailFeature.Action)
     case searchRegionList(SearchRegionListFeature.Action)
     
@@ -137,6 +143,9 @@ public struct MapFeature {
     BindingReducer()
     Scope(state: \.location, action: \.location) {
       location
+    }
+    Scope(state: \.mapSearch, action: \.mapSearch) {
+      mapSearch
     }
     .ifLet(\.flowerSpotDetail, action: \.flowerSpotDetail) {
       flowerSpotDetail
