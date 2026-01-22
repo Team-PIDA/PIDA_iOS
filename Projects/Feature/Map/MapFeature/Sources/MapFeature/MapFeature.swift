@@ -123,7 +123,7 @@ extension MapFeature {
         )
         
       case let .showRegionList(result):
-        state.isShowRegionList = result != .none
+        state.isShowRegionList = result != nil
         if let result = result {
           state.regionResult = result
           state.searchRegionList = .init(region: result)
