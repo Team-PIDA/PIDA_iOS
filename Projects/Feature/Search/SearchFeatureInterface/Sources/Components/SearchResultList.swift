@@ -31,9 +31,11 @@ public struct SearchResultList: View {
           Text(item.streetName ?? "")
             .fontStyle(FontSet.Body.body2)
             .foregroundStyle(ColorSet.Text.Primary)
-          Text(item.address ?? "")
-            .fontStyle(FontSet.Caption.caption1)
-            .foregroundStyle(ColorSet.Text.Tertiary)
+          if let address = item.address {
+            Text(address)
+              .fontStyle(FontSet.Caption.caption1)
+              .foregroundStyle(ColorSet.Text.Tertiary)
+          }
         }
         Spacer()
         if let subInfo = item.subInfo {

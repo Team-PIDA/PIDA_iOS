@@ -28,6 +28,8 @@ public struct DetentBottomSheet<Content: View>: View {
   @State private var offset: CGFloat = 0
   // 드래그 시작 시점의 기준 offset
   @State private var lastOffset: CGFloat = 0
+  // 현재 실제 시트 높이
+  @State private var currentHeight: CGFloat = 0
   
   // 등장 / 퇴장 애니메이션
   private let presentAnimation = Animation.spring(
@@ -98,6 +100,10 @@ public struct DetentBottomSheet<Content: View>: View {
         guard isPresent else { return }
         withAnimation { syncToDetent(screenHeight: screenHeight, maxHeight: maxHeight) }
       }
+      .onChange(of: offset) { _, _ in
+        // offset 변경 시 현재 높이 업데이트
+        currentHeight = calculateCurrentHeight(screenHeight: screenHeight)
+      }
     }
     .ignoresSafeArea(.all, edges: .bottom)
   }
@@ -118,6 +124,7 @@ public struct DetentBottomSheet<Content: View>: View {
         
         // 외부에서 주입된 콘텐츠
         content
+          .frame(height: max(currentHeight - 20, 0)) // 핸들러 높이 제외
       }
       .frame(maxHeight: .infinity, alignment: .top)
     }
@@ -237,17 +244,31 @@ public struct DetentBottomSheet<Content: View>: View {
   private func clamp(_ value: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
     Swift.min(Swift.max(value, min), max)
   }
+  
+  // 현재 실제 시트 높이 계산
+  private func calculateCurrentHeight(screenHeight: CGFloat) -> CGFloat {
+    let mediumHeight = BottomSheetDetent.medium.visibleHeight(minHeight: minHeight, screenHeight: screenHeight)
+    let highHeight = BottomSheetDetent.high.visibleHeight(minHeight: minHeight, screenHeight: screenHeight)
+    
+    // 현재 offset을 기반으로 실제 보이는 높이 계산
+    let visibleHeight = minHeight + abs(offset)
+    
+    // medium 이하일 때는 medium 높이로 고정
+    if visibleHeight <= mediumHeight {
+      return mediumHeight
+    }
+    // medium과 high 사이일 때는 현재 높이 그대로
+    else if visibleHeight < highHeight {
+      return visibleHeight
+    }
+    // high 이상일 때는 high 높이로 고정
+    else {
+      return highHeight
+    }
+  }
 }
 
 // MARK: - fileprivate BottomSheetDetent Extension
 extension BottomSheetDetent {
   fileprivate static let ordered: [BottomSheetDetent] = [.low, .medium, .high]
-  
-  fileprivate func visibleHeight(minHeight: CGFloat, screenHeight: CGFloat) -> CGFloat {
-    switch self {
-    case .low:       return minHeight
-    case .medium: return (screenHeight - 64.0) * (3.0 / 5.0)
-    case .high:      return screenHeight
-    }
-  }
 }

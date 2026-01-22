@@ -8,6 +8,8 @@
 
 import SearchRegionListFeatureInterface
 import ComposableArchitecture
+import FlowerSpotClient
+import Shared
 
 extension SearchRegionListFeature {
   public init() {
@@ -15,10 +17,22 @@ extension SearchRegionListFeature {
   }
 
   struct Core: Reducer {
+    @Dependency(\.flowerSpotClient) var flowerSpotClient
+    
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
-      default:
+      case .onAppear:
         return .none
+        
+      case let .storeFlowerSpots(flowerSpots):
+        state.flowerSpots = flowerSpots
+        state.isLoading = false
+        return .none
+        
+      case let .flowerSpotTapped(flowerSpot):
+        return .send(.delegate(.showFlowerSpotDetail(flowerSpot)))
+        
+      case .delegate: return .none
       }
     }
   }

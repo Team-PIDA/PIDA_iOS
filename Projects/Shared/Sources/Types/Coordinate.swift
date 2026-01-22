@@ -29,4 +29,20 @@ public struct Coordinate: Equatable, Sendable, Codable {
       )
       return (Double.distanceInKilometers(from: from, to: to) * 10).rounded() / 10
     }
+    
+    public func boundingBoxForRadius(radiusInKm: Double) -> [Coordinate] {
+      let latitudeDelta = radiusInKm / 111.0
+      let longitudeDelta = radiusInKm / (111.0 * cos(latitude * .pi / 180.0))
+      
+      let southWest = Coordinate(
+        latitude: latitude - latitudeDelta,
+        longitude: longitude - longitudeDelta
+      )
+      let northEast = Coordinate(
+        latitude: latitude + latitudeDelta,
+        longitude: longitude + longitudeDelta
+      )
+      
+      return [southWest, northEast]
+    }
 }

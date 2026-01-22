@@ -83,3 +83,6 @@ Release-Secrets.xcconfig
 
 # Gemfile.lock은 팀 일관성을 위해 커밋 권장
 # Gemfile.lock
+
+# Claude Code
+.claude/

@@ -76,9 +76,20 @@ extension SearchFeature {
         state.searchWord = text ?? ""
         return .none
         
-      case let .selectResult(item): // TODO: - 선택한 타입(리전, 거리)에 따라 분기처리 필요
-        return fetchSelectedDetailInfo(item: item)
-
+      case let .selectResult(item):
+        switch item.searchType {
+        case .region:
+          if let name = item.streetName, let coord = item.coord {
+            return .send(
+              .delegate(
+                .selectRegionResult(.init(name: name, coordinate: coord))
+              )
+            )
+          } else { return .none }
+        case .street:
+          return fetchSelectedDetailInfo(item: item)
+        }
+        
       // MARK: - Delegate
       
       case .dismiss:

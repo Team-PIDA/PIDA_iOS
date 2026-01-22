@@ -69,7 +69,13 @@ extension MapFeature {
         }
         // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
         state.flowerSpotDetail = .init(userLocation: state.userLocation)
+        
+        if state.isShowRegionList { // 리전 검색 결과 리스트에서 마커 탭 시 바텀시트 정리
+          state.isShowRegionList = false
+          state.detailRoot = .region
+        }
         return .run { send in
+          await send(.showRegionList(data: nil))
           await send(.fetchPathLines(id))
           await send(.flowerSpotDetail(.requestDetailInfo(id)))
         }
@@ -97,8 +103,8 @@ extension MapFeature {
         
       case let .showSearchResult(result):
         state.searchResult = result
-        state.detailRoot = .search
         if result != nil {
+          state.detailRoot = .search
           // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
           state.flowerSpotDetail = .init(userLocation: state.userLocation)
         } else {
@@ -116,11 +122,17 @@ extension MapFeature {
           .send(.setSearchBarText(nil))
         )
         
-      case let .showRegionList(regionResult, isPresent):
-        state.regionResult = regionResult
-        state.searchRegionList = .init()
-        state.isShowRegionList = isPresent
-        return showSearchRegionResult(result: regionResult)
+      case let .showRegionList(result):
+        state.isShowRegionList = result != nil
+        if let result = result {
+          state.regionResult = result
+          state.searchRegionList = .init(region: result)
+          return showSearchRegionResult(name: result.name, coord: result.coordinate)
+        } else {
+          state.regionSheetDetent = .medium
+          state.searchRegionList = nil
+          return .none
+        }
         
       case .changeRegionSheetDetent:
         if state.isShowRegionList {
@@ -140,15 +152,20 @@ extension MapFeature {
         case .region:
           state.flowerSpotDetail = nil
           state.detailRoot = nil
-          return .send(.showRegionList(state.regionResult, true))
+          if let result = state.regionResult {
+            return .send(.showRegionList(data: result))
+          }
+          return .none
         case .search:
+          state.detailRoot = nil
           return .send(.presentToSearch)
         case nil:
           if state.isShowRegionList {
-            state.searchRegionList = nil
             state.regionResult = nil
-            state.isShowRegionList = false
-            return .send(.presentToSearch)
+            return .concatenate(
+              .send(.showRegionList(data: nil)),
+              .send(.presentToSearch)
+            )
           }
         }
         return .none
@@ -182,6 +199,10 @@ extension MapFeature {
           state.flowerSpots.removeAll()
           data.forEach {
             state.flowerSpots[$0.id] = $0
+          }
+          // SearchRegionListFeature가 활성화되어 있으면 데이터 전달
+          if state.searchRegionList != nil {
+            return .send(.searchRegionList(.storeFlowerSpots(data)))
           }
           return .none
           
@@ -224,6 +245,17 @@ extension MapFeature {
           state.searchResult = flowerSpot
           return .send(.location(.moveLocation(flowerSpot.pinPoint)))
         }
+        
+      case let .searchRegionList(.delegate(action)):
+        switch action {
+        case let .showFlowerSpotDetail(data):
+          state.detailRoot = .region
+          return .concatenate(
+            .send(.showRegionList(data: nil)),
+            .send(.fetchDetailInfo(data.id)),
+            .send(.location(.moveLocation(data.pinPoint)))
+          )
+        }
 
       case .flowerSpotDetail:
         return .none
@@ -264,12 +296,11 @@ extension MapFeature.Core {
     }
   }
   
-  private func showSearchRegionResult(result: FlowerSpotEntity?) -> Effect<Action> {
+  private func showSearchRegionResult(name: String, coord: Coordinate) -> Effect<Action> {
     return .run { send in
-      if let result = result {
-        await send(.setSearchBarText(result.streetName))
-        await send(.location(.moveLocation(result.pinPoint)))
-      }
+      await send(.setSearchBarText(name))
+      await send(.location(.moveLocation(coord)))
+      await send(.location(.fetchFlowersInRadius(coordinate: coord, radiusInKm: 1.0)))
     }
   }
 }

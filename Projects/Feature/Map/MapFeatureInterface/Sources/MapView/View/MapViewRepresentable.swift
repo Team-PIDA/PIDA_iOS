@@ -43,6 +43,9 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 활성화 된 마커 상태를 업데이트
   @Binding var updateMarkerStatus: BloomStatus?
   
+  /// 바텀시트 표시 여부 (카메라 중앙 위치 조정용)
+  @Binding var hasBottomSheet: Bool
+  
   /// 마커 탭 시 id값을 전달하기 위한 클로저
   var onMarkerTapped: ((Int?) -> Void)? = nil
   /// 지도 범위 좌표 값을 전달하기 위한 클로저
@@ -79,8 +82,15 @@ struct MapViewRepresentable: UIViewRepresentable {
       moveUserLocation(uiView, to: userLocation, context: context)
     }
     
-    if context.coordinator.markers.isEmpty, !flowerPositions.isEmpty {
+    // 마커 데이터가 변경되었을 때 마커 업데이트
+    if !flowerPositions.isEmpty && context.coordinator.currentFlowerPositions != flowerPositions {
+      // 기존 마커 삭제
+      if !context.coordinator.markers.isEmpty {
+        context.coordinator.deleteAllMarkers()
+      }
+      // 새로운 마커 표시
       presentMarkers(uiView, flowers: flowerPositions, context: context)
+      context.coordinator.currentFlowerPositions = flowerPositions
     }
     
     // 마커 탭 이벤트 시
@@ -176,13 +186,40 @@ extension MapViewRepresentable {
   /// 카메라 이동 메서드
   private func moveCamera(_ view: NMFNaverMapView, to point: Coordinate?, zoomLevel: Double = 13) {
     if let point = point {
-      let coord = NMGLatLng(lat: point.latitude, lng: point.longitude)
+      var adjustedPoint = point
+      
+      // 바텀시트가 있을 때 중앙 위치 조정
+      if hasBottomSheet {
+        adjustedPoint = adjustCenterForBottomSheet(originalPoint: point, mapView: view.mapView)
+      }
+      
+      let coord = NMGLatLng(lat: adjustedPoint.latitude, lng: adjustedPoint.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: coord, zoomTo: zoomLevel)
       cameraUpdate.animation = .easeOut
       cameraUpdate.animationDuration = 1
       
       view.mapView.moveCamera(cameraUpdate)
     }
+  }
+  
+  /// 바텀시트를 고려한 중앙 위치 조정
+  private func adjustCenterForBottomSheet(originalPoint: Coordinate, mapView: NMFMapView) -> Coordinate {
+    let screenHeight = UIScreen.main.bounds.height
+    let bottomSheetHeight = BottomSheetDetent.medium.visibleHeight(minHeight: 0.0, screenHeight: screenHeight) 
+    let searchBarHeight: CGFloat = 60 // 대략적인 SearchBar 높이
+    
+    // 화면 중앙에서 위로 올릴 픽셀 오프셋
+    let offsetFromCenter = (bottomSheetHeight / 2) - (searchBarHeight / 2)
+    
+    // 위도 오프셋 계산 (대략 1도 ≈ 111km, 픽셀당 변환)
+    let projection = mapView.projection
+    
+    let originalLatLng = NMGLatLng(lat: originalPoint.latitude, lng: originalPoint.longitude)
+    let centerScreenPoint = projection.point(from: originalLatLng)
+    let adjustedScreenPoint = CGPoint(x: centerScreenPoint.x, y: centerScreenPoint.y + offsetFromCenter)
+    let adjustedLatLng = projection.latlng(from: adjustedScreenPoint)
+    
+    return Coordinate(latitude: adjustedLatLng.lat, longitude: adjustedLatLng.lng)
   }
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
@@ -214,6 +251,35 @@ extension MapViewRepresentable {
       latitude: total.lat / count,
       longitude: total.lon / count
     )
+  }
+  
+  /// 경로의 모든 포인트가 보이도록 카메라 조정
+  private func fitCameraToPath(_ view: NMFNaverMapView, path: [Coordinate]) {
+    guard !path.isEmpty else { return }
+    
+    let latitudes = path.map { $0.latitude }
+    let longitudes = path.map { $0.longitude }
+    
+    let minLat = latitudes.min() ?? 0
+    let maxLat = latitudes.max() ?? 0
+    let minLng = longitudes.min() ?? 0
+    let maxLng = longitudes.max() ?? 0
+    
+    let bounds = NMGLatLngBounds(
+      southWestLat: minLat,
+      southWestLng: minLng,
+      northEastLat: maxLat,
+      northEastLng: maxLng
+    )
+    
+    let cameraUpdate = NMFCameraUpdate(
+      fit: bounds,
+      paddingInsets: UIEdgeInsets(top: 200, left: 80, bottom: 250, right: 80)
+    )
+    cameraUpdate.animation = .easeOut
+    cameraUpdate.animationDuration = 1
+    
+    view.mapView.moveCamera(cameraUpdate)
   }
 }
 
@@ -269,7 +335,7 @@ extension MapViewRepresentable {
     path.outlineColor = flowerState.color
     path.path = NMGLineString(points: lines)
     path.mapView = view.mapView
-    
+    path.globalZIndex = 1
     context.coordinator.paths = path
     
     // 양 끝 원 마커 추가
@@ -284,9 +350,14 @@ extension MapViewRepresentable {
                          to: lastPoint,
                          icon: flowerState.circleImage,
                          anchor: CGPoint(x: 0.5, y: 0.5))
-    
+    start.globalZIndex = 2
+    end.globalZIndex = 2
     context.coordinator.startMarker = start
     context.coordinator.endMarker = end
+    
+    // 모든 경로 포인트가 보이도록 카메라 조정
+    fitCameraToPath(view, path: newPath)
+    
     isNeedDrawMarker = false
   }
   

@@ -47,6 +47,9 @@ extension LocationFeature {
       case let .fetchFlowers(positions):
         return fetchFlowerSpots(positions: positions)
         
+      case let .fetchFlowersInRadius(coordinate, radiusInKm):
+        return fetchFlowerSpotsInRadius(coordinate: coordinate, radiusInKm: radiusInKm)
+        
       case let .storeFlowerData(data):
         return .send(.delegate(.storeFlowerData(data)))
         
@@ -102,6 +105,28 @@ extension LocationFeature.Core {
         if result.itemList.count == 0 {
           await send(.showToastView(message: "이 근방에는 꽃길이 없어요.", buttonLabel: "제보하기"))
         }
+        await send(.storeFlowerData(result.itemList))
+      } catch let error as NetworkError {
+        await send(.mapSearchError(error.localizedDescription))
+      } catch let error as FoundationError {
+        await send(.mapSearchError(error.localizedDescription))
+      } catch {
+        await send(.mapSearchError(error.localizedDescription))
+      }
+    }
+  }
+  
+  private func fetchFlowerSpotsInRadius(coordinate: Coordinate, radiusInKm: Double) -> Effect<Action> {
+    return .run { send in
+      do {
+        let bounds = coordinate.boundingBoxForRadius(radiusInKm: radiusInKm)
+        let query = GetFlowerSpotQuery(
+          swLat: bounds[0].latitude,
+          swLng: bounds[0].longitude,
+          neLat: bounds[1].latitude,
+          neLng: bounds[1].longitude
+        )
+        let result = try await flowerSpotClient.fetchAllFlowerPin(query: query)
         await send(.storeFlowerData(result.itemList))
       } catch let error as NetworkError {
         await send(.mapSearchError(error.localizedDescription))

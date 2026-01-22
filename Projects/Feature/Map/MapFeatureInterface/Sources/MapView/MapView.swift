@@ -91,8 +91,8 @@ extension MapView {
   private var mapView: some View {
     MapViewRepresentable(
       userLocation: $store.location.point,
-      flowerPositions: $store.state.flowerSpots,
-      newPath: $store.state.selectedPathLines,
+      flowerPositions: $store.flowerSpots,
+      newPath: $store.selectedPathLines,
       requestBounds: $store.requestMapBound,
       isCameraMove: $store.researchButtonEnable,
       focusData: $store.searchResult,
@@ -101,7 +101,8 @@ extension MapView {
       updateMarkerStatus: Binding(
         get: { store.flowerSpotDetail?.updateMarkerStatus },
         set: { _ in }
-      )
+      ),
+      hasBottomSheet: $store.isShowRegionList
     )
     .onReceiveMapBounds {
       if store.requestMapBound {
