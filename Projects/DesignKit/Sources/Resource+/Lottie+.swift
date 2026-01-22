@@ -9,8 +9,7 @@
 import Foundation
 
 public enum LottieSet: String {
-  case dot_loading = "dot_loading"
-  
+  case dot_loading
   
   public var name: String { return rawValue }
 }
