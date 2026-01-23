@@ -26,8 +26,8 @@ public struct MapSearchFeature {
     public var searchResult: FlowerSpotEntity? = nil
     /// 검색 결과 텍스트
     public var searchText: String? = nil
-    /// 상세 화면 진입 시 루트 화면
-    public var detailRoot: DetailRoot? = nil
+    /// 현재 네비게이션 상태
+    public var currentNavigation: NavigationState = .map
     /// 리전 검색 결과 저장
     public var regionResult: RegionInfoEntity? = nil
     /// 리전 검색 리스트 화면 show 여부
@@ -60,6 +60,8 @@ public struct MapSearchFeature {
     case searchBackButtonTapped
     /// SearchBar 뒤로가기 시 화면 전환 처리
     case handleSearchBackNavigation
+    /// 리전리스트에서 상세로 이동 시 네비게이션 상태 설정
+    case setNavigationFromRegionList
     
     case delegate(Delegate)
   }
@@ -72,9 +74,15 @@ public struct MapSearchFeature {
     case dismissFlowerSpotDetil
   }
   
-  public enum DetailRoot: Equatable {
-    case region
-    case search
+  public enum NavigationState: Equatable {
+    case map                                    // 기본 지도 화면
+    case regionList(RegionInfoEntity)          // 리전 검색 결과 리스트
+    case flowerDetail(DetailSource)    // 꽃 상세 화면
+    
+    public enum DetailSource: Equatable {
+      case fromSearch(FlowerSpotEntity)         // 검색에서 온 상세
+      case fromRegionList(RegionInfoEntity)     // 리전리스트에서 온 상세
+    }
   }
   
   public var body: some ReducerOf<Self> {

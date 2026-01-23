@@ -200,16 +200,16 @@ extension MapFeature {
           return .send(.delegate(.presentToLogin(id: id)))
 
         case let .showOnMap(flowerSpot):
-          state.mapSearch.searchResult = flowerSpot // TODO: - 왜 저장하는지?
+          state.mapSearch.searchResult = flowerSpot 
           return .send(.location(.moveLocation(flowerSpot.pinPoint)))
         }
         
       case let .searchRegionList(.delegate(action)):
         switch action {
         case let .showFlowerSpotDetail(data):
-          state.mapSearch.detailRoot = .region
           return .concatenate(
             .send(.mapSearch(.showRegionList(data: nil))),
+            .send(.mapSearch(.setNavigationFromRegionList)),
             .send(.fetchDetailInfo(data.id)),
             .send(.location(.moveLocation(data.pinPoint)))
           )
