@@ -102,7 +102,7 @@ extension MapView {
         get: { store.flowerSpotDetail?.updateMarkerStatus },
         set: { _ in }
       ),
-      hasBottomSheet: $store.isShowRegionList
+      hasBottomSheet: $store.mapSearch.isShowRegionList
     )
     .onReceiveMapBounds {
       if store.requestMapBound {
@@ -113,7 +113,7 @@ extension MapView {
       store.send(.markerTapped(id: id))
     }
     .cameraMoveEvent {
-      store.send(.changeRegionSheetDetent)
+      store.send(.mapSearch(.changeRegionSheetDetent))
     }
     .ignoresSafeArea()
   }
@@ -129,7 +129,7 @@ extension MapView {
           TouchArea(image: .back)
             .size(.extraLarge)
             .action {
-              store.send(.searchBackButtonTapped)
+              store.send(.mapSearch(.searchBackButtonTapped))
             }
         }
       )
@@ -222,7 +222,10 @@ extension MapView {
   }
   
   private func regionListSheet(store: StoreOf<SearchRegionListFeature>) -> some View {
-    DetentBottomSheet(isPresented: $store.isShowRegionList, detent: $store.regionSheetDetent) {
+    DetentBottomSheet(
+      isPresented: $store.mapSearch.isShowRegionList,
+      detent: $store.mapSearch.regionSheetDetent
+    ) {
       SearchRegionListView(store: store)
     }
   }

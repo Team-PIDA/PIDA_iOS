@@ -234,7 +234,7 @@ struct PIDAFeature {
           
         case let .selectRegionResult(result):
           return .concatenate(
-            .send(.map(.showRegionList(data: result))),
+            .send(.map(.mapSearch(.showRegionList(data: result)))),
             .send(.presentSearch(false, keyword: nil))
           )
         }
