@@ -256,6 +256,7 @@ extension MapFeature.Core {
   
   private func showSearchRegionResult(name: String, coord: Coordinate) -> Effect<Action> {
     return .run { send in
+      await send(.markerTapped(id: nil))
       await send(.mapSearch(.setSearchBarText(name)))
       await send(.location(.moveLocation(coord)))
       await send(.location(.fetchFlowersInRadius(coordinate: coord, radiusInKm: 1.0)))
