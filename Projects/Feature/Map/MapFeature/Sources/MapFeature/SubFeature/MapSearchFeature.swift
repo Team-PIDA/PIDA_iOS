@@ -33,8 +33,8 @@ extension MapSearchFeature {
         
       case let .showSearchResult(result):
         state.searchResult = result
-        if let result = result {
-          state.currentNavigation = .flowerDetail(.fromSearch(result))
+        if let _ = result {
+          state.currentNavigation = .flowerDetail(.fromSearch)
         }
         return .send(.delegate(.showSearchResult(result)))
         
@@ -45,7 +45,7 @@ extension MapSearchFeature {
         state.isShowRegionList = result != nil
         if let result = result {
           state.regionResult = result
-          state.currentNavigation = .regionList(result)
+          state.currentNavigation = .regionList
         } else {
           state.regionSheetDetent = .medium
         }
@@ -54,9 +54,7 @@ extension MapSearchFeature {
       case .hideRegionList:
         if state.isShowRegionList { // 리전 검색 결과 리스트에서 마커 탭 시 바텀시트 정리
           state.isShowRegionList = false
-          if case .regionList(let region) = state.currentNavigation {
-            state.currentNavigation = .flowerDetail(.fromRegionList(region))
-          }
+          state.currentNavigation = .flowerDetail(.fromRegionList)
         }
         return .none
         
@@ -80,11 +78,11 @@ extension MapSearchFeature {
           state.currentNavigation = .map
           return .send(.presentToSearch)
           
-        case .flowerDetail(.fromRegionList(let region)):
+        case .flowerDetail(.fromRegionList):
           // 리전리스트 → 상세 → 뒤로 = 리전리스트 복원
-          state.currentNavigation = .regionList(region)
+          state.currentNavigation = .regionList
           return .concatenate(
-            .send(.showRegionList(data: region)),
+            .send(.showRegionList(data: state.regionResult)),
             .send(.delegate(.dismissFlowerSpotDetail))
           )
           
@@ -102,9 +100,7 @@ extension MapSearchFeature {
         }
         
       case .setNavigationFromRegionList:
-        if let regionResult = state.regionResult {
-          state.currentNavigation = .flowerDetail(.fromRegionList(regionResult))
-        }
+        state.currentNavigation = .flowerDetail(.fromRegionList)
         return .none
         
       case .binding, .delegate: return .none

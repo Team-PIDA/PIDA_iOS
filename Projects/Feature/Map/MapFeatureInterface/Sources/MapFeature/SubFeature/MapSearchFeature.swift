@@ -76,12 +76,12 @@ public struct MapSearchFeature {
   
   public enum NavigationState: Equatable {
     case map                                    // 기본 지도 화면
-    case regionList(RegionInfoEntity)          // 리전 검색 결과 리스트
+    case regionList          // 리전 검색 결과 리스트
     case flowerDetail(DetailSource)    // 꽃 상세 화면
     
     public enum DetailSource: Equatable {
-      case fromSearch(FlowerSpotEntity)         // 검색에서 온 상세
-      case fromRegionList(RegionInfoEntity)     // 리전리스트에서 온 상세
+      case fromSearch         // 검색에서 온 상세
+      case fromRegionList     // 리전리스트에서 온 상세
     }
   }
   
