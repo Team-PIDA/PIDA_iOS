@@ -72,12 +72,12 @@ extension MapFeature {
         // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
         state.flowerSpotDetail = .init(userLocation: state.userLocation)
         
-        return .run { send in
-          await send(.mapSearch(.hideRegionList)) // 리전 검색 결과 리스트에서 마커 탭 시 바텀시트 정리
-          await send(.mapSearch(.showRegionList(data: nil)))
-          await send(.fetchPathLines(id))
-          await send(.flowerSpotDetail(.requestDetailInfo(id)))
-        }
+        return .concatenate(
+          .send(.mapSearch(.showRegionList(data: nil))),
+          .send(.mapSearch(.setNavigationFromRegionList)),
+          .send(.fetchPathLines(id)),
+          .send(.flowerSpotDetail(.requestDetailInfo(id)))
+        )
         
       case let .fetchPathLines(id):
         if let data = state.flowerSpots[id] {

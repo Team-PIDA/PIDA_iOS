@@ -51,13 +51,6 @@ extension MapSearchFeature {
         }
         return .send(.delegate(.showSearchRegionList(result)))
         
-      case .hideRegionList:
-        if state.isShowRegionList { // 리전 검색 결과 리스트에서 마커 탭 시 바텀시트 정리
-          state.isShowRegionList = false
-          state.currentNavigation = .flowerDetail(.fromRegionList)
-        }
-        return .none
-        
       case .changeRegionSheetDetent:
         if state.isShowRegionList {
           state.regionSheetDetent = .low

@@ -51,8 +51,6 @@ public struct MapSearchFeature {
     
     /// 리전 검색 결과
     case showRegionList(data: RegionInfoEntity?)
-    /// 리전 검색 화면 숨기기 (리전 검색 화면에서 화면 전환 시)
-    case hideRegionList
     /// 리전 검색 시트 detent 변경
     case changeRegionSheetDetent
     
