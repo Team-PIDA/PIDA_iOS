@@ -85,7 +85,7 @@ extension MapSearchFeature {
           state.currentNavigation = .regionList(region)
           return .concatenate(
             .send(.showRegionList(data: region)),
-            .send(.delegate(.dismissFlowerSpotDetil))
+            .send(.delegate(.dismissFlowerSpotDetail))
           )
           
         case .regionList:

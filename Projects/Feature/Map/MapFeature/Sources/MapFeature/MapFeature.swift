@@ -126,7 +126,7 @@ extension MapFeature {
         case .resetMarkerTapped:
           return .send(.markerTapped(id: nil))
           
-        case .dismissFlowerSpotDetil:
+        case .dismissFlowerSpotDetail:
           state.flowerSpotDetail = nil
           return .none
         }

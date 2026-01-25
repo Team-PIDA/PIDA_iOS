@@ -71,7 +71,7 @@ public struct MapSearchFeature {
     case presentToSearch(String?)
     case showSearchRegionList(RegionInfoEntity?)
     case resetMarkerTapped
-    case dismissFlowerSpotDetil
+    case dismissFlowerSpotDetail
   }
   
   public enum NavigationState: Equatable {
