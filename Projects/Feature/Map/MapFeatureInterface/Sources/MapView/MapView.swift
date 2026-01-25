@@ -67,7 +67,7 @@ public struct MapView: View {
     .overlay {
       Group {
         if let store = store.scope(state: \.searchRegionList, action: \.searchRegionList) {
-          regionListSheet(store: store)
+          regionListSheet(with: store)
         }
       }
     }
@@ -221,12 +221,12 @@ extension MapView {
     )
   }
   
-  private func regionListSheet(store: StoreOf<SearchRegionListFeature>) -> some View {
+  private func regionListSheet(with regionStore: StoreOf<SearchRegionListFeature>) -> some View {
     DetentBottomSheet(
       isPresented: $store.mapSearch.isShowRegionList,
       detent: $store.mapSearch.regionSheetDetent
     ) {
-      SearchRegionListView(store: store)
+      SearchRegionListView(store: regionStore)
     }
   }
 }
