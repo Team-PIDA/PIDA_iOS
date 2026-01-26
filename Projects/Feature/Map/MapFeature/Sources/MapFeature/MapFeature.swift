@@ -18,12 +18,14 @@ import SearchRegionListFeatureInterface
 extension MapFeature {
   public init(
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
+    mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>,
     flowerSpotDetail: FlowerSpotDetailFeature,
     searchRegionList: SearchRegionListFeature
   ) {
     self.init(
       reducer: Reduce(Core()),
       location: location,
+      mapSearch: mapSearch,
       flowerSpotDetail: flowerSpotDetail,
       searchRegionList: searchRegionList
     )
@@ -70,15 +72,12 @@ extension MapFeature {
         // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
         state.flowerSpotDetail = .init(userLocation: state.userLocation)
         
-        if state.isShowRegionList { // 리전 검색 결과 리스트에서 마커 탭 시 바텀시트 정리
-          state.isShowRegionList = false
-          state.detailRoot = .region
-        }
-        return .run { send in
-          await send(.showRegionList(data: nil))
-          await send(.fetchPathLines(id))
-          await send(.flowerSpotDetail(.requestDetailInfo(id)))
-        }
+        return .concatenate(
+          .send(.mapSearch(.showRegionList(data: nil))),
+          .send(.mapSearch(.setNavigationFromRegionList)),
+          .send(.fetchPathLines(id)),
+          .send(.flowerSpotDetail(.requestDetailInfo(id)))
+        )
         
       case let .fetchPathLines(id):
         if let data = state.flowerSpots[id] {
@@ -99,76 +98,38 @@ extension MapFeature {
           .send(.flowerSpotDetail(.fetchDetailInfo(id)))
         )
         
-        // MARK: - Search
+        // MARK: - MapSearch Delegate Action
         
-      case let .showSearchResult(result):
-        state.searchResult = result
-        if result != nil {
-          state.detailRoot = .search
-          // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
-          state.flowerSpotDetail = .init(userLocation: state.userLocation)
-        } else {
+      case let .mapSearch(.delegate(action)):
+        switch action {
+        case let .showSearchResult(result):
+          if result != nil {
+            // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
+            state.flowerSpotDetail = .init(userLocation: state.userLocation)
+          } else {
+            state.flowerSpotDetail = nil
+          }
+          return showSearchResult(result: result)
+          
+        case let .presentToSearch(keyword):
+          return .send(.delegate(.presentToSearch(keyword)))
+          
+        case let .showSearchRegionList(result):
+          if let result = result {
+            state.searchRegionList = .init(region: result)
+            return showSearchRegionResult(name: result.name, coord: result.coordinate)
+          } else {
+            state.searchRegionList = nil
+            return .none
+          }
+          
+        case .resetMarkerTapped:
+          return .send(.markerTapped(id: nil))
+          
+        case .dismissFlowerSpotDetail:
           state.flowerSpotDetail = nil
-        }
-        return showSearchResult(result: result)
-        
-      case let .setSearchBarText(text):
-        state.searchText = text
-        return .none
-        
-      case .resetSearchBar:
-        return .concatenate(
-          .send(.showSearchResult(nil)),
-          .send(.setSearchBarText(nil))
-        )
-        
-      case let .showRegionList(result):
-        state.isShowRegionList = result != nil
-        if let result = result {
-          state.regionResult = result
-          state.searchRegionList = .init(region: result)
-          return showSearchRegionResult(name: result.name, coord: result.coordinate)
-        } else {
-          state.regionSheetDetent = .medium
-          state.searchRegionList = nil
           return .none
         }
-        
-      case .changeRegionSheetDetent:
-        if state.isShowRegionList {
-          state.regionSheetDetent = .low
-        }
-        return .none
-        
-      case .searchBackButtonTapped:
-        return .concatenate(
-          .send(.handleSearchBackNavigation),
-          .send(.resetSearchBar),
-          .send(.markerTapped(id: nil))
-        )
-        
-      case .handleSearchBackNavigation:
-        switch state.detailRoot {
-        case .region:
-          state.flowerSpotDetail = nil
-          state.detailRoot = nil
-          if let result = state.regionResult {
-            return .send(.showRegionList(data: result))
-          }
-          return .none
-        case .search:
-          state.detailRoot = nil
-          return .send(.presentToSearch)
-        case nil:
-          if state.isShowRegionList {
-            state.regionResult = nil
-            return .concatenate(
-              .send(.showRegionList(data: nil)),
-              .send(.presentToSearch)
-            )
-          }
-        }
-        return .none
         
         // MARK: - Alert
         
@@ -220,9 +181,6 @@ extension MapFeature {
         
         // MARK: - Delegate
 
-      case .presentToSearch:
-        return .send(.delegate(.presentToSearch(state.searchText)))
-
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
 
@@ -242,16 +200,16 @@ extension MapFeature {
           return .send(.delegate(.presentToLogin(id: id)))
 
         case let .showOnMap(flowerSpot):
-          state.searchResult = flowerSpot
+          state.mapSearch.searchResult = flowerSpot 
           return .send(.location(.moveLocation(flowerSpot.pinPoint)))
         }
         
       case let .searchRegionList(.delegate(action)):
         switch action {
         case let .showFlowerSpotDetail(data):
-          state.detailRoot = .region
           return .concatenate(
-            .send(.showRegionList(data: nil)),
+            .send(.mapSearch(.showRegionList(data: nil))),
+            .send(.mapSearch(.setNavigationFromRegionList)),
             .send(.fetchDetailInfo(data.id)),
             .send(.location(.moveLocation(data.pinPoint)))
           )
@@ -260,7 +218,7 @@ extension MapFeature {
       case .flowerSpotDetail:
         return .none
         
-      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList:
+      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch:
         return .none
         
       }
@@ -288,7 +246,7 @@ extension MapFeature.Core {
   private func showSearchResult(result: FlowerSpotEntity?) -> Effect<Action> {
     return .run { send in
       if let result = result {
-        await send(.setSearchBarText(result.streetName))
+        await send(.mapSearch(.setSearchBarText(result.streetName)))
         await send(.location(.moveLocation(result.pinPoint)))
         await send(.fetchPathLines(result.id))
         await send(.flowerSpotDetail(.requestDetailInfo(result.id)))
@@ -298,7 +256,8 @@ extension MapFeature.Core {
   
   private func showSearchRegionResult(name: String, coord: Coordinate) -> Effect<Action> {
     return .run { send in
-      await send(.setSearchBarText(name))
+      await send(.markerTapped(id: nil))
+      await send(.mapSearch(.setSearchBarText(name)))
       await send(.location(.moveLocation(coord)))
       await send(.location(.fetchFlowersInRadius(coordinate: coord, radiusInKm: 1.0)))
     }

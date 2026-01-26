@@ -19,17 +19,20 @@ import Shared
 public struct MapFeature {
   private let reducer: Reduce<State, Action>
   private let location: Reduce<LocationFeature.State, LocationFeature.Action>
+  private let mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>
   private let flowerSpotDetail: FlowerSpotDetailFeature
   private let searchRegionList: SearchRegionListFeature
 
   public init(
     reducer: Reduce<State, Action>,
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
+    mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>,
     flowerSpotDetail: FlowerSpotDetailFeature,
     searchRegionList: SearchRegionListFeature
   ) {
     self.reducer = reducer
     self.location = location
+    self.mapSearch = mapSearch
     self.flowerSpotDetail = flowerSpotDetail
     self.searchRegionList = searchRegionList
   }
@@ -52,15 +55,6 @@ public struct MapFeature {
     public var requestMapBound: Bool = false
     /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
-    /// 검색 결과 데이터
-    public var searchResult: FlowerSpotEntity? = nil
-    /// 검색 결과 텍스트
-    public var searchText: String? = nil
-    
-    /// 상세 화면 진입 시 루트 화면
-    public var detailRoot: DetailRoot? = nil
-    /// 리전 검색 결과 저장
-    public var regionResult: RegionInfoEntity? = nil // TODO: - 추후 타입 변경 필요
     
     public var toastMessage: String? = nil
     
@@ -68,13 +62,11 @@ public struct MapFeature {
     
     public var isViewAppeared: Bool = false
     
-    public var isShowRegionList: Bool = false
-    
-    public var regionSheetDetent: BottomSheetDetent = .medium
-    
     public var alertType: AlertType? = nil
 
     public var location: LocationFeature.State = .init()
+    
+    public var mapSearch: MapSearchFeature.State = .init()
 
     /// Optional State 패턴: nil이면 바텀시트 숨김, 값이 있으면 바텀시트 표시
     public var flowerSpotDetail: FlowerSpotDetailFeature.State? = nil
@@ -87,6 +79,7 @@ public struct MapFeature {
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
     case location(LocationFeature.Action)
+    case mapSearch(MapSearchFeature.Action)
     case flowerSpotDetail(FlowerSpotDetailFeature.Action)
     case searchRegionList(SearchRegionListFeature.Action)
     
@@ -100,21 +93,12 @@ public struct MapFeature {
     case fetchPathLines(Int)
     case fetchDetailInfo(Int)
     
-    case showSearchResult(FlowerSpotEntity?)
-    case setSearchBarText(String?)
-    case resetSearchBar
-    case showRegionList(data: RegionInfoEntity?)
-    case changeRegionSheetDetent
-    case searchBackButtonTapped
-    case handleSearchBackNavigation
-    
     case presentAlert(type: AlertType)
     case alertCancelTapped
     case alertAcceptTapped(AlertType)
     case clearAlertState
     
     case delegate(Delegate)
-    case presentToSearch
     case pushToSetting
   }
   
@@ -128,15 +112,13 @@ public struct MapFeature {
     case mapDidLoad
   }
   
-  public enum DetailRoot: Equatable {
-    case region
-    case search
-  }
-  
   public var body: some ReducerOf<Self> {
     BindingReducer()
     Scope(state: \.location, action: \.location) {
       location
+    }
+    Scope(state: \.mapSearch, action: \.mapSearch) {
+      mapSearch
     }
     .ifLet(\.flowerSpotDetail, action: \.flowerSpotDetail) {
       flowerSpotDetail

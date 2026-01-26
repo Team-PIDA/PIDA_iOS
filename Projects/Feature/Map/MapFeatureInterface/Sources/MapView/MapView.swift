@@ -67,7 +67,7 @@ public struct MapView: View {
     .overlay {
       Group {
         if let store = store.scope(state: \.searchRegionList, action: \.searchRegionList) {
-          regionListSheet(store: store)
+          regionListSheet(with: store)
         }
       }
     }
@@ -95,14 +95,14 @@ extension MapView {
       newPath: $store.selectedPathLines,
       requestBounds: $store.requestMapBound,
       isCameraMove: $store.researchButtonEnable,
-      focusData: $store.searchResult,
+      focusData: $store.mapSearch.searchResult,
       isNeedDeleteMarker: $store.isNeedDeleteMarker,
       isNeedDrawMarker: $store.isNeedDrawMarker,
       updateMarkerStatus: Binding(
         get: { store.flowerSpotDetail?.updateMarkerStatus },
         set: { _ in }
       ),
-      hasBottomSheet: $store.isShowRegionList
+      hasBottomSheet: $store.mapSearch.isShowRegionList
     )
     .onReceiveMapBounds {
       if store.requestMapBound {
@@ -113,14 +113,14 @@ extension MapView {
       store.send(.markerTapped(id: id))
     }
     .cameraMoveEvent {
-      store.send(.changeRegionSheetDetent)
+      store.send(.mapSearch(.changeRegionSheetDetent))
     }
     .ignoresSafeArea()
   }
   
   @ViewBuilder
   private func searchView() -> some View {
-    if let result = store.searchText { // 검색 결과
+    if let result = store.mapSearch.searchText { // 검색 결과
       SearchBar(
         text: .constant(result),
         placeholder: "",
@@ -129,12 +129,12 @@ extension MapView {
           TouchArea(image: .back)
             .size(.extraLarge)
             .action {
-              store.send(.searchBackButtonTapped)
+              store.send(.mapSearch(.searchBackButtonTapped))
             }
         }
       )
       .onTap {
-        store.send(.presentToSearch)
+        store.send(.mapSearch(.presentToSearch))
       }
     } else { // 검색
       SearchBar(
@@ -145,7 +145,7 @@ extension MapView {
         }
       )
       .onTap {
-        store.send(.presentToSearch)
+        store.send(.mapSearch(.presentToSearch))
       }
     }
   }
@@ -221,9 +221,12 @@ extension MapView {
     )
   }
   
-  private func regionListSheet(store: StoreOf<SearchRegionListFeature>) -> some View {
-    DetentBottomSheet(isPresented: $store.isShowRegionList, detent: $store.regionSheetDetent) {
-      SearchRegionListView(store: store)
+  private func regionListSheet(with regionStore: StoreOf<SearchRegionListFeature>) -> some View {
+    DetentBottomSheet(
+      isPresented: $store.mapSearch.isShowRegionList,
+      detent: $store.mapSearch.regionSheetDetent
+    ) {
+      SearchRegionListView(store: regionStore)
     }
   }
 }
