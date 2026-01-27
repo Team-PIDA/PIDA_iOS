@@ -43,4 +43,13 @@ struct UserEndPoint: Sendable {
       parameters: .body(body)
     )
   }
+
+  static func updateLocation(body: UpdateLocationBody) -> Endpoint<UpdateLocationDTO> {
+    return Endpoint(
+      headers: .authorization,
+      method: .put,
+      path: "/users/location",
+      parameters: .body(body)
+    )
+  }
 }
