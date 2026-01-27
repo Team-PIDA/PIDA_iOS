@@ -78,6 +78,8 @@ struct PIDAFeature {
 
     /// 구독 상태 플래그 (중복 구독 방지)
     var isSubscribed: Bool = false
+    /// 마지막 위치 업데이트 시간 (중복 호출 방지)
+    var lastLocationUpdateTime: Date? = nil
   }
 
   /// Effect 취소를 위한 ID
@@ -186,6 +188,12 @@ struct PIDAFeature {
         // 포그라운드 진입 또는 백그라운드 전환 시 + 로그인 상태
         guard phase == .active || phase == .background else { return .none }
         guard UserDefaultsKeys.accessToken != nil else { return .none }
+        // 최소 5분 간격으로 업데이트
+        if let lastUpdate = state.lastLocationUpdateTime,
+           Date().timeIntervalSince(lastUpdate) < 300 {
+          return .none
+        }
+        state.lastLocationUpdateTime = Date()
         return .send(.updateUserLocation)
 
       case .updateUserLocation:
