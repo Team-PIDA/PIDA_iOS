@@ -43,15 +43,15 @@ public enum DetailsEvent: AnalyticsEvent {
     case .start:
       return "details_start"
     case .scrollReachBottom:
-      return "scroll_reach_bottom"
+      return "details_scroll_reach_bottom"
     case .copyAddress:
-      return "copy_address"
+      return "details_copy_address"
     case .thumbnailClicked:
       return "details_thumbnail_clicked"
     case .galleryStart:
-      return "gallery_start"
+      return "details_gallery_start"
     case .viewerStart:
-      return "viewer_start"
+      return "details_viewer_start"
     }
   }
 

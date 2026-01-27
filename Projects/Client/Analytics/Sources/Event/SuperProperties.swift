@@ -95,11 +95,10 @@ private enum DeviceInfo {
   static var modelName: String {
     var systemInfo = utsname()
     uname(&systemInfo)
-    let machineMirror = Mirror(reflecting: systemInfo.machine)
-    let identifier = machineMirror.children.reduce("") { identifier, element in
-      guard let value = element.value as? Int8, value != 0 else { return identifier }
-      return identifier + String(UnicodeScalar(UInt8(value)))
+    return withUnsafePointer(to: &systemInfo.machine) {
+      $0.withMemoryRebound(to: CChar.self, capacity: 1) {
+        String(validatingUTF8: $0) ?? "unknown"
+      }
     }
-    return identifier
   }
 }

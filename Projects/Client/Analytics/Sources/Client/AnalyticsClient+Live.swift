@@ -37,7 +37,7 @@ extension AnalyticsClient: DependencyKey {
   }()
 }
 
-// MARK: - Preview/Test Value
+// MARK: - Preview Value
 
 extension AnalyticsClient {
   public static let previewValue: AnalyticsClient = {
@@ -48,17 +48,6 @@ extension AnalyticsClient {
         print("[Analytics Preview] \(event.name): \(event.properties)")
         #endif
       },
-      identify: { _ in },
-      setUserProperties: { _ in },
-      reset: { },
-      setSuperProperties: { _ in }
-    )
-  }()
-
-  public static let testValue: AnalyticsClient = {
-    AnalyticsClient(
-      initialize: { _ in },
-      track: { _ in },
       identify: { _ in },
       setUserProperties: { _ in },
       reset: { },

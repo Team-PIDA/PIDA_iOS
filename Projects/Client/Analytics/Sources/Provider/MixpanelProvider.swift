@@ -11,6 +11,10 @@ import Mixpanel
 // MARK: - MixpanelProvider
 
 /// Mixpanel SDK 래핑 Provider
+///
+/// - Note: Mixpanel SDK는 내부적으로 thread-safe하게 구현되어 있어
+///         `@unchecked Sendable`로 선언해도 안전합니다.
+///         https://github.com/mixpanel/mixpanel-swift
 public final class MixpanelProvider: AnalyticsProvider, @unchecked Sendable {
   public init() {}
 
