@@ -34,6 +34,7 @@ extension TargetDependency {
     public static let Location = Self.project(.client(.Location))
     public static let Push = Self.project(.client(.Push))
     public static let DeepLink = Self.project(.client(.DeepLink))
+    public static let Analytics = Self.project(.client(.Analytics))
   }
 }
 
@@ -53,6 +54,7 @@ extension TargetDependency {
     public static let DotLottie = Self.project(.spm(.DotLottie))
     public static let FirebaseCore = Self.project(.spm(.FirebaseCore))
     public static let FirebaseMessaging = Self.project(.spm(.FirebaseMessaging))
+    public static let Mixpanel = Self.project(.spm(.Mixpanel))
   }
 }
 

@@ -38,6 +38,7 @@ public enum Client: ModuleRepresentable {
   case Location
   case Push
   case DeepLink
+  case Analytics
 }
 
 public enum SPM: ModuleRepresentable {
@@ -46,4 +47,5 @@ public enum SPM: ModuleRepresentable {
   case DotLottie
   case FirebaseCore
   case FirebaseMessaging
+  case Mixpanel
 }
