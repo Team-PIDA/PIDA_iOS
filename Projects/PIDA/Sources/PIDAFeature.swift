@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftUI
 import ComposableArchitecture
 
 import MapFeature
@@ -32,6 +33,7 @@ import SearchRegionListFeatureInterface
 
 import PushClient
 import UserClient
+import LocationClient
 import DeepLinkClient
 import Shared
 
@@ -50,6 +52,7 @@ enum LoginSource: Equatable {
 struct PIDAFeature {
   @Dependency(\.pushNotificationClient) var pushNotificationClient
   @Dependency(\.userClient) var userClient
+  @Dependency(\.locationClient) var locationClient
 
   let locationReducer = Reduce(LocationFeature())
   let mapSearchReducer = Reduce(MapSearchFeature())
@@ -116,6 +119,10 @@ struct PIDAFeature {
     case subscribeDeepLink
     case deepLinkReceived(DeepLink)
     case processPendingDeepLink
+
+    // 앱 생명주기 관련
+    case scenePhaseChanged(ScenePhase)
+    case updateUserLocation
   }
   
   var body: some ReducerOf<Self> {
@@ -172,7 +179,18 @@ struct PIDAFeature {
         print("✅ Processing pending DeepLink: \(pendingDeepLink)")
         AppDelegate.pendingDeepLink = nil
         return .send(.deepLinkReceived(pendingDeepLink))
-        
+
+        // MARK: - Scene Phase
+
+      case let .scenePhaseChanged(phase):
+        // 포그라운드 진입 또는 백그라운드 전환 시 + 로그인 상태
+        guard phase == .active || phase == .background else { return .none }
+        guard UserDefaultsKeys.accessToken != nil else { return .none }
+        return .send(.updateUserLocation)
+
+      case .updateUserLocation:
+        return updateUserLocation()
+
       case let .presentSearch(isShow, keyword):
         if isShow {
           state.search = .init(initText: keyword)
@@ -462,5 +480,21 @@ extension PIDAFeature {
       }
     }
     .cancellable(id: CancelID.deepLinkSubscription)
+  }
+
+  /// 사용자 위치를 서버로 전송
+  private func updateUserLocation() -> Effect<Action> {
+    return .run { [locationClient, userClient] _ in
+      guard let coordinate = await locationClient.requestUserLocation() else {
+        print("📍 위치 정보를 가져올 수 없습니다.")
+        return
+      }
+      do {
+        try await userClient.updateLocation(coordinate.latitude, coordinate.longitude)
+        print("✅ 사용자 위치 업데이트 성공: \(coordinate.latitude), \(coordinate.longitude)")
+      } catch {
+        print("❌ 사용자 위치 업데이트 실패: \(error)")
+      }
+    }
   }
 }
