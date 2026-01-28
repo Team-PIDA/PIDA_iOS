@@ -23,6 +23,8 @@ public struct DetentBottomSheet<Content: View>: View {
   @Binding private var detent: BottomSheetDetent
   // 시트 표시 여부
   @Binding private var isPresent: Bool
+  // 현재 높이를 외부로 전달하기 위한 바인딩
+  @Binding private var currentHeightBinding: CGFloat
   
   // 현재 시트 위치(offset)
   @State private var offset: CGFloat = 0
@@ -52,6 +54,7 @@ public struct DetentBottomSheet<Content: View>: View {
     minHeight: CGFloat = 115,
     cornerRadius: CGFloat = .Number16,
     detent: Binding<BottomSheetDetent> = .constant(.medium),
+    currentHeight: Binding<CGFloat>? = nil,
     @ViewBuilder content: () -> Content
   ) {
     self._isPresent = isPresented
@@ -59,6 +62,7 @@ public struct DetentBottomSheet<Content: View>: View {
     self.cornerRadius = cornerRadius
     self._detent = detent
     self.initialDetent = detent.wrappedValue
+    self._currentHeightBinding = currentHeight ?? .constant(0)
     self.content = content()
   }
   
@@ -102,7 +106,9 @@ public struct DetentBottomSheet<Content: View>: View {
       }
       .onChange(of: offset) { _, _ in
         // offset 변경 시 현재 높이 업데이트
-        currentHeight = calculateCurrentHeight(screenHeight: screenHeight)
+        let newHeight = calculateCurrentHeight(screenHeight: screenHeight)
+        currentHeight = newHeight
+        currentHeightBinding = newHeight
       }
     }
     .ignoresSafeArea(.all, edges: .bottom)
@@ -245,26 +251,15 @@ public struct DetentBottomSheet<Content: View>: View {
     Swift.min(Swift.max(value, min), max)
   }
   
-  // 현재 실제 시트 높이 계산
+  // 현재 실제 시트 높이 계산 (스크린 하단에서부터의 가시 높이)
   private func calculateCurrentHeight(screenHeight: CGFloat) -> CGFloat {
-    let mediumHeight = BottomSheetDetent.medium.visibleHeight(minHeight: minHeight, screenHeight: screenHeight)
-    let highHeight = BottomSheetDetent.high.visibleHeight(minHeight: minHeight, screenHeight: screenHeight)
+    if !isPresent {
+      return 0
+    }
     
-    // 현재 offset을 기반으로 실제 보이는 높이 계산
-    let visibleHeight = minHeight + abs(offset)
-    
-    // medium 이하일 때는 medium 높이로 고정
-    if visibleHeight <= mediumHeight {
-      return mediumHeight
-    }
-    // medium과 high 사이일 때는 현재 높이 그대로
-    else if visibleHeight < highHeight {
-      return visibleHeight
-    }
-    // high 이상일 때는 high 높이로 고정
-    else {
-      return highHeight
-    }
+    // 스크린 하단에서부터 실제로 보이는 높이 계산
+    // offset이 음수일수록 더 많이 올라온 상태 (더 높은 높이)
+    return minHeight + abs(offset)
   }
 }
 

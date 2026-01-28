@@ -20,9 +20,9 @@ public struct MapView: View {
   @State private var isDragEnabled: Bool = true
   /// 바텀시트 확장 상태 여부
   @State private var isBottomSheetExpanded: Bool = false
+  /// 바텀시트 실제 높이
+  @State private var buttonBottomPadding: CGFloat = 0
 
-  
-  
   public init(store: StoreOf<MapFeature>) {
     self.store = store
   }
@@ -175,9 +175,21 @@ extension MapView {
         store.send(.location(.currentButtonTapped(true)))
       }
       .elevation(cornerRadius: .Number24)
+      .padding(.bottom, .Number16)
     }
     .padding(.trailing, .Number16)
-    .padding(.bottom, store.flowerSpotDetail != nil ? 180 : 40)
+    .padding(.bottom, currentButtonBottomPadding)
+  }
+  
+  private var currentButtonBottomPadding: CGFloat {
+    if store.flowerSpotDetail != nil {
+      return 174
+    } else if store.mapSearch.isShowRegionList {
+      // DetentBottomSheet에서 받아온 실제 높이 + 여백
+      return min(buttonBottomPadding, 500)
+    } else {
+      return 20
+    }
   }
   
   private func alertView(type: AlertType) -> some View {
@@ -224,9 +236,12 @@ extension MapView {
   private func regionListSheet(with regionStore: StoreOf<SearchRegionListFeature>) -> some View {
     DetentBottomSheet(
       isPresented: $store.mapSearch.isShowRegionList,
-      detent: $store.mapSearch.regionSheetDetent
+      detent: $store.mapSearch.regionSheetDetent,
+      currentHeight: $buttonBottomPadding
     ) {
       SearchRegionListView(store: regionStore)
     }
   }
 }
+
+
