@@ -183,7 +183,7 @@ extension MapView {
   
   private var currentButtonBottomPadding: CGFloat {
     if store.flowerSpotDetail != nil {
-      return 174
+      return 140
     } else if store.mapSearch.isShowRegionList {
       // DetentBottomSheet에서 받아온 실제 높이 + 여백
       return min(buttonBottomPadding, 500)
