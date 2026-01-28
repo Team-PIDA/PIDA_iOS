@@ -33,7 +33,6 @@ public struct SearchView: View {
 }
 
 extension SearchView {
-  // TODO: - 검색 데이터 확정 시 데이터에 맞춰 파라미터 추가
   /// 검색 리스트
   private func searchList() -> some View {
     VStack(alignment: .leading, spacing: .Number0) {
