@@ -34,6 +34,9 @@ public struct MapSearchFeature {
     public var isShowRegionList: Bool = false
     /// 리전 검색 리스트 바텀시트 detent
     public var regionSheetDetent: BottomSheetDetent = .medium
+    /// 리전 검색 리스트 바텀시트 높이
+    public var regionBottomSheetHeight: CGFloat = 0
+    
     public init() {}
   }
   

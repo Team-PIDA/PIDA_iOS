@@ -108,7 +108,11 @@ public struct DetentBottomSheet<Content: View>: View {
         // offset 변경 시 현재 높이 업데이트
         let newHeight = calculateCurrentHeight(screenHeight: screenHeight)
         currentHeight = newHeight
-        currentHeightBinding = newHeight
+        
+        // 애니메이션과 함께 currentHeightBinding 업데이트
+        withAnimation(snapAnimation) {
+          currentHeightBinding = newHeight
+        }
       }
     }
     .ignoresSafeArea(.all, edges: .bottom)

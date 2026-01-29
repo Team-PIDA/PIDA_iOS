@@ -20,8 +20,6 @@ public struct MapView: View {
   @State private var isDragEnabled: Bool = true
   /// 바텀시트 확장 상태 여부
   @State private var isBottomSheetExpanded: Bool = false
-  /// 바텀시트 실제 높이
-  @State private var buttonBottomPadding: CGFloat = 0
 
   public init(store: StoreOf<MapFeature>) {
     self.store = store
@@ -185,8 +183,7 @@ extension MapView {
     if store.flowerSpotDetail != nil {
       return 140
     } else if store.mapSearch.isShowRegionList {
-      // DetentBottomSheet에서 받아온 실제 높이 + 여백
-      return min(buttonBottomPadding, 500)
+      return min(store.mapSearch.regionBottomSheetHeight, 500)
     } else {
       return 20
     }
@@ -237,7 +234,7 @@ extension MapView {
     DetentBottomSheet(
       isPresented: $store.mapSearch.isShowRegionList,
       detent: $store.mapSearch.regionSheetDetent,
-      currentHeight: $buttonBottomPadding
+      currentHeight: $store.mapSearch.regionBottomSheetHeight
     ) {
       SearchRegionListView(store: regionStore)
     }
