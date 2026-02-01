@@ -9,7 +9,7 @@
 import Foundation
 import Shared
 
-public struct PlaceSearchListEntity: Equatable, Sendable, Codable {
+public struct PlaceSearchEntity: Equatable, Sendable, Codable {
   public var name: String
   public var address: String?
   public var coordinate: Coordinate
@@ -30,51 +30,3 @@ public struct PlaceSearchListEntity: Equatable, Sendable, Codable {
     self.searchType = searchType
   }
 }
-
-
-/**
- {
-   "district": [
-     {
-       "name": "여의도 한강공원",
-       "address": "서울특별시 영등포구 여의도동",
-       "pinPoint": {
-         "type": "Point",
-         "coordinates": [
-           126.934,
-           37.5284
-         ]
-       },
-       "region": "SEOUL"
-     }
-   ],
-   "landmarks": [
-     {
-       "name": "여의도 한강공원",
-       "address": "서울특별시 영등포구 여의도동",
-       "pinPoint": {
-         "type": "Point",
-         "coordinates": [
-           126.934,
-           37.5284
-         ]
-       },
-       "region": "SEOUL"
-     }
-   ],
-   "flowerSpots": [
-     {
-       "name": "여의도 한강공원",
-       "address": "서울특별시 영등포구 여의도동",
-       "pinPoint": {
-         "type": "Point",
-         "coordinates": [
-           126.934,
-           37.5284
-         ]
-       },
-       "region": "SEOUL"
-     }
-   ]
- }
- */

@@ -11,13 +11,13 @@ import APIClient
 import Shared
 
 struct PlaceSearchListDTO: DTO {
-  typealias Entity = [PlaceSearchListEntity]
+  typealias Entity = [PlaceSearchEntity]
   let district: [PlaceSearchDTO]
   let landmarks: [PlaceSearchDTO]
   let flowerSpots: [PlaceSearchDTO]
   
-  func toEntity() throws -> [PlaceSearchListEntity] {
-    var result: [PlaceSearchListEntity] = []
+  func toEntity() throws -> Entity {
+    var result: Entity = []
     let district = district.map { try? $0.toEntity(searchType: .region) }.compactMap { $0 }
     let landmarks = landmarks.map { try? $0.toEntity(searchType: .region) }.compactMap { $0 }
     let flowerSpot = flowerSpots.map { try? $0.toEntity(searchType: .street) }.compactMap { $0 }
@@ -30,21 +30,21 @@ struct PlaceSearchListDTO: DTO {
 }
 
 struct PlaceSearchDTO: DTO {
-  typealias Entity = PlaceSearchListEntity
+  typealias Entity = PlaceSearchEntity
   
   let name: String
   let address: String?
   let pinPoint: PinPointDTO
   let region: String
   
-  func toEntity() throws -> PlaceSearchListEntity {
+  func toEntity() throws -> Entity {
     guard let pinPoint = try? pinPoint.toEntity() else {
       throw FoundationError.failedToDecode(PinPointDTO.self)
     }
     return .init(name: name, address: address, coordinate: pinPoint, region: region)
   }
   
-  func toEntity(searchType: SearchType) throws -> PlaceSearchListEntity {
+  func toEntity(searchType: SearchType) throws -> PlaceSearchEntity {
     guard let pinPoint = try? pinPoint.toEntity() else {
       throw FoundationError.failedToDecode(PinPointDTO.self)
     }
