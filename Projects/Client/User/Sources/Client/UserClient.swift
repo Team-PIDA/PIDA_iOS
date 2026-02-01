@@ -14,6 +14,7 @@ public struct UserClient: Sendable {
   public var fetchUserInfo: @Sendable () async throws -> UserInfoEntity
   public var withdrawUser: @Sendable () async throws -> WithDrawEntity
   public var updateFCMToken: @Sendable (_ fcmToken: String) async throws -> Void
+  public var updateLocation: @Sendable (_ latitude: Double, _ longitude: Double) async throws -> Void
 }
 
 public extension DependencyValues {

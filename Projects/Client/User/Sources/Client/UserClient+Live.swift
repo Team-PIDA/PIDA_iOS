@@ -34,6 +34,11 @@ extension UserClient: DependencyKey {
         let body = UpdateFCMTokenBody(fcmToken: fcmToken)
         let endpoint = UserEndPoint.updateFCMToken(body: body)
         _ = try await apiClient.execute(endpoint)
+      },
+      updateLocation: { latitude, longitude in
+        let body = UpdateLocationBody(latitude: latitude, longitude: longitude)
+        let endpoint = UserEndPoint.updateLocation(body: body)
+        _ = try await apiClient.execute(endpoint)
       }
     )
   }
