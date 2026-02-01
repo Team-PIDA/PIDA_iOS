@@ -145,12 +145,12 @@ public struct FlowerSpotDetailFeature {
     // MARK: - Delegate
     case delegate(Delegate)
     case dismiss
-    case presentToBlooming(id: Int, streetName: String)
+    case presentToBlooming(id: Int, streetName: String, distance: Double?)
   }
 
   public enum Delegate: Equatable {
     case dismiss
-    case presentToBlooming(id: Int, streetName: String)
+    case presentToBlooming(id: Int, streetName: String, distance: Double?)
     case presentToLogin(id: Int)
     case showOnMap(FlowerSpotEntity)
   }

@@ -42,7 +42,8 @@ extension FlowerSpotDetailFeature {
         if UserDefaultsKeys.isLoggedIn == true {
           let streetName = state.flowerSpotData.streetName
           let id = state.flowerSpotData.id
-          return .send(.presentToBlooming(id: id, streetName: streetName))
+          let distance = state.distance > 0 ? state.distance : nil
+          return .send(.presentToBlooming(id: id, streetName: streetName, distance: distance))
         } else {
           return .send(.showLoginAlert)
         }
@@ -75,8 +76,8 @@ extension FlowerSpotDetailFeature {
         state.isNeedDeletePath = true
         return .send(.delegate(.dismiss))
 
-      case let .presentToBlooming(id, streetName):
-        return .send(.delegate(.presentToBlooming(id: id, streetName: streetName)))
+      case let .presentToBlooming(id, streetName, distance):
+        return .send(.delegate(.presentToBlooming(id: id, streetName: streetName, distance: distance)))
 
       case .showLoginAlert:
         state.isShowLoginAlert = true

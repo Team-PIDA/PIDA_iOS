@@ -64,6 +64,9 @@ public struct BloomingUpdateView: View {
         photosPickerItem = nil
       }
     }
+    .onAppear {
+      store.send(.onAppear)
+    }
   }
   
   @ViewBuilder

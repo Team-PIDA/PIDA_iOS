@@ -199,8 +199,8 @@ extension MapFeature {
           state.isNeedDeleteMarker = true
           return .none
 
-        case let .presentToBlooming(id, streetName):
-          return .send(.delegate(.presentToBlooming(id: id, streetName: streetName)))
+        case let .presentToBlooming(id, streetName, distance):
+          return .send(.delegate(.presentToBlooming(id: id, streetName: streetName, distance: distance)))
 
         case let .presentToLogin(id):
           return .send(.delegate(.presentToLogin(id: id)))

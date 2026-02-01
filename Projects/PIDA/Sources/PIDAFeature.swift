@@ -102,7 +102,7 @@ struct PIDAFeature {
 
     case binding(BindingAction<State>)
     case presentSearch(Bool, keyword: String?)
-    case presentBloomingUpdate(Bool, id: Int?, streetName: String)
+    case presentBloomingUpdate(Bool, id: Int?, streetName: String, distance: Double? = nil)
     case presentToLogin(Bool)
     case presentSignUp(Bool)
 
@@ -208,9 +208,9 @@ struct PIDAFeature {
         state.isShowSearch = isShow
         return .none
 
-      case let .presentBloomingUpdate(isPresent, id, streetName):
+      case let .presentBloomingUpdate(isPresent, id, streetName, distance):
         if isPresent {
-          state.blooming = .init(spotId: id, streetName: streetName)
+          state.blooming = .init(spotId: id, streetName: streetName, distanceFromSpot: distance)
         }
         state.isPresentBlooming = isPresent
         return .none
@@ -284,8 +284,8 @@ struct PIDAFeature {
         
       case let .map(.delegate(action)):
         switch action {
-        case let .presentToBlooming(id, streetName):
-          return .send(.presentBloomingUpdate(true, id: id, streetName: streetName))
+        case let .presentToBlooming(id, streetName, distance):
+          return .send(.presentBloomingUpdate(true, id: id, streetName: streetName, distance: distance))
           
         case let .presentToLogin(id):
           state.loginSource = .flowerSpotDetail(spotId: id)
