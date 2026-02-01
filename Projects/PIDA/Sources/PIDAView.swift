@@ -13,6 +13,7 @@ import SearchFeatureInterface
 import SettingFeatureInterface
 import AuthFeatureInterface
 import BloomingFeatureInterface
+import Shared
 
 struct PIDAView: View {
   @Bindable var store: StoreOf<PIDAFeature> = Store(initialState: PIDAFeature.State()) { PIDAFeature()
@@ -73,6 +74,9 @@ struct PIDAView: View {
           store.send(.onAppear)
         }
         .onChange(of: scenePhase) { _, newPhase in
+          if newPhase == .background {
+            UserDefaultsKeys.lastSessionEndTime = Date()
+          }
           store.send(.scenePhaseChanged(newPhase))
         }
     }

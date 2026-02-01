@@ -35,6 +35,7 @@ import PushClient
 import UserClient
 import LocationClient
 import DeepLinkClient
+import AnalyticsClient
 import Shared
 
 enum Path: Hashable {
@@ -53,6 +54,7 @@ struct PIDAFeature {
   @Dependency(\.pushNotificationClient) var pushNotificationClient
   @Dependency(\.userClient) var userClient
   @Dependency(\.locationClient) var locationClient
+  @Dependency(\.analyticsClient) var analyticsClient
 
   let locationReducer = Reduce(LocationFeature())
   let mapSearchReducer = Reduce(MapSearchFeature())
@@ -425,7 +427,10 @@ extension Reducer where State == PIDAFeature.State, Action == PIDAFeature.Action
 extension PIDAFeature {
   /// 앱 시작 시 푸시 알림 권한 요청 및 구독 초기화
   private func initializeAppLifecycle() -> Effect<Action> {
-    return .run { [pushNotificationClient] send in
+    return .run { [pushNotificationClient, locationClient, analyticsClient] send in
+      // 세션 시작 이벤트 트래킹
+      trackSessionStart(locationClient: locationClient, analyticsClient: analyticsClient)
+
       // 푸시 알림 권한 요청
       let status = await pushNotificationClient.checkAuthorizationStatus()
       if status == .notDetermined {
@@ -436,6 +441,42 @@ extension PIDAFeature {
       // DeepLink 구독 시작
       await send(.subscribeDeepLink)
     }
+  }
+
+  /// 세션 시작 이벤트 트래킹
+  private func trackSessionStart(
+    locationClient: LocationClient,
+    analyticsClient: AnalyticsClient
+  ) {
+    let now = Date()
+
+    // 이전 세션 지속 시간 계산 (초 단위)
+    var sessionDuration: Int? = nil
+    if let startTime = UserDefaultsKeys.sessionStartTime,
+       let endTime = UserDefaultsKeys.lastSessionEndTime {
+      sessionDuration = Int(endTime.timeIntervalSince(startTime))
+    }
+
+    // 이전 세션 종료 후 경과 시간 계산 (초 단위)
+    var sessionPreviousGap: Int? = nil
+    if let lastEndTime = UserDefaultsKeys.lastSessionEndTime {
+      sessionPreviousGap = Int(now.timeIntervalSince(lastEndTime))
+    }
+
+    // 위치 권한 상태 확인
+    let userLocationEnabled = locationClient.checkAuthorizationStatus()
+
+    // 새 세션 시작 시간 저장
+    UserDefaultsKeys.sessionStartTime = now
+
+    // 이벤트 트래킹
+    analyticsClient.track(
+      SessionEvent.start(
+        sessionDuration: sessionDuration,
+        sessionPreviousGap: sessionPreviousGap,
+        userLocationEnabled: userLocationEnabled
+      )
+    )
   }
 
   /// FCM 토큰 수신 구독

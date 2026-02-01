@@ -73,4 +73,12 @@ public struct UserDefaultsKeys {
 
   @UserDefault("deviceId", default: nil)
   public static var deviceId: String?
+
+  // MARK: - Session Analytics
+
+  @UserDefault("sessionStartTime", default: nil)
+  public static var sessionStartTime: Date?
+
+  @UserDefault("lastSessionEndTime", default: nil)
+  public static var lastSessionEndTime: Date?
 }

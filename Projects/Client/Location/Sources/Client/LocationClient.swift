@@ -12,6 +12,7 @@ import Shared
 @DependencyClient
 public struct LocationClient: Sendable {
   public var requestUserLocation: @Sendable () async -> Coordinate?
+  public var checkAuthorizationStatus: @Sendable () -> Bool = { false }
 }
 
 public extension DependencyValues {

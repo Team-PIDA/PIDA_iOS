@@ -7,12 +7,17 @@
 //
 
 import ComposableArchitecture
+import CoreLocation
 
 extension LocationClient: DependencyKey {
   public static var liveValue: Self {
     return .init(
-      requestUserLocation: { 
+      requestUserLocation: {
         await LocationService().requestUserLocation()
+      },
+      checkAuthorizationStatus: {
+        let status = CLLocationManager().authorizationStatus
+        return status == .authorizedAlways || status == .authorizedWhenInUse
       }
     )
   }
