@@ -12,6 +12,7 @@ import FlowerSpotClient
 import BloomingClient
 import DesignKit
 import Shared
+import AnalyticsClient
 
 @Reducer
 public struct FlowerSpotDetailFeature {
@@ -77,8 +78,12 @@ public struct FlowerSpotDetailFeature {
     /// URL -> Data 매핑 (프리페치된 이미지)
     public var prefetchedImages: [String: Data] = [:]
 
-    public init(userLocation: Coordinate? = nil) {
+    /// 진입 경로 (Analytics 용)
+    public var entryPoint: MapEvent.EntryPoint = .mapPin
+
+    public init(userLocation: Coordinate? = nil, entryPoint: MapEvent.EntryPoint = .mapPin) {
       self.userLocation = userLocation
+      self.entryPoint = entryPoint
     }
   }
 

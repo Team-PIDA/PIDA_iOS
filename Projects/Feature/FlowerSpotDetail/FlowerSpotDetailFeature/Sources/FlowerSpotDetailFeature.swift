@@ -14,6 +14,7 @@ import FlowerSpotDetailFeatureInterface
 import FlowerSpotClient
 import BloomingClient
 import CacheClient
+import AnalyticsClient
 
 extension FlowerSpotDetailFeature {
   public init() {
@@ -24,6 +25,7 @@ extension FlowerSpotDetailFeature {
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.bloomingClient) var bloomingClient
     @Dependency(\.cache) var cache
+    @Dependency(\.analyticsClient) var analyticsClient
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
@@ -203,6 +205,16 @@ extension FlowerSpotDetailFeature {
         if let bloomStatus = BloomStatus(rawValue: state.flowerSpotData.bloomingStatus) {
           state.updateMarkerStatus = bloomStatus
         }
+        // spotSelected 이벤트 트래킹
+        analyticsClient.track(
+          MapEvent.spotSelected(
+            spotId: state.flowerSpotData.id,
+            distanceFromSpot: state.distance > 0 ? state.distance : nil,
+            currentBloomStatus: state.flowerSpotData.bloomingStatus,
+            visitCount: state.flowerSpotData.recentlyVisitedCount,
+            entryPoint: state.entryPoint
+          )
+        )
       }
     }
   }
