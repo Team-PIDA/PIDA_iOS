@@ -250,36 +250,46 @@ extension FlowerSpotDetailFeature {
       }
     }
 
+    /// 로딩 완료 여부 체크 (UI 상태 업데이트만)
     private func checkLoadingComplete(_ state: inout State) {
-      if state.flowerSpotData.id != 0 && state.bloomingStatus.totalCount >= 0 {
-        state.isDetailLoading = false
-        state.isNeedDrawPath = true
-        if let bloomStatus = BloomStatus(rawValue: state.flowerSpotData.bloomingStatus) {
-          state.updateMarkerStatus = bloomStatus
-        }
-        // spotSelected 이벤트 트래킹
-        analyticsClient.track(
-          MapEvent.spotSelected(
-            spotId: state.flowerSpotData.id,
-            distanceFromSpot: state.distance > 0 ? state.distance : nil,
-            currentBloomStatus: state.flowerSpotData.bloomingStatus,
-            visitCount: state.flowerSpotData.recentlyVisitedCount,
-            entryPoint: state.entryPoint
-          )
-        )
-        // details_start 이벤트 트래킹 및 시작 시간 기록
-        state.detailsStartTime = Date()
-        state.hasTrackedScrollReachBottom = false
-        state.copyAddressCount = 0
-        analyticsClient.track(
-          DetailsEvent.start(
-            spotId: state.flowerSpotData.id,
-            distanceFromSpot: state.distance > 0 ? state.distance : nil,
-            currentBloomStatus: state.flowerSpotData.bloomingStatus,
-            visitCount: state.flowerSpotData.recentlyVisitedCount
-          )
-        )
+      // 이미 로딩 완료된 경우 스킵
+      guard state.isDetailLoading else { return }
+      // 모든 데이터가 준비됐는지 확인
+      guard state.flowerSpotData.id != 0 && state.bloomingStatus.totalCount >= 0 else { return }
+
+      state.isDetailLoading = false
+      state.isNeedDrawPath = true
+      if let bloomStatus = BloomStatus(rawValue: state.flowerSpotData.bloomingStatus) {
+        state.updateMarkerStatus = bloomStatus
       }
+      // Analytics 트래킹
+      trackDetailsStart(&state)
+    }
+
+    /// details_start 및 map_spot_selected 이벤트 트래킹
+    private func trackDetailsStart(_ state: inout State) {
+      // spotSelected 이벤트 트래킹
+      analyticsClient.track(
+        MapEvent.spotSelected(
+          spotId: state.flowerSpotData.id,
+          distanceFromSpot: state.distance > 0 ? state.distance : nil,
+          currentBloomStatus: state.flowerSpotData.bloomingStatus,
+          visitCount: state.flowerSpotData.recentlyVisitedCount,
+          entryPoint: state.entryPoint
+        )
+      )
+      // details_start 이벤트 트래킹 및 시작 시간 기록
+      state.detailsStartTime = Date()
+      state.hasTrackedScrollReachBottom = false
+      state.copyAddressCount = 0
+      analyticsClient.track(
+        DetailsEvent.start(
+          spotId: state.flowerSpotData.id,
+          distanceFromSpot: state.distance > 0 ? state.distance : nil,
+          currentBloomStatus: state.flowerSpotData.bloomingStatus,
+          visitCount: state.flowerSpotData.recentlyVisitedCount
+        )
+      )
     }
   }
 }
