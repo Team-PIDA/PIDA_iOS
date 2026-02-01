@@ -11,7 +11,7 @@ import ComposableArchitecture
 import SearchFeatureInterface
 import SearchClient
 import FlowerSpotClient
-import Shared
+import AnalyticsClient
 
 extension SearchFeature {
   public init() {
@@ -21,6 +21,7 @@ extension SearchFeature {
   struct Core: Reducer {
     @Dependency(\.searchClient) var searchClient
     @Dependency(\.flowerSpotClient) var flowerSpotClient
+    @Dependency(\.analyticsClient) var analyticsClient
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
@@ -30,11 +31,16 @@ extension SearchFeature {
           state.showRecentList = true
           return .send(.updateSearchResults(state.recentList))
         } else {
+          // 첫 입력 시 search_input 이벤트 트래킹
+          if state.showRecentList {
+            analyticsClient.track(SearchEvent.input)
+          }
           state.showRecentList = false
           return .send(.searchItem(searchQuery))
         }
 
       case .onAppear:
+        // search_start 이벤트는 fetchRecentResult 완료 후 트래킹
         return .concatenate(
           .send(.configureSearchList),
           .send(.searchBarFocused(true)),
@@ -56,6 +62,15 @@ extension SearchFeature {
 
       case let .updateSearchResults(results):
         state.searchList = results
+        // 검색 결과 없음 트래킹 (최근 검색 목록이 아니고, 결과가 비어있을 때)
+        if !state.showRecentList && results.isEmpty && !state.searchWord.isEmpty {
+          analyticsClient.track(
+            SearchEvent.noResultViewed(
+              keywordLength: state.searchWord.count,
+              resultType: .landmark
+            )
+          )
+        }
         return .none
 
       case .fetchRecentResult:
@@ -63,6 +78,14 @@ extension SearchFeature {
 
       case let .storeRecentResult(item):
         state.recentList = item
+        // search_start 이벤트 트래킹
+        analyticsClient.track(
+          SearchEvent.start(
+            hasRecentSearches: !item.isEmpty,
+            recentSearchesCount: item.count,
+            entryPoint: "map"
+          )
+        )
         return .none
 
       case let .fetchSearchResult(result):
@@ -77,6 +100,14 @@ extension SearchFeature {
         return .none
         
       case let .selectResult(item):
+        // 최근 검색어 클릭 or 자동완성 클릭 트래킹
+        if state.showRecentList {
+          analyticsClient.track(SearchEvent.recentSearchClicked)
+        } else {
+          let resultType: SearchEvent.ResultType = item.searchType == .region ? .region : .landmark
+          analyticsClient.track(SearchEvent.suggestionClicked(resultType: resultType))
+        }
+
         switch item.searchType {
         case .region:
           if let name = item.streetName, let coord = item.coord {
