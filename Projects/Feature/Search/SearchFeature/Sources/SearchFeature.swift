@@ -44,7 +44,8 @@ extension SearchFeature {
         return .concatenate(
           .send(.configureSearchList),
           .send(.searchBarFocused(true)),
-          .send(.fetchRecentResult)
+          .send(.fetchRecentResult),
+          fetchKeywordSearch(keyword: "한강")
         )
 
       case .configureSearchList:
@@ -203,6 +204,22 @@ extension SearchFeature.Core {
       } catch {
         print(error.localizedDescription)
       }
+    }
+  }
+  
+  private func fetchKeywordSearch(keyword: String) -> Effect<Action> {
+    return .run { send in
+      do {
+        let result = try await searchClient.fetchKeywordSearch(keyword: keyword)
+        print(result)
+      } catch let error as NetworkError {
+        print(error.errorDescription)
+      } catch let error as FoundationError {
+        print(error.errorDescription)
+      } catch {
+        print(error.localizedDescription)
+      }
+      
     }
   }
 }

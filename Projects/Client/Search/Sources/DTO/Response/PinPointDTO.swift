@@ -11,7 +11,7 @@ import APIClient
 import Shared
 
 struct PinPointDTO: DTO {
-  typealias Entity = Coordinate?
+  typealias Entity = Coordinate
   var type: String
   var coordinates: [Double]
   
@@ -25,8 +25,10 @@ struct PinPointDTO: DTO {
 }
 
 extension PinPointDTO {
-  func toEntity() throws -> Coordinate? {
-    if coordinates.count < 2 { return nil }
+  func toEntity() throws -> Coordinate {
+    guard coordinates.count >= 2 else {
+      throw FoundationError.failedToDecode(PinPointDTO.self)
+    }
     return Coordinate(latitude: coordinates[1], longitude: coordinates[0])
   }
 }

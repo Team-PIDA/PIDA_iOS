@@ -12,9 +12,8 @@ import APIClient
 struct SearchEndPoint: Sendable {
   static func searchPlaces(query: PlaceSearchQuery) -> Endpoint<PlaceSearchListDTO> {
     return Endpoint(
-      headers: .authorization,
       method: .get,
-      path: "/place/search",
+      path: "/places/search",
       parameters: .query(query)
     )
   }

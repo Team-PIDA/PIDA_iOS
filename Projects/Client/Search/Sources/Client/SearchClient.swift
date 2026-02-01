@@ -14,6 +14,7 @@ public struct SearchClient {
   public var fetchRecentSearch: @Sendable () async throws -> [SearchListCellEntity]
   public var getSearchListFromCache: @Sendable () async throws -> [SearchListCellEntity]
   public var saveRecentSearchItem: @Sendable (_ item: SearchListCellEntity) async throws -> Void
+  public var fetchKeywordSearch: @Sendable (_ keyword: String) async throws -> [PlaceSearchEntity]
 }
 
 public extension DependencyValues {

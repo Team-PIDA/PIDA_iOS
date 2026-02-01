@@ -38,17 +38,14 @@ struct PlaceSearchDTO: DTO {
   let region: String
   
   func toEntity() throws -> Entity {
-    guard let pinPoint = try? pinPoint.toEntity() else {
-      throw FoundationError.failedToDecode(PinPointDTO.self)
-    }
-    return .init(name: name, address: address, coordinate: pinPoint, region: region)
+    let coordinate = try pinPoint.toEntity()
+    return .init(name: name, address: address, coordinate: coordinate, region: region, searchType: .region)
   }
   
-  func toEntity(searchType: SearchType) throws -> PlaceSearchEntity {
-    guard let pinPoint = try? pinPoint.toEntity() else {
-      throw FoundationError.failedToDecode(PinPointDTO.self)
-    }
-    return .init(name: name, address: address, coordinate: pinPoint, region: region, searchType: searchType)
+  func toEntity(searchType: SearchType) throws -> Entity {
+    var data = try self.toEntity()
+    data.searchType = searchType
+    return data
   }
 }
 

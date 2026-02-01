@@ -9,10 +9,12 @@
 import ComposableArchitecture
 import CacheClient
 import Shared
+import APIClient
 
 extension SearchClient: DependencyKey {
   public static var liveValue: SearchClient {
     @Dependency(\.cache) var cache
+    @Dependency(\.apiClient) var apiClient
     
     return .init(
       calculateSimilarityScore: { text, query in
@@ -105,6 +107,11 @@ extension SearchClient: DependencyKey {
           
         updated.insert(entity, at: 0)
         try await cache.set(.recentSearches, updated)
+      },
+      fetchKeywordSearch: { keyword in
+        let query = PlaceSearchQuery(query: keyword)
+        let endpoint = SearchEndPoint.searchPlaces(query: query)
+        return try await apiClient.execute(endpoint).toEntity()
       }
     )
   }
