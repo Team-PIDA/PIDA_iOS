@@ -86,6 +86,12 @@ extension FlowerSpotDetailFeature {
 
       case .pushToPhotoGallery:
         state.path.append(.photoGallery)
+        // details_gallery_start 이벤트 트래킹
+        analyticsClient.track(
+          DetailsEvent.galleryStart(
+            distanceFromSpot: state.distance > 0 ? state.distance : nil
+          )
+        )
         return .none
 
       case .popFromPhotoGallery:
@@ -100,6 +106,16 @@ extension FlowerSpotDetailFeature {
           currentIndex: index
         )
         state.isPresentPhotoViewer = true
+        // details_thumbnail_clicked 이벤트 트래킹
+        analyticsClient.track(
+          DetailsEvent.thumbnailClicked(spotPhoto: state.flowerSpotData.imageUrls.count)
+        )
+        // details_viewer_start 이벤트 트래킹
+        analyticsClient.track(
+          DetailsEvent.viewerStart(
+            distanceFromSpot: state.distance > 0 ? state.distance : nil
+          )
+        )
         return .none
 
       case .dismissPhotoViewer:
@@ -193,6 +209,41 @@ extension FlowerSpotDetailFeature {
         checkLoadingComplete(&state)
         return .none
 
+      // MARK: - Analytics
+
+      case .copyAddressTapped:
+        state.copyAddressCount += 1
+        let scrollTimeToReach: Double
+        if let startTime = state.detailsStartTime {
+          scrollTimeToReach = Date().timeIntervalSince(startTime)
+        } else {
+          scrollTimeToReach = 0
+        }
+        // details_copy_address 이벤트 트래킹
+        analyticsClient.track(
+          DetailsEvent.copyAddress(
+            scrollTimeToReach: scrollTimeToReach,
+            copyAddressCount: state.copyAddressCount,
+            copyAddressToUpdate: state.bloomingStatus.totalCount
+          )
+        )
+        return .none
+
+      case .scrollReachedBottom:
+        guard !state.hasTrackedScrollReachBottom else { return .none }
+        state.hasTrackedScrollReachBottom = true
+        let scrollTimeToReach: Double
+        if let startTime = state.detailsStartTime {
+          scrollTimeToReach = Date().timeIntervalSince(startTime)
+        } else {
+          scrollTimeToReach = 0
+        }
+        // details_scroll_reach_bottom 이벤트 트래킹
+        analyticsClient.track(
+          DetailsEvent.scrollReachBottom(scrollTimeToReach: scrollTimeToReach)
+        )
+        return .none
+
       case .delegate, .binding:
         return .none
       }
@@ -213,6 +264,18 @@ extension FlowerSpotDetailFeature {
             currentBloomStatus: state.flowerSpotData.bloomingStatus,
             visitCount: state.flowerSpotData.recentlyVisitedCount,
             entryPoint: state.entryPoint
+          )
+        )
+        // details_start 이벤트 트래킹 및 시작 시간 기록
+        state.detailsStartTime = Date()
+        state.hasTrackedScrollReachBottom = false
+        state.copyAddressCount = 0
+        analyticsClient.track(
+          DetailsEvent.start(
+            spotId: state.flowerSpotData.id,
+            distanceFromSpot: state.distance > 0 ? state.distance : nil,
+            currentBloomStatus: state.flowerSpotData.bloomingStatus,
+            visitCount: state.flowerSpotData.recentlyVisitedCount
           )
         )
       }

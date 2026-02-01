@@ -151,6 +151,7 @@ public struct FlowerSpotDetailView: View {
           }
           .onTapGesture {
             UIPasteboard.general.string = store.flowerSpotData.address
+            store.send(.copyAddressTapped)
             store.send(.showToastView(message: "주소가 복사되었습니다."))
           }
         }
@@ -204,7 +205,10 @@ public struct FlowerSpotDetailView: View {
         Text("나무 종류")
           .fontStyle(FontSet.Heading.heading3)
           .foregroundColor(ColorSet.Text.Primary)
-        
+          .onAppear {
+            store.send(.scrollReachedBottom)
+          }
+
         Text(store.flowerSpotData.description)
           .fontStyle(FontSet.Body.body2)
           .foregroundColor(ColorSet.Text.Primary)

@@ -81,6 +81,17 @@ public struct FlowerSpotDetailFeature {
     /// 진입 경로 (Analytics 용)
     public var entryPoint: MapEvent.EntryPoint = .mapPin
 
+    // MARK: - Analytics State
+
+    /// 상세 페이지 진입 시간 (스크롤 시간 계산용)
+    public var detailsStartTime: Date? = nil
+
+    /// 주소 복사 횟수 (세션 내)
+    public var copyAddressCount: Int = 0
+
+    /// 하단 도달 이벤트 트래킹 여부
+    public var hasTrackedScrollReachBottom: Bool = false
+
     public init(userLocation: Coordinate? = nil, entryPoint: MapEvent.EntryPoint = .mapPin) {
       self.userLocation = userLocation
       self.entryPoint = entryPoint
@@ -126,6 +137,10 @@ public struct FlowerSpotDetailFeature {
     case prefetchImages
     case imagesPrefetched([String: Data])
     case cacheImage(url: String, data: Data)
+
+    // MARK: - Analytics
+    case copyAddressTapped
+    case scrollReachedBottom
 
     // MARK: - Delegate
     case delegate(Delegate)
