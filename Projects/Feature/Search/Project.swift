@@ -13,6 +13,7 @@ let project = Project.buildFeature(
   for: Feature.Search,
   interfaceDependencies: [
     .Client.Search,
-    .Client.FlowerSpot
+    .Client.FlowerSpot,
+    .Client.Analytics
   ]
 )

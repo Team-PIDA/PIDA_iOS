@@ -19,6 +19,7 @@ let project = Project.buildApp(
     .Client.Push,
     .Client.User,
     .Client.DeepLink,
+    .Client.Analytics,
     .SPM.FirebaseCore,
     .SPM.FirebaseMessaging,
     .Feature.SearchRegionList

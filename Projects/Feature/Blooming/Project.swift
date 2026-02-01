@@ -12,6 +12,7 @@ import ProjectDescriptionHelpers
 let project = Project.buildFeature(
   for: Feature.Blooming,
   interfaceDependencies: [
-    .Client.Blooming
+    .Client.Blooming,
+    .Client.Analytics
   ]
 )
