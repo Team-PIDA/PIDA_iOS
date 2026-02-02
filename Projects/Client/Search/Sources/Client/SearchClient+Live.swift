@@ -61,29 +61,9 @@ extension SearchClient: DependencyKey {
         return 0
       },
       fetchRecentSearch: {
-//        guard let items = await cache.get(.recentSearches, as: [SearchListCellEntity].self)
-//        else { return [] }
-//        return items
-        return [
-          SearchListCellEntity(
-            id: 1,
-            address: "서울특별시 강남구 테헤란로 123",
-            streetName: "벚꽃길",
-            subInfo: nil,
-            searchType: .street
-          ),
-          SearchListCellEntity(
-            id: 2,
-            address: nil,
-            streetName: "상수역",
-            subInfo: nil,
-            searchType: .region,
-            coord: .init(
-              latitude: 37.54776,
-              longitude: 126.92297
-            )
-          )
-        ]
+        guard let items = await cache.get(.recentSearches, as: [PlaceSearchEntity].self)
+        else { return [] }
+        return items
       },
       // NOTE: 질문) 얘가 하는 역할이 뭔지?
       getSearchListFromCache: {
@@ -92,7 +72,7 @@ extension SearchClient: DependencyKey {
         return items.map { SearchListCellEntity($0) }
       },
       saveRecentSearchItem: { entity in
-        guard let allList = await cache.get(.recentSearches, as: [SearchListCellEntity].self)
+        guard let allList = await cache.get(.recentSearches, as: [PlaceSearchEntity].self)
         else {
           // 캐시에 최근 검색어가 하나도 없으면 새로 생성
           try await cache.set(.recentSearches, [entity])

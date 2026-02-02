@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Shared
 
 public struct SearchAddressCacheModel: Equatable, Sendable, Codable {
   public let id: Int
@@ -14,18 +15,21 @@ public struct SearchAddressCacheModel: Equatable, Sendable, Codable {
   public let streetName: String?
   public let subInfo: String?
   public let searchType: String?
+  public let coordinate: Coordinate?
   
   public init(
     id: Int,
     address: String?,
     streetName: String?,
     subInfo: String? = nil,
-    searchType: String? = nil
+    searchType: String? = nil,
+    coordinate: Coordinate? = nil
   ) {
     self.id = id
     self.address = address
     self.streetName = streetName
     self.subInfo = subInfo
     self.searchType = searchType
+    self.coordinate = coordinate
   }
 }

@@ -7,14 +7,15 @@
 //
 
 import Foundation
+import CacheClient
 import Shared
 
 public struct PlaceSearchEntity: Equatable, Sendable, Codable, Identifiable {
   public var id: Int
   public var name: String
   public var address: String?
-  public var coordinate: Coordinate
-  public var region: String
+  public var coordinate: Coordinate?
+  public var region: String?
   public var searchType: SearchType
   public var subInfo: String?
   
@@ -34,5 +35,14 @@ public struct PlaceSearchEntity: Equatable, Sendable, Codable, Identifiable {
     self.region = region
     self.searchType = searchType
     self.subInfo = subInfo
+  }
+  
+  public init(_ entity: SearchAddressCacheModel) {
+    self.id = entity.id
+    self.name = entity.streetName ?? ""
+    self.address = entity.address
+    self.subInfo = entity.subInfo
+    self.searchType = entity.searchType.flatMap { SearchType(rawValue: $0) } ?? .street
+    self.coordinate = entity.coordinate
   }
 }

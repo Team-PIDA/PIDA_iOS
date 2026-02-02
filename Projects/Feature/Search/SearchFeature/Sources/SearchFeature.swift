@@ -117,9 +117,10 @@ extension SearchFeature {
 
         switch item.searchType {
         case .region:
+          guard let coordinate = item.coordinate else { return .none }
           return .send(
             .delegate(
-              .selectRegionResult(.init(name: item.name, coordinate: item.coordinate))
+              .selectRegionResult(.init(name: item.name, coordinate: coordinate))
             )
           )
         case .street:
@@ -147,58 +148,19 @@ extension SearchFeature.Core {
     return .run { send in
       do {
         let recent = try await searchClient.fetchRecentSearch()
-//        await send(.storeRecentResult(recent))
-//        if keyword.isEmpty {
-//          await send(.updateSearchResults(recent))
-//        }
+        await send(.storeRecentResult(recent))
+        if keyword.isEmpty {
+          await send(.updateSearchResults(recent))
+        }
       }
     }
   }
-  
-  private func searchItem(with searchQuery: String) -> Effect<Action> {
-    return .run { send in
-      do {
-        var data = try await searchClient.getSearchListFromCache()
-        if data.isEmpty {
-          print("캐시 복구")
-          try await flowerSpotClient.fetchAllFlowerAddress()
-          data = try await searchClient.getSearchListFromCache()
-        }
-        let scoredResults = try data.map { flowerSpot -> (flower: SearchListCellEntity, score: Int) in
-          let addressScore = try searchClient.calculateSimilarityScore(
-            text: flowerSpot.address,
-            query: searchQuery
-          ) * 2
-          let streetScore = try searchClient.calculateSimilarityScore(
-            text: flowerSpot.streetName,
-            query: searchQuery
-          )
-          let totalScore = addressScore + streetScore
-          return (flowerSpot, totalScore)
-        }
-        let filteredResults = scoredResults
-          .filter { $0.score > 0 }
-          .sorted { $0.score > $1.score }
-          .prefix(20)
-          .map { $0.flower }
-//        await MainActor.run { send(.updateSearchResults(filteredResults)) }
-      } catch let error as NetworkError {
-        print(error.errorDescription)
-      } catch let error as FoundationError {
-        print(error.errorDescription)
-      } catch {
-        print(error.localizedDescription)
-      }
-    }
-  }
-  
   
   private func fetchSelectedDetailInfo(item: PlaceSearchEntity) -> Effect<Action> {
     return .run { send in
       do {
         let detail = try await flowerSpotClient.getFlowerSpotDetail(id: item.id)
-        // TODO: - 최근 검색 목록 타입 변경
-//        try await searchClient.saveRecentSearchItem(item: item)
+        try await searchClient.saveRecentSearchItem(item: item)
         await MainActor.run {
           send(.searchBarFocused(false))
           send(.fetchSearchResult(detail))
@@ -217,7 +179,9 @@ extension SearchFeature.Core {
     return .run { send in
       do {
         let result = try await searchClient.fetchKeywordSearch(keyword: keyword)
-        print(result)
+        await MainActor.run {
+          send(.updateSearchResults(result))
+        }
       } catch let error as NetworkError {
         print(error.errorDescription)
       } catch let error as FoundationError {

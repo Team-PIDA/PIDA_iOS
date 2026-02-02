@@ -55,7 +55,8 @@ extension MapFeature {
         
       case .viewDidAppear:
         state.isViewAppeared = true
-        return .send(.fetchAllFlowerAddress)
+        return .none
+//        return .send(.fetchAllFlowerAddress)
         
       case let .requestMapBounds(isRequest):
         state.requestMapBound = isRequest
