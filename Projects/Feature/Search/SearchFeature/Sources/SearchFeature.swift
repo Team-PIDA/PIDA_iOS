@@ -22,7 +22,8 @@ extension SearchFeature {
     @Dependency(\.searchClient) var searchClient
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.analyticsClient) var analyticsClient
-
+    @Dependency(\.mainQueue) var mainQueue
+    
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       case .binding(\.searchWord):
@@ -44,8 +45,7 @@ extension SearchFeature {
         return .concatenate(
           .send(.configureSearchList),
           .send(.searchBarFocused(true)),
-          .send(.fetchRecentResult),
-          fetchKeywordSearch(keyword: "한강")
+          .send(.fetchRecentResult)
         )
 
       case .configureSearchList:
@@ -59,8 +59,14 @@ extension SearchFeature {
 
       // MARK: - Search
       case let .searchItem(searchQuery):
-        return searchItem(with: searchQuery)
-
+        return fetchKeywordSearch(keyword: searchQuery)
+          .throttle(
+            id: CancelID.search,
+            for: .milliseconds(300),
+            scheduler: mainQueue,
+            latest: true
+          )
+        
       case let .updateSearchResults(results):
         state.searchList = results
         // 검색 결과 없음 트래킹 (최근 검색 목록이 아니고, 결과가 비어있을 때)
@@ -111,13 +117,11 @@ extension SearchFeature {
 
         switch item.searchType {
         case .region:
-          if let name = item.streetName, let coord = item.coord {
-            return .send(
-              .delegate(
-                .selectRegionResult(.init(name: name, coordinate: coord))
-              )
+          return .send(
+            .delegate(
+              .selectRegionResult(.init(name: item.name, coordinate: item.coordinate))
             )
-          } else { return .none }
+          )
         case .street:
           return fetchSelectedDetailInfo(item: item)
         }
@@ -143,10 +147,10 @@ extension SearchFeature.Core {
     return .run { send in
       do {
         let recent = try await searchClient.fetchRecentSearch()
-        await send(.storeRecentResult(recent))
-        if keyword.isEmpty {
-          await send(.updateSearchResults(recent))
-        }
+//        await send(.storeRecentResult(recent))
+//        if keyword.isEmpty {
+//          await send(.updateSearchResults(recent))
+//        }
       }
     }
   }
@@ -177,7 +181,7 @@ extension SearchFeature.Core {
           .sorted { $0.score > $1.score }
           .prefix(20)
           .map { $0.flower }
-        await MainActor.run { send(.updateSearchResults(filteredResults)) }
+//        await MainActor.run { send(.updateSearchResults(filteredResults)) }
       } catch let error as NetworkError {
         print(error.errorDescription)
       } catch let error as FoundationError {
@@ -188,11 +192,13 @@ extension SearchFeature.Core {
     }
   }
   
-  private func fetchSelectedDetailInfo(item: SearchListCellEntity) -> Effect<Action> {
+  
+  private func fetchSelectedDetailInfo(item: PlaceSearchEntity) -> Effect<Action> {
     return .run { send in
       do {
         let detail = try await flowerSpotClient.getFlowerSpotDetail(id: item.id)
-        try await searchClient.saveRecentSearchItem(item: item)
+        // TODO: - 최근 검색 목록 타입 변경
+//        try await searchClient.saveRecentSearchItem(item: item)
         await MainActor.run {
           send(.searchBarFocused(false))
           send(.fetchSearchResult(detail))

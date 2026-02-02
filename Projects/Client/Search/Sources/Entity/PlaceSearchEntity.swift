@@ -9,24 +9,30 @@
 import Foundation
 import Shared
 
-public struct PlaceSearchEntity: Equatable, Sendable, Codable {
+public struct PlaceSearchEntity: Equatable, Sendable, Codable, Identifiable {
+  public var id: Int
   public var name: String
   public var address: String?
   public var coordinate: Coordinate
   public var region: String
   public var searchType: SearchType
+  public var subInfo: String?
   
   public init(
+    id: Int = 1,
     name: String,
     address: String? = nil,
     coordinate: Coordinate,
     region: String,
-    searchType: SearchType = .street
+    searchType: SearchType = .street,
+    subInfo: String? = nil
   ) {
+    self.id = id
     self.name = name
     self.address = address
     self.coordinate = coordinate
     self.region = region
     self.searchType = searchType
+    self.subInfo = subInfo
   }
 }
