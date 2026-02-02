@@ -135,9 +135,10 @@ public enum SearchEvent: AnalyticsEvent {
 // MARK: - ResultType
 
 public extension SearchEvent {
-  /// 검색어 타입 (행정구역, 랜드마크)
+  /// 검색어 타입 (행정구역, 랜드마크, 꽃길)
   enum ResultType: String, Sendable {
-    case region = "region"
+    case district = "district"
     case landmark = "landmark"
+    case flowerSpot = "flowerSpot"
   }
 }

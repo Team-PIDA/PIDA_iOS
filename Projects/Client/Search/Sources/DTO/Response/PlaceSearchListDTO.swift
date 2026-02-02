@@ -18,9 +18,9 @@ struct PlaceSearchListDTO: DTO {
   
   func toEntity() throws -> Entity {
     var result: Entity = []
-    let district = district.map { try? $0.toEntity(searchType: .region) }.compactMap { $0 }
-    let landmarks = landmarks.map { try? $0.toEntity(searchType: .region) }.compactMap { $0 }
-    let flowerSpot = flowerSpots.map { try? $0.toEntity(searchType: .street) }.compactMap { $0 }
+    let district = district.map { try? $0.toEntity(searchType: .district) }.compactMap { $0 }
+    let landmarks = landmarks.map { try? $0.toEntity(searchType: .landmark) }.compactMap { $0 }
+    let flowerSpot = flowerSpots.map { try? $0.toEntity(searchType: .flowerSpot) }.compactMap { $0 }
     result.append(contentsOf: district)
     result.append(contentsOf: landmarks)
     result.append(contentsOf: flowerSpot)
@@ -39,7 +39,7 @@ struct PlaceSearchDTO: DTO {
   
   func toEntity() throws -> Entity {
     let coordinate = try pinPoint.toEntity()
-    return .init(name: name, address: address, coordinate: coordinate, region: region, searchType: .region)
+    return .init(name: name, address: address, coordinate: coordinate, region: region, searchType: .flowerSpot)
   }
   
   func toEntity(searchType: SearchType) throws -> Entity {

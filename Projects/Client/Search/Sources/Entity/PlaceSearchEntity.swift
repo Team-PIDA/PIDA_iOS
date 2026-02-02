@@ -26,7 +26,7 @@ public struct PlaceSearchEntity: Equatable, Sendable, Codable, Identifiable {
     address: String? = nil,
     coordinate: Coordinate,
     region: String,
-    searchType: SearchType = .street,
+    searchType: SearchType = .flowerSpot,
     subInfo: String? = nil
   ) {
     self.uuid = .init()
@@ -45,7 +45,7 @@ public struct PlaceSearchEntity: Equatable, Sendable, Codable, Identifiable {
     self.name = entity.streetName ?? ""
     self.address = entity.address
     self.subInfo = entity.subInfo
-    self.searchType = entity.searchType.flatMap { SearchType(rawValue: $0) } ?? .street
+    self.searchType = entity.searchType.flatMap { SearchType(rawValue: $0) } ?? .flowerSpot
     self.coordinate = entity.coordinate
   }
 }

@@ -114,12 +114,15 @@ extension SearchFeature {
         if state.showRecentList {
           analyticsClient.track(SearchEvent.recentSearchClicked)
         } else {
-          let resultType: SearchEvent.ResultType = item.searchType == .region ? .region : .landmark
+          let resultType: SearchEvent.ResultType = .init(rawValue: item.searchType.rawValue) ?? .flowerSpot
           analyticsClient.track(SearchEvent.suggestionClicked(resultType: resultType))
         }
-
+        
         switch item.searchType {
-        case .region:
+        case .flowerSpot:
+          return fetchSelectedDetailInfo(item: item)
+          
+        default:
           guard let coordinate = item.coordinate else { return .none }
           return .concatenate(
             .send(.updateRecentSesarch(item)),
@@ -128,8 +131,6 @@ extension SearchFeature {
                 .init(name: item.name, coordinate: coordinate))
             ))
           )
-        case .street:
-          return fetchSelectedDetailInfo(item: item)
         }
         
       // MARK: - Delegate
