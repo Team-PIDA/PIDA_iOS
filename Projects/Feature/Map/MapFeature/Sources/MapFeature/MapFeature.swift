@@ -13,6 +13,7 @@ import MapFeatureInterface
 import FlowerSpotClient
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
+import AnalyticsClient
 
 
 extension MapFeature {
@@ -34,6 +35,7 @@ extension MapFeature {
   struct Core: Reducer {
     @Dependency(\.flowerSpotClient) var flowerSpot
     @Dependency(\.openURL) var openURL
+    @Dependency(\.analyticsClient) var analyticsClient
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
@@ -44,6 +46,7 @@ extension MapFeature {
         return .none
         
       case .moveToReportURL:
+        analyticsClient.track(MapEvent.reportClicked)
         return .run { send in
           if let url = ExternalURL.report {
             await openURL(url)
@@ -57,6 +60,9 @@ extension MapFeature {
       case let .requestMapBounds(isRequest):
         state.requestMapBound = isRequest
         state.researchButtonEnable = false
+        if isRequest {
+          analyticsClient.track(MapEvent.researchClicked(currentPage: "map"))
+        }
         return .none
         
       case .fetchAllFlowerAddress:
@@ -193,8 +199,8 @@ extension MapFeature {
           state.isNeedDeleteMarker = true
           return .none
 
-        case let .presentToBlooming(id, streetName):
-          return .send(.delegate(.presentToBlooming(id: id, streetName: streetName)))
+        case let .presentToBlooming(id, streetName, distance):
+          return .send(.delegate(.presentToBlooming(id: id, streetName: streetName, distance: distance)))
 
         case let .presentToLogin(id):
           return .send(.delegate(.presentToLogin(id: id)))

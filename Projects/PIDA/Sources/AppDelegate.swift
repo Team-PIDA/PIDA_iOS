@@ -9,8 +9,10 @@
 import UIKit
 import FirebaseCore
 import FirebaseMessaging
+import ComposableArchitecture
 import Shared
 import DeepLinkClient
+import AnalyticsClient
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
@@ -24,6 +26,12 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     // MARK: - Firebase 초기 설정
     FirebaseConfiguration.shared.setLoggerLevel(.min)
     FirebaseApp.configure()
+
+    // MARK: - Mixpanel 초기화
+    if let mixpanelToken = Constant.mixpanel_token {
+      @Dependency(\.analyticsClient) var analyticsClient
+      analyticsClient.initialize(mixpanelToken)
+    }
 
     // MARK: - 푸시 알림 설정
     Messaging.messaging().delegate = self

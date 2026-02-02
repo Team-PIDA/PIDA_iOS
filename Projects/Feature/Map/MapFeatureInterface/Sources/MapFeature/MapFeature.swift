@@ -107,7 +107,7 @@ public struct MapFeature {
   public enum Delegate: Equatable {
     case presentToSearch(String?)
     case pushToSetting
-    case presentToBlooming(id: Int, streetName: String)
+    case presentToBlooming(id: Int, streetName: String, distance: Double?)
     case presentToLogin(id: Int)
     case mapDidLoad
   }

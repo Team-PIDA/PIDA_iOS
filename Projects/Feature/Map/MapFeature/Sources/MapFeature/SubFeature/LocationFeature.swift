@@ -13,6 +13,7 @@ import ComposableArchitecture
 import MapFeatureInterface
 import FlowerSpotClient
 import LocationClient
+import AnalyticsClient
 
 extension LocationFeature {
   
@@ -23,6 +24,7 @@ extension LocationFeature {
   struct Core: Reducer {
     @Dependency(\.locationClient) var locationClient
     @Dependency(\.flowerSpotClient) var flowerSpotClient
+    @Dependency(\.analyticsClient) var analyticsClient
     
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
@@ -40,6 +42,7 @@ extension LocationFeature {
       case let .currentButtonTapped(isTapped):
         state.isCurrentButtonTap = isTapped
         if isTapped {
+          analyticsClient.track(MapEvent.currentLocationClicked(currentPage: "map"))
           return .send(.moveUserLocation)
         }
         return .none
@@ -103,6 +106,7 @@ extension LocationFeature.Core {
         )
         let result = try await flowerSpotClient.fetchAllFlowerPin(query: query)
         if result.itemList.count == 0 {
+          analyticsClient.track(MapEvent.researchFailed)
           await send(.showToastView(message: "이 근방에는 꽃길이 없어요.", buttonLabel: "제보하기"))
         }
         await send(.storeFlowerData(result.itemList))

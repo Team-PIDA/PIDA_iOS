@@ -14,6 +14,7 @@ import FlowerSpotDetailFeatureInterface
 import FlowerSpotClient
 import BloomingClient
 import CacheClient
+import AnalyticsClient
 
 extension FlowerSpotDetailFeature {
   public init() {
@@ -24,6 +25,7 @@ extension FlowerSpotDetailFeature {
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.bloomingClient) var bloomingClient
     @Dependency(\.cache) var cache
+    @Dependency(\.analyticsClient) var analyticsClient
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
@@ -40,7 +42,8 @@ extension FlowerSpotDetailFeature {
         if UserDefaultsKeys.isLoggedIn == true {
           let streetName = state.flowerSpotData.streetName
           let id = state.flowerSpotData.id
-          return .send(.presentToBlooming(id: id, streetName: streetName))
+          let distance = state.distance > 0 ? state.distance : nil
+          return .send(.presentToBlooming(id: id, streetName: streetName, distance: distance))
         } else {
           return .send(.showLoginAlert)
         }
@@ -73,8 +76,8 @@ extension FlowerSpotDetailFeature {
         state.isNeedDeletePath = true
         return .send(.delegate(.dismiss))
 
-      case let .presentToBlooming(id, streetName):
-        return .send(.delegate(.presentToBlooming(id: id, streetName: streetName)))
+      case let .presentToBlooming(id, streetName, distance):
+        return .send(.delegate(.presentToBlooming(id: id, streetName: streetName, distance: distance)))
 
       case .showLoginAlert:
         state.isShowLoginAlert = true
@@ -84,6 +87,12 @@ extension FlowerSpotDetailFeature {
 
       case .pushToPhotoGallery:
         state.path.append(.photoGallery)
+        // details_gallery_start 이벤트 트래킹
+        analyticsClient.track(
+          DetailsEvent.galleryStart(
+            distanceFromSpot: state.distance > 0 ? state.distance : nil
+          )
+        )
         return .none
 
       case .popFromPhotoGallery:
@@ -98,6 +107,16 @@ extension FlowerSpotDetailFeature {
           currentIndex: index
         )
         state.isPresentPhotoViewer = true
+        // details_thumbnail_clicked 이벤트 트래킹
+        analyticsClient.track(
+          DetailsEvent.thumbnailClicked(spotPhoto: state.flowerSpotData.imageUrls.count)
+        )
+        // details_viewer_start 이벤트 트래킹
+        analyticsClient.track(
+          DetailsEvent.viewerStart(
+            distanceFromSpot: state.distance > 0 ? state.distance : nil
+          )
+        )
         return .none
 
       case .dismissPhotoViewer:
@@ -191,19 +210,86 @@ extension FlowerSpotDetailFeature {
         checkLoadingComplete(&state)
         return .none
 
+      // MARK: - Analytics
+
+      case .copyAddressTapped:
+        state.copyAddressCount += 1
+        let scrollTimeToReach: Double
+        if let startTime = state.detailsStartTime {
+          scrollTimeToReach = Date().timeIntervalSince(startTime)
+        } else {
+          scrollTimeToReach = 0
+        }
+        // details_copy_address 이벤트 트래킹
+        analyticsClient.track(
+          DetailsEvent.copyAddress(
+            scrollTimeToReach: scrollTimeToReach,
+            copyAddressCount: state.copyAddressCount,
+            copyAddressToUpdate: state.bloomingStatus.totalCount
+          )
+        )
+        return .none
+
+      case .scrollReachedBottom:
+        guard !state.hasTrackedScrollReachBottom else { return .none }
+        state.hasTrackedScrollReachBottom = true
+        let scrollTimeToReach: Double
+        if let startTime = state.detailsStartTime {
+          scrollTimeToReach = Date().timeIntervalSince(startTime)
+        } else {
+          scrollTimeToReach = 0
+        }
+        // details_scroll_reach_bottom 이벤트 트래킹
+        analyticsClient.track(
+          DetailsEvent.scrollReachBottom(scrollTimeToReach: scrollTimeToReach)
+        )
+        return .none
+
       case .delegate, .binding:
         return .none
       }
     }
 
+    /// 로딩 완료 여부 체크 (UI 상태 업데이트만)
     private func checkLoadingComplete(_ state: inout State) {
-      if state.flowerSpotData.id != 0 && state.bloomingStatus.totalCount >= 0 {
-        state.isDetailLoading = false
-        state.isNeedDrawPath = true
-        if let bloomStatus = BloomStatus(rawValue: state.flowerSpotData.bloomingStatus) {
-          state.updateMarkerStatus = bloomStatus
-        }
+      // 이미 로딩 완료된 경우 스킵
+      guard state.isDetailLoading else { return }
+      // 모든 데이터가 준비됐는지 확인
+      guard state.flowerSpotData.id != 0 && state.bloomingStatus.totalCount >= 0 else { return }
+
+      state.isDetailLoading = false
+      state.isNeedDrawPath = true
+      if let bloomStatus = BloomStatus(rawValue: state.flowerSpotData.bloomingStatus) {
+        state.updateMarkerStatus = bloomStatus
       }
+      // Analytics 트래킹
+      trackDetailsStart(&state)
+    }
+
+    /// details_start 및 map_spot_selected 이벤트 트래킹
+    private func trackDetailsStart(_ state: inout State) {
+      // spotSelected 이벤트 트래킹
+      analyticsClient.track(
+        MapEvent.spotSelected(
+          spotId: state.flowerSpotData.id,
+          distanceFromSpot: state.distance > 0 ? state.distance : nil,
+          currentBloomStatus: state.flowerSpotData.bloomingStatus,
+          visitCount: state.flowerSpotData.recentlyVisitedCount,
+          entryPoint: state.entryPoint
+        )
+      )
+      // details_start 이벤트 트래킹 및 시작 시간 기록
+      state.detailsStartTime = Date()
+      state.hasTrackedScrollReachBottom = false
+      state.copyAddressCount = 0
+      analyticsClient.track(
+        DetailsEvent.start(
+          spotId: state.flowerSpotData.id,
+          distanceFromSpot: state.distance > 0 ? state.distance : nil,
+          currentBloomStatus: state.flowerSpotData.bloomingStatus,
+          visitCount: state.flowerSpotData.recentlyVisitedCount
+        )
+      )
     }
   }
 }

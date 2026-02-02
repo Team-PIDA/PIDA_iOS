@@ -18,6 +18,7 @@ let project = Project.buildFeature(
     .Client.Blooming,
     .Client.Location,
     .Client.Search,
+    .Client.Analytics,
     .SPM.NMap
   ]
 )

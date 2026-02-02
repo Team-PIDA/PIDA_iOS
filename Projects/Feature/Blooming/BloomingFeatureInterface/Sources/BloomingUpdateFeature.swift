@@ -32,15 +32,21 @@ public struct BloomingUpdateFeature {
     public var selectedUIImage: UIImage? = nil
     public var isPhotoPickerPresented: Bool = false
 
-    public init(spotId: Int?, streetName: String) {
+    // Analytics 상태
+    public var distanceFromSpot: Double? = nil
+    public var updateStartTime: Date? = nil
+
+    public init(spotId: Int?, streetName: String, distanceFromSpot: Double? = nil) {
       self.spotId = spotId
       self.streetName = streetName
+      self.distanceFromSpot = distanceFromSpot
     }
   }
   
   public enum Action: BindableAction, Equatable {
     case binding(BindingAction<State>)
 
+    case onAppear
     case changeStatus
     case initialState
     case sendToastMessage(String)
