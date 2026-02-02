@@ -29,6 +29,7 @@ extension SearchRegionListFeature {
       case let .storeFlowerSpots(flowerSpots):
         state.flowerSpots = flowerSpots
         state.isLoading = false
+        state.isDataEmpty = flowerSpots.isEmpty
         // search_result_viewed 이벤트 트래킹
         analyticsClient.track(
           SearchEvent.resultViewed(
