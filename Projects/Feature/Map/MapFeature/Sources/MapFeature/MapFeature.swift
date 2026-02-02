@@ -56,7 +56,6 @@ extension MapFeature {
       case .viewDidAppear:
         state.isViewAppeared = true
         return .none
-//        return .send(.fetchAllFlowerAddress)
         
       case let .requestMapBounds(isRequest):
         state.requestMapBound = isRequest
@@ -177,6 +176,15 @@ extension MapFeature {
         case let .storeUserLocation(location):
           state.userLocation = location
           state.location.userLocation = location
+          
+          // 초기 지도 로드 시 한번만 실행
+          if shouldTriggerInitialMapLoad(state: state) {
+            state.isInitialMapLoadCompleted = true
+            return .concatenate(
+              .send(.requestMapBounds(true)),
+              .send(.delegate(.mapDidLoad))
+            )
+          }
           return .none
           
         case let .showToastView(message, label):
@@ -234,6 +242,11 @@ extension MapFeature {
 }
 
 extension MapFeature.Core {
+  /// 초기 지도 로드 이벤트 트리거 조건 확인
+  private func shouldTriggerInitialMapLoad(state: State) -> Bool {
+    return state.isViewAppeared && !state.isInitialMapLoadCompleted
+  }
+  
   private func fetchAllFlowerAddress() -> Effect<Action> {
     return .run { send in
       do {
@@ -245,8 +258,6 @@ extension MapFeature.Core {
       } catch {
         print(error.localizedDescription)
       }
-      await send(.requestMapBounds(true))
-      await send(.delegate(.mapDidLoad))
     }
   }
   

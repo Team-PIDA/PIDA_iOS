@@ -62,6 +62,9 @@ public struct MapFeature {
     
     public var isViewAppeared: Bool = false
     
+    /// 초기 지도 로드 완료 여부
+    public var isInitialMapLoadCompleted: Bool = false
+    
     public var alertType: AlertType? = nil
 
     public var location: LocationFeature.State = .init()
