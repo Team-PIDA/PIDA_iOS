@@ -11,6 +11,7 @@ import CacheClient
 import Shared
 
 public struct PlaceSearchEntity: Equatable, Sendable, Codable, Identifiable {
+  public var uuid: UUID
   public var id: Int
   public var name: String
   public var address: String?
@@ -28,6 +29,7 @@ public struct PlaceSearchEntity: Equatable, Sendable, Codable, Identifiable {
     searchType: SearchType = .street,
     subInfo: String? = nil
   ) {
+    self.uuid = .init()
     self.id = id
     self.name = name
     self.address = address
@@ -38,6 +40,7 @@ public struct PlaceSearchEntity: Equatable, Sendable, Codable, Identifiable {
   }
   
   public init(_ entity: SearchAddressCacheModel) {
+    self.uuid = .init()
     self.id = entity.id
     self.name = entity.streetName ?? ""
     self.address = entity.address
