@@ -27,6 +27,7 @@ extension SearchRegionListFeature {
       case let .storeFlowerSpots(flowerSpots):
         state.flowerSpots = flowerSpots
         state.isLoading = false
+        state.isDataEmpty = flowerSpots.isEmpty
         return .none
         
       case let .flowerSpotTapped(flowerSpot):

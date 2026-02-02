@@ -21,8 +21,6 @@ public struct MapView: View {
   /// 바텀시트 확장 상태 여부
   @State private var isBottomSheetExpanded: Bool = false
 
-  
-  
   public init(store: StoreOf<MapFeature>) {
     self.store = store
   }
@@ -175,9 +173,20 @@ extension MapView {
         store.send(.location(.currentButtonTapped(true)))
       }
       .elevation(cornerRadius: .Number24)
+      .padding(.bottom, .Number16)
     }
     .padding(.trailing, .Number16)
-    .padding(.bottom, store.flowerSpotDetail != nil ? 180 : 40)
+    .padding(.bottom, currentButtonBottomPadding)
+  }
+  
+  private var currentButtonBottomPadding: CGFloat {
+    if store.flowerSpotDetail != nil {
+      return 140
+    } else if store.mapSearch.isShowRegionList {
+      return min(store.mapSearch.regionBottomSheetHeight, 500)
+    } else {
+      return 20
+    }
   }
   
   private func alertView(type: AlertType) -> some View {
@@ -224,9 +233,12 @@ extension MapView {
   private func regionListSheet(with regionStore: StoreOf<SearchRegionListFeature>) -> some View {
     DetentBottomSheet(
       isPresented: $store.mapSearch.isShowRegionList,
-      detent: $store.mapSearch.regionSheetDetent
+      detent: $store.mapSearch.regionSheetDetent,
+      currentHeight: $store.mapSearch.regionBottomSheetHeight
     ) {
       SearchRegionListView(store: regionStore)
     }
   }
 }
+
+
