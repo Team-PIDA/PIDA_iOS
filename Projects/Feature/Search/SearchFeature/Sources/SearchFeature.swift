@@ -83,6 +83,9 @@ extension SearchFeature {
       case .fetchRecentResult:
         return fetchRecentResult(keyword: state.searchWord)
 
+      case let .updateRecentSesarch(item):
+        return updateRecentSearch(item: item)
+        
       case let .storeRecentResult(item):
         state.recentList = item
         // search_start 이벤트 트래킹
@@ -118,10 +121,12 @@ extension SearchFeature {
         switch item.searchType {
         case .region:
           guard let coordinate = item.coordinate else { return .none }
-          return .send(
-            .delegate(
-              .selectRegionResult(.init(name: item.name, coordinate: coordinate))
-            )
+          return .concatenate(
+            .send(.updateRecentSesarch(item)),
+            .send(.delegate(
+              .selectRegionResult(
+                .init(name: item.name, coordinate: coordinate))
+            ))
           )
         case .street:
           return fetchSelectedDetailInfo(item: item)
@@ -160,8 +165,9 @@ extension SearchFeature.Core {
     return .run { send in
       do {
         let detail = try await flowerSpotClient.getFlowerSpotDetail(id: item.id)
-        try await searchClient.saveRecentSearchItem(item: item)
+        
         await MainActor.run {
+          send(.updateRecentSesarch(item))
           send(.searchBarFocused(false))
           send(.fetchSearchResult(detail))
         }
@@ -190,6 +196,12 @@ extension SearchFeature.Core {
         print(error.localizedDescription)
       }
       
+    }
+  }
+  
+  private func updateRecentSearch(item: PlaceSearchEntity) -> Effect<Action> {
+    return .run { send in
+      try await searchClient.saveRecentSearchItem(item: item)
     }
   }
 }

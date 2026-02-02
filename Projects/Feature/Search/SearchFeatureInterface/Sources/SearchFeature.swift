@@ -46,6 +46,7 @@ public struct SearchFeature {
     case fetchSearchResult(FlowerSpotEntity)
     case fetchRecentResult
     
+    case updateRecentSesarch(PlaceSearchEntity)
     case storeRecentResult([PlaceSearchEntity])
     case initialSearchBar(String?)
    

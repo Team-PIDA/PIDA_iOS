@@ -92,6 +92,7 @@ extension SearchClient: DependencyKey {
         let query = PlaceSearchQuery(query: keyword)
         let endpoint = SearchEndPoint.searchPlaces(query: query)
         return try await apiClient.execute(endpoint).toEntity()
+        
       }
     )
   }
