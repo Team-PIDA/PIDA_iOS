@@ -65,9 +65,6 @@ extension MapFeature {
         }
         return .none
         
-      case .fetchAllFlowerAddress:
-        return fetchAllFlowerAddress()
-        
         // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
       case let .markerTapped(id):
         guard let id = id else {
@@ -245,20 +242,6 @@ extension MapFeature.Core {
   /// 초기 지도 로드 이벤트 트리거 조건 확인
   private func shouldTriggerInitialMapLoad(state: State) -> Bool {
     return state.isViewAppeared && !state.isInitialMapLoadCompleted
-  }
-  
-  private func fetchAllFlowerAddress() -> Effect<Action> {
-    return .run { send in
-      do {
-        try await flowerSpot.fetchAllFlowerAddress()
-      } catch let error as NetworkError {
-        print(error.localizedDescription)
-      } catch let error as FoundationError {
-        print(error.localizedDescription)
-      } catch {
-        print(error.localizedDescription)
-      }
-    }
   }
   
   private func showSearchResult(result: FlowerSpotEntity?) -> Effect<Action> {

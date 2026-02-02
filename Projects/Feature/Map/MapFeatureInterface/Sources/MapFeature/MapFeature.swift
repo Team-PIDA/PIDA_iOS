@@ -91,7 +91,6 @@ public struct MapFeature {
     case viewDidAppear
     
     case requestMapBounds(Bool)
-    case fetchAllFlowerAddress
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
     case fetchDetailInfo(Int)
