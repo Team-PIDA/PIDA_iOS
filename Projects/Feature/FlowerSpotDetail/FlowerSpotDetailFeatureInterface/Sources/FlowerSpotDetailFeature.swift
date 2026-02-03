@@ -31,13 +31,13 @@ public struct FlowerSpotDetailFeature {
   // MARK: - PhotoViewer State
 
   public struct PhotoViewerState: Equatable {
-    public var imageUrls: [String]
+    public var images: [FlowerSpotImageEntity]
     public var currentIndex: Int
     public var scale: CGFloat
     public var isUIHidden: Bool
 
-    public init(imageUrls: [String], currentIndex: Int) {
-      self.imageUrls = imageUrls
+    public init(images: [FlowerSpotImageEntity], currentIndex: Int) {
+      self.images = images
       self.currentIndex = currentIndex
       self.scale = 1.0
       self.isUIHidden = false

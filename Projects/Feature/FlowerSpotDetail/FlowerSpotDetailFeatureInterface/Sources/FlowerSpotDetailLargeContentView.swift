@@ -58,7 +58,7 @@ public struct FlowerSpotDetailLargeContentView: View {
         switch path {
         case .photoGallery:
           PhotoGalleryView(
-            imageUrls: store.flowerSpotData.imageUrls,
+            images: store.flowerSpotData.images,
             prefetchedImages: store.prefetchedImages,
             title: store.flowerSpotData.streetName,
             onImageTapped: { index in
@@ -79,7 +79,7 @@ public struct FlowerSpotDetailLargeContentView: View {
     }) {
       if let viewer = store.photoViewer {
         PhotoViewerView(
-          imageUrls: viewer.imageUrls,
+          images: viewer.images,
           prefetchedImages: store.prefetchedImages,
           currentIndex: viewer.currentIndex,
           onDismiss: {
