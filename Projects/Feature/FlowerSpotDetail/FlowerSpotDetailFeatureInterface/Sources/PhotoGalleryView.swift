@@ -8,10 +8,12 @@
 
 import SwiftUI
 import DesignKit
+import FlowerSpotClient
+import Shared
 
 /// 이미지 갤러리 화면 (2열 그리드)
 public struct PhotoGalleryView: View {
-  private let imageUrls: [String]
+  private let images: [FlowerSpotImageEntity]
   private let prefetchedImages: [String: Data]
   private let title: String
   private let onImageTapped: ((Int) -> Void)?
@@ -24,14 +26,14 @@ public struct PhotoGalleryView: View {
   ]
 
   public init(
-    imageUrls: [String],
+    images: [FlowerSpotImageEntity],
     prefetchedImages: [String: Data] = [:],
     title: String,
     onImageTapped: ((Int) -> Void)? = nil,
     onBackTapped: (() -> Void)? = nil,
     onImageLoaded: ((String, Data) -> Void)? = nil
   ) {
-    self.imageUrls = imageUrls
+    self.images = images
     self.prefetchedImages = prefetchedImages
     self.title = title
     self.onImageTapped = onImageTapped
@@ -73,16 +75,26 @@ public struct PhotoGalleryView: View {
       let itemWidth = (geometry.size.width - 16 * 2 - 12) / 2
       ScrollView {
         LazyVGrid(columns: columns, spacing: 12) {
-          ForEach(0..<imageUrls.count, id: \.self) { index in
-            let url = imageUrls[index]
-            RemoteImageView(
-              imageData: prefetchedImages[url],
-              fallbackUrlString: url,
-              onTap: { onImageTapped?(index) },
-              onImageLoaded: { data in onImageLoaded?(url, data) }
-            )
-            .frame(width: itemWidth, height: itemWidth)
-            .clipped()
+          ForEach(0..<images.count, id: \.self) { index in
+            let image = images[index]
+            ZStack(alignment: .bottomTrailing) {
+              RemoteImageView(
+                imageData: prefetchedImages[image.url],
+                fallbackUrlString: image.url,
+                onTap: { onImageTapped?(index) },
+                onImageLoaded: { data in onImageLoaded?(image.url, data) }
+              )
+              .frame(width: itemWidth, height: itemWidth)
+              .clipped()
+
+              if let dateText = image.createdAt?.photoDateText() {
+                Text(dateText)
+                  .fontStyle(FontSet.Caption.caption1)
+                  .foregroundColor(ColorSet.Text.Inverse)
+                  .padding(.trailing, .Number12)
+                  .padding(.bottom, .Number4)
+              }
+            }
             .cornerRadius(16)
           }
         }
