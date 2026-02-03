@@ -203,7 +203,7 @@ public struct FlowerSpotDetailLargeContentView: View {
 
       // Image Gallery
       FlowerSpotImageGalleryView(
-        imageUrls: store.flowerSpotData.imageUrls,
+        images: store.flowerSpotData.images,
         prefetchedImages: store.prefetchedImages,
         onImageTapped: { index in
           store.send(.presentPhotoViewer(index: index))
