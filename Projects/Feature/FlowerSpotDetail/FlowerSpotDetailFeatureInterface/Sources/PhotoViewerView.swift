@@ -8,10 +8,12 @@
 
 import SwiftUI
 import DesignKit
+import FlowerSpotClient
+import Shared
 
 /// 이미지 상세 뷰어 (전체화면, Pinch 확대)
 public struct PhotoViewerView: View {
-  private let imageUrls: [String]
+  private let images: [FlowerSpotImageEntity]
   private let prefetchedImages: [String: Data]
   private let currentIndex: Int
   private let onDismiss: (() -> Void)?
@@ -34,7 +36,7 @@ public struct PhotoViewerView: View {
   private let maxScale: CGFloat = 10.0
 
   public init(
-    imageUrls: [String],
+    images: [FlowerSpotImageEntity],
     prefetchedImages: [String: Data] = [:],
     currentIndex: Int,
     onDismiss: (() -> Void)? = nil,
@@ -42,7 +44,7 @@ public struct PhotoViewerView: View {
     onNextTapped: (() -> Void)? = nil,
     onImageLoaded: ((String, Data) -> Void)? = nil
   ) {
-    self.imageUrls = imageUrls
+    self.images = images
     self.prefetchedImages = prefetchedImages
     self.currentIndex = currentIndex
     self.onDismiss = onDismiss
@@ -73,12 +75,12 @@ public struct PhotoViewerView: View {
         }
 
       // 이미지
-      if currentIndex < imageUrls.count {
-        let url = imageUrls[currentIndex]
+      if currentIndex < images.count {
+        let image = images[currentIndex]
         RemoteImageView(
-          imageData: prefetchedImages[url],
-          fallbackUrlString: url,
-          onImageLoaded: { data in onImageLoaded?(url, data) }
+          imageData: prefetchedImages[image.url],
+          fallbackUrlString: image.url,
+          onImageLoaded: { data in onImageLoaded?(image.url, data) }
         )
         .placeholderStyle(.dark)
         .aspectRatio(contentMode: .fit)
@@ -191,10 +193,19 @@ public struct PhotoViewerView: View {
 
   // MARK: - Top Bar
 
+  private var topBarTitle: String {
+    let indexText = "\(currentIndex + 1)/\(images.count)"
+    if currentIndex < images.count,
+       let dateText = images[currentIndex].createdAt?.photoDateText() {
+      return "\(indexText) · \(dateText)"
+    }
+    return indexText
+  }
+
   @ViewBuilder
   private var topBar: some View {
     NavigationBar(
-      title: "\(currentIndex + 1)/\(imageUrls.count)",
+      title: topBarTitle,
       closeContent: {
         TouchArea(image: .close)
           .action {
@@ -225,7 +236,7 @@ public struct PhotoViewerView: View {
       Spacer()
 
       // 오른쪽 쉐브론 (마지막 이미지면 숨김)
-      if currentIndex < imageUrls.count - 1 {
+      if currentIndex < images.count - 1 {
         chevronButton(direction: .right) {
           onNextTapped?()
         }
