@@ -10,6 +10,25 @@ import Foundation
 import APIClient
 import Shared
 
+struct FlowerSpotImageDTO: Codable {
+  var url: String
+  var createdAt: String?
+
+  func toEntity() -> FlowerSpotImageEntity {
+    var date: Date? = nil
+    if let createdAt = createdAt {
+      let formatter = ISO8601DateFormatter()
+      formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+      date = formatter.date(from: createdAt)
+      if date == nil {
+        formatter.formatOptions = [.withInternetDateTime]
+        date = formatter.date(from: createdAt)
+      }
+    }
+    return FlowerSpotImageEntity(url: url, createdAt: date)
+  }
+}
+
 struct FlowerSpotItemDTO: DTO {
   typealias Entity = FlowerSpotEntity
   var id: Int
@@ -23,6 +42,7 @@ struct FlowerSpotItemDTO: DTO {
   var pinPoint: PointGeomDTO?
   var region: String?
   var imageUrls: [String]?
+  var images: [FlowerSpotImageDTO]?
   var deletedAt: String?
   var previewUrl: String?
 }
@@ -41,7 +61,15 @@ extension FlowerSpotItemDTO {
     let description = self.description ?? "나무 정보 없음"
     let district = self.district ?? ""
     let region = self.region ?? ""
-    let imageUrls = self.imageUrls ?? []
+
+    // images가 있으면 사용, 없으면 imageUrls로 폴백
+    let images: [FlowerSpotImageEntity]
+    if let imagesDTO = self.images, !imagesDTO.isEmpty {
+      images = imagesDTO.map { $0.toEntity() }
+    } else {
+      images = (self.imageUrls ?? []).map { FlowerSpotImageEntity(url: $0) }
+    }
+
     return .init(
       id: self.id,
       address: address,
@@ -53,7 +81,7 @@ extension FlowerSpotItemDTO {
       path: path,
       pinPoint: pinPoint,
       region: region,
-      imageUrls: imageUrls, /*["https://picsum.photos/400/300"]*/
+      images: images,
       previewUrl: previewUrl
     )
   }
