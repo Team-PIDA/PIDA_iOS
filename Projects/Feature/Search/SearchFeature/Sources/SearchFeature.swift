@@ -29,8 +29,7 @@ extension SearchFeature {
       case .binding(\.searchWord):
         let searchQuery = state.searchWord
         if searchQuery.isEmpty {
-          state.showRecentList = true
-          return .send(.updateSearchResults(state.recentList))
+          return .send(.showRecentList)
         } else {
           // 첫 입력 시 search_input 이벤트 트래킹
           if state.showRecentList {
@@ -68,9 +67,12 @@ extension SearchFeature {
           )
         
       case let .updateSearchResults(results):
+        guard !state.showRecentList else {
+          return .send(.showRecentList)
+        }
         state.searchList = results
         // 검색 결과 없음 트래킹 (최근 검색 목록이 아니고, 결과가 비어있을 때)
-        if !state.showRecentList && results.isEmpty && !state.searchWord.isEmpty {
+        if results.isEmpty && !state.searchWord.isEmpty {
           analyticsClient.track(
             SearchEvent.noResultViewed(
               keywordLength: state.searchWord.count,
@@ -78,6 +80,11 @@ extension SearchFeature {
             )
           )
         }
+        return .none
+        
+      case .showRecentList:
+        state.showRecentList = true
+        state.searchList = state.recentList
         return .none
 
       case .fetchRecentResult:

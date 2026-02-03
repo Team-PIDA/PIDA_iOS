@@ -43,6 +43,7 @@ public struct SearchFeature {
     case searchItem(String)
     
     case updateSearchResults([PlaceSearchEntity])
+    case showRecentList
     case fetchSearchResult(FlowerSpotEntity)
     case fetchRecentResult
     
