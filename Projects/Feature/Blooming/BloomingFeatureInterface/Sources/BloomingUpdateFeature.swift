@@ -66,6 +66,9 @@ public struct BloomingUpdateFeature {
     case photoSelected(Data?)
     case uploadImage(url: String, data: Data)
 
+    // 완료 상태 액션
+    case setCompleted(Bool)
+
     case delegate(Delegate)
     case dismiss(didUpdate: Bool, spotId: Int) // 상태 기록 완료 여부
   }

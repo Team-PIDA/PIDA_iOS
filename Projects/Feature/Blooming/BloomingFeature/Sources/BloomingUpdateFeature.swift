@@ -75,6 +75,7 @@ extension BloomingUpdateFeature {
         state.buttonTittle = "개화 상태를 선택해주세요"
         state.selectedStatus = nil
         state.isButtonEnable = false
+        state.isCompleted = false
         return .none
 
       case let .sendToastMessage(message):
@@ -148,6 +149,10 @@ extension BloomingUpdateFeature {
         // Task.detached로 직접 처리하므로 여기서는 아무것도 하지 않음
         return .none
 
+      case let .setCompleted(isCompleted):
+        state.isCompleted = isCompleted
+        return .none
+
       case .binding, .delegate:
         return .none
       }
@@ -196,9 +201,8 @@ extension BloomingUpdateFeature.Core {
           }
         }
 
-        // 화면 dismiss + Toast 표시
-        await send(.dismiss(didUpdate: true, spotId: id))
-        await send(.sendToastMessage(result.message))
+        // 완료 화면으로 전환
+        await send(.setCompleted(true))
       } catch {
         await send(.sendToastMessage("기록에 실패했어요"))
       }
