@@ -32,7 +32,7 @@ public struct SearchResultList: View {
             .fontStyle(FontSet.Body.body2)
             .foregroundStyle(ColorSet.Text.Primary)
           if let address = item.address,
-              item.searchType == .flowerSpot {
+              item.searchType != .landmark {
             Text(address)
               .fontStyle(FontSet.Caption.caption1)
               .foregroundStyle(ColorSet.Text.Tertiary)
