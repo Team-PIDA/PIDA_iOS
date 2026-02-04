@@ -58,7 +58,6 @@ extension APIClient {
         return // 성공 시 즉시 반환
       } catch {
         lastError = error
-        print("[APIClient] Upload attempt \(attempt) failed: \(error)")
         if attempt < maxRetryCount {
           try? await Task.sleep(nanoseconds: 1_000_000_000) // 1초 대기
         }
@@ -73,9 +72,13 @@ extension APIClient {
     url: String,
     data: Data
   ) async throws -> Void {
+    guard let validURL = URL(string: url) else {
+      throw throwError(NetworkError.customError(message: "Invalid upload URL"))
+    }
+
     try await withThrowingTaskGroup(of: Void.self) { group in
       group.addTask {
-        var request = URLRequest(url: URL(string: url)!)
+        var request = URLRequest(url: validURL)
         request.httpMethod = "PUT"
         request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
         request.setValue("", forHTTPHeaderField: "Expect")
@@ -122,9 +125,13 @@ extension APIClient {
   static func internalDownload(
     _ url: String
   ) async throws -> Data {
-    try await withThrowingTaskGroup(of: Data.self) { group in
+    guard let validURL = URL(string: url) else {
+      throw throwError(DownloadError.unknown)
+    }
+
+    return try await withThrowingTaskGroup(of: Data.self) { group in
       group.addTask {
-        let request = URLRequest(url: URL(string: url)!)
+        let request = URLRequest(url: validURL)
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let response = response as? HTTPURLResponse else {

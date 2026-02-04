@@ -63,14 +63,13 @@ public struct BloomingUpdateFeature {
     case updateButtonTapped
     case updateBloomingRequest
 
-    case setSpodtId(Int)
+    case setSpotId(Int)
     case setStreetName(String)
 
     // 이미지 관련 액션
     case photoButtonTapped
     case photoRemoveButtonTapped
     case photoSelected(Data?)
-    case uploadImage(url: String, data: Data)
 
     // 완료 상태 액션
     case setCompleted(Bool)

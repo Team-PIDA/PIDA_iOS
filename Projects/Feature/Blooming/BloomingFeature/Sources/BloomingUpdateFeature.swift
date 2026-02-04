@@ -83,7 +83,7 @@ extension BloomingUpdateFeature {
         state.toastMessage = message
         return .none
 
-      case let .setSpodtId(id):
+      case let .setSpotId(id):
         state.spotId = id
         return .none
 
@@ -92,9 +92,9 @@ extension BloomingUpdateFeature {
         return .none
 
       case .updateButtonTapped:
+        guard !state.isButtonLoading else { return .none }
         state.isButtonLoading = true
         return .send(.updateBloomingRequest)
-          .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
 
       case .updateBloomingRequest:
         guard let id = state.spotId,
@@ -147,9 +147,6 @@ extension BloomingUpdateFeature {
         state.isPhotoPickerPresented = false
         return .none
 
-      case .uploadImage:
-        // Task.detached로 직접 처리하므로 여기서는 아무것도 하지 않음
-        return .none
 
       case let .setCompleted(isCompleted):
         state.isCompleted = isCompleted
@@ -214,10 +211,8 @@ extension BloomingUpdateFeature.Core {
         if let imageData,
            let uploadUrl = result.uploadUrl {
           do {
-//            try await apiClient.upload(url: uploadUrl, data: imageData)
-            throw NetworkError.customError(message: "테스트용 에러")
+            try await apiClient.upload(url: uploadUrl, data: imageData)
           } catch {
-            print("[BloomingFeature] Image upload failed: \(error)")
             imageUploadFailed = true
           }
         }

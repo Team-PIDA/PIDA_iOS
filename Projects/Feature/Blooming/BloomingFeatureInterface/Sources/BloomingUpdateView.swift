@@ -169,7 +169,7 @@ public struct BloomingUpdateView: View {
           .foregroundStyle(ColorSet.Text.Primary)
       }
       .fontStyle(FontSet.Heading.heading1)
-      Text("석촌호수로의 개화 상태를 기록해주세요")
+      Text("\(store.streetName)의 개화 상태를 기록해주세요")
         .fontStyle(FontSet.Body.body3)
         .foregroundStyle(ColorSet.Text.Secondary)
     }
