@@ -76,6 +76,14 @@ public struct BloomingUpdateView: View {
           }
           .padding(.Number16)
       }
+
+      if let alertType = store.alertType {
+        PIDAlert(
+          type: alertType,
+          closeAction: { store.send(.clearAlertState) },
+          acceptAction: { store.send(.alertAcceptTapped) }
+        )
+      }
     }
   }
 

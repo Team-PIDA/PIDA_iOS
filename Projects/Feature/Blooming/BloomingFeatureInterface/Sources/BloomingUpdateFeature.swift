@@ -42,6 +42,9 @@ public struct BloomingUpdateFeature {
     // 버튼 로딩 상태
     public var isButtonLoading: Bool = false
 
+    // Alert 상태
+    public var alertType: AlertType? = nil
+
     public init(spotId: Int?, streetName: String, distanceFromSpot: Double? = nil) {
       self.spotId = spotId
       self.streetName = streetName
@@ -74,6 +77,11 @@ public struct BloomingUpdateFeature {
 
     // 버튼 로딩 상태 액션
     case setButtonLoading(Bool)
+
+    // Alert 관련 액션
+    case presentAlert(AlertType)
+    case alertAcceptTapped
+    case clearAlertState
 
     case delegate(Delegate)
     case dismiss(didUpdate: Bool, spotId: Int) // 상태 기록 완료 여부

@@ -76,6 +76,7 @@ extension BloomingUpdateFeature {
         state.selectedStatus = nil
         state.isButtonEnable = false
         state.isCompleted = false
+        state.alertType = nil
         return .none
 
       case let .sendToastMessage(message):
@@ -159,6 +160,19 @@ extension BloomingUpdateFeature {
         state.isButtonLoading = isLoading
         return .none
 
+      // MARK: - Alert Actions
+
+      case let .presentAlert(type):
+        state.alertType = type
+        return .none
+
+      case .alertAcceptTapped:
+        return .send(.clearAlertState)
+
+      case .clearAlertState:
+        state.alertType = nil
+        return .none
+
       case .binding, .delegate:
         return .none
       }
@@ -196,13 +210,25 @@ extension BloomingUpdateFeature.Core {
         )
 
         // 이미지 업로드를 독립적인 Task로 실행 (dismiss 후에도 계속 실행)
+        // 최대 3회 재시도, 실패 시 1초 대기
         if let imageData,
            let uploadUrl = result.uploadUrl {
           Task.detached {
-            do {
-              try await apiClient.upload(url: uploadUrl, data: imageData)
-            } catch {
-              print("[BloomingFeature] Image upload failed: \(error)")
+            var success = false
+            for attempt in 1...3 {
+              do {
+                try await apiClient.upload(url: uploadUrl, data: imageData)
+                success = true
+                break
+              } catch {
+                print("[BloomingFeature] Image upload attempt \(attempt) failed: \(error)")
+                if attempt < 3 {
+                  try? await Task.sleep(nanoseconds: 1_000_000_000) // 1초 대기
+                }
+              }
+            }
+            if !success {
+              await send(.presentAlert(.imageUploadFailed))
             }
           }
         }
