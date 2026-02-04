@@ -43,11 +43,42 @@ public extension Date {
     let startOfReference = calendar.startOfDay(for: referenceDate)
     let components = calendar.dateComponents([.day], from: startOfReference, to: startOfSelf)
     let dayDiff = components.day ?? 0
-    
+
     switch dayDiff {
     case 0: return "오늘"
     case let x where x < 0: return "\(-x)일 전"
     default: return "\(dayDiff)일 후"
+    }
+  }
+
+  /// 사진 업로드 날짜 표기
+  /// - 당일: nil
+  /// - 1~10일 전: "N일 전"
+  /// - 11일 이상 (같은 해): "M월 D일"
+  /// - 11일 이상 (다른 해): "YYYY년 M월 D일"
+  func photoDateText(from referenceDate: Date = Date()) -> String? {
+    let calendar = Calendar.current
+    let startOfSelf = calendar.startOfDay(for: self)
+    let startOfReference = calendar.startOfDay(for: referenceDate)
+    let components = calendar.dateComponents([.day], from: startOfSelf, to: startOfReference)
+    let dayDiff = components.day ?? 0
+
+    switch dayDiff {
+    case 0:
+      return nil
+    case 1...10:
+      return "\(dayDiff)일 전"
+    default:
+      let selfYear = calendar.component(.year, from: self)
+      let referenceYear = calendar.component(.year, from: referenceDate)
+      let month = calendar.component(.month, from: self)
+      let day = calendar.component(.day, from: self)
+
+      if selfYear == referenceYear {
+        return "\(month)월 \(day)일"
+      } else {
+        return "\(selfYear)년 \(month)월 \(day)일"
+      }
     }
   }
 }

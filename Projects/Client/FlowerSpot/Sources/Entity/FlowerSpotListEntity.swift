@@ -30,8 +30,13 @@ public struct FlowerSpotEntity: Equatable, Sendable, Codable {
   public var path: [Coordinate]
   public var pinPoint: Coordinate
   public var region: String
-  public var imageUrls: [String]
+  public var images: [FlowerSpotImageEntity]
   public var previewUrl: String?
+
+  /// 하위 호환성을 위한 computed property
+  public var imageUrls: [String] {
+    images.map { $0.url }
+  }
 
   public init(
     id: Int,
@@ -44,7 +49,7 @@ public struct FlowerSpotEntity: Equatable, Sendable, Codable {
     path: [Coordinate],
     pinPoint: Coordinate,
     region: String,
-    imageUrls: [String] = [],
+    images: [FlowerSpotImageEntity] = [],
     previewUrl: String? = nil
   ) {
     self.id = id
@@ -58,7 +63,7 @@ public struct FlowerSpotEntity: Equatable, Sendable, Codable {
     self.path = path
     self.pinPoint = pinPoint
     self.region = region
-    self.imageUrls = imageUrls
+    self.images = images
     self.previewUrl = previewUrl
   }
 }

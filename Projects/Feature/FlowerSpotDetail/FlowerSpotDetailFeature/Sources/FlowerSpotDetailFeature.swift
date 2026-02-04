@@ -103,13 +103,13 @@ extension FlowerSpotDetailFeature {
 
       case let .presentPhotoViewer(index):
         state.photoViewer = .init(
-          imageUrls: state.flowerSpotData.imageUrls,
+          images: state.flowerSpotData.images,
           currentIndex: index
         )
         state.isPresentPhotoViewer = true
         // details_thumbnail_clicked 이벤트 트래킹
         analyticsClient.track(
-          DetailsEvent.thumbnailClicked(spotPhoto: state.flowerSpotData.imageUrls.count)
+          DetailsEvent.thumbnailClicked(spotPhoto: state.flowerSpotData.images.count)
         )
         // details_viewer_start 이벤트 트래킹
         analyticsClient.track(
@@ -137,7 +137,7 @@ extension FlowerSpotDetailFeature {
 
       case .photoViewerNextTapped:
         guard var viewer = state.photoViewer else { return .none }
-        if viewer.currentIndex < viewer.imageUrls.count - 1 {
+        if viewer.currentIndex < viewer.images.count - 1 {
           viewer.currentIndex += 1
           state.photoViewer = viewer
         }

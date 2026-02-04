@@ -8,6 +8,7 @@
 
 import SwiftUI
 import DesignKit
+import FlowerSpotClient
 
 /// 확장 바텀시트에서 이미지를 표시하는 갤러리 뷰
 /// - 0장: 표시 안함
@@ -15,7 +16,7 @@ import DesignKit
 /// - 2장: 가로 나란히 (spacing 12)
 /// - 3장+: 수평 스크롤 (160x160) + 더보기 버튼
 public struct FlowerSpotImageGalleryView: View {
-  private let imageUrls: [String]
+  private let images: [FlowerSpotImageEntity]
   private let prefetchedImages: [String: Data]
   private let onImageTapped: ((Int) -> Void)?
   private let onMoreTapped: (() -> Void)?
@@ -25,13 +26,13 @@ public struct FlowerSpotImageGalleryView: View {
   private let spacing: CGFloat = 12
 
   public init(
-    imageUrls: [String],
+    images: [FlowerSpotImageEntity],
     prefetchedImages: [String: Data] = [:],
     onImageTapped: ((Int) -> Void)? = nil,
     onMoreTapped: (() -> Void)? = nil,
     onImageLoaded: ((String, Data) -> Void)? = nil
   ) {
-    self.imageUrls = imageUrls
+    self.images = images
     self.prefetchedImages = prefetchedImages
     self.onImageTapped = onImageTapped
     self.onMoreTapped = onMoreTapped
@@ -40,7 +41,7 @@ public struct FlowerSpotImageGalleryView: View {
 
   public var body: some View {
     Group {
-      switch imageUrls.count {
+      switch images.count {
       case 0:
         EmptyView()
       case 1:
@@ -57,12 +58,12 @@ public struct FlowerSpotImageGalleryView: View {
 
   @ViewBuilder
   private var singleImageView: some View {
-    let url = imageUrls[0]
+    let image = images[0]
     RemoteImageView(
-      imageData: prefetchedImages[url],
-      fallbackUrlString: url,
+      imageData: prefetchedImages[image.url],
+      fallbackUrlString: image.url,
       onTap: { onImageTapped?(0) },
-      onImageLoaded: { data in onImageLoaded?(url, data) }
+      onImageLoaded: { data in onImageLoaded?(image.url, data) }
     )
     .frame(height: imageHeight)
     .frame(maxWidth: .infinity)
@@ -78,12 +79,12 @@ public struct FlowerSpotImageGalleryView: View {
       let imageWidth = (geometry.size.width - spacing) / 2
       HStack(spacing: spacing) {
         ForEach(0..<2, id: \.self) { index in
-          let url = imageUrls[index]
+          let image = images[index]
           RemoteImageView(
-            imageData: prefetchedImages[url],
-            fallbackUrlString: url,
+            imageData: prefetchedImages[image.url],
+            fallbackUrlString: image.url,
             onTap: { onImageTapped?(index) },
-            onImageLoaded: { data in onImageLoaded?(url, data) }
+            onImageLoaded: { data in onImageLoaded?(image.url, data) }
           )
           .frame(width: imageWidth, height: imageHeight)
           .clipped()
@@ -100,13 +101,13 @@ public struct FlowerSpotImageGalleryView: View {
   private var multipleImagesView: some View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: spacing) {
-        ForEach(0..<min(3, imageUrls.count), id: \.self) { index in
-          let url = imageUrls[index]
+        ForEach(0..<min(3, images.count), id: \.self) { index in
+          let image = images[index]
           RemoteImageView(
-            imageData: prefetchedImages[url],
-            fallbackUrlString: url,
+            imageData: prefetchedImages[image.url],
+            fallbackUrlString: image.url,
             onTap: { onImageTapped?(index) },
-            onImageLoaded: { data in onImageLoaded?(url, data) }
+            onImageLoaded: { data in onImageLoaded?(image.url, data) }
           )
           .frame(width: imageHeight, height: imageHeight)
           .clipped()
