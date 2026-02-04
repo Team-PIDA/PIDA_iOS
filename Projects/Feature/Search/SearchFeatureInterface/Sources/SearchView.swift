@@ -52,7 +52,7 @@ extension SearchView {
       } else {
         ScrollView {
           LazyVStack {
-            ForEach(store.searchList, id: \.uuid) { data in
+            ForEach(store.searchList, id: \.coordinate) { data in
               SearchResultList(
                 item: data,
                 onTap: {

@@ -61,7 +61,7 @@ extension SearchFeature {
         return fetchKeywordSearch(keyword: searchQuery)
           .throttle(
             id: CancelID.search,
-            for: .milliseconds(300),
+            for: 0.3,
             scheduler: mainQueue,
             latest: true
           )

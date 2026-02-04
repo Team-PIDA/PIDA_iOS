@@ -9,7 +9,7 @@
 import Foundation
 import CoreLocation
 
-public struct Coordinate: Equatable, Sendable, Codable {
+public struct Coordinate: Equatable, Hashable, Sendable, Codable {
     public var latitude: Double
     public var longitude: Double
     
