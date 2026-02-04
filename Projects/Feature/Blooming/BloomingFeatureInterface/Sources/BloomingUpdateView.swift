@@ -39,11 +39,12 @@ public struct BloomingUpdateView: View {
       VStack(spacing: .Number0) {
         Spacer()
 
-        DotLottieAnimation(
-          fileName: LottieSet.update_success_panpare.name,
-          config: AnimationConfig(autoplay: true, loop: false)
+        DotLottieView(
+          dotLottie: DotLottieAnimation(
+            fileName: LottieSet.update_success_panpare.name,
+            config: AnimationConfig(autoplay: true, loop: false)
+          )
         )
-        .view()
         .frame(width: .Number120, height: .Number120)
 
         Spacer()
