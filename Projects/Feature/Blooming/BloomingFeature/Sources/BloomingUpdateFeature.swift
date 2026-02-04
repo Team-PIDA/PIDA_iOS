@@ -209,27 +209,15 @@ extension BloomingUpdateFeature.Core {
           )
         )
 
-        // 이미지 업로드를 독립적인 Task로 실행 (dismiss 후에도 계속 실행)
-        // 최대 3회 재시도, 실패 시 1초 대기
+        // 이미지 업로드 (APIClient 내부에서 3회 재시도)
+        var imageUploadFailed = false
         if let imageData,
            let uploadUrl = result.uploadUrl {
-          Task.detached {
-            var success = false
-            for attempt in 1...3 {
-              do {
-                try await apiClient.upload(url: uploadUrl, data: imageData)
-                success = true
-                break
-              } catch {
-                print("[BloomingFeature] Image upload attempt \(attempt) failed: \(error)")
-                if attempt < 3 {
-                  try? await Task.sleep(nanoseconds: 1_000_000_000) // 1초 대기
-                }
-              }
-            }
-            if !success {
-              await send(.presentAlert(.imageUploadFailed))
-            }
+          do {
+            try await apiClient.upload(url: uploadUrl, data: imageData)
+          } catch {
+            print("[BloomingFeature] Image upload failed: \(error)")
+            imageUploadFailed = true
           }
         }
 
