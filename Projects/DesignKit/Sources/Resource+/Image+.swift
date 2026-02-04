@@ -13,7 +13,8 @@ public enum ImageSet {
        flower, location, myLocation, placeholder,
        replay, search, sentimentDissatisfied, warning,
        avatar, avatarLarge, loveletter, apple, kakao, loginLogo,
-       fewLargePin, goneLargePin, manyLargePin, emptyResult, pullDown, forest, verified, feedback, camera
+       fewLargePin, goneLargePin, manyLargePin, emptyResult, pullDown, forest, verified, feedback, camera,
+       updateCompletedIcon
   
   public var swiftUIImage: DesignKitImages {
     switch self {
@@ -45,6 +46,7 @@ public enum ImageSet {
     case .verified: return DesignKitAsset.Icons.verified
     case .feedback: return DesignKitAsset.Icons.feedback
     case .camera: return DesignKitAsset.Icons.camera
+    case .updateCompletedIcon: return DesignKitAsset.Icons.updateCompletedIcon
     }
   }
 }

@@ -8,6 +8,7 @@
 
 import SwiftUI
 import PhotosUI
+import DotLottie
 import DesignKit
 import ComposableArchitecture
 
@@ -20,6 +21,68 @@ public struct BloomingUpdateView: View {
   }
   
   public var body: some View {
+    if store.isCompleted {
+      completionView
+    } else {
+      inputView
+    }
+  }
+
+  // MARK: - Completion View
+
+  @ViewBuilder
+  private var completionView: some View {
+    ZStack {
+      ColorSet.Background.Accent
+        .ignoresSafeArea()
+
+      VStack(spacing: .Number0) {
+        Spacer()
+
+        DotLottieAnimation(
+          fileName: LottieSet.update_success_panpare.name,
+          config: AnimationConfig(autoplay: true, loop: false)
+        )
+        .view()
+        .frame(width: .Number120, height: .Number120)
+
+        Spacer()
+          .frame(height: .Number24)
+
+        ImageSet.updateCompletedIcon.swiftUIImage.swiftUIImage
+          .resizable()
+          .frame(width: .Number48, height: .Number48)
+
+        Spacer()
+          .frame(height: .Number16)
+
+        VStack(spacing: .Number8) {
+          Text("개화 상태를\n기록했어요")
+            .fontStyle(FontSet.Heading.heading1)
+            .foregroundStyle(ColorSet.Text.Primary)
+            .multilineTextAlignment(.center)
+
+          Text("\(store.streetName)의 개화 상태가 기록되었어요")
+            .fontStyle(FontSet.Body.body3)
+            .foregroundStyle(ColorSet.Text.Secondary)
+        }
+
+        Spacer()
+
+        PIDButton(title: "상세페이지로 돌아가기", size: .large)
+          .action {
+            guard let spotId = store.spotId else { return }
+            store.send(.dismiss(didUpdate: true, spotId: spotId))
+          }
+          .padding(.Number16)
+      }
+    }
+  }
+
+  // MARK: - Input View
+
+  @ViewBuilder
+  private var inputView: some View {
     ZStack {
       ColorSet.Background.Primary
         .ignoresSafeArea()

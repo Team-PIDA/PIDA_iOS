@@ -36,6 +36,9 @@ public struct BloomingUpdateFeature {
     public var distanceFromSpot: Double? = nil
     public var updateStartTime: Date? = nil
 
+    // 완료 페이지 상태
+    public var isCompleted: Bool = false
+
     public init(spotId: Int?, streetName: String, distanceFromSpot: Double? = nil) {
       self.spotId = spotId
       self.streetName = streetName
