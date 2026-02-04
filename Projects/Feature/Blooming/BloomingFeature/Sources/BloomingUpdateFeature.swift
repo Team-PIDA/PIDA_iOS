@@ -91,6 +91,7 @@ extension BloomingUpdateFeature {
         return .none
 
       case .updateButtonTapped:
+        state.isButtonLoading = true
         return .send(.updateBloomingRequest)
           .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
 
@@ -151,6 +152,11 @@ extension BloomingUpdateFeature {
 
       case let .setCompleted(isCompleted):
         state.isCompleted = isCompleted
+        state.isButtonLoading = false
+        return .none
+
+      case let .setButtonLoading(isLoading):
+        state.isButtonLoading = isLoading
         return .none
 
       case .binding, .delegate:
@@ -204,6 +210,7 @@ extension BloomingUpdateFeature.Core {
         // 완료 화면으로 전환
         await send(.setCompleted(true))
       } catch {
+        await send(.setButtonLoading(false))
         await send(.sendToastMessage("기록에 실패했어요"))
       }
     }

@@ -176,6 +176,7 @@ public struct BloomingUpdateView: View {
         store.send(.updateButtonTapped)
       }
       .isActive(store.isButtonEnable)
+      .isLoading(store.isButtonLoading)
       .padding(.Number16)
   }
 

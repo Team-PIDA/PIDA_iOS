@@ -39,6 +39,9 @@ public struct BloomingUpdateFeature {
     // 완료 페이지 상태
     public var isCompleted: Bool = false
 
+    // 버튼 로딩 상태
+    public var isButtonLoading: Bool = false
+
     public init(spotId: Int?, streetName: String, distanceFromSpot: Double? = nil) {
       self.spotId = spotId
       self.streetName = streetName
@@ -68,6 +71,9 @@ public struct BloomingUpdateFeature {
 
     // 완료 상태 액션
     case setCompleted(Bool)
+
+    // 버튼 로딩 상태 액션
+    case setButtonLoading(Bool)
 
     case delegate(Delegate)
     case dismiss(didUpdate: Bool, spotId: Int) // 상태 기록 완료 여부

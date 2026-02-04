@@ -86,4 +86,13 @@ public extension PIDButton {
     button.isFullWidth = isFullWidth
     return button
   }
+
+  /// 버튼의 로딩 상태를 설정합니다.
+  /// - Parameter isLoading: 로딩 중 여부를 결정하는 불리언 값입니다.
+  /// - Returns: 지정된 로딩 상태가 적용된 수정된 버튼을 반환합니다.
+  func isLoading(_ isLoading: Bool) -> Self {
+    var button = self
+    button.isLoading = isLoading
+    return button
+  }
 }
