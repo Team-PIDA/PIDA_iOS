@@ -51,7 +51,6 @@ public struct FlowerSpotDetailLargeContentView: View {
             closeAction: { store.send(.alertCancelTapped) },
             acceptAction: { store.send(.alertAcceptTapped) }
           )
-          .isErrorType(false)
         }
       }
       .navigationDestination(for: FlowerSpotDetailFeature.Path.self) { path in

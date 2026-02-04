@@ -123,7 +123,6 @@ extension SettingView {
       closeAction: { store.send(.alertCancelTapped) },
       acceptAction: { store.send(.alertAcceptTapped(type)) }
     )
-    .isErrorType(true)
   }
 }
 
