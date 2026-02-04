@@ -37,9 +37,9 @@ public enum PIDButtonSize {
 
   public var loadingSize: CGFloat {
     switch self {
-    case .large: return .Number24
-    case .medium: return .Number20
-    case .small: return .Number16
+    case .large: return .Number48
+    case .medium: return .Number40
+    case .small: return .Number32
     }
   }
 }

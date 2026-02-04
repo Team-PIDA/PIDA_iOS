@@ -24,6 +24,7 @@ public struct SearchRegionListView: View {
         Spacer()
         DotLottieAnimation(
           fileName: LottieSet.dot_loading.name,
+          bundle: DesignKitResources.bundle,
           config: AnimationConfig(autoplay: true, loop: true)
         )
         .view()

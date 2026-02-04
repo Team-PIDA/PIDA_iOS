@@ -214,7 +214,8 @@ extension BloomingUpdateFeature.Core {
         if let imageData,
            let uploadUrl = result.uploadUrl {
           do {
-            try await apiClient.upload(url: uploadUrl, data: imageData)
+//            try await apiClient.upload(url: uploadUrl, data: imageData)
+            throw NetworkError.customError(message: "테스트용 에러")
           } catch {
             print("[BloomingFeature] Image upload failed: \(error)")
             imageUploadFailed = true
@@ -223,6 +224,11 @@ extension BloomingUpdateFeature.Core {
 
         // 완료 화면으로 전환
         await send(.setCompleted(true))
+
+        // 이미지 업로드 실패 시 알럿 표시
+        if imageUploadFailed {
+          await send(.presentAlert(.imageUploadFailed))
+        }
       } catch {
         await send(.setButtonLoading(false))
         await send(.sendToastMessage("기록에 실패했어요"))

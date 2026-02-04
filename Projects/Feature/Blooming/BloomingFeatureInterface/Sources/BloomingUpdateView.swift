@@ -39,33 +39,30 @@ public struct BloomingUpdateView: View {
       VStack(spacing: .Number0) {
         Spacer()
 
-        DotLottieView(
-          dotLottie: DotLottieAnimation(
+        ZStack {
+          
+          VStack {
+            ImageSet.updateCompletedIcon.swiftUIImage.swiftUIImage
+              .resizable()
+              .frame(width: .Number125, height: .Number125)
+
+            Spacer()
+              .frame(height: .Number16)
+            
+            VStack(spacing: .Number8) {
+              Text("개화 상태 기록이\n완료되었어요")
+                .fontStyle(FontSet.Heading.heading1)
+                .foregroundStyle(ColorSet.Text.Primary)
+                .multilineTextAlignment(.center)
+            }
+          }
+          
+          DotLottieAnimation(
             fileName: LottieSet.update_success_panpare.name,
+            bundle: DesignKitResources.bundle,
             config: AnimationConfig(autoplay: true, loop: false)
           )
-        )
-        .frame(width: .Number120, height: .Number120)
-
-        Spacer()
-          .frame(height: .Number24)
-
-        ImageSet.updateCompletedIcon.swiftUIImage.swiftUIImage
-          .resizable()
-          .frame(width: .Number48, height: .Number48)
-
-        Spacer()
-          .frame(height: .Number16)
-
-        VStack(spacing: .Number8) {
-          Text("개화 상태를\n기록했어요")
-            .fontStyle(FontSet.Heading.heading1)
-            .foregroundStyle(ColorSet.Text.Primary)
-            .multilineTextAlignment(.center)
-
-          Text("\(store.streetName)의 개화 상태가 기록되었어요")
-            .fontStyle(FontSet.Body.body3)
-            .foregroundStyle(ColorSet.Text.Secondary)
+          .view()
         }
 
         Spacer()

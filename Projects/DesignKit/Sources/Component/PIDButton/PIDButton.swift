@@ -60,10 +60,11 @@ public struct PIDButton<IconContent: View>: View {
       if isLoading {
         DotLottieAnimation(
           fileName: LottieSet.dot_loading.name,
+          bundle: DesignKitResources.bundle,
           config: AnimationConfig(autoplay: true, loop: true)
         )
         .view()
-        .frame(width: size.loadingSize, height: size.loadingSize)
+        .frame(height: size.loadingSize)
       } else {
         iconContent.map { $0() }
         Text(title)
@@ -72,17 +73,17 @@ public struct PIDButton<IconContent: View>: View {
       }
     }
     .frame(maxWidth: isFullWidth ? .infinity : nil)
-    .padding(.horizontal, isFullWidth ? .Number0 : size.padding.horizonal)
-    .padding(.vertical, size.padding.vertical)
+    .padding(.horizontal, isLoading ? .Number0 : (isFullWidth ? .Number0 : size.padding.horizonal))
+    .padding(.vertical, isLoading ? .Number0 : size.padding.vertical)
     .background(
       RoundedRectangle(cornerRadius: size.cornerRadius)
-        .fill(backgroundColor)
+        .fill( isLoading ? ColorSet.Component.Disabled : backgroundColor)
     )
     .overlay(
       RoundedRectangle(cornerRadius: size.cornerRadius)
         .inset(by: 0.5)
         .stroke(
-          isSecondary
+          isSecondary || isLoading
           ? ColorSet.Border.Secondary
           : backgroundColor,
           lineWidth: 1
