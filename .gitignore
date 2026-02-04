@@ -86,3 +86,4 @@ Release-Secrets.xcconfig
 
 # Claude Code
 .claude/
+docs/
