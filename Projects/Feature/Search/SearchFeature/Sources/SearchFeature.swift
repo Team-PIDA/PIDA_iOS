@@ -172,7 +172,8 @@ extension SearchFeature.Core {
   private func fetchSelectedDetailInfo(item: PlaceSearchEntity) -> Effect<Action> {
     return .run { send in
       do {
-        let detail = try await flowerSpotClient.getFlowerSpotDetail(id: item.id)
+        guard let id = item.id else { return }
+        let detail = try await flowerSpotClient.getFlowerSpotDetail(id: id)
         
         await MainActor.run {
           send(.updateRecentSesarch(item))
