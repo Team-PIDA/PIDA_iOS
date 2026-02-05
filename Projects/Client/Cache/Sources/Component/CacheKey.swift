@@ -49,10 +49,6 @@ public enum CacheKey: Sendable {
 
   // MARK: - FlowerSpot (꽃 명소)
 
-  /// 전체 꽃 명소 목록
-  /// - 지도에 표시할 모든 꽃 명소 데이터
-  case allFlowerSpots
-
   /// 특정 꽃 명소의 상세 정보
   /// - Parameter id: 꽃 명소의 고유 식별자
   case flowerSpotDetail(id: Int)
@@ -106,9 +102,6 @@ public extension CacheKey {
   /// - 예시: `flowerspot_detail_123`, `search_result_abc123`
   var rawValue: String {
     switch self {
-    case .allFlowerSpots:
-      return "flowerspot_all"
-
     case let .flowerSpotDetail(id):
       return "flowerspot_detail_\(id)"
 
@@ -151,10 +144,6 @@ public extension CacheKey {
   /// | 거의 변경 안됨 | 7~30일 | 사용자 설정, 검색 기록 |
   var defaultTTL: TTL {
     switch self {
-    case .allFlowerSpots:
-      // 전체 목록은 1시간마다 갱신 (새 명소 추가 반영)
-      return .hours(1)
-
     case .flowerSpotDetail:
       // 상세 정보도 1시간 캐시 (개화 상태 변경 가능)
       return .hours(1)

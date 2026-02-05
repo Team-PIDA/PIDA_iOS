@@ -25,17 +25,5 @@ extension GetFlowerSpotListDTO {
     }
     return FlowerSpotListEntity(itemList: items)
   }
-  
-  func toCacheModel() -> [SearchAddressCacheModel] {
-    guard let list = list else { return [] }
-    return list.compactMap { item in
-      SearchAddressCacheModel(
-        id: item.id,
-        address: item.address,
-        streetName: item.streetName,
-        subInfo: nil
-      )
-    }
-  }
 }
 
