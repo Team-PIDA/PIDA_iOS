@@ -30,7 +30,7 @@ extension SearchClient: DependencyKey {
           return
         }
         var updated = allList
-        if let existingIndex = updated.firstIndex(where: { $0.coordinate == entity.coordinate }) {
+        if let existingIndex = updated.firstIndex(where: { $0.identifier == entity.identifier }) {
           updated.remove(at: existingIndex)
         }
         

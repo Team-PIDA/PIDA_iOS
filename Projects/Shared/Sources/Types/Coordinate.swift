@@ -45,4 +45,8 @@ public struct Coordinate: Equatable, Hashable, Sendable, Codable {
       
       return [southWest, northEast]
     }
+  
+  public func toString() -> String {
+    return longitude.description + latitude.description
+  }
 }

@@ -19,6 +19,11 @@ public struct PlaceSearchEntity: Equatable, Sendable, Codable {
   public var subInfo: String?
   public var flowerSpotId: Int?
   
+  /// 캐시에서 동일 데이터 식별하기 위한 식별자
+  public var identifier: String {
+    return (coordinate?.toString() ?? "") + name
+  }
+  
   public init(
     name: String,
     address: String? = nil,
