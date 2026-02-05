@@ -10,39 +10,30 @@ import Foundation
 import CacheClient
 import Shared
 
-public struct PlaceSearchEntity: Equatable, Sendable, Codable, Identifiable {
-  public var id: Int?
+public struct PlaceSearchEntity: Equatable, Sendable, Codable {
   public var name: String
   public var address: String?
   public var coordinate: Coordinate?
   public var region: String?
   public var searchType: SearchType
   public var subInfo: String?
+  public var flowerSpotId: Int?
   
   public init(
-    id: Int? = nil,
     name: String,
     address: String? = nil,
     coordinate: Coordinate,
     region: String,
     searchType: SearchType = .flowerSpot,
-    subInfo: String? = nil
+    subInfo: String? = nil,
+    flowerSpotId: Int? = nil
   ) {
-    self.id = id
     self.name = name
     self.address = address
     self.coordinate = coordinate
     self.region = region
     self.searchType = searchType
     self.subInfo = subInfo
-  }
-  
-  public init(_ entity: SearchAddressCacheModel) {
-    self.id = entity.id
-    self.name = entity.streetName ?? ""
-    self.address = entity.address
-    self.subInfo = entity.subInfo
-    self.searchType = entity.searchType.flatMap { SearchType(rawValue: $0) } ?? .flowerSpot
-    self.coordinate = entity.coordinate
+    self.flowerSpotId = flowerSpotId
   }
 }

@@ -172,7 +172,7 @@ extension SearchFeature.Core {
   private func fetchSelectedDetailInfo(item: PlaceSearchEntity) -> Effect<Action> {
     return .run { send in
       do {
-        guard let id = item.id else { return }
+        guard let id = item.flowerSpotId else { return }
         let detail = try await flowerSpotClient.getFlowerSpotDetail(id: id)
         
         await MainActor.run {

@@ -36,10 +36,18 @@ struct PlaceSearchDTO: DTO {
   let address: String?
   let pinPoint: PinPointDTO
   let region: String
+  let flowerSpotId: Int?
   
   func toEntity() throws -> Entity {
     let coordinate = try pinPoint.toEntity()
-    return .init(name: name, address: address, coordinate: coordinate, region: region, searchType: .flowerSpot)
+    return .init(
+      name: name,
+      address: address,
+      coordinate: coordinate,
+      region: region,
+      searchType: .flowerSpot,
+      flowerSpotId: flowerSpotId
+    )
   }
   
   func toEntity(searchType: SearchType) throws -> Entity {
