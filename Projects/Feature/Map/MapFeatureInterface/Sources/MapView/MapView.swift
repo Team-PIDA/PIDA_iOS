@@ -195,7 +195,6 @@ extension MapView {
       closeAction: { store.send(.alertCancelTapped) },
       acceptAction: { store.send(.alertAcceptTapped(type)) }
     )
-    .isErrorType(false)
   }
 
   // MARK: - BottomSheet

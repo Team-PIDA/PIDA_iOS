@@ -8,6 +8,7 @@
 
 import SwiftUI
 import PhotosUI
+import DotLottie
 import DesignKit
 import ComposableArchitecture
 
@@ -20,6 +21,74 @@ public struct BloomingUpdateView: View {
   }
   
   public var body: some View {
+    if store.isCompleted {
+      completionView
+    } else {
+      inputView
+    }
+  }
+
+  // MARK: - Completion View
+
+  @ViewBuilder
+  private var completionView: some View {
+    ZStack {
+      ColorSet.Background.Accent
+        .ignoresSafeArea()
+
+      VStack(spacing: .Number0) {
+        Spacer()
+
+        ZStack {
+          
+          VStack {
+            ImageSet.updateCompletedIcon.swiftUIImage.swiftUIImage
+              .resizable()
+              .frame(width: .Number125, height: .Number125)
+
+            Spacer()
+              .frame(height: .Number16)
+            
+            VStack(spacing: .Number8) {
+              Text("개화 상태 기록이\n완료되었어요")
+                .fontStyle(FontSet.Heading.heading1)
+                .foregroundStyle(ColorSet.Text.Primary)
+                .multilineTextAlignment(.center)
+            }
+          }
+          
+          DotLottieAnimation(
+            fileName: LottieSet.update_success_panpare.name,
+            bundle: DesignKitResources.bundle,
+            config: AnimationConfig(autoplay: true, loop: false)
+          )
+          .view()
+        }
+
+        Spacer()
+
+        PIDButton(title: "상세페이지로 돌아가기", size: .large)
+          .action {
+            guard let spotId = store.spotId else { return }
+            store.send(.dismiss(didUpdate: true, spotId: spotId))
+          }
+          .padding(.Number16)
+      }
+
+      if let alertType = store.alertType {
+        PIDAlert(
+          type: alertType,
+          closeAction: { store.send(.clearAlertState) },
+          acceptAction: { store.send(.alertAcceptTapped) }
+        )
+      }
+    }
+  }
+
+  // MARK: - Input View
+
+  @ViewBuilder
+  private var inputView: some View {
     ZStack {
       ColorSet.Background.Primary
         .ignoresSafeArea()
@@ -100,7 +169,7 @@ public struct BloomingUpdateView: View {
           .foregroundStyle(ColorSet.Text.Primary)
       }
       .fontStyle(FontSet.Heading.heading1)
-      Text("석촌호수로의 개화 상태를 기록해주세요")
+      Text("\(store.streetName)의 개화 상태를 기록해주세요")
         .fontStyle(FontSet.Body.body3)
         .foregroundStyle(ColorSet.Text.Secondary)
     }
@@ -113,6 +182,7 @@ public struct BloomingUpdateView: View {
         store.send(.updateButtonTapped)
       }
       .isActive(store.isButtonEnable)
+      .isLoading(store.isButtonLoading)
       .padding(.Number16)
   }
 

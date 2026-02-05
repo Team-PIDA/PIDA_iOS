@@ -7,17 +7,19 @@
 //
 
 import SwiftUI
+import DotLottie
 
 public struct PIDButton<IconContent: View>: View {
-  
+
   public var title: String
   public var size: PIDButtonSize
   public var isDisabled: Bool = false
   public var isError: Bool = false
   public var isSecondary: Bool = false
+  public var isLoading: Bool = false
   public var action: (() async -> Void)? = nil
   public var iconContent: (() -> IconContent)?
-  
+
   public var backgroundColor: Color = ColorSet.Component.Primary
   public var textColor: Color? = nil
   public var isFullWidth: Bool = true
@@ -47,31 +49,41 @@ public struct PIDButton<IconContent: View>: View {
     content
       .buttonPress(
         isPressed: $isPressed,
-        isDisabled: isDisabled,
+        isDisabled: isDisabled || isLoading,
         action: action
       )
   }
-  
+
   @ViewBuilder
   private var content: some View {
     HStack(spacing: .Number6) {
-      iconContent.map { $0() }
-      Text(title)
-        .foregroundColor(resolvedTextColor)
-        .fontStyle(size.font)
+      if isLoading {
+        DotLottieAnimation(
+          fileName: LottieSet.dot_loading.name,
+          bundle: DesignKitResources.bundle,
+          config: AnimationConfig(autoplay: true, loop: true)
+        )
+        .view()
+        .frame(height: size.loadingSize)
+      } else {
+        iconContent.map { $0() }
+        Text(title)
+          .foregroundColor(resolvedTextColor)
+          .fontStyle(size.font)
+      }
     }
     .frame(maxWidth: isFullWidth ? .infinity : nil)
-    .padding(.horizontal, isFullWidth ? .Number0 : size.padding.horizonal)
-    .padding(.vertical, size.padding.vertical)
+    .padding(.horizontal, isLoading ? .Number0 : (isFullWidth ? .Number0 : size.padding.horizonal))
+    .padding(.vertical, isLoading ? .Number0 : size.padding.vertical)
     .background(
       RoundedRectangle(cornerRadius: size.cornerRadius)
-        .fill(backgroundColor)
+        .fill( isLoading ? ColorSet.Component.Disabled : backgroundColor)
     )
     .overlay(
       RoundedRectangle(cornerRadius: size.cornerRadius)
         .inset(by: 0.5)
         .stroke(
-          isSecondary
+          isSecondary || isLoading
           ? ColorSet.Border.Secondary
           : backgroundColor,
           lineWidth: 1
@@ -218,7 +230,7 @@ public struct PIDButton<IconContent: View>: View {
         size: .large
       )
       .isSecondary(true)
-      
+
       PIDButton(
         title: "Icon",
         size: .large
@@ -228,7 +240,7 @@ public struct PIDButton<IconContent: View>: View {
           .foregroundColor(ColorSet.Icon.Accent)
       }
       .isSecondary(true)
-      
+
       PIDButton(
         title: "Disabled",
         size: .large
@@ -238,6 +250,26 @@ public struct PIDButton<IconContent: View>: View {
           .foregroundColor(ColorSet.Icon.Accent)
       }
       .isDisabled(true)
+    }
+
+    Section("로딩 버튼") {
+      PIDButton(
+        title: "Label",
+        size: .large
+      )
+      .isLoading(true)
+
+      PIDButton(
+        title: "Label",
+        size: .medium
+      )
+      .isLoading(true)
+
+      PIDButton(
+        title: "Label",
+        size: .small
+      )
+      .isLoading(true)
     }
   }
 }

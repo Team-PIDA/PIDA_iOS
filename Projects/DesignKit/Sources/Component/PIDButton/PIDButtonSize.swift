@@ -34,4 +34,12 @@ public enum PIDButtonSize {
     case .small: return FontSet.Label.label3
     }
   }
+
+  public var loadingSize: CGFloat {
+    switch self {
+    case .large: return .Number48
+    case .medium: return .Number40
+    case .small: return .Number32
+    }
+  }
 }

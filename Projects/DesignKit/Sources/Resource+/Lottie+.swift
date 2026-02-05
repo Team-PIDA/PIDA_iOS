@@ -10,6 +10,7 @@ import Foundation
 
 public enum LottieSet: String {
   case dot_loading
-  
+  case update_success_panpare
+
   public var name: String { return rawValue }
 }

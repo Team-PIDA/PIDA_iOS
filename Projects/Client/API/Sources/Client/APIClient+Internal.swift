@@ -49,15 +49,42 @@ extension APIClient {
     _ url: String,
     _ data: Data
   ) async throws -> Void {
+    let maxRetryCount = 3
+    var lastError: Error?
+
+    for attempt in 1...maxRetryCount {
+      do {
+        try await performUpload(url: url, data: data)
+        return // 성공 시 즉시 반환
+      } catch {
+        lastError = error
+        if attempt < maxRetryCount {
+          try? await Task.sleep(nanoseconds: 1_000_000_000) // 1초 대기
+        }
+      }
+    }
+
+    // 3회 모두 실패
+    throw lastError ?? throwError(FoundationError.taskFailed)
+  }
+
+  private static func performUpload(
+    url: String,
+    data: Data
+  ) async throws -> Void {
+    guard let validURL = URL(string: url) else {
+      throw throwError(NetworkError.customError(message: "Invalid upload URL"))
+    }
+
     try await withThrowingTaskGroup(of: Void.self) { group in
       group.addTask {
-        var request = URLRequest(url: URL(string: url)!)
+        var request = URLRequest(url: validURL)
         request.httpMethod = "PUT"
         request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
         request.setValue("", forHTTPHeaderField: "Expect")
-        
+
         let (_, response) = try await URLSession.shared.upload(for: request, from: data)
-        
+
         guard let response = response as? HTTPURLResponse else {
           throw Self.throwError(
             FoundationError.failedToCasting(
@@ -66,7 +93,7 @@ extension APIClient {
             )
           )
         }
-        
+
         switch response.statusCode {
         case 200...299: break
         default:
@@ -75,12 +102,12 @@ extension APIClient {
           )
         }
       }
-      
+
       group.addTask {
         try await Task.sleep(nanoseconds: UInt64(10.0 * 1_000_000_000))
         throw throwError(NetworkError.timeout(10.0))
       }
-      
+
       do {
         if let _ = try await group.next() {
           group.cancelAll()
@@ -98,9 +125,13 @@ extension APIClient {
   static func internalDownload(
     _ url: String
   ) async throws -> Data {
-    try await withThrowingTaskGroup(of: Data.self) { group in
+    guard let validURL = URL(string: url) else {
+      throw throwError(DownloadError.unknown)
+    }
+
+    return try await withThrowingTaskGroup(of: Data.self) { group in
       group.addTask {
-        let request = URLRequest(url: URL(string: url)!)
+        let request = URLRequest(url: validURL)
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let response = response as? HTTPURLResponse else {

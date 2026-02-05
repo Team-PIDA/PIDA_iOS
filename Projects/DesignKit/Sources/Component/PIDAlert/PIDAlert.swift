@@ -13,10 +13,11 @@ public struct PIDAlert: View {
   public var message: String?
   public var cancelTitle: String
   public var acceptTitle: String
+  public var showCancelButton: Bool
   public var closeAction: () async -> Void
   public var acceptAction: () async -> Void
-  var isErrorType: Bool = true
-  
+  var isErrorType: Bool = false
+
   public init(
     type: AlertType,
     closeAction: @escaping () async -> Void,
@@ -26,6 +27,8 @@ public struct PIDAlert: View {
     self.message = type.message
     self.cancelTitle = type.cancel
     self.acceptTitle = type.accept
+    self.showCancelButton = type.showCancelButton
+    self.isErrorType = type.isError
     self.closeAction = closeAction
     self.acceptAction = acceptAction
   }
@@ -76,17 +79,19 @@ public struct PIDAlert: View {
   @ViewBuilder
   private var buttonView: some View {
     HStack(spacing: .Number12) {
-      PIDButton(
-        title: cancelTitle,
-        size: .large
-      )
-      .isSecondary(true)
-      .action {
-        Task { @MainActor in
-          await closeAction()
+      if showCancelButton {
+        PIDButton(
+          title: cancelTitle,
+          size: .large
+        )
+        .isSecondary(true)
+        .action {
+          Task { @MainActor in
+            await closeAction()
+          }
         }
       }
-      
+
       PIDButton(
         title: acceptTitle,
         size: .large

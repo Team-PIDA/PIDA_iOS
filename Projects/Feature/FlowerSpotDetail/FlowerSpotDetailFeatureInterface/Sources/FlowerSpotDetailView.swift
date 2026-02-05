@@ -37,7 +37,6 @@ public struct FlowerSpotDetailView: View {
           closeAction: { store.send(.alertCancelTapped) },
           acceptAction: { store.send(.alertAcceptTapped) }
         )
-        .isErrorType(false)
       }
     }
     .onAppear {

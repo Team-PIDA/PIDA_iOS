@@ -75,13 +75,15 @@ extension BloomingUpdateFeature {
         state.buttonTittle = "개화 상태를 선택해주세요"
         state.selectedStatus = nil
         state.isButtonEnable = false
+        state.isCompleted = false
+        state.alertType = nil
         return .none
 
       case let .sendToastMessage(message):
         state.toastMessage = message
         return .none
 
-      case let .setSpodtId(id):
+      case let .setSpotId(id):
         state.spotId = id
         return .none
 
@@ -90,8 +92,9 @@ extension BloomingUpdateFeature {
         return .none
 
       case .updateButtonTapped:
+        guard !state.isButtonLoading else { return .none }
+        state.isButtonLoading = true
         return .send(.updateBloomingRequest)
-          .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
 
       case .updateBloomingRequest:
         guard let id = state.spotId,
@@ -144,8 +147,27 @@ extension BloomingUpdateFeature {
         state.isPhotoPickerPresented = false
         return .none
 
-      case .uploadImage:
-        // Task.detached로 직접 처리하므로 여기서는 아무것도 하지 않음
+
+      case let .setCompleted(isCompleted):
+        state.isCompleted = isCompleted
+        state.isButtonLoading = false
+        return .none
+
+      case let .setButtonLoading(isLoading):
+        state.isButtonLoading = isLoading
+        return .none
+
+      // MARK: - Alert Actions
+
+      case let .presentAlert(type):
+        state.alertType = type
+        return .none
+
+      case .alertAcceptTapped:
+        return .send(.clearAlertState)
+
+      case .clearAlertState:
+        state.alertType = nil
         return .none
 
       case .binding, .delegate:
@@ -184,22 +206,26 @@ extension BloomingUpdateFeature.Core {
           )
         )
 
-        // 이미지 업로드를 독립적인 Task로 실행 (dismiss 후에도 계속 실행)
+        // 이미지 업로드 (APIClient 내부에서 3회 재시도)
+        var imageUploadFailed = false
         if let imageData,
            let uploadUrl = result.uploadUrl {
-          Task.detached {
-            do {
-              try await apiClient.upload(url: uploadUrl, data: imageData)
-            } catch {
-              print("[BloomingFeature] Image upload failed: \(error)")
-            }
+          do {
+            try await apiClient.upload(url: uploadUrl, data: imageData)
+          } catch {
+            imageUploadFailed = true
           }
         }
 
-        // 화면 dismiss + Toast 표시
-        await send(.dismiss(didUpdate: true, spotId: id))
-        await send(.sendToastMessage(result.message))
+        // 완료 화면으로 전환
+        await send(.setCompleted(true))
+
+        // 이미지 업로드 실패 시 알럿 표시
+        if imageUploadFailed {
+          await send(.presentAlert(.imageUploadFailed))
+        }
       } catch {
+        await send(.setButtonLoading(false))
         await send(.sendToastMessage("기록에 실패했어요"))
       }
     }
