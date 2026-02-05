@@ -59,16 +59,45 @@ public struct FlowerSpotImageGalleryView: View {
   @ViewBuilder
   private var singleImageView: some View {
     let image = images[0]
-    RemoteImageView(
-      imageData: prefetchedImages[image.url],
-      fallbackUrlString: image.url,
-      onTap: { onImageTapped?(0) },
-      onImageLoaded: { data in onImageLoaded?(image.url, data) }
-    )
-    .frame(height: imageHeight)
-    .frame(maxWidth: .infinity)
-    .clipped()
-    .cornerRadius(10)
+    ZStack(alignment: .bottomTrailing) {
+      RemoteImageView(
+        imageData: prefetchedImages[image.url],
+        fallbackUrlString: image.url,
+        onTap: { onImageTapped?(0) },
+        onImageLoaded: { data in onImageLoaded?(image.url, data) }
+      )
+      .frame(height: imageHeight)
+      .frame(maxWidth: .infinity)
+      .clipped()
+      .cornerRadius(10)
+      
+      if let dateText = image.createdAt?.photoDateText() {
+        // 하단 그라디언트 오버레이 + 텍스트
+        VStack {
+          Spacer()
+          HStack {
+            Spacer()
+            Text(dateText)
+              .fontStyle(FontSet.Caption.caption1)
+              .foregroundColor(ColorSet.Text.Inverse)
+          }
+          .padding(.top, .Number8)
+          .padding(.bottom, .Number8)
+          .padding(.leading, .Number12)
+          .padding(.trailing, .Number12)
+          .background(
+            LinearGradient(
+              gradient: Gradient(colors: [
+                Color(hex: 0x121212).opacity(0),
+                Color(hex: 0x121212).opacity(0.4)
+              ]),
+              startPoint: .top,
+              endPoint: .bottom
+            )
+          )
+        }
+      }
+    }
   }
 
   // MARK: - Two Images (2장)
@@ -80,6 +109,7 @@ public struct FlowerSpotImageGalleryView: View {
       HStack(spacing: spacing) {
         ForEach(0..<2, id: \.self) { index in
           let image = images[index]
+          ZStack(alignment: .bottomTrailing) {
           RemoteImageView(
             imageData: prefetchedImages[image.url],
             fallbackUrlString: image.url,
@@ -89,6 +119,34 @@ public struct FlowerSpotImageGalleryView: View {
           .frame(width: imageWidth, height: imageHeight)
           .clipped()
           .cornerRadius(10)
+          
+            if let dateText = image.createdAt?.photoDateText() {
+              // 하단 그라디언트 오버레이 + 텍스트
+              VStack {
+                Spacer()
+                HStack {
+                  Spacer()
+                  Text(dateText)
+                    .fontStyle(FontSet.Caption.caption1)
+                    .foregroundColor(ColorSet.Text.Inverse)
+                }
+                .padding(.top, .Number8)
+                .padding(.bottom, .Number8)
+                .padding(.leading, .Number12)
+                .padding(.trailing, .Number12)
+                .background(
+                  LinearGradient(
+                    gradient: Gradient(colors: [
+                      Color(hex: 0x121212).opacity(0),
+                      Color(hex: 0x121212).opacity(0.4)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                  )
+                )
+              }
+            }
+          }
         }
       }
     }
@@ -103,15 +161,44 @@ public struct FlowerSpotImageGalleryView: View {
       HStack(spacing: spacing) {
         ForEach(0..<min(3, images.count), id: \.self) { index in
           let image = images[index]
-          RemoteImageView(
-            imageData: prefetchedImages[image.url],
-            fallbackUrlString: image.url,
-            onTap: { onImageTapped?(index) },
-            onImageLoaded: { data in onImageLoaded?(image.url, data) }
-          )
-          .frame(width: imageHeight, height: imageHeight)
-          .clipped()
-          .cornerRadius(10)
+          ZStack(alignment: .bottomTrailing) {
+            RemoteImageView(
+              imageData: prefetchedImages[image.url],
+              fallbackUrlString: image.url,
+              onTap: { onImageTapped?(index) },
+              onImageLoaded: { data in onImageLoaded?(image.url, data) }
+            )
+            .frame(width: imageHeight, height: imageHeight)
+            .clipped()
+            .cornerRadius(10)
+            
+            if let dateText = image.createdAt?.photoDateText() {
+              // 하단 그라디언트 오버레이 + 텍스트
+              VStack {
+                Spacer()
+                HStack {
+                  Spacer()
+                  Text(dateText)
+                    .fontStyle(FontSet.Caption.caption1)
+                    .foregroundColor(ColorSet.Text.Inverse)
+                }
+                .padding(.top, .Number8)
+                .padding(.bottom, .Number8)
+                .padding(.leading, .Number12)
+                .padding(.trailing, .Number12)
+                .background(
+                  LinearGradient(
+                    gradient: Gradient(colors: [
+                      Color(hex: 0x121212).opacity(0),
+                      Color(hex: 0x121212).opacity(0.4)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                  )
+                )
+              }
+            }
+          }
         }
 
         // 더보기 버튼

@@ -32,12 +32,7 @@ public struct FlowerSpotEntity: Equatable, Sendable, Codable {
   public var region: String
   public var images: [FlowerSpotImageEntity]
   public var previewUrl: String?
-
-  /// 하위 호환성을 위한 computed property
-  public var imageUrls: [String] {
-    images.map { $0.url }
-  }
-
+  
   public init(
     id: Int,
     address: String? = nil,

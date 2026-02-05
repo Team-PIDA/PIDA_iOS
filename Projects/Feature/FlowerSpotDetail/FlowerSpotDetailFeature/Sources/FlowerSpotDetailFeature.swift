@@ -153,7 +153,7 @@ extension FlowerSpotDetailFeature {
       // MARK: - Image Prefetch
 
       case .prefetchImages:
-        let urls = state.flowerSpotData.imageUrls
+        let urls = state.flowerSpotData.images.map { $0.url }
         guard !urls.isEmpty else { return .none }
         return prefetchImages(urls: urls)
 

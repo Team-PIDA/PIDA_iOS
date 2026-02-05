@@ -33,7 +33,7 @@ public struct FlowerSpotDetailSmallContentView: View {
 
       Spacer()
 
-      if let firstImageUrl = flowerSpotData.imageUrls.first {
+      if let firstImageUrl = flowerSpotData.images.first?.url {
         RemoteImageView(urlString: firstImageUrl)
           .frame(width: 80, height: 80)
           .clipped()
