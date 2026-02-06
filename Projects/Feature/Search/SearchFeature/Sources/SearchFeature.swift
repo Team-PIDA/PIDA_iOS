@@ -90,7 +90,7 @@ extension SearchFeature {
       case .fetchRecentResult:
         return fetchRecentResult(keyword: state.searchWord)
 
-      case let .updateRecentSesarch(item):
+      case let .updateRecentSearch(item):
         return updateRecentSearch(item: item)
         
       case let .storeRecentResult(item):
@@ -132,7 +132,7 @@ extension SearchFeature {
         default:
           guard let coordinate = item.coordinate else { return .none }
           return .concatenate(
-            .send(.updateRecentSesarch(item)),
+            .send(.updateRecentSearch(item)),
             .send(.delegate(
               .selectRegionResult(
                 .init(name: item.name, coordinate: coordinate))
@@ -176,7 +176,7 @@ extension SearchFeature.Core {
         let detail = try await flowerSpotClient.getFlowerSpotDetail(id: id)
         
         await MainActor.run {
-          send(.updateRecentSesarch(item))
+          send(.updateRecentSearch(item))
           send(.searchBarFocused(false))
           send(.fetchSearchResult(detail))
         }
