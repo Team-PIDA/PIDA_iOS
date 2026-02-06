@@ -13,7 +13,7 @@ import Shared
 public struct PlaceSearchEntity: Equatable, Sendable, Codable {
   public var name: String
   public var address: String?
-  public var coordinate: Coordinate?
+  public var coordinate: Coordinate
   public var region: String?
   public var searchType: SearchType
   public var subInfo: String?
@@ -21,7 +21,7 @@ public struct PlaceSearchEntity: Equatable, Sendable, Codable {
   
   /// 캐시에서 동일 데이터 식별하기 위한 식별자
   public var identifier: String {
-    return (coordinate?.toString() ?? "") + name
+    return coordinate.toString() + name
   }
   
   public init(

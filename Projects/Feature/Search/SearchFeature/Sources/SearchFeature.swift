@@ -130,12 +130,11 @@ extension SearchFeature {
           return fetchSelectedDetailInfo(item: item)
           
         default:
-          guard let coordinate = item.coordinate else { return .none }
           return .concatenate(
             .send(.updateRecentSearch(item)),
             .send(.delegate(
               .selectRegionResult(
-                .init(name: item.name, coordinate: coordinate))
+                .init(name: item.name, coordinate: item.coordinate))
             ))
           )
         }
