@@ -1,18 +1,15 @@
 //
 //  Project.swift
-//  APIManifests
 //
-//  Created by 조용인 on 12/19/25.
+//  Created by Jiyeon
 //
 
 import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.buildStaticLibrary(
-  for: Client.API,
+  for: Client.Logger,
   dependencies: [
-    .SPM.TCA,
-    .Shared,
-    .Client.Logger
+    .SPM.TCA
   ]
 )

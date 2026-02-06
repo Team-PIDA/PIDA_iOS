@@ -35,6 +35,7 @@ extension TargetDependency {
     public static let Push = Self.project(.client(.Push))
     public static let DeepLink = Self.project(.client(.DeepLink))
     public static let Analytics = Self.project(.client(.Analytics))
+    public static let Logger = Self.project(.client(.Logger))
   }
 }
 
