@@ -47,6 +47,6 @@ public struct Coordinate: Equatable, Hashable, Sendable, Codable {
     }
   
   public func toString() -> String {
-    return longitude.description + latitude.description
+    return longitude.description + "_" + latitude.description
   }
 }
