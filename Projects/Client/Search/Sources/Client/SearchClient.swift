@@ -9,7 +9,7 @@
 import ComposableArchitecture
 
 @DependencyClient
-public struct SearchClient {
+public struct SearchClient: Sendable {
   public var fetchRecentSearch: @Sendable () async throws -> [PlaceSearchEntity]
   public var saveRecentSearchItem: @Sendable (_ item: PlaceSearchEntity) async throws -> Void
   public var fetchKeywordSearch: @Sendable (_ keyword: String) async throws -> [PlaceSearchEntity]
