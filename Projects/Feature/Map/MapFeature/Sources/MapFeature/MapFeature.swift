@@ -55,7 +55,7 @@ extension MapFeature {
         
       case .viewDidAppear:
         state.isViewAppeared = true
-        return .send(.fetchAllFlowerAddress)
+        return .none
         
       case let .requestMapBounds(isRequest):
         state.requestMapBound = isRequest
@@ -64,9 +64,6 @@ extension MapFeature {
           analyticsClient.track(MapEvent.researchClicked(currentPage: "map"))
         }
         return .none
-        
-      case .fetchAllFlowerAddress:
-        return fetchAllFlowerAddress()
         
         // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
       case let .markerTapped(id):
@@ -176,6 +173,15 @@ extension MapFeature {
         case let .storeUserLocation(location):
           state.userLocation = location
           state.location.userLocation = location
+          
+          // 초기 지도 로드 시 한번만 실행
+          if shouldTriggerInitialMapLoad(state: state) {
+            state.isInitialMapLoadCompleted = true
+            return .concatenate(
+              .send(.requestMapBounds(true)),
+              .send(.delegate(.mapDidLoad))
+            )
+          }
           return .none
           
         case let .showToastView(message, label):
@@ -233,20 +239,9 @@ extension MapFeature {
 }
 
 extension MapFeature.Core {
-  private func fetchAllFlowerAddress() -> Effect<Action> {
-    return .run { send in
-      do {
-        try await flowerSpot.fetchAllFlowerAddress()
-      } catch let error as NetworkError {
-        print(error.localizedDescription)
-      } catch let error as FoundationError {
-        print(error.localizedDescription)
-      } catch {
-        print(error.localizedDescription)
-      }
-      await send(.requestMapBounds(true))
-      await send(.delegate(.mapDidLoad))
-    }
+  /// 초기 지도 로드 이벤트 트리거 조건 확인
+  private func shouldTriggerInitialMapLoad(state: State) -> Bool {
+    return state.isViewAppeared && !state.isInitialMapLoadCompleted
   }
   
   private func showSearchResult(result: FlowerSpotEntity?) -> Effect<Action> {

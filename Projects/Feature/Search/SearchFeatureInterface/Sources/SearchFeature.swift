@@ -23,8 +23,8 @@ public struct SearchFeature {
   public struct State: Equatable {
     public var isFocused: Bool = false
     public var searchWord: String = ""
-    public var searchList: [SearchListCellEntity] = []
-    public var recentList: [SearchListCellEntity] = []
+    public var searchList: [PlaceSearchEntity] = []
+    public var recentList: [PlaceSearchEntity] = []
     public var showRecentList: Bool = true
     public init(initText: String?) {
       self.searchWord = initText ?? ""
@@ -42,17 +42,19 @@ public struct SearchFeature {
     case configureSearchList
     case searchItem(String)
     
-    case updateSearchResults([SearchListCellEntity])
+    case updateSearchResults([PlaceSearchEntity])
+    case showRecentList
     case fetchSearchResult(FlowerSpotEntity)
     case fetchRecentResult
     
-    case storeRecentResult([SearchListCellEntity])
+    case updateRecentSearch(PlaceSearchEntity)
+    case storeRecentResult([PlaceSearchEntity])
     case initialSearchBar(String?)
    
     
     // MARK: - Delegate
     
-    case selectResult(SearchListCellEntity)
+    case selectResult(PlaceSearchEntity)
     case dismiss
     case delegate(Delegate)
   }
@@ -61,6 +63,10 @@ public struct SearchFeature {
     case dismiss
     case selectResult(FlowerSpotEntity)
     case selectRegionResult(RegionInfoEntity)
+  }
+  
+  public enum CancelID {
+    case search
   }
 
   public var body: some Reducer<State, Action> {

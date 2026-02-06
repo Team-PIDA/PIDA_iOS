@@ -36,7 +36,10 @@ extension MapSearchFeature {
         if let _ = result {
           state.currentNavigation = .flowerDetail(.fromSearch)
         }
-        return .send(.delegate(.showSearchResult(result)))
+        return .concatenate(
+          .send(.delegate(.showSearchResult(result))),
+          result != nil ? .send(.showRegionList(data: nil)) : .none // 리전 리스트 화면 정리
+        )
         
       case .presentToSearch:
         return .send(.delegate(.presentToSearch(state.searchText)))
@@ -49,7 +52,10 @@ extension MapSearchFeature {
         } else {
           state.regionSheetDetent = .medium
         }
-        return .send(.delegate(.showSearchRegionList(result)))
+        return .concatenate(
+          .send(.delegate(.showSearchRegionList(result))),
+          result != nil ? .send(.delegate(.dismissFlowerSpotDetail)) : .none // 디테일 화면 닫기
+        )
         
       case .changeRegionSheetDetent:
         if state.isShowRegionList {

@@ -9,7 +9,7 @@
 import Foundation
 import CoreLocation
 
-public struct Coordinate: Equatable, Sendable, Codable {
+public struct Coordinate: Equatable, Hashable, Sendable, Codable {
     public var latitude: Double
     public var longitude: Double
     
@@ -45,4 +45,8 @@ public struct Coordinate: Equatable, Sendable, Codable {
       
       return [southWest, northEast]
     }
+  
+  public func toString() -> String {
+    return longitude.description + "_" + latitude.description
+  }
 }

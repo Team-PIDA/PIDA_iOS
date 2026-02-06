@@ -12,12 +12,12 @@ import SearchClient
 
 public struct SearchResultList: View {
   
-  private var item: SearchListCellEntity
-  private var onTap: ((SearchListCellEntity) async -> Void)?
+  private var item: PlaceSearchEntity
+  private var onTap: ((PlaceSearchEntity) async -> Void)?
   
   public init(
-    item: SearchListCellEntity,
-    onTap: ((SearchListCellEntity) async -> Void)? = nil
+    item: PlaceSearchEntity,
+    onTap: ((PlaceSearchEntity) async -> Void)? = nil
   ) {
     self.item = item
     
@@ -28,10 +28,11 @@ public struct SearchResultList: View {
     VStack {
       HStack {
         VStack(alignment: .leading, spacing: .Number0) {
-          Text(item.streetName ?? "")
+          Text(item.name)
             .fontStyle(FontSet.Body.body2)
             .foregroundStyle(ColorSet.Text.Primary)
-          if let address = item.address {
+          if let address = item.address,
+              item.searchType != .landmark {
             Text(address)
               .fontStyle(FontSet.Caption.caption1)
               .foregroundStyle(ColorSet.Text.Tertiary)

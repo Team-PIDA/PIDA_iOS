@@ -22,14 +22,14 @@ extension SearchFeature {
     @Dependency(\.searchClient) var searchClient
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.analyticsClient) var analyticsClient
-
+    @Dependency(\.mainQueue) var mainQueue
+    
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       case .binding(\.searchWord):
         let searchQuery = state.searchWord
         if searchQuery.isEmpty {
-          state.showRecentList = true
-          return .send(.updateSearchResults(state.recentList))
+          return .send(.showRecentList)
         } else {
           // 첫 입력 시 search_input 이벤트 트래킹
           if state.showRecentList {
@@ -58,12 +58,21 @@ extension SearchFeature {
 
       // MARK: - Search
       case let .searchItem(searchQuery):
-        return searchItem(with: searchQuery)
-
+        return fetchKeywordSearch(keyword: searchQuery)
+          .throttle(
+            id: CancelID.search,
+            for: 0.3,
+            scheduler: mainQueue,
+            latest: true
+          )
+        
       case let .updateSearchResults(results):
+        guard !state.showRecentList else {
+          return .send(.showRecentList)
+        }
         state.searchList = results
         // 검색 결과 없음 트래킹 (최근 검색 목록이 아니고, 결과가 비어있을 때)
-        if !state.showRecentList && results.isEmpty && !state.searchWord.isEmpty {
+        if results.isEmpty && !state.searchWord.isEmpty {
           analyticsClient.track(
             SearchEvent.noResultViewed(
               keywordLength: state.searchWord.count,
@@ -72,10 +81,18 @@ extension SearchFeature {
           )
         }
         return .none
+        
+      case .showRecentList:
+        state.showRecentList = true
+        state.searchList = state.recentList
+        return .none
 
       case .fetchRecentResult:
         return fetchRecentResult(keyword: state.searchWord)
 
+      case let .updateRecentSearch(item):
+        return updateRecentSearch(item: item)
+        
       case let .storeRecentResult(item):
         state.recentList = item
         // search_start 이벤트 트래킹
@@ -104,21 +121,22 @@ extension SearchFeature {
         if state.showRecentList {
           analyticsClient.track(SearchEvent.recentSearchClicked)
         } else {
-          let resultType: SearchEvent.ResultType = item.searchType == .region ? .region : .landmark
+          let resultType: SearchEvent.ResultType = .init(rawValue: item.searchType.rawValue) ?? .flowerSpot
           analyticsClient.track(SearchEvent.suggestionClicked(resultType: resultType))
         }
-
+        
         switch item.searchType {
-        case .region:
-          if let name = item.streetName, let coord = item.coord {
-            return .send(
-              .delegate(
-                .selectRegionResult(.init(name: name, coordinate: coord))
-              )
-            )
-          } else { return .none }
-        case .street:
+        case .flowerSpot:
           return fetchSelectedDetailInfo(item: item)
+          
+        default:
+          return .concatenate(
+            .send(.updateRecentSearch(item)),
+            .send(.delegate(
+              .selectRegionResult(
+                .init(name: item.name, coordinate: item.coordinate))
+            ))
+          )
         }
         
       // MARK: - Delegate
@@ -150,49 +168,14 @@ extension SearchFeature.Core {
     }
   }
   
-  private func searchItem(with searchQuery: String) -> Effect<Action> {
+  private func fetchSelectedDetailInfo(item: PlaceSearchEntity) -> Effect<Action> {
     return .run { send in
       do {
-        var data = try await searchClient.getSearchListFromCache()
-        if data.isEmpty {
-          print("캐시 복구")
-          try await flowerSpotClient.fetchAllFlowerAddress()
-          data = try await searchClient.getSearchListFromCache()
-        }
-        let scoredResults = try data.map { flowerSpot -> (flower: SearchListCellEntity, score: Int) in
-          let addressScore = try searchClient.calculateSimilarityScore(
-            text: flowerSpot.address,
-            query: searchQuery
-          ) * 2
-          let streetScore = try searchClient.calculateSimilarityScore(
-            text: flowerSpot.streetName,
-            query: searchQuery
-          )
-          let totalScore = addressScore + streetScore
-          return (flowerSpot, totalScore)
-        }
-        let filteredResults = scoredResults
-          .filter { $0.score > 0 }
-          .sorted { $0.score > $1.score }
-          .prefix(20)
-          .map { $0.flower }
-        await MainActor.run { send(.updateSearchResults(filteredResults)) }
-      } catch let error as NetworkError {
-        print(error.errorDescription)
-      } catch let error as FoundationError {
-        print(error.errorDescription)
-      } catch {
-        print(error.localizedDescription)
-      }
-    }
-  }
-  
-  private func fetchSelectedDetailInfo(item: SearchListCellEntity) -> Effect<Action> {
-    return .run { send in
-      do {
-        let detail = try await flowerSpotClient.getFlowerSpotDetail(id: item.id)
-        try await searchClient.saveRecentSearchItem(item: item)
+        guard let id = item.flowerSpotId else { return }
+        let detail = try await flowerSpotClient.getFlowerSpotDetail(id: id)
+        
         await MainActor.run {
+          send(.updateRecentSearch(item))
           send(.searchBarFocused(false))
           send(.fetchSearchResult(detail))
         }
@@ -203,6 +186,30 @@ extension SearchFeature.Core {
       } catch {
         print(error.localizedDescription)
       }
+    }
+  }
+  
+  private func fetchKeywordSearch(keyword: String) -> Effect<Action> {
+    return .run { send in
+      do {
+        let result = try await searchClient.fetchKeywordSearch(keyword: keyword)
+        await MainActor.run {
+          send(.updateSearchResults(result))
+        }
+      } catch let error as NetworkError {
+        print(error.errorDescription)
+      } catch let error as FoundationError {
+        print(error.errorDescription)
+      } catch {
+        print(error.localizedDescription)
+      }
+      
+    }
+  }
+  
+  private func updateRecentSearch(item: PlaceSearchEntity) -> Effect<Action> {
+    return .run { send in
+      try await searchClient.saveRecentSearchItem(item: item)
     }
   }
 }
