@@ -10,8 +10,8 @@ import SwiftUI
 
 public struct CategoryButton: View {
   
-  var title: String
-  var icon: ImageSet?
+  private var title: String
+  private var icon: ImageSet?
   var isActive: Bool
   
   public init(
