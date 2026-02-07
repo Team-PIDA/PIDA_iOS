@@ -161,7 +161,7 @@ public struct FlowerSpotDetailLargeContentView: View {
             .foregroundColor(ColorSet.Text.Primary)
 
           Text("·")
-            .fontStyle(FontSet.Label.label2)
+            .fontStyle(FontSet.Caption.caption1)
             .foregroundColor(ColorSet.Text.Secondary)
 
           if let blooming = BloomStatus(rawValue: store.flowerSpotData.bloomingStatus) {
@@ -185,7 +185,7 @@ public struct FlowerSpotDetailLargeContentView: View {
           Icon(image: .distance)
             .size(.small)
             .foregroundColor(ColorSet.Icon.Secondary)
-          Text("내 위치로부터 \(String(format: "%.1f", store.distance)) km")
+          Text(headerDistanceText)
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }
@@ -226,7 +226,7 @@ public struct FlowerSpotDetailLargeContentView: View {
     VStack(alignment: .leading, spacing: .Number14) {
       VStack(alignment: .leading, spacing: .Number8) {
         Text("위치")
-          .fontStyle(FontSet.Heading.heading2)
+          .fontStyle(FontSet.Heading.heading3)
           .foregroundColor(ColorSet.Text.Primary)
 
         HStack(spacing: .Number4) {
@@ -249,8 +249,7 @@ public struct FlowerSpotDetailLargeContentView: View {
           }
         }
 
-        let walkingMinutes = Int((store.distance / 5.0) * 60)
-        Text("현재 위치에서 걸어서 약 \(walkingMinutes)분 (\(String(format: "%.1f", store.distance))km)")
+        Text(walkingTimeText)
           .fontStyle(FontSet.Title.title4)
           .foregroundColor(ColorSet.Text.Accent)
       }
@@ -362,7 +361,34 @@ public struct FlowerSpotDetailLargeContentView: View {
     }
     .background(
       Color.white
-        .shadow(color: .black.opacity(0.1), radius: 8, y: -4)
+        .shadow(color: .black.opacity(0.16), radius: 8)
     )
+  }
+
+  // MARK: - Distance Formatting
+
+  private var formattedDistance: String {
+    if store.distance < 1.0 {
+      return "\(Int(store.distance * 1000))m"
+    } else {
+      return String(format: "%.1f", store.distance) + "km"
+    }
+  }
+
+  private var headerDistanceText: String {
+    if store.distance < 1.0 {
+      return "내 위치로부터 \(formattedDistance)이내"
+    } else {
+      return "내 위치로부터 \(formattedDistance)"
+    }
+  }
+
+  private var walkingTimeText: String {
+    let walkingMinutes = max(1, Int((store.distance / 5.0) * 60))
+    if store.distance < 1.0 {
+      return "현재 위치에서 걸어서 \(walkingMinutes)분 (\(formattedDistance) 이내)"
+    } else {
+      return "현재 위치에서 걸어서 \(walkingMinutes)분 (\(formattedDistance))"
+    }
   }
 }
