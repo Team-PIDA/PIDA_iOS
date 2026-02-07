@@ -11,13 +11,17 @@ import SwiftUI
 public struct Icon: View {
   
   public var image: ImageSet
-  public var size: IconSize = .large
+  public var size: IconSize
   public var color: Color = ColorSet.Icon.Primary
   
   public init(
-    image: ImageSet
+    image: ImageSet,
+    size: IconSize = .large,
+    color: Color = ColorSet.Icon.Primary
   ) {
     self.image = image
+    self.size = size
+    self.color = color
   }
   
   public var body: some View {
