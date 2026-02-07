@@ -177,8 +177,9 @@ public struct FlowerSpotDetailLargeContentView: View {
         }
       }
 
-      Divider()
-        .background(ColorSet.Border.Secondary)
+      Rectangle()
+        .fill(ColorSet.Background.Tertiary)
+        .frame(height: 1)
 
       VStack(alignment: .leading, spacing: .Number6) {
         HStack(spacing: .Number4) {
