@@ -7,10 +7,19 @@
 //
 
 import ComposableArchitecture
+import OSLog
+
+public enum LogLevel: Sendable {
+  case debug
+  case info
+  case notice
+  case error
+  case fault
+}
 
 @DependencyClient
 public struct LoggerClient: Sendable {
-  public var execute: @Sendable () async throws -> Void
+  public var log: @Sendable (_ message: String, _ level: LogLevel) -> Void
 }
 
 public extension DependencyValues {
