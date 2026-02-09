@@ -7,10 +7,30 @@
 //
 
 import ComposableArchitecture
+import OSLog
 
 extension LoggerClient: DependencyKey {
   public static var liveValue: Self {
+    let logger = OSLog(subsystem: "com.pida.me", category: "PIDA")
     
-    return .init()
+    return .init(
+      log: { message, level in
+        let osLogType: OSLogType
+        switch level {
+        case .debug:
+          osLogType = .debug
+        case .info:
+          osLogType = .info
+        case .notice:
+          osLogType = .default
+        case .error:
+          osLogType = .error
+        case .fault:
+          osLogType = .fault
+        }
+        
+        os_log("%{public}@", log: logger, type: osLogType, message)
+      }
+    )
   }
 }
