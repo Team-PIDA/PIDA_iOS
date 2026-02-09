@@ -91,6 +91,20 @@ extension APIClient {
     throw DownloadError.timeout(timeout)
   }
   
+  static func sendRequestLog(_ request: URLRequest) {
+    @Dependency(\.loggerClient) var loggerClient
+    var message = """
+    🚀 [\(request.httpMethod ?? "none")] \(request.url?.absoluteString ?? "none")
+    """
+    
+    if let body = request.httpBody,
+       let bodyString = String(data: body, encoding: .utf8) {
+      message += "\n- Body: \(bodyString)"
+    }
+    
+    loggerClient.log(message: message, level: .info)
+  }
+  
   static func responseSuccess<R>(
     _ response: APIResponse<R>,
     endpoint: any APIRequestable
@@ -98,14 +112,13 @@ extension APIClient {
     @Dependency(\.loggerClient) var loggerClient
     
     let message = """
-          ==========================================
-          ============== ✅ SUCCESS ================
-          ✔️ URL: \(endpoint.path)
-          ✔️ Data: \(response.data)
-          ==========================================
-          """
+    ✅ [\(response.status)] \(endpoint.method) \(endpoint.path)
+    - TimeStamp: \(response.timestamp)
+    - Data: \(response.data)
+    """
     loggerClient.log(message, .info)
   }
+  
   
   static func throwError(
     _ error: Error,
@@ -125,7 +138,6 @@ extension APIClient {
     }
     
     let message = """
-          =========================================
           ============== 🚨 ERROR==================
           ✔️ URL: \(endpoint?.path ?? "N/A")
           ✔️ Message: \(description)
