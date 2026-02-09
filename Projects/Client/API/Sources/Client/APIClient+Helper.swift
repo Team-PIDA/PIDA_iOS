@@ -46,6 +46,8 @@ extension APIClient {
           code: errorResponse.status,
           className: errorResponse.data.errorClassName
         ),
+        url: response.url?.absoluteString,
+        errorResponse: errorResponse,
         endpoint: endpoint
       )
     default:
@@ -122,6 +124,8 @@ extension APIClient {
   
   static func throwError(
     _ error: Error,
+    url: String? = nil,
+    errorResponse: ErrorResponse? = nil,
     endpoint: (any APIRequestable)? = nil
   ) -> Error {
     @Dependency(\.loggerClient) var loggerClient
@@ -137,13 +141,26 @@ extension APIClient {
       description = error.errorDescription
     }
     
-    let message = """
-          ============== 🚨 ERROR==================
-          ✔️ URL: \(endpoint?.path ?? "N/A")
-          ✔️ Message: \(description)
-          =========================================
-          """
-    loggerClient.log(message, .error)
+    guard let endpoint = endpoint else {
+      loggerClient.log(message: "🚨 \(description)", level: .error)
+      return error
+    }
+    
+    var logMessage = "🚨 [Error] \(endpoint.path)"
+    if let errorResponse = errorResponse {
+      logMessage += "\n- TimeStamp: \(errorResponse.timestamp)"
+      logMessage += "\n- Status: \(errorResponse.status)"
+    }
+    logMessage += "\n- Headers: \(endpoint.headers)"
+    if let url = url {
+      logMessage += "\n- URL: \(url)"
+    }
+    logMessage += "\n- Method: \(endpoint.method)"
+    if let parameters = endpoint.parameters {
+      logMessage += "\n- Parameters: \(parameters)"
+    }
+    logMessage += "\n- Message: \(description)"
+    loggerClient.log(logMessage, .error)
     return error
   }
 }
