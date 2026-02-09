@@ -8,6 +8,8 @@
 
 import Foundation
 import Shared
+import LoggerClient
+import ComposableArchitecture
 
 extension APIClient {
   static func handleResponse<R: Decodable & Sendable>(
@@ -93,19 +95,24 @@ extension APIClient {
     _ response: APIResponse<R>,
     endpoint: any APIRequestable
   ) {
-    print("""
+    @Dependency(\.loggerClient) var loggerClient
+    
+    let message = """
           ==========================================
           ============== ✅ SUCCESS ================
           ✔️ URL: \(endpoint.path)
           ✔️ Data: \(response.data)
           ==========================================
-          """)
+          """
+    loggerClient.log(message, .info)
   }
   
   static func throwError(
     _ error: Error,
     endpoint: (any APIRequestable)? = nil
   ) -> Error {
+    @Dependency(\.loggerClient) var loggerClient
+    
     var description: String = error.localizedDescription
     if let error = error as? NetworkError {
       description = error.errorDescription
@@ -116,13 +123,15 @@ extension APIClient {
     } else if let error = error as? DownloadError {
       description = error.errorDescription
     }
-    print("""
+    
+    let message = """
           =========================================
           ============== 🚨 ERROR==================
           ✔️ URL: \(endpoint?.path ?? "N/A")
           ✔️ Message: \(description)
           =========================================
-          """)
+          """
+    loggerClient.log(message, .error)
     return error
   }
 }
