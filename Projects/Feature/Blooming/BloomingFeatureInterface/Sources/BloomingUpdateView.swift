@@ -168,10 +168,7 @@ public struct BloomingUpdateView: View {
         Text("개화상태는 어땠나요?")
           .foregroundStyle(ColorSet.Text.Primary)
       }
-      .fontStyle(FontSet.Heading.heading1)
-      Text("\(store.streetName)의 개화 상태를 기록해주세요")
-        .fontStyle(FontSet.Body.body3)
-        .foregroundStyle(ColorSet.Text.Secondary)
+      .fontStyle(FontSet.Heading.heading2)
     }
     
   }
@@ -199,7 +196,7 @@ public struct BloomingUpdateView: View {
             .resizable()
             .scaledToFill()
             .frame(width: .Number100, height: .Number100)
-            .clipShape(RoundedRectangle(cornerRadius: .Number16))
+            .clipShape(RoundedRectangle(cornerRadius: .Number10))
             .overlay(alignment: .topTrailing) {
               PIDIconButton {
                 Icon(image: .close)

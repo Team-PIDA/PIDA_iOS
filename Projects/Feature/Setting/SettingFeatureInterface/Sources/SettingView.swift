@@ -88,9 +88,11 @@ extension SettingView {
           if store.isLoggedIn {
             HStack(spacing: .Number0) {
               Text("환영해요! ")
+                .fontStyle(FontSet.Body.body2)
               Text(store.username)
                 .fontStyle(FontSet.Title.title3)
               Text("님")
+                .fontStyle(FontSet.Body.body2)
             }
           } else {
             Text("로그인 하기")
