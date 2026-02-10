@@ -33,6 +33,10 @@ extension LoggerClient: DependencyKey {
         }
         
         os_log("%{public}@", log: logger, type: osLogType, message)
+      },
+      logError: { errorInfo in
+        let message = errorInfo.formatLogMessage()
+        Self.liveValue.log(message, .error)
       }
     )
   }

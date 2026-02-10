@@ -66,7 +66,7 @@ extension APIClient {
     do {
       guard let newToken = try await Self.refreshToken() else {
         throw throwError(TokenError.expiredToken, endpoint: endpoint)
-      }
+    }
       // 기존 작업 재요청
       var newRequest = try endpoint.toURLRequest()
       newRequest.setValue(
@@ -130,36 +130,28 @@ extension APIClient {
   ) -> Error {
     @Dependency(\.loggerClient) var loggerClient
     
-    var description: String = error.localizedDescription
-    if let error = error as? NetworkError {
-      description = error.errorDescription
-    } else if let error = error as? FoundationError {
-      description = error.errorDescription
-    } else if let error = error as? TokenError {
-      description = error.errorDescription
-    } else if let error = error as? DownloadError {
-      description = error.errorDescription
-    }
-    
     guard let endpoint = endpoint else {
-      loggerClient.log(message: "🚨 \(description)", level: .error)
+      let errorInfo = ErrorLogInfo(
+        error: error,
+        path: "Unknown",
+        headers: "none"
+      )
+      loggerClient.logError(errorInfo)
       return error
     }
     
-    var logMessage = "🚨 [Error] \(endpoint.path)"
-    if let errorResponse = errorResponse {
-      logMessage = "🚨 [\(errorResponse.status)] \(endpoint.method) \(endpoint.path)"
-      logMessage += "\n- TimeStamp: \(errorResponse.timestamp)"
-    }
-    if let url = url {
-      logMessage += "\n- URL: \(url)"
-    }
-    if let parameters = endpoint.parameters {
-      logMessage += "\n- Parameters: \(parameters)"
-    }
-    logMessage += "\n- Headers: \(endpoint.headers)"
-    logMessage += "\n- Message: \(description)"
-    loggerClient.log(logMessage, .error)
+    let errorInfo = ErrorLogInfo(
+      error: error,
+      path: endpoint.path,
+      method: endpoint.method.rawValue,
+      statusCode: errorResponse?.status,
+      timestamp: errorResponse?.timestamp,
+      url: url,
+      parameters: endpoint.parameters.map { String(describing: $0) },
+      headers: String(describing: endpoint.headers)
+    )
+    
+    loggerClient.logError(errorInfo)
     return error
   }
 }

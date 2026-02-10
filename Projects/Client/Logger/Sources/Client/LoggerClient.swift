@@ -20,6 +20,7 @@ public enum LogLevel: Sendable {
 @DependencyClient
 public struct LoggerClient: Sendable {
   public var log: @Sendable (_ message: String, _ level: LogLevel) -> Void
+  public var logError: @Sendable (ErrorLogInfo) -> Void
 }
 
 public extension DependencyValues {
