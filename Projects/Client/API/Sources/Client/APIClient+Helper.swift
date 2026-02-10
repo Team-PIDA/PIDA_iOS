@@ -111,12 +111,15 @@ extension APIClient {
   ) {
     @Dependency(\.loggerClient) var loggerClient
     
-    let message = """
-    ✅ [\(response.status)] \(endpoint.method) \(endpoint.path)
-    - TimeStamp: \(response.timestamp)
-    - Data: \(response.data)
-    """
-    loggerClient.log(message, .info)
+    let responseInfo = ResponseLogInfo(
+      status: response.status,
+      method: endpoint.method.rawValue,
+      path: endpoint.path,
+      timestamp: response.timestamp,
+      data: String(describing: response.data)
+    )
+    
+    loggerClient.logLoggable(responseInfo, .info)
   }
   
   

@@ -2,7 +2,7 @@
 //  Loggable.swift
 //  LoggerClient
 //
-//  Created by Claude
+//  Created by Jiyeon
 //  Copyright © com.pida.me. All rights reserved.
 //
 
