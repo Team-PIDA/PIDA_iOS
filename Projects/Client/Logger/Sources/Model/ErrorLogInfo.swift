@@ -2,11 +2,12 @@
 //  ErrorLogInfo.swift
 //  LoggerClient
 //
-//  Created by Claude
+//  Created by Jiyeon
 //  Copyright © com.pida.me. All rights reserved.
 //
 
 import Foundation
+import Shared
 
 public struct ErrorLogInfo: Sendable {
   public let error: Error
@@ -70,6 +71,16 @@ public struct ErrorLogInfo: Sendable {
   }
   
   private func formatErrorDescription(_ error: Error) -> String {
-    return error.localizedDescription
+    if let error = error as? NetworkError {
+      return error.errorDescription
+    } else if let error = error as? FoundationError {
+      return error.errorDescription
+    } else if let error = error as? TokenError {
+      return error.errorDescription
+    } else if let error = error as? DownloadError {
+      return error.errorDescription
+    } else {
+      return error.localizedDescription
+    }
   }
 }
