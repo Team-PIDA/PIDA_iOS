@@ -1,0 +1,13 @@
+//
+//  Loggable.swift
+//  LoggerClient
+//
+//  Created by Claude
+//  Copyright © com.pida.me. All rights reserved.
+//
+
+import Foundation
+
+public protocol Loggable {
+  func logMessage() -> String
+}

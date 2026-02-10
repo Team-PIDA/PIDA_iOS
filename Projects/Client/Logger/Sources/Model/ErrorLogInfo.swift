@@ -9,7 +9,7 @@
 import Foundation
 import Shared
 
-public struct ErrorLogInfo: Sendable {
+public struct ErrorLogInfo: Sendable, Loggable {
   public let error: Error
   public let path: String
   public let method: String?
@@ -39,7 +39,7 @@ public struct ErrorLogInfo: Sendable {
     self.headers = headers
   }
   
-  public func formatLogMessage() -> String {
+  public func logMessage() -> String {
     let errorMessage = formatErrorDescription(error)
     
     if let method = method, let statusCode = statusCode {

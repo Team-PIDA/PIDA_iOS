@@ -136,7 +136,7 @@ extension APIClient {
         path: "Unknown",
         headers: "none"
       )
-      loggerClient.logError(errorInfo)
+      loggerClient.logLoggable(errorInfo, .error)
       return error
     }
     
@@ -151,7 +151,7 @@ extension APIClient {
       headers: String(describing: endpoint.headers)
     )
     
-    loggerClient.logError(errorInfo)
+    loggerClient.logLoggable(errorInfo, .error)
     return error
   }
 }
