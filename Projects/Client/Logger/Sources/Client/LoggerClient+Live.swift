@@ -11,7 +11,10 @@ import OSLog
 
 extension LoggerClient: DependencyKey {
   public static var liveValue: Self {
-    let logger = OSLog(subsystem: "com.pida.me", category: "PIDA")
+    let logger = OSLog(
+      subsystem: Bundle.main.bundleIdentifier ?? "com.pida.me", 
+      category: "PIDA"
+    )
     
     return .init(
       log: { message, level in
