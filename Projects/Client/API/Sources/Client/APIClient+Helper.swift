@@ -148,17 +148,16 @@ extension APIClient {
     
     var logMessage = "🚨 [Error] \(endpoint.path)"
     if let errorResponse = errorResponse {
+      logMessage = "🚨 [\(errorResponse.status)] \(endpoint.method) \(endpoint.path)"
       logMessage += "\n- TimeStamp: \(errorResponse.timestamp)"
-      logMessage += "\n- Status: \(errorResponse.status)"
     }
-    logMessage += "\n- Headers: \(endpoint.headers)"
     if let url = url {
       logMessage += "\n- URL: \(url)"
     }
-    logMessage += "\n- Method: \(endpoint.method)"
     if let parameters = endpoint.parameters {
       logMessage += "\n- Parameters: \(parameters)"
     }
+    logMessage += "\n- Headers: \(endpoint.headers)"
     logMessage += "\n- Message: \(description)"
     loggerClient.log(logMessage, .error)
     return error
