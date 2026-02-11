@@ -127,11 +127,7 @@ extension APIClient {
     @Dependency(\.loggerClient) var loggerClient
     
     guard let endpoint = endpoint else {
-      let errorInfo = ErrorLogInfo(
-        error: error,
-        path: "Unknown",
-        headers: "none"
-      )
+      let errorInfo = ErrorLogInfo(error: error)
       loggerClient.logLoggable(errorInfo, .error)
       return error
     }

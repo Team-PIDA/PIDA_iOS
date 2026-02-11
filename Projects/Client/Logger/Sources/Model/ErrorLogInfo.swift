@@ -21,22 +21,22 @@ public struct ErrorLogInfo: Sendable, Loggable {
   
   public init(
     error: Error,
-    path: String,
+    path: String? = nil,
     method: String? = nil,
     statusCode: Int? = nil,
     timestamp: String? = nil,
     url: String? = nil,
     parameters: String? = nil,
-    headers: String
+    headers: String? = nil
   ) {
     self.error = error
-    self.path = path
+    self.path = path ?? "none"
     self.method = method
     self.statusCode = statusCode
     self.timestamp = timestamp
     self.url = url
     self.parameters = parameters
-    self.headers = headers
+    self.headers = headers ?? "none"
   }
   
   public func logMessage() -> String {
