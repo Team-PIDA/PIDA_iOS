@@ -9,18 +9,16 @@
 import Foundation
 
 public struct RequestLogInfo: Sendable, Loggable {
-  public let method: String
-  public let url: String
-  public let body: String?
+  let method: String
+  let url: String
+  let body: String?
   
   public init(
-    method: String,
-    url: String,
-    body: String? = nil
+    request: URLRequest
   ) {
-    self.method = method
-    self.url = url
-    self.body = body
+    self.method = request.httpMethod ?? "none"
+    self.url = request.url?.absoluteString ?? "none"
+    self.body = request.httpBody.flatMap { String(data: $0, encoding: .utf8) }
   }
   
   public func logMessage() -> String {

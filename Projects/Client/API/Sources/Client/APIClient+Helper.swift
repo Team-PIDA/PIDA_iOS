@@ -96,12 +96,7 @@ extension APIClient {
   static func sendRequestLog(_ request: URLRequest) {
     @Dependency(\.loggerClient) var loggerClient
     
-    let requestInfo = RequestLogInfo(
-      method: request.httpMethod ?? "none",
-      url: request.url?.absoluteString ?? "none",
-      body: request.httpBody.flatMap { String(data: $0, encoding: .utf8) }
-    )
-    
+    let requestInfo = RequestLogInfo(request: request)
     loggerClient.logLoggable(requestInfo, .info)
   }
   
