@@ -86,7 +86,7 @@ extension FlowerSpotDetailFeature {
       // MARK: - Navigation (PhotoGallery)
 
       case .pushToPhotoGallery:
-        state.path.append(.photoGallery)
+        state.isPresentPhotoGallery = true
         // details_gallery_start 이벤트 트래킹
         analyticsClient.track(
           DetailsEvent.galleryStart(
@@ -96,7 +96,7 @@ extension FlowerSpotDetailFeature {
         return .none
 
       case .popFromPhotoGallery:
-        state.path.removeLast()
+        state.isPresentPhotoGallery = false
         return .none
 
       // MARK: - Presentation (PhotoViewer)

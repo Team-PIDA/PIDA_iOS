@@ -194,10 +194,7 @@ extension MapFeature {
         // MARK: - Delegate
 
       case .pushToSetting:
-        return .concatenate(
-          .send(.markerTapped(id: nil)),
-          .send(.delegate(.pushToSetting))
-        )
+        return .send(.delegate(.pushToSetting))
 
       // MARK: - FlowerSpotDetailFeature Delegate 처리
       case let .flowerSpotDetail(.delegate(action)):

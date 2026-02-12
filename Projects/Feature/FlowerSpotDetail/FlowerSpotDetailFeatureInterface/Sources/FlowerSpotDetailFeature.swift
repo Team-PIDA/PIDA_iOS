@@ -22,12 +22,6 @@ public struct FlowerSpotDetailFeature {
     self.reducer = reducer
   }
 
-  // MARK: - Path (내부 NavigationStack용)
-
-  public enum Path: Hashable {
-    case photoGallery
-  }
-
   // MARK: - PhotoViewer State
 
   public struct PhotoViewerState: Equatable {
@@ -69,7 +63,7 @@ public struct FlowerSpotDetailFeature {
 
     // MARK: - Navigation State
 
-    public var path: [Path] = []
+    public var isPresentPhotoGallery: Bool = false
     public var photoViewer: PhotoViewerState? = nil
     public var isPresentPhotoViewer: Bool = false
 

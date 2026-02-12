@@ -34,45 +34,46 @@ public struct FlowerSpotDetailLargeContentView: View {
   }
 
   public var body: some View {
-    NavigationStack(path: $store.path) {
-      ZStack {
-        VStack(spacing: .Number0) {
-          navigationBar
-          mainScrollContent
-          floatingButton
-        }
-
-        ToastView(message: $store.toastMessage)
-          .padding(.bottom, .Number80)
-
-        if store.isShowLoginAlert {
-          PIDAlert(
-            type: .login,
-            closeAction: { store.send(.alertCancelTapped) },
-            acceptAction: { store.send(.alertAcceptTapped) }
-          )
-        }
+    ZStack {
+      VStack(spacing: .Number0) {
+        navigationBar
+        mainScrollContent
+        floatingButton
       }
-      .navigationDestination(for: FlowerSpotDetailFeature.Path.self) { path in
-        switch path {
-        case .photoGallery:
-          PhotoGalleryView(
-            images: store.flowerSpotData.images,
-            prefetchedImages: store.prefetchedImages,
-            title: store.flowerSpotData.streetName,
-            onImageTapped: { index in
-              store.send(.presentPhotoViewer(index: index))
-            },
-            onBackTapped: {
-              store.send(.popFromPhotoGallery)
-            },
-            onImageLoaded: { url, data in
-              store.send(.cacheImage(url: url, data: data))
-            }
-          )
-        }
+
+      ToastView(message: $store.toastMessage)
+        .padding(.bottom, .Number80)
+
+      if store.isShowLoginAlert {
+        PIDAlert(
+          type: .login,
+          closeAction: { store.send(.alertCancelTapped) },
+          acceptAction: { store.send(.alertAcceptTapped) }
+        )
+      }
+
+      if store.isPresentPhotoGallery {
+        PhotoGalleryView(
+          images: store.flowerSpotData.images,
+          prefetchedImages: store.prefetchedImages,
+          title: store.flowerSpotData.streetName,
+          onImageTapped: { index in
+            store.send(.presentPhotoViewer(index: index))
+          },
+          onBackTapped: {
+            store.send(.popFromPhotoGallery)
+          },
+          onImageLoaded: { url, data in
+            store.send(.cacheImage(url: url, data: data))
+          }
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.top, UIApplication.shared.safeAreaTopInset)
+        .background(ColorSet.Background.Primary)
+        .transition(.move(edge: .trailing))
       }
     }
+    .animation(.easeInOut(duration: 0.25), value: store.isPresentPhotoGallery)
     .fullScreenCover(isPresented: $store.isPresentPhotoViewer, onDismiss: {
       store.send(.cleanupPhotoViewer)
     }) {
@@ -118,7 +119,7 @@ public struct FlowerSpotDetailLargeContentView: View {
           }
       }
     )
-    .padding(.top, .Number20)
+    .padding(.top, UIApplication.shared.safeAreaTopInset)
   }
 
   // MARK: - Main Scroll Content
