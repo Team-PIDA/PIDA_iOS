@@ -38,16 +38,20 @@ public struct SearchResultList: View {
               .foregroundStyle(ColorSet.Text.Tertiary)
           }
         }
+        .frame(maxHeight: .infinity, alignment: .center)
         Spacer()
         if let subInfo = item.subInfo {
           Text(subInfo)
             .fontStyle(FontSet.Caption.caption1)
             .foregroundStyle(ColorSet.Text.Tertiary)
+            .frame(maxHeight: .infinity, alignment: .center)
         }
       }
+      .frame(maxHeight: .infinity)
       .padding(.vertical, .Number12)
       BorderView(size: .long)
     }
+    .frame(height: .Number66)
     .contentShape(Rectangle())
     .padding(.horizontal, .Number16)
     .onTapGesture {
