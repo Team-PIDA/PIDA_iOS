@@ -69,8 +69,7 @@ public struct FlowerSpotImageGalleryView: View {
       .frame(height: imageHeight)
       .frame(maxWidth: .infinity)
       .clipped()
-      .cornerRadius(10)
-      
+
       if let dateText = image.createdAt?.photoDateText() {
         // 하단 그라디언트 오버레이 + 텍스트
         VStack {
@@ -98,6 +97,7 @@ public struct FlowerSpotImageGalleryView: View {
         }
       }
     }
+    .cornerRadius(10)
   }
 
   // MARK: - Two Images (2장)
@@ -118,8 +118,7 @@ public struct FlowerSpotImageGalleryView: View {
           )
           .frame(width: imageWidth, height: imageHeight)
           .clipped()
-          .cornerRadius(10)
-          
+
             if let dateText = image.createdAt?.photoDateText() {
               // 하단 그라디언트 오버레이 + 텍스트
               VStack {
@@ -147,6 +146,7 @@ public struct FlowerSpotImageGalleryView: View {
               }
             }
           }
+          .cornerRadius(10)
         }
       }
     }
@@ -170,8 +170,7 @@ public struct FlowerSpotImageGalleryView: View {
             )
             .frame(width: imageHeight, height: imageHeight)
             .clipped()
-            .cornerRadius(10)
-            
+
             if let dateText = image.createdAt?.photoDateText() {
               // 하단 그라디언트 오버레이 + 텍스트
               VStack {
@@ -199,6 +198,7 @@ public struct FlowerSpotImageGalleryView: View {
               }
             }
           }
+          .cornerRadius(10)
         }
 
         // 더보기 버튼
