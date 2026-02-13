@@ -49,7 +49,7 @@ public struct SearchRegionListView: View {
           .padding(.bottom, .Number33)
       } else {
         ScrollView {
-          LazyVStack(spacing: .Number12) {
+          LazyVStack(spacing: .Number0) {
             ForEach(store.flowerSpots, id: \.id) { flowerSpot in
               RegionListItemView(
                 flowerSpot: flowerSpot,

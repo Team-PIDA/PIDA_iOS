@@ -24,7 +24,7 @@ public struct RegionListItemView: View {
     self.onTap = onTap
   }
   public var body: some View {
-    VStack(spacing: .Number12) {
+    VStack(alignment: .leading, spacing: .Number0) {
       HStack(alignment: .center, spacing: .Number12) {
         contentView
         
@@ -32,15 +32,12 @@ public struct RegionListItemView: View {
           RemoteImageView(urlString: previewUrl)
             .frame(width: 72, height: 72)
             .clipped()
-            .cornerRadius(16)
+            .cornerRadius(.Number16)
         }
       }
-      
-      Rectangle()
-        .frame(height: 1)
-        .foregroundStyle(ColorSet.Border.Secondary)
+      .padding(.vertical, .Number12)
+      BorderView(size: .long)
     }
-    .padding(.top, .Number12)
     .contentShape(Rectangle())
     .onTapGesture {
       onTap(flowerSpot)
@@ -50,7 +47,7 @@ public struct RegionListItemView: View {
   @ViewBuilder
   private var contentView: some View {
     HStack {
-      VStack(alignment: .leading, spacing: 0) {
+      VStack(alignment: .leading, spacing: .Number0) {
         Text(flowerSpot.streetName)
           .fontStyle(FontSet.Body.body2)
           .foregroundStyle(ColorSet.Text.Primary)
@@ -63,7 +60,7 @@ public struct RegionListItemView: View {
           }
           TagView(text: flowerSpot.recentlyVisitedCountString)
         }
-        .padding(.top, 8)
+        .padding(.top, .Number8)
         
       }
       Spacer()
