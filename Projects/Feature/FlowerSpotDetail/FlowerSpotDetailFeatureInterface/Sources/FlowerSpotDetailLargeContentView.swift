@@ -134,6 +134,7 @@ public struct FlowerSpotDetailLargeContentView: View {
         sectionDivider
         flowerInfoSection
       }
+      .background(ScrollViewConfigurator(bounces: false))
     }
     .background(ColorSet.Background.Primary)
   }

@@ -98,7 +98,7 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
     .background(ColorSet.Background.Primary)
     .cornerRadius(.Number16, corners: [.topLeft, .topRight])
     .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
-    .gesture(shouldEnableDrag ? dragGesture() : nil)
+    .simultaneousGesture(shouldEnableDrag ? dragGesture() : nil)
   }
 
   /// 드래그 활성화 여부 결정
