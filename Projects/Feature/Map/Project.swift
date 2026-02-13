@@ -19,6 +19,7 @@ let project = Project.buildFeature(
     .Client.Location,
     .Client.Search,
     .Client.Analytics,
-    .SPM.NMap
+    .NMapsMap,
+    .NMapsGeometry
   ]
 )

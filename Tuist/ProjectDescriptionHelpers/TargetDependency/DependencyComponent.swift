@@ -50,7 +50,6 @@ extension TargetDependency {
 extension TargetDependency {
   public struct SPM: TargetDependencyFactory {
     public static let TCA = Self.project(.spm(.ComposableArchitecture))
-    public static let NMap = Self.project(.spm(.NMapsMap))
     public static let DotLottie = Self.project(.spm(.DotLottie))
     public static let FirebaseCore = Self.project(.spm(.FirebaseCore))
     public static let FirebaseMessaging = Self.project(.spm(.FirebaseMessaging))
@@ -59,13 +58,6 @@ extension TargetDependency {
 }
 
 extension TargetDependency {
-  // XCFramework 지원
-  public struct XCFrameworks {
-    /// XCFramework를 동적 이름으로 생성
-    /// - Parameter name: XCFramework 이름
-    /// - Returns: XCFramework TargetDependency
-    public static func xcframework(named name: String) -> TargetDependency {
-      .xcframework(path: .relativeToRoot("Frameworks/\(name).xcframework"))
-    }
-  }
+  public static let NMapsMap = xcframework(path: .relativeToRoot("Frameworks/NMapsMap.xcframework"))
+  public static let NMapsGeometry = xcframework(path: .relativeToRoot("Frameworks/NMapsGeometry.xcframework"))
 }
