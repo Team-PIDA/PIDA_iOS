@@ -196,7 +196,12 @@ extension MapFeature {
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
 
-      // MARK: - FlowerSpotDetailFeature Delegate 처리
+      // MARK: - FlowerSpotDetailFeature 처리
+
+      case let .flowerSpotDetail(.detailResponse(item, _)):
+        state.flowerSpots[item.id] = item
+        return .none
+
       case let .flowerSpotDetail(.delegate(action)):
         switch action {
         case .dismiss:
