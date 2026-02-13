@@ -147,6 +147,7 @@ public struct FlowerSpotDetailFeature {
     case presentToBlooming(id: Int, streetName: String, distance: Double?)
     case presentToLogin(id: Int)
     case showOnMap(FlowerSpotEntity)
+    case didUpdateFlowerSpot(FlowerSpotEntity)
   }
 
   public var body: some ReducerOf<Self> {

@@ -188,16 +188,20 @@ extension FlowerSpotDetailFeature {
           state.distance = .zero
         }
         checkLoadingComplete(&state)
-        // 이미지 프리페치 시작
+        // 이미지 프리페치 시작 + 부모에게 최신 데이터 전달
         if shouldUpdateMap {
           // 딥링크 진입: 지도 위치 이동 + 마커 표시
           return .concatenate(
             .send(.prefetchImages),
-            .send(.delegate(.showOnMap(item)))
+            .send(.delegate(.showOnMap(item))),
+            .send(.delegate(.didUpdateFlowerSpot(item)))
           )
         } else {
-          // 마커 탭/검색: 프리페치만
-          return .send(.prefetchImages)
+          // 마커 탭/검색: 프리페치 + 부모 동기화
+          return .concatenate(
+            .send(.prefetchImages),
+            .send(.delegate(.didUpdateFlowerSpot(item)))
+          )
         }
 
       case let .bloomingResponse(item):
