@@ -196,7 +196,8 @@ extension MapFeature {
       case .pushToSetting:
         return .send(.delegate(.pushToSetting))
 
-      // MARK: - FlowerSpotDetailFeature Delegate 처리
+      // MARK: - FlowerSpotDetailFeature 처리
+
       case let .flowerSpotDetail(.delegate(action)):
         switch action {
         case .dismiss:
@@ -212,8 +213,12 @@ extension MapFeature {
           return .send(.delegate(.presentToLogin(id: id)))
 
         case let .showOnMap(flowerSpot):
-          state.mapSearch.searchResult = flowerSpot 
+          state.mapSearch.searchResult = flowerSpot
           return .send(.location(.moveLocation(flowerSpot.pinPoint)))
+
+        case let .didUpdateFlowerSpot(item):
+          state.flowerSpots[item.id] = item
+          return .none
         }
         
       case let .searchRegionList(.delegate(action)):

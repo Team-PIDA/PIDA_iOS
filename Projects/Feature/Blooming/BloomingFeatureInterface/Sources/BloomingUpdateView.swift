@@ -159,16 +159,19 @@ public struct BloomingUpdateView: View {
       VStack(alignment: .center, spacing: .Number0) {
         Text("오늘 방문한")
           .foregroundStyle(ColorSet.Text.Primary)
+          .fontStyle(FontSet.Heading.heading2)
         HStack(spacing: .Number0) {
           Text(store.streetName)
             .foregroundStyle(ColorSet.Text.Accent)
+            .fontStyle(FontSet.Heading.heading2)
           Text("의")
             .foregroundStyle(ColorSet.Text.Primary)
+            .fontStyle(FontSet.Heading.heading2)
         }
         Text("개화상태는 어땠나요?")
           .foregroundStyle(ColorSet.Text.Primary)
+          .fontStyle(FontSet.Heading.heading2)
       }
-      .fontStyle(FontSet.Heading.heading2)
     }
     
   }

@@ -83,14 +83,20 @@ struct MapViewRepresentable: UIViewRepresentable {
     }
     
     // 마커 데이터가 변경되었을 때 마커 업데이트
-    if !flowerPositions.isEmpty && context.coordinator.currentFlowerPositions != flowerPositions {
+    if context.coordinator.currentFlowerPositions != flowerPositions {
+      // 마커 ID 세트가 변경된 경우에만 카메라 이동 (데이터만 갱신된 경우 스킵)
+      let shouldMoveCamera = Set(context.coordinator.currentFlowerPositions.keys) != Set(flowerPositions.keys)
+
       // 기존 마커 삭제
       if !context.coordinator.markers.isEmpty {
         context.coordinator.deleteAllMarkers()
       }
-      // 새로운 마커 표시
-      presentMarkers(uiView, flowers: flowerPositions, context: context)
-      context.coordinator.currentFlowerPositions = flowerPositions
+
+      if !flowerPositions.isEmpty {
+        // 새로운 마커 표시
+        presentMarkers(uiView, flowers: flowerPositions, context: context, shouldMoveCamera: shouldMoveCamera)
+        context.coordinator.currentFlowerPositions = flowerPositions
+      }
     }
     
     // 마커 탭 이벤트 시
@@ -362,10 +368,17 @@ extension MapViewRepresentable {
   }
   
   /// 지도 위에 비활성화 마커를 표시하기 위한 메서드
-  private func presentMarkers(_ view: NMFNaverMapView, flowers: [Int: FlowerSpotEntity], context: Context) {
-    // 마커 중간지점으로 카메라 이동
-    let mid = averageCenter(of: flowers.values.map { $0.pinPoint })
-    moveCamera(view, to: mid, zoomLevel: view.mapView.cameraPosition.zoom)
+  private func presentMarkers(
+    _ view: NMFNaverMapView,
+    flowers: [Int: FlowerSpotEntity],
+    context: Context,
+    shouldMoveCamera: Bool = true
+  ) {
+    // 마커 중간지점으로 카메라 이동 (마커 ID 비교 확인 -> 현재 보이는 마커들)
+    if shouldMoveCamera {
+      let mid = averageCenter(of: flowers.values.map { $0.pinPoint })
+      moveCamera(view, to: mid, zoomLevel: view.mapView.cameraPosition.zoom)
+    }
     
     for pin in flowers {
       let position = pin.value.pinPoint

@@ -13,7 +13,7 @@ extension DesignKitFontFamily {
   public struct FontSet: Sendable {
     public struct Heading: Sendable {
       public static let heading1 = FontInfo(font: Pretendard.semiBold, size: 24, lineHeight: 1.4)
-      public static let heading2 = FontInfo(font: Pretendard.semiBold, size: 20, lineHeight: 1.4)
+      public static let heading2 = FontInfo(font: Pretendard.semiBold, size: 22, lineHeight: 1.4)
       public static let heading3 = FontInfo(font: Pretendard.semiBold, size: 18, lineHeight: 1.4)
       public static let heading4 = FontInfo(font: Pretendard.semiBold, size: 16, lineHeight: 1.4)
     }

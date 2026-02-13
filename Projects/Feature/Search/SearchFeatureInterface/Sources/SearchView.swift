@@ -77,11 +77,13 @@ extension SearchView {
         TouchArea(image: .back)
           .size(.extraLarge)
           .action {
-            store.send(.dismiss)
+            store.send(.backButtonTapped)
           }
       }
     )
-    
+    .onSubmit {
+      store.send(.searchBarReturnTapped)
+    }
     .padding(.horizontal, .Number16)
     .padding(.vertical, .Number8)
   }
@@ -91,12 +93,16 @@ extension SearchView {
       Spacer()
       VStack(alignment: .center, spacing: .Number8) {
         Image(asset: ImageSet.emptyResult.swiftUIImage)
-        Text("최근 검색 결과가 없습니다.")
-          .fontStyle(FontSet.Body.body3)
-          .foregroundStyle(ColorSet.Text.Secondary)
+        Text(
+          store.searchWord.isEmpty ?
+          "최근 검색 결과가 없습니다."
+          : "검색 결과가 없습니다."
+        )
+        .fontStyle(FontSet.Body.body3)
+        .foregroundStyle(ColorSet.Text.Secondary)
       }
       Spacer()
     }
-
+    
   }
 }
