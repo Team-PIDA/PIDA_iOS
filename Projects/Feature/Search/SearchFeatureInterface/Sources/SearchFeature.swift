@@ -41,6 +41,7 @@ public struct SearchFeature {
     case searchBarFocused(Bool)
     case configureSearchList
     case searchItem(String)
+    case backButtonTapped
     
     case updateSearchResults([PlaceSearchEntity])
     case showRecentList

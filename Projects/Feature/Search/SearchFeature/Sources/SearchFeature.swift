@@ -43,7 +43,7 @@ extension SearchFeature {
         // search_start 이벤트는 fetchRecentResult 완료 후 트래킹
         return .concatenate(
           .send(.configureSearchList),
-          .send(.searchBarFocused(true)),
+          .send(.searchBarFocused(state.searchWord.isEmpty)),
           .send(.fetchRecentResult)
         )
 
@@ -65,6 +65,14 @@ extension SearchFeature {
             scheduler: mainQueue,
             latest: true
           )
+        
+      case .backButtonTapped:
+        if state.searchWord.isEmpty {
+          return .send(.dismiss)
+        } else {
+          state.searchWord = ""
+          return .send(.showRecentList)
+        }
         
       case let .updateSearchResults(results):
         guard !state.showRecentList else {

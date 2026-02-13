@@ -77,7 +77,7 @@ extension SearchView {
         TouchArea(image: .back)
           .size(.extraLarge)
           .action {
-            store.send(.dismiss)
+            store.send(.backButtonTapped)
           }
       }
     )
