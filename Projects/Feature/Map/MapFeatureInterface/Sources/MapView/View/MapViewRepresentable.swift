@@ -83,14 +83,17 @@ struct MapViewRepresentable: UIViewRepresentable {
     }
     
     // 마커 데이터가 변경되었을 때 마커 업데이트
-    if !flowerPositions.isEmpty && context.coordinator.currentFlowerPositions != flowerPositions {
+    if context.coordinator.currentFlowerPositions != flowerPositions {
       // 기존 마커 삭제
       if !context.coordinator.markers.isEmpty {
         context.coordinator.deleteAllMarkers()
       }
-      // 새로운 마커 표시
-      presentMarkers(uiView, flowers: flowerPositions, context: context)
-      context.coordinator.currentFlowerPositions = flowerPositions
+      
+      if !flowerPositions.isEmpty {
+        // 새로운 마커 표시
+        presentMarkers(uiView, flowers: flowerPositions, context: context)
+        context.coordinator.currentFlowerPositions = flowerPositions
+      }
     }
     
     // 마커 탭 이벤트 시
