@@ -23,7 +23,7 @@ extension ProfileUpdateFeature {
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
       case .binding(\.changeName):
-        return .send(.checkValidNickName(state.changeName))
+        return .send(.checkValidNickName(state.changeName.trimmingCharacters(in: .whitespaces)))
 
       case .onAppear:
         if let nickname = UserDefaultsKeys.username {
@@ -45,7 +45,7 @@ extension ProfileUpdateFeature {
         return .none
 
       case .saveTapped:
-        return .send(.changeNickName(state.changeName))
+        return .send(.changeNickName(state.changeName.trimmingCharacters(in: .whitespaces)))
           .throttle(id: ID.throttle, for: 0.3, scheduler: mainQueue, latest: false)
 
       case let .checkValidNickName(nickname):
