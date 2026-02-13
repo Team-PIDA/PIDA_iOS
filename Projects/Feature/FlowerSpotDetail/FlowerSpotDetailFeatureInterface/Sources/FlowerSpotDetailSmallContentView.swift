@@ -25,8 +25,8 @@ public struct FlowerSpotDetailSmallContentView: View {
   }
 
   public var body: some View {
-    HStack(alignment: .top, spacing: .Number12) {
-      VStack(alignment: .leading, spacing: .Number8) {
+    HStack(alignment: .center, spacing: .Number12) {
+      VStack(alignment: .leading, spacing: .Number10) {
         titleSection
         tagSection
       }
@@ -41,8 +41,7 @@ public struct FlowerSpotDetailSmallContentView: View {
       }
     }
     .padding(.horizontal, .Number16)
-    .padding(.top, .Number8)
-    .padding(.bottom, .Number16)
+    .padding(.vertical, .Number20)
   }
 
   // MARK: - Title Section
@@ -58,7 +57,7 @@ public struct FlowerSpotDetailSmallContentView: View {
         if let blooming = BloomStatus(rawValue: flowerSpotData.bloomingStatus) {
           HStack(spacing: 4) {
             GradiantIcon(image: .flower)
-              .size(.large)
+              .size(.small)
               .foregroundStyle(blooming.gradiant)
             Text(blooming.text)
               .fontStyle(FontSet.Label.label2)
