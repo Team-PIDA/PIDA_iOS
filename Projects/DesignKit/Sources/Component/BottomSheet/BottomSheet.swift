@@ -52,7 +52,7 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
   ) {
     self.minHeight = minHeight
     self.maxHeight = maxHeight
-    self.midHeight = midHeight ?? (minHeight + maxHeight) / 2
+    self.midHeight = midHeight ?? minHeight + (maxHeight - minHeight) / 3
     self.smallContent = smallContent
     self.largeContent = largeContent
     self.onDismiss = onDismiss
@@ -140,6 +140,12 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
       }
       .scrollDisabled(true)
       .frame(height: currentHeight - .Number20)
+      .contentShape(Rectangle())
+      .onTapGesture {
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+          currentHeight = maxHeight
+        }
+      }
     } else {
       largeContent()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
