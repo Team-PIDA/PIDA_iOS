@@ -50,6 +50,7 @@ public struct SearchFeature {
     case updateRecentSearch(PlaceSearchEntity)
     case storeRecentResult([PlaceSearchEntity])
     case initialSearchBar(String?)
+    case searchBarReturnTapped
    
     
     // MARK: - Delegate

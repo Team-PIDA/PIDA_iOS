@@ -139,6 +139,12 @@ extension SearchFeature {
           )
         }
         
+      case .searchBarReturnTapped:
+        if let firstMatchingItem = state.searchList.first(where: { $0.name == state.searchWord }) {
+          return .send(.selectResult(firstMatchingItem))
+        }
+        return .none
+        
       // MARK: - Delegate
       
       case .dismiss:

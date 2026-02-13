@@ -81,7 +81,9 @@ extension SearchView {
           }
       }
     )
-    
+    .onSubmit {
+      store.send(.searchBarReturnTapped)
+    }
     .padding(.horizontal, .Number16)
     .padding(.vertical, .Number8)
   }
