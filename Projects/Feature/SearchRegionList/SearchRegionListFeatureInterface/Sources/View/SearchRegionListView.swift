@@ -44,11 +44,10 @@ public struct SearchRegionListView: View {
     VStack(alignment: .leading, spacing: 0) {
       headerView
       
-      if store.isDataEmpty {
-        emptyView
-          .padding(.bottom, .Number33)
-      } else {
-        ScrollView {
+      ScrollView {
+        if store.isDataEmpty {
+          emptyView
+        } else {
           LazyVStack(spacing: .Number0) {
             ForEach(store.flowerSpots, id: \.id) { flowerSpot in
               RegionListItemView(
@@ -69,18 +68,17 @@ public struct SearchRegionListView: View {
   
   @ViewBuilder
   private var emptyView: some View {
-    HStack {
+    VStack(alignment: .center, spacing: .Number8) {
       Spacer()
-      VStack(alignment: .center, spacing: .Number8) {
-        Spacer()
-        Image(asset: ImageSet.emptyResult.swiftUIImage)
-        Text("검색 결과가 없습니다.")
-          .fontStyle(FontSet.Body.body3)
-          .foregroundStyle(ColorSet.Text.Secondary)
-        Spacer()
-      }
+      Image(asset: ImageSet.emptyResult.swiftUIImage)
+      Text("검색 결과가 없습니다.")
+        .fontStyle(FontSet.Body.body3)
+        .foregroundStyle(ColorSet.Text.Secondary)
       Spacer()
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .frame(minHeight: 300)
+    
   }
   
   @ViewBuilder
