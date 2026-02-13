@@ -42,7 +42,7 @@ public struct FlowerSpotDetailLargeContentView: View {
       }
 
       ToastView(message: $store.toastMessage)
-        .padding(.bottom, .Number80)
+        .padding(.bottom, .Number120)
 
       if store.isShowLoginAlert {
         PIDAlert(
