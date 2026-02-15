@@ -8,8 +8,6 @@
 
 import Foundation
 import Shared
-import LoggerClient
-import ComposableArchitecture
 
 extension APIClient {
   static func handleResponse<R: Decodable & Sendable>(
@@ -94,18 +92,14 @@ extension APIClient {
   }
   
   static func sendRequestLog(_ request: URLRequest) {
-    @Dependency(\.loggerClient) var loggerClient
-    
     let requestInfo = RequestLogInfo(request: request)
-    loggerClient.logLoggable(requestInfo, .info)
+    Logger.log(requestInfo, level: .info)
   }
   
   static func responseSuccess<R>(
     _ response: APIResponse<R>,
     endpoint: any APIRequestable
   ) {
-    @Dependency(\.loggerClient) var loggerClient
-    
     let responseInfo = ResponseLogInfo(
       status: response.status,
       method: endpoint.method.rawValue,
@@ -114,7 +108,7 @@ extension APIClient {
       data: String(describing: response.data)
     )
     
-    loggerClient.logLoggable(responseInfo, .info)
+    Logger.log(responseInfo, level: .info)
   }
   
   
@@ -124,11 +118,9 @@ extension APIClient {
     errorResponse: ErrorResponse? = nil,
     endpoint: (any APIRequestable)? = nil
   ) -> Error {
-    @Dependency(\.loggerClient) var loggerClient
-    
     guard let endpoint = endpoint else {
       let errorInfo = ErrorLogInfo(error: error)
-      loggerClient.logLoggable(errorInfo, .error)
+      Logger.log(errorInfo, level: .error)
       return error
     }
     
@@ -143,7 +135,7 @@ extension APIClient {
       headers: String(describing: endpoint.headers)
     )
     
-    loggerClient.logLoggable(errorInfo, .error)
+    Logger.log(errorInfo, level: .error)
     return error
   }
 }

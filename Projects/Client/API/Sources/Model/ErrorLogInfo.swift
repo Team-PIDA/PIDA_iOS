@@ -1,6 +1,6 @@
 //
 //  ErrorLogInfo.swift
-//  LoggerClient
+//  APIClient
 //
 //  Created by Jiyeon
 //  Copyright © com.pida.me. All rights reserved.

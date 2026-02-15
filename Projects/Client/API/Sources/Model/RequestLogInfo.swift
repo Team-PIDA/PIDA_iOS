@@ -1,12 +1,13 @@
 //
 //  RequestLogInfo.swift
-//  LoggerClient
+//  APIClient
 //
 //  Created by Jiyeon
 //  Copyright © com.pida.me. All rights reserved.
 //
 
 import Foundation
+import Shared
 
 public struct RequestLogInfo: Sendable, Loggable {
   let method: String

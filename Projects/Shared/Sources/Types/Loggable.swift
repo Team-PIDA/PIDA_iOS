@@ -1,6 +1,6 @@
 //
 //  Loggable.swift
-//  LoggerClient
+//  Shared
 //
 //  Created by Jiyeon
 //  Copyright © com.pida.me. All rights reserved.

@@ -1,9 +1,9 @@
 //
 //  LogLevel.swift
-//  LoggerClient
+//  Shared
 //
-//  Created by Jiyeon on 2/11/26.
-//  Copyright © 2026 com.pida.me. All rights reserved.
+//  Created by Jiyeon
+//  Copyright © com.pida.me. All rights reserved.
 //
 
 import Foundation

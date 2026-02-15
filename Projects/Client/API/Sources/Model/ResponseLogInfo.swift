@@ -1,12 +1,13 @@
 //
 //  ResponseLogInfo.swift
-//  LoggerClient
+//  APIClient
 //
 //  Created by Jiyeon
 //  Copyright © com.pida.me. All rights reserved.
 //
 
 import Foundation
+import Shared
 
 public struct ResponseLogInfo: Sendable, Loggable {
   public let status: Int

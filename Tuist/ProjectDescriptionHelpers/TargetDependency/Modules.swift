@@ -39,7 +39,6 @@ public enum Client: ModuleRepresentable {
   case Push
   case DeepLink
   case Analytics
-  case Logger
 }
 
 public enum SPM: ModuleRepresentable {

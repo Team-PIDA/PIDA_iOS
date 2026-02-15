@@ -12,7 +12,6 @@ let project = Project.buildStaticLibrary(
   for: Client.API,
   dependencies: [
     .SPM.TCA,
-    .Shared,
-    .Client.Logger
+    .Shared
   ]
 )
