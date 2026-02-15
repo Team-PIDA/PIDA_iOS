@@ -63,11 +63,19 @@ public enum Scheme {
     }
   }
 
+  public var APP_DISPLAY_NAME: String {
+    switch self {
+    case .dev: "피다 Dev"
+    case .release: "피다"
+    }
+  }
+
   public var INFO_PLIST: [String: Plist.Value] {
     return [
       "CFBundleDevelopmentRegion": "ko_KR",
       "CFBundleShortVersionString": "1.2.1",
       "CFBundleVersion": "1",
+      "CFBundleDisplayName": .string(APP_DISPLAY_NAME),
       "CFBundleIconName": .string(APP_ICON_NAME),
       "UILaunchStoryboardName": "LaunchScreen",
       "UIApplicationSceneManifest": [

@@ -19,8 +19,8 @@ extension Settings {
             "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon"
         ],
         configurations: [
-            .debug(name: "Debug", xcconfig: .relativeToRoot("Config/Debug.xcconfig")),
-            .release(name: "Release", xcconfig: .relativeToRoot("Config/Release.xcconfig")),
+            .debug(name: "Debug", xcconfig: .relativeToRoot("Config/PIDA-Debug.xcconfig")),
+            .release(name: "Release", xcconfig: .relativeToRoot("Config/PIDA-Release.xcconfig")),
         ]
     )
 
@@ -34,8 +34,8 @@ extension Settings {
             "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon_dev"
         ],
         configurations: [
-            .debug(name: "Debug", xcconfig: .relativeToRoot("Config/Debug.xcconfig")),
-            .release(name: "Release", xcconfig: .relativeToRoot("Config/Release.xcconfig")),
+            .debug(name: "Debug", xcconfig: .relativeToRoot("Config/PIDev-Debug.xcconfig")),
+            .release(name: "Release", xcconfig: .relativeToRoot("Config/PIDev-Release.xcconfig")),
         ]
     )
     
