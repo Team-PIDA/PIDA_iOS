@@ -18,7 +18,7 @@ public enum NetworkError: Error, LocalizedError, Sendable {
   public var errorDescription: String {
     switch self {
     case let .serverError(message, code, className):
-      return "[에러코드: \(code)] - \(className)_\(message)"
+      return "[\(code)] - \(className)_\(message)"
     case let .invalidStatusCode(code): return "[잘못 된 StatusCode] - \(code)"
     case let .customError(message): return "[커스텀 에러] - \(message)"
     case let .timeout(time): return "[네트워크 요청 시간이 초과되었습니다.] - \(time)Seconds"

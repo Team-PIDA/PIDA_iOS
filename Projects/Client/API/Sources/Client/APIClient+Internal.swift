@@ -16,6 +16,8 @@ extension APIClient {
     try await withThrowingTaskGroup(of: T.Response.self) { group in
       group.addTask { // 실제 네트워크 통신 Task
         let request = try endpoint.toURLRequest()
+        sendRequestLog(request)
+        
         let (data, response) = try await URLSession.shared.data(for: request)
         return try await self.handleResponse(data: data, response: response, endpoint: endpoint)
       }

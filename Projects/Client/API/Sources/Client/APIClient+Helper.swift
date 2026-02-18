@@ -44,6 +44,8 @@ extension APIClient {
           code: errorResponse.status,
           className: errorResponse.data.errorClassName
         ),
+        url: response.url?.absoluteString,
+        errorResponse: errorResponse,
         endpoint: endpoint
       )
     default:
@@ -62,7 +64,7 @@ extension APIClient {
     do {
       guard let newToken = try await Self.refreshToken() else {
         throw throwError(TokenError.expiredToken, endpoint: endpoint)
-      }
+    }
       // 기존 작업 재요청
       var newRequest = try endpoint.toURLRequest()
       newRequest.setValue(
@@ -89,40 +91,51 @@ extension APIClient {
     throw DownloadError.timeout(timeout)
   }
   
+  static func sendRequestLog(_ request: URLRequest) {
+    let requestInfo = RequestLogInfo(request: request)
+    Logger.log(requestInfo, level: .info)
+  }
+  
   static func responseSuccess<R>(
     _ response: APIResponse<R>,
     endpoint: any APIRequestable
   ) {
-    print("""
-          ==========================================
-          ============== ✅ SUCCESS ================
-          ✔️ URL: \(endpoint.path)
-          ✔️ Data: \(response.data)
-          ==========================================
-          """)
+    let responseInfo = ResponseLogInfo(
+      status: response.status,
+      method: endpoint.method.rawValue,
+      path: endpoint.path,
+      timestamp: response.timestamp,
+      data: String(describing: response.data)
+    )
+    
+    Logger.log(responseInfo, level: .info)
   }
+  
   
   static func throwError(
     _ error: Error,
+    url: String? = nil,
+    errorResponse: ErrorResponse? = nil,
     endpoint: (any APIRequestable)? = nil
   ) -> Error {
-    var description: String = error.localizedDescription
-    if let error = error as? NetworkError {
-      description = error.errorDescription
-    } else if let error = error as? FoundationError {
-      description = error.errorDescription
-    } else if let error = error as? TokenError {
-      description = error.errorDescription
-    } else if let error = error as? DownloadError {
-      description = error.errorDescription
+    guard let endpoint = endpoint else {
+      let errorInfo = ErrorLogInfo(error: error)
+      Logger.log(errorInfo, level: .error)
+      return error
     }
-    print("""
-          =========================================
-          ============== 🚨 ERROR==================
-          ✔️ URL: \(endpoint?.path ?? "N/A")
-          ✔️ Message: \(description)
-          =========================================
-          """)
+    
+    let errorInfo = ErrorLogInfo(
+      error: error,
+      path: endpoint.path,
+      method: endpoint.method.rawValue,
+      statusCode: errorResponse?.status,
+      timestamp: errorResponse?.timestamp,
+      url: url,
+      parameters: endpoint.parameters.map { String(describing: $0) },
+      headers: String(describing: endpoint.headers)
+    )
+    
+    Logger.log(errorInfo, level: .error)
     return error
   }
 }
