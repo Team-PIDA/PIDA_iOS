@@ -181,7 +181,7 @@ extension MapView {
   
   private var currentButtonBottomPadding: CGFloat {
     if store.flowerSpotDetail != nil {
-      return 140
+      return .detailBottomSheetHeight
     } else if store.mapSearch.isShowRegionList {
       return min(store.mapSearch.regionBottomSheetHeight, 500)
     } else {

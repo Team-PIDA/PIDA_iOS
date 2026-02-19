@@ -41,7 +41,7 @@ public struct CherryBlossomBottomSheet<SmallContent: View, LargeContent: View>: 
   
   // MARK: - Init
   public init(
-    minHeight: CGFloat = 166,
+    minHeight: CGFloat = .detailBottomSheetHeight,
     maxHeight: CGFloat = UIScreen.main.bounds.height,
     midHeight: CGFloat? = nil,
     isDragEnabled: Binding<Bool>,

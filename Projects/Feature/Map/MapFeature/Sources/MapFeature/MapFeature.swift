@@ -217,7 +217,11 @@ extension MapFeature {
           return .send(.location(.moveLocation(flowerSpot.pinPoint)))
 
         case let .didUpdateFlowerSpot(item):
-          state.flowerSpots[item.id] = item
+          let existData = state.flowerSpots[item.id]
+          if let existData = existData,
+             item.bloomingStatus != existData.bloomingStatus {
+            state.flowerSpots[item.id] = item
+          }
           return .none
         }
         
