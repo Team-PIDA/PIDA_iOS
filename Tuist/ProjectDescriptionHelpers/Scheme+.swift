@@ -73,7 +73,7 @@ public enum Scheme {
   public var INFO_PLIST: [String: Plist.Value] {
     return [
       "CFBundleDevelopmentRegion": "ko_KR",
-      "CFBundleShortVersionString": "1.2.1",
+      "CFBundleShortVersionString": "1.2.2",
       "CFBundleVersion": "1",
       "CFBundleDisplayName": .string(APP_DISPLAY_NAME),
       "CFBundleIconName": .string(APP_ICON_NAME),
