@@ -19,23 +19,18 @@ public enum MapAction: Equatable {
   case updateMarkerStatus(BloomStatus)
   case deletePath
   case moveToUserLocation(Coordinate)
+  case drawPath(FlowerSpotEntity, [Coordinate])
 }
 
 struct MapViewRepresentable: UIViewRepresentable {
   /// 지도에 보여줄 데이터
   @Binding var flowerPositions: [Int: FlowerSpotEntity]
   
-  /// 마커 탭 시 경로를 보여주기 위한 프로퍼티
-  @Binding var newPath: [Coordinate]
-  
   /// 지도를 움직일 경우 현 위치 재검색 버튼 활성화 하기 위한 트리거
   @Binding var isCameraMove: Bool
   
   /// 지도에 특정 위치를 표시하기 위한 프로퍼티
   @Binding var focusData: FlowerSpotEntity?
-  
-  /// 마커 그리기 트리거
-  @Binding var isNeedDrawMarker: Bool
   
   /// 바텀시트 표시 여부 (카메라 중앙 위치 조정용)
   @Binding var hasBottomSheet: Bool
@@ -95,13 +90,6 @@ struct MapViewRepresentable: UIViewRepresentable {
       }
     }
     
-    // 마커 탭 이벤트 시
-    if let data = context.coordinator.selectedPin {
-      if isNeedDrawMarker, newPath != context.coordinator.drawPathPoints {
-        drawPathLine(uiView, data: data, for: newPath, context: context)
-      }
-    }
-    
     // 특정 위치에 나타날 데이터가 있을 경우
     if let focusData = focusData, context.coordinator.focusData != focusData {
       drawPathLine(uiView, data: focusData, for: focusData.path, context: context)
@@ -123,7 +111,6 @@ struct MapViewRepresentable: UIViewRepresentable {
   
   /// 액션 기반 명령 실행
   private func executeAction(_ action: MapAction, on uiView: NMFNaverMapView, context: Context) {
-    print(action)
     switch action {
     case .requestBounds:
       if !context.coordinator.isInitialBounds {
@@ -145,6 +132,9 @@ struct MapViewRepresentable: UIViewRepresentable {
       
     case .moveToUserLocation(let location):
       moveUserLocation(uiView, to: location, context: context)
+      
+    case .drawPath(let data, let pathCoordinates):
+      drawPathLine(uiView, data: data, for: pathCoordinates, context: context)
     }
   }
   

@@ -89,10 +89,8 @@ extension MapView {
   private var mapView: some View {
     MapViewRepresentable(
       flowerPositions: $store.flowerSpots,
-      newPath: $store.selectedPathLines,
       isCameraMove: $store.researchButtonEnable,
       focusData: $store.mapSearch.searchResult,
-      isNeedDrawMarker: $store.isNeedDrawMarker,
       hasBottomSheet: $store.mapSearch.isShowRegionList,
       mapAction: Binding(
         get: { store.mapAction },

@@ -47,8 +47,6 @@ public struct MapFeature {
     public var flowerSpots: [Int: FlowerSpotEntity] = [:]
     /// 현재 그려져있는 경로
     public var selectedPathLines: [Coordinate] = []
-    /// 지도에 마커 및 경로 그리기 트리거
-    public var isNeedDrawMarker: Bool = false
     /// 초기 지도 범위 요청 트리거 (초기 진입용)
     public var shouldRequestInitialBounds: Bool = false
     /// 현위치 재검색 버튼 활성화 여부

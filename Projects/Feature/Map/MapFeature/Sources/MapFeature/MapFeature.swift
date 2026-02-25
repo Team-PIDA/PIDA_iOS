@@ -86,7 +86,7 @@ extension MapFeature {
       case let .fetchPathLines(id):
         if let data = state.flowerSpots[id] {
           state.selectedPathLines = data.path
-          state.isNeedDrawMarker = true
+          state.mapAction = .drawPath(data, data.path)
         } else {
           state.selectedPathLines = []
         }
