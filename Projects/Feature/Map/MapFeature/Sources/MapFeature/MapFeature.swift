@@ -58,17 +58,18 @@ extension MapFeature {
         return .none
         
       case let .requestMapBounds(isRequest):
-        state.requestMapBound = isRequest
+        state.shouldRequestInitialBounds = true
         state.researchButtonEnable = false
         if isRequest {
           analyticsClient.track(MapEvent.researchClicked(currentPage: "map"))
+          return .send(.setMapAction(.requestBounds))
         }
         return .none
         
         // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
       case let .markerTapped(id):
         guard let id = id else {
-          state.isNeedDeleteMarker = true
+          state.mapAction = .deletePath
           state.flowerSpotDetail = nil  // 바텀시트 닫기
           return .none
         }
@@ -203,7 +204,7 @@ extension MapFeature {
         case .dismiss:
           // 바텀시트 닫기: Optional State를 nil로 설정
           state.flowerSpotDetail = nil
-          state.isNeedDeleteMarker = true
+          state.mapAction = .deletePath
           return .none
 
         case let .presentToBlooming(id, streetName, distance):
@@ -223,6 +224,10 @@ extension MapFeature {
             state.flowerSpots[item.id] = item
           }
           return .none
+          
+        case let .updateMarkerStatus(bloomStatus):
+          state.mapAction = .updateMarkerStatus(bloomStatus)
+          return .none
         }
         
       case let .searchRegionList(.delegate(action)):
@@ -237,6 +242,10 @@ extension MapFeature {
         }
 
       case .flowerSpotDetail:
+        return .none
+        
+      case let .setMapAction(action):
+        state.mapAction = action
         return .none
         
       case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch:

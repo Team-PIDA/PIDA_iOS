@@ -192,6 +192,7 @@ extension FlowerSpotDetailFeature {
         if shouldUpdateMap {
           // 딥링크 진입: 지도 위치 이동 + 마커 표시
           return .concatenate(
+            checkBloomStatus(status: state.flowerSpotData.bloomingStatus),
             .send(.prefetchImages),
             .send(.delegate(.showOnMap(item))),
             .send(.delegate(.didUpdateFlowerSpot(item)))
@@ -199,6 +200,7 @@ extension FlowerSpotDetailFeature {
         } else {
           // 마커 탭/검색: 프리페치 + 부모 동기화
           return .concatenate(
+            checkBloomStatus(status: state.flowerSpotData.bloomingStatus),
             .send(.prefetchImages),
             .send(.delegate(.didUpdateFlowerSpot(item)))
           )
@@ -207,12 +209,12 @@ extension FlowerSpotDetailFeature {
       case let .bloomingResponse(item):
         state.bloomingStatus = item
         checkLoadingComplete(&state)
-        return .none
+        return checkBloomStatus(status: state.flowerSpotData.bloomingStatus)
 
       case let .verifyTodayBlooming(item):
         state.isVotedBlooming = item
         checkLoadingComplete(&state)
-        return .none
+        return checkBloomStatus(status: state.flowerSpotData.bloomingStatus)
 
       // MARK: - Analytics
 
@@ -263,11 +265,17 @@ extension FlowerSpotDetailFeature {
 
       state.isDetailLoading = false
       state.isNeedDrawPath = true
-      if let bloomStatus = BloomStatus(rawValue: state.flowerSpotData.bloomingStatus) {
-        state.updateMarkerStatus = bloomStatus
-      }
+      
       // Analytics 트래킹
       trackDetailsStart(&state)
+      
+    }
+    
+    private func checkBloomStatus(status: String) -> Effect<Action> {
+      if let bloomStatus = BloomStatus(rawValue: status) {
+        return .send(.delegate(.updateMarkerStatus(bloomStatus)))
+      }
+      return .none
     }
 
     /// details_start 및 map_spot_selected 이벤트 트래킹

@@ -91,21 +91,18 @@ extension MapView {
       userLocation: $store.location.point,
       flowerPositions: $store.flowerSpots,
       newPath: $store.selectedPathLines,
-      requestBounds: $store.requestMapBound,
       isCameraMove: $store.researchButtonEnable,
       focusData: $store.mapSearch.searchResult,
-      isNeedDeleteMarker: $store.isNeedDeleteMarker,
       isNeedDrawMarker: $store.isNeedDrawMarker,
-      updateMarkerStatus: Binding(
-        get: { store.flowerSpotDetail?.updateMarkerStatus },
-        set: { _ in }
+      hasBottomSheet: $store.mapSearch.isShowRegionList,
+      mapAction: Binding(
+        get: { store.mapAction },
+        set: { store.send(.setMapAction($0)) }
       ),
-      hasBottomSheet: $store.mapSearch.isShowRegionList
+      shouldRequestInitialBounds: $store.shouldRequestInitialBounds
     )
     .onReceiveMapBounds {
-      if store.requestMapBound {
-        store.send(.location(.fetchFlowers($0)))
-      }
+      store.send(.location(.fetchFlowers($0)))
     }
     .onMarkerTapped { id in
       store.send(.markerTapped(id: id))

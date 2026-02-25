@@ -56,7 +56,7 @@ extension MapViewRepresentable {
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
       if let onMarkerTapped = parent.onMarkerTapped {
         onMarkerTapped(nil)
-        parent.isNeedDeleteMarker = true
+        parent.mapAction = .deletePath
       }
       if let _ = focusMarker {
         deleteSearchResult()
@@ -86,10 +86,8 @@ extension MapViewRepresentable {
     
     func mapViewCameraIdle(_ mapView: NMFMapView) {
       // 앱 처음 진입 시 카메라 이동 완료 후 지도 범위 값 가져오도록 처리
-      if isInitialBounds, parent.requestBounds {
-        parent.currentVisibleBounds(on: mapView)
-        parent.requestBounds = false
-        isInitialBounds = false
+      if isInitialBounds, parent.shouldRequestInitialBounds {
+        parent.mapAction = .requestInitialBounds
       }
     }
     
@@ -140,7 +138,6 @@ extension MapViewRepresentable {
       }
       deletePath()
       deleteMarker()
-      parent.isNeedDeleteMarker = false
       selectedPin = data
       activeMarker = marker
       
@@ -162,7 +159,6 @@ extension MapViewRepresentable {
         startMarker.iconImage = NMFOverlayImage(image: state.circleImage)
         endMarker.iconImage = NMFOverlayImage(image: state.circleImage)
       }
-      parent.updateMarkerStatus = nil
     }
     
   }
