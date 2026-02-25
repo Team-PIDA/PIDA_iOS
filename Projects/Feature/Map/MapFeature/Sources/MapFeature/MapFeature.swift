@@ -190,6 +190,10 @@ extension MapFeature {
           
         case let .presentAlert(type):
           return .send(.presentAlert(type: type))
+          
+        case let .moveToLocation(location):
+          state.mapAction = .moveToUserLocation(location)
+          return .none
         }
         
         // MARK: - Delegate

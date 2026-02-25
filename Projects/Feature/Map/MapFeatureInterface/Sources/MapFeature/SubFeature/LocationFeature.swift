@@ -56,6 +56,8 @@ public struct LocationFeature {
     case storeFlowerData([FlowerSpotEntity])
     /// 상위로 전달하여 하위 state에 동기화
     case storeUserLocation(Coordinate?)
+    /// 지도 위치 이동 요청
+    case moveToLocation(Coordinate)
     
     case showToastView(message: String?, buttonLabel: String?)
     case presentAlert(type: AlertType)

@@ -37,7 +37,7 @@ extension LocationFeature {
         
       case let .moveLocation(point):
         state.point = point
-        return .none
+        return .send(.delegate(.moveToLocation(point)))
         
       case let .currentButtonTapped(isTapped):
         state.isCurrentButtonTap = isTapped

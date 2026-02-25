@@ -88,7 +88,6 @@ extension MapView {
   @ViewBuilder
   private var mapView: some View {
     MapViewRepresentable(
-      userLocation: $store.location.point,
       flowerPositions: $store.flowerSpots,
       newPath: $store.selectedPathLines,
       isCameraMove: $store.researchButtonEnable,

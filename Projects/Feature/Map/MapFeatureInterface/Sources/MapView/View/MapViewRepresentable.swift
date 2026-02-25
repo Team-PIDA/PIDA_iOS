@@ -18,14 +18,10 @@ public enum MapAction: Equatable {
   case requestInitialBounds
   case updateMarkerStatus(BloomStatus)
   case deletePath
+  case moveToUserLocation(Coordinate)
 }
 
 struct MapViewRepresentable: UIViewRepresentable {
-  /// 사용자의 현재 위치 정보
-  ///
-  /// - 초기 및 현위치 버튼 탭 시에만 값이 채워져 있음
-  /// - 현 위치 이동 플래그 기능과 유사하게 동작
-  @Binding var userLocation: Coordinate?
   /// 지도에 보여줄 데이터
   @Binding var flowerPositions: [Int: FlowerSpotEntity]
   
@@ -82,10 +78,6 @@ struct MapViewRepresentable: UIViewRepresentable {
   }
   
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    if let userLocation = userLocation {
-      moveUserLocation(uiView, to: userLocation, context: context)
-    }
-    
     // 마커 데이터가 변경되었을 때 마커 업데이트
     if context.coordinator.currentFlowerPositions != flowerPositions {
       // 마커 ID 세트가 변경된 경우에만 카메라 이동 (데이터만 갱신된 경우 스킵)
@@ -131,6 +123,7 @@ struct MapViewRepresentable: UIViewRepresentable {
   
   /// 액션 기반 명령 실행
   private func executeAction(_ action: MapAction, on uiView: NMFNaverMapView, context: Context) {
+    print(action)
     switch action {
     case .requestBounds:
       if !context.coordinator.isInitialBounds {
@@ -149,6 +142,9 @@ struct MapViewRepresentable: UIViewRepresentable {
     case .deletePath:
       context.coordinator.deletePath()
       context.coordinator.deleteMarker()
+      
+    case .moveToUserLocation(let location):
+      moveUserLocation(uiView, to: location, context: context)
     }
   }
   
@@ -201,9 +197,7 @@ extension MapViewRepresentable {
       view.mapView.positionMode = .normal
       moveCamera(view, to: userLocation)
       context.coordinator.lastCameraPoint = userLocation
-      
     }
-    self.userLocation = nil
   }
   
   /// 카메라 이동 메서드
