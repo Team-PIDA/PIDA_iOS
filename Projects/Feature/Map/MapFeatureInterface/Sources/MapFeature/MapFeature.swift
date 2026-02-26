@@ -52,8 +52,8 @@ public struct MapFeature {
     /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
     
-    /// 지도 액션 명령
-    public var mapAction: MapAction? = nil
+    /// 지도 액션 명령 큐
+    public var mapActions: [MapAction] = []
     
     public var toastMessage: String? = nil
     
@@ -90,7 +90,8 @@ public struct MapFeature {
     case viewDidAppear
     
     case requestMapBounds(Bool)
-    case setMapAction(MapAction?)
+    case addMapAction(MapAction)
+    case clearMapActions
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
     case fetchDetailInfo(Int)

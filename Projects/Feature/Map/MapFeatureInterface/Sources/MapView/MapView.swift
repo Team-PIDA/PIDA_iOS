@@ -90,12 +90,8 @@ extension MapView {
     MapViewRepresentable(
       flowerPositions: $store.flowerSpots,
       isCameraMove: $store.researchButtonEnable,
-      focusData: $store.mapSearch.searchResult,
       hasBottomSheet: $store.mapSearch.isShowRegionList,
-      mapAction: Binding(
-        get: { store.mapAction },
-        set: { store.send(.setMapAction($0)) }
-      ),
+      mapActions: $store.mapActions,
       shouldRequestInitialBounds: $store.shouldRequestInitialBounds
     )
     .onReceiveMapBounds {

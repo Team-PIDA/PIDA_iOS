@@ -179,6 +179,7 @@ extension FlowerSpotDetailFeature {
         return fetchDetailInfo(id: id)
 
       case let .detailResponse(item, shouldUpdateMap):
+        let prevData = state.flowerSpotData
         state.flowerSpotData = item
         state.spotId = item.id
         // distance 계산

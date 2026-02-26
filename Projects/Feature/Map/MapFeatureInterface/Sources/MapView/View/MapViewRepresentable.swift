@@ -20,6 +20,9 @@ public enum MapAction: Equatable {
   case deletePath
   case moveToUserLocation(Coordinate)
   case drawPath(FlowerSpotEntity, [Coordinate])
+  case changeActiveMarker(FlowerSpotEntity)
+  case showFocus(FlowerSpotEntity)
+  case clearFocus
 }
 
 struct MapViewRepresentable: UIViewRepresentable {
@@ -29,14 +32,11 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 지도를 움직일 경우 현 위치 재검색 버튼 활성화 하기 위한 트리거
   @Binding var isCameraMove: Bool
   
-  /// 지도에 특정 위치를 표시하기 위한 프로퍼티
-  @Binding var focusData: FlowerSpotEntity?
-  
   /// 바텀시트 표시 여부 (카메라 중앙 위치 조정용)
   @Binding var hasBottomSheet: Bool
   
-  /// 지도 액션 명령
-  @Binding var mapAction: MapAction?
+  /// 지도 액션 명령 큐
+  @Binding var mapActions: [MapAction]
   
   /// 초기 bounds 요청 여부 (현재 위치 이동 완료 후 자동 실행용)
   @Binding var shouldRequestInitialBounds: Bool
@@ -90,18 +90,14 @@ struct MapViewRepresentable: UIViewRepresentable {
       }
     }
     
-    // 특정 위치에 나타날 데이터가 있을 경우
-    if let focusData = focusData, context.coordinator.focusData != focusData {
-      drawPathLine(uiView, data: focusData, for: focusData.path, context: context)
-      drawFocusMarker(uiView, result: focusData, context: context)
-    } else if focusData == nil, context.coordinator.focusData != nil {
-      context.coordinator.deleteSearchResult()
-    }
-    
-    // 액션 기반 명령 처리
-    if let action = mapAction {
-      executeAction(action, on: uiView, context: context)
-      mapAction = nil
+    // 액션 큐 기반 명령 처리
+    if !mapActions.isEmpty {
+      let actionsToExecute = mapActions
+      mapActions.removeAll() // 먼저 큐 클리어
+      for action in actionsToExecute {
+        Logger.log("Executing action: \(action)", level: .debug)
+        executeAction(action, on: uiView, context: context)
+      }
     }
   }
   
@@ -135,6 +131,16 @@ struct MapViewRepresentable: UIViewRepresentable {
       
     case .drawPath(let data, let pathCoordinates):
       drawPathLine(uiView, data: data, for: pathCoordinates, context: context)
+      
+    case let .changeActiveMarker(data):
+      drawFocusMarker(uiView, result: data, context: context)
+      
+    case .showFocus(let data):
+      drawPathLine(uiView, data: data, for: data.path, context: context)
+      drawFocusMarker(uiView, result: data, context: context)
+      
+    case .clearFocus:
+      context.coordinator.deleteSearchResult()
     }
   }
   
