@@ -91,7 +91,6 @@ public struct MapFeature {
     
     case requestMapBounds(Bool)
     case addMapAction(MapAction)
-    case clearMapActions
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
     case fetchDetailInfo(Int)

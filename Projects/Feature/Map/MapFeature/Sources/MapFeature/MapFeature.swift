@@ -249,10 +249,6 @@ extension MapFeature {
         state.mapActions.append(action)
         return .none
         
-      case .clearMapActions:
-        state.mapActions.removeAll()
-        return .none
-        
       case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch:
         return .none
         
