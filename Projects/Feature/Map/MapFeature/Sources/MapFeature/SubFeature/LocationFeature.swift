@@ -77,10 +77,7 @@ extension LocationFeature {
 
 extension LocationFeature.Core {
   
-  
   private func moveUserLocation(isCurrentButtonTap: Bool) -> Effect<Action> {
-    
-    
     return .run { send in
       if let location = await locationClient.requestUserLocation() {
         await send(.saveUserLocation(location))

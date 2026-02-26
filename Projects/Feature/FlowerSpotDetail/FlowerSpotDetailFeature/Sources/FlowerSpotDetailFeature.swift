@@ -179,7 +179,6 @@ extension FlowerSpotDetailFeature {
         return fetchDetailInfo(id: id)
 
       case let .detailResponse(item, shouldUpdateMap):
-        let prevData = state.flowerSpotData
         state.flowerSpotData = item
         state.spotId = item.id
         // distance 계산
@@ -195,7 +194,6 @@ extension FlowerSpotDetailFeature {
           return .concatenate(
             checkBloomStatus(status: state.flowerSpotData.bloomingStatus),
             .send(.prefetchImages),
-            .send(.delegate(.showOnMap(item))),
             .send(.delegate(.didUpdateFlowerSpot(item)))
           )
         } else {

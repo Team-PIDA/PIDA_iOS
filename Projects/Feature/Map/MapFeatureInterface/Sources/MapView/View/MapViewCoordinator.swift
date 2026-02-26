@@ -56,7 +56,6 @@ extension MapViewRepresentable {
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
       if let onMarkerTapped = parent.onMarkerTapped {
         onMarkerTapped(nil)
-        parent.mapActions.append(.deletePath)
       }
       if let _ = focusMarker {
         deleteSearchResult()

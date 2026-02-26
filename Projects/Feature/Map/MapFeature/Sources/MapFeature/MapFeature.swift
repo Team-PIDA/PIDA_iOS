@@ -62,6 +62,7 @@ extension MapFeature {
         state.researchButtonEnable = false
         if isRequest {
           analyticsClient.track(MapEvent.researchClicked(currentPage: "map"))
+          state.flowerSpots.removeAll()
           return .send(.addMapAction(.requestBounds))
         }
         return .none
@@ -165,11 +166,10 @@ extension MapFeature {
           data.forEach {
             state.flowerSpots[$0.id] = $0
           }
-          // SearchRegionListFeature가 활성화되어 있으면 데이터 전달
-          if state.searchRegionList != nil {
-            return .send(.searchRegionList(.storeFlowerSpots(data)))
-          }
-          return .none
+          return .concatenate(
+            .send(.addMapAction(.updateMarkers(state.flowerSpots))),
+            state.searchRegionList != nil ? .send(.searchRegionList(.storeFlowerSpots(data))) : .none
+          )
           
         case let .storeUserLocation(location):
           state.userLocation = location
