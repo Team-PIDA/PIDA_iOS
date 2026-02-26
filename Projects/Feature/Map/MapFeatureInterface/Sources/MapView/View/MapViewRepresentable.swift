@@ -13,19 +13,6 @@ import FlowerSpotClient
 import BloomingClient
 import Shared
 
-public enum MapAction: Equatable {
-  case requestBounds
-  case requestInitialBounds
-  case updateMarkerStatus(BloomStatus)
-  case deletePath
-  case moveToUserLocation(Coordinate)
-  case drawPath(FlowerSpotEntity, [Coordinate])
-  case changeActiveMarker(FlowerSpotEntity)
-  case showFocus(FlowerSpotEntity)
-  case clearFocus
-  case updateMarkers([Int: FlowerSpotEntity])
-}
-
 struct MapViewRepresentable: UIViewRepresentable {
   /// 지도에 보여줄 데이터
   @Binding var flowerPositions: [Int: FlowerSpotEntity]
