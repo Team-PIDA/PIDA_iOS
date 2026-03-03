@@ -58,7 +58,6 @@ public struct FlowerSpotDetailFeature {
     public var isShowLoginAlert: Bool = false
     public var isVotedBlooming: VerifyBloomingStateEntity = .init(isBlooming: false)
     public var isDetailLoading: Bool = false
-    public var updateMarkerStatus: BloomStatus? = nil
     public var userLocation: Coordinate? = nil
 
     // MARK: - Navigation State
@@ -148,6 +147,7 @@ public struct FlowerSpotDetailFeature {
     case presentToLogin(id: Int)
     case showOnMap(FlowerSpotEntity)
     case didUpdateFlowerSpot(FlowerSpotEntity)
+    case updateMarkerStatus(BloomStatus)
   }
 
   public var body: some ReducerOf<Self> {

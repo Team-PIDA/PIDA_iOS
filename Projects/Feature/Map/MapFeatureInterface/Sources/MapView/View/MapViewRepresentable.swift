@@ -14,37 +14,20 @@ import BloomingClient
 import Shared
 
 struct MapViewRepresentable: UIViewRepresentable {
-  /// 사용자의 현재 위치 정보
-  ///
-  /// - 초기 및 현위치 버튼 탭 시에만 값이 채워져 있음
-  /// - 현 위치 이동 플래그 기능과 유사하게 동작
-  @Binding var userLocation: Coordinate?
   /// 지도에 보여줄 데이터
   @Binding var flowerPositions: [Int: FlowerSpotEntity]
-  
-  /// 마커 탭 시 경로를 보여주기 위한 프로퍼티
-  @Binding var newPath: [Coordinate]
-  
-  /// 지도 범위 요청 프로퍼티
-  @Binding var requestBounds: Bool
   
   /// 지도를 움직일 경우 현 위치 재검색 버튼 활성화 하기 위한 트리거
   @Binding var isCameraMove: Bool
   
-  /// 지도에 특정 위치를 표시하기 위한 프로퍼티
-  @Binding var focusData: FlowerSpotEntity?
-  
-  /// 마커 삭제 트리거
-  @Binding var isNeedDeleteMarker: Bool
-  
-  /// 마커 그리기 트리거
-  @Binding var isNeedDrawMarker: Bool
-  
-  /// 활성화 된 마커 상태를 업데이트
-  @Binding var updateMarkerStatus: BloomStatus?
-  
   /// 바텀시트 표시 여부 (카메라 중앙 위치 조정용)
   @Binding var hasBottomSheet: Bool
+  
+  /// 지도 액션 명령 큐
+  @Binding var mapActions: [MapAction]
+  
+  /// 초기 bounds 요청 여부 (현재 위치 이동 완료 후 자동 실행용)
+  @Binding var shouldRequestInitialBounds: Bool
   
   /// 마커 탭 시 id값을 전달하기 위한 클로저
   var onMarkerTapped: ((Int?) -> Void)? = nil
@@ -78,60 +61,66 @@ struct MapViewRepresentable: UIViewRepresentable {
   }
   
   func updateUIView(_ uiView: NMFNaverMapView, context: Context) {
-    if let userLocation = userLocation {
-      moveUserLocation(uiView, to: userLocation, context: context)
-    }
     
-    // 마커 데이터가 변경되었을 때 마커 업데이트
-    if context.coordinator.currentFlowerPositions != flowerPositions {
-      // 마커 ID 세트가 변경된 경우에만 카메라 이동 (데이터만 갱신된 경우 스킵)
-      let shouldMoveCamera = Set(context.coordinator.currentFlowerPositions.keys) != Set(flowerPositions.keys)
-
-      // 기존 마커 삭제
-      if !context.coordinator.markers.isEmpty {
-        context.coordinator.deleteAllMarkers()
+    // 액션 큐 기반 명령 처리
+    if !mapActions.isEmpty {
+      let actionsToExecute = mapActions
+      mapActions.removeAll() // 먼저 큐 클리어
+      for action in actionsToExecute {
+        executeAction(action, on: uiView, context: context)
       }
-
-      if !flowerPositions.isEmpty {
-        // 새로운 마커 표시
-        presentMarkers(uiView, flowers: flowerPositions, context: context, shouldMoveCamera: shouldMoveCamera)
-        context.coordinator.currentFlowerPositions = flowerPositions
-      }
-    }
-    
-    // 마커 탭 이벤트 시
-    if let data = context.coordinator.selectedPin {
-      if isNeedDrawMarker, newPath != context.coordinator.drawPathPoints {
-        drawPathLine(uiView, data: data, for: newPath, context: context)
-        
-      } else if isNeedDeleteMarker { // 그려져있는 마커 및 경로 삭제
-        context.coordinator.deletePath()
-        context.coordinator.deleteMarker()
-      }
-    }
-    
-    // 현 위치 재검색 액션
-    if requestBounds, !context.coordinator.isInitialBounds {
-      currentVisibleBounds(on: uiView.mapView)
-      deleteDrawMarker(context: context)
-      requestBounds = false
-    }
-    
-    // 특정 위치에 나타날 데이터가 있을 경우
-    if let focusData = focusData, context.coordinator.focusData != focusData {
-      drawPathLine(uiView, data: focusData, for: focusData.path, context: context)
-      drawFocusMarker(uiView, result: focusData, context: context)
-    } else if focusData == nil, context.coordinator.focusData != nil {
-      context.coordinator.deleteSearchResult()
-    }
-    
-    if let state = updateMarkerStatus {
-      context.coordinator.updateMarker(state: state)
     }
   }
   
   func makeCoordinator() -> Coordinator {
     return Coordinator(self)
+  }
+  
+  /// 액션 기반 명령 실행
+  private func executeAction(
+    _ action: MapAction,
+    on uiView: NMFNaverMapView,
+    context: Context
+  ) {
+    switch action {
+    case .requestBounds:
+      if !context.coordinator.isInitialBounds {
+        currentVisibleBounds(on: uiView.mapView)
+        deleteDrawMarker(context: context)
+      }
+      
+    case .requestInitialBounds:
+      currentVisibleBounds(on: uiView.mapView)
+      context.coordinator.isInitialBounds = false
+      shouldRequestInitialBounds = false
+      
+    case .updateMarkerStatus(let state):
+      context.coordinator.updateMarker(state: state)
+      
+    case .deletePath:
+      context.coordinator.deletePath()
+      context.coordinator.deleteMarker()
+      
+    case .moveToUserLocation(let location):
+      moveUserLocation(uiView, to: location, context: context)
+      
+    case .drawPath(let data, let pathCoordinates):
+      drawPathLine(uiView, data: data, for: pathCoordinates, context: context)
+      
+    case let .changeActiveMarker(data):
+      drawFocusMarker(uiView, result: data, context: context)
+      
+    case .showFocus(let data):
+      drawPathLine(uiView, data: data, for: data.path, context: context)
+      drawFocusMarker(uiView, result: data, context: context)
+      
+    case .clearFocus:
+      context.coordinator.deleteSearchResult()
+      
+    case .updateMarkers(let flowers):
+      updateMarkersAction(uiView, flowers: flowers, context: context)
+      
+    }
   }
   
 }
@@ -140,6 +129,27 @@ struct MapViewRepresentable: UIViewRepresentable {
 
 extension MapViewRepresentable {
   
+  /// 마커 데이터 업데이트 액션
+  private func updateMarkersAction(
+    _ view: NMFNaverMapView, 
+    flowers: [Int: FlowerSpotEntity],
+    context: Context
+  ) {
+    flowerPositions = flowers
+    // 기존 마커 삭제
+    if !context.coordinator.markers.isEmpty {
+      context.coordinator.deleteAllMarkers()
+    }
+
+    if !flowers.isEmpty {
+      // 새로운 마커 표시
+      let shouldMoveCamera = Set(context.coordinator.currentFlowerPositions.keys) != Set(flowerPositions.keys)
+      presentMarkers(view, flowers: flowers, context: context, shouldMoveCamera: shouldMoveCamera)
+      context.coordinator.currentFlowerPositions = flowers
+      
+    }
+  }
+  
   /// 특정 위치에 마커를 표시
   func drawFocusMarker(_ view: NMFNaverMapView, result: FlowerSpotEntity, context: Context) {
     // 중복 그리기 방지
@@ -147,7 +157,6 @@ extension MapViewRepresentable {
     if let marker = context.coordinator.focusMarker {
       marker.mapView = nil
     }
-    isNeedDeleteMarker = false
     context.coordinator.focusData = result
     
     let state = BloomStatus(rawValue: result.bloomingStatus)
@@ -184,9 +193,7 @@ extension MapViewRepresentable {
       view.mapView.positionMode = .normal
       moveCamera(view, to: userLocation)
       context.coordinator.lastCameraPoint = userLocation
-      
     }
-    self.userLocation = nil
   }
   
   /// 카메라 이동 메서드
@@ -295,7 +302,6 @@ extension MapViewRepresentable {
   /// 지도에 올라와있는 마커 삭제
   func deleteDrawMarker(context: Context) {
     if !context.coordinator.markers.isEmpty {
-      flowerPositions.removeAll()
       context.coordinator.deleteAllMarkers()
     }
   }
@@ -363,8 +369,6 @@ extension MapViewRepresentable {
     
     // 모든 경로 포인트가 보이도록 카메라 조정
     fitCameraToPath(view, path: newPath)
-    
-    isNeedDrawMarker = false
   }
   
   /// 지도 위에 비활성화 마커를 표시하기 위한 메서드

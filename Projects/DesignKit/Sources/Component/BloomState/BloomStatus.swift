@@ -9,7 +9,7 @@
 import Foundation
 import SwiftUI
 
-public enum BloomStatus: String, Sendable {
+public enum BloomStatus: String, Sendable, Equatable {
   case little = "LITTLE"
   case bloomed = "BLOOMED"
   case withered = "WITHERED"

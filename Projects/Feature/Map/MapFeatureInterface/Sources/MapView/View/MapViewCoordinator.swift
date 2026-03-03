@@ -56,7 +56,6 @@ extension MapViewRepresentable {
     func mapView(_ mapView: NMFMapView, didTapMap latlng: NMGLatLng, point: CGPoint) {
       if let onMarkerTapped = parent.onMarkerTapped {
         onMarkerTapped(nil)
-        parent.isNeedDeleteMarker = true
       }
       if let _ = focusMarker {
         deleteSearchResult()
@@ -75,7 +74,6 @@ extension MapViewRepresentable {
     
     func deleteSearchResult() {
       deletePath()
-      parent.focusData = nil
       if let searchMarker = focusMarker {
         searchMarker.mapView = nil
       }
@@ -86,10 +84,8 @@ extension MapViewRepresentable {
     
     func mapViewCameraIdle(_ mapView: NMFMapView) {
       // 앱 처음 진입 시 카메라 이동 완료 후 지도 범위 값 가져오도록 처리
-      if isInitialBounds, parent.requestBounds {
-        parent.currentVisibleBounds(on: mapView)
-        parent.requestBounds = false
-        isInitialBounds = false
+      if isInitialBounds, parent.shouldRequestInitialBounds {
+        parent.mapActions.append(.requestInitialBounds)
       }
     }
     
@@ -140,7 +136,6 @@ extension MapViewRepresentable {
       }
       deletePath()
       deleteMarker()
-      parent.isNeedDeleteMarker = false
       selectedPin = data
       activeMarker = marker
       
@@ -149,9 +144,11 @@ extension MapViewRepresentable {
     /// 마커 개화 상태 값 업데이트
     func updateMarker(state: BloomStatus) {
       if let activeMarker = activeMarker {
+        guard selectedPin?.bloomingStatus != state.rawValue else { return }
         selectedPin?.bloomingStatus = state.rawValue
         activeMarker.iconImage = NMFOverlayImage(image: state.activeImage)
       } else if let focusMarker = focusMarker {
+        guard focusData?.bloomingStatus != state.rawValue else { return }
         focusMarker.iconImage = NMFOverlayImage(image: state.activeImage)
       }
       if let path = paths,
@@ -162,7 +159,6 @@ extension MapViewRepresentable {
         startMarker.iconImage = NMFOverlayImage(image: state.circleImage)
         endMarker.iconImage = NMFOverlayImage(image: state.circleImage)
       }
-      parent.updateMarkerStatus = nil
     }
     
   }

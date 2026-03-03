@@ -47,14 +47,13 @@ public struct MapFeature {
     public var flowerSpots: [Int: FlowerSpotEntity] = [:]
     /// 현재 그려져있는 경로
     public var selectedPathLines: [Coordinate] = []
-    /// 지도에 마커 및 경로 비활성화 트리거
-    public var isNeedDeleteMarker: Bool = false
-    /// 지도에 마커 및 경로 그리기 트리거
-    public var isNeedDrawMarker: Bool = false
-    /// 지도 범위 요청 트리거
-    public var requestMapBound: Bool = false
+    /// 초기 지도 범위 요청 트리거 (초기 진입용)
+    public var shouldRequestInitialBounds: Bool = false
     /// 현위치 재검색 버튼 활성화 여부
     public var researchButtonEnable: Bool = false
+    
+    /// 지도 액션 명령 큐
+    public var mapActions: [MapAction] = []
     
     public var toastMessage: String? = nil
     
@@ -91,6 +90,7 @@ public struct MapFeature {
     case viewDidAppear
     
     case requestMapBounds(Bool)
+    case addMapAction(MapAction)
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
     case fetchDetailInfo(Int)
