@@ -20,6 +20,7 @@ extension MapFeature {
   public init(
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
     mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>,
+    category: Reduce<CategoryFeature.State, CategoryFeature.Action>,
     flowerSpotDetail: FlowerSpotDetailFeature,
     searchRegionList: SearchRegionListFeature
   ) {
@@ -27,6 +28,7 @@ extension MapFeature {
       reducer: Reduce(Core()),
       location: location,
       mapSearch: mapSearch,
+      category: category,
       flowerSpotDetail: flowerSpotDetail,
       searchRegionList: searchRegionList
     )
@@ -249,7 +251,10 @@ extension MapFeature {
         state.mapActions.append(action)
         return .none
         
-      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch:
+      case .category(.delegate):
+        return .none
+
+      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category:
         return .none
         
       }
