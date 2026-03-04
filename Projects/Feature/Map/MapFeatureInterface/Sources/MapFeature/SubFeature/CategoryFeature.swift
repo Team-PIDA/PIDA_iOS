@@ -19,10 +19,20 @@ public struct CategoryFeature {
 
   @ObservableState
   public struct State: Equatable {
-    public init() {}
+    public var selectedCategoryId: Int = 1
+    public var categoryList: [CategoryItem]
+    public init() {
+      categoryList = [
+        .init(id: 1, title: "전체"),
+        .init(id: 2, title: "산책로 추천"),
+        .init(id: 3, title: "카페 추천"),
+        .init(id: 4, title: "벚꽃 축제")
+      ]
+    }
   }
 
   public enum Action: Equatable {
+    case tapCategory(id: Int)
     case delegate(Delegate)
   }
 
@@ -32,4 +42,9 @@ public struct CategoryFeature {
   public var body: some ReducerOf<Self> {
     reducer
   }
+}
+
+public struct CategoryItem: Equatable {
+  var id: Int
+  var title: String
 }

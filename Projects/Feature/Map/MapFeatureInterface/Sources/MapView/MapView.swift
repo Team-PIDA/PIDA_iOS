@@ -29,9 +29,7 @@ public struct MapView: View {
     ZStack(alignment: .bottom) {
       mapView
       VStack {
-        searchView()
-          .padding(.horizontal, .Number16)
-          .padding(.vertical, .Number8)
+        headerSection()
         if store.researchButtonEnable {
           ResearchButton(
             action: {
@@ -107,6 +105,16 @@ extension MapView {
   }
   
   @ViewBuilder
+  private func headerSection() -> some View {
+    VStack(spacing: .Number10) {
+      searchView()
+        .padding(.horizontal, .Number16)
+      categoryButton()
+    }
+    .padding(.vertical, .Number8)
+  }
+  
+  @ViewBuilder
   private func searchView() -> some View {
     if let result = store.mapSearch.searchText { // 검색 결과
       SearchBar(
@@ -148,6 +156,23 @@ extension MapView {
     }
     .action {
       store.send(.pushToSetting)
+    }
+  }
+  
+  private func categoryButton() -> some View {
+    ScrollView(.horizontal) {
+      HStack(spacing: .Number8) {
+        ForEach(store.category.categoryList, id: \.id) { item in
+          CategoryButton(
+            title: item.title,
+            isActive: item.id == store.category.selectedCategoryId
+          )
+          .onTapGesture {
+            store.send(.category(.tapCategory(id: item.id)))
+          }
+        }
+      }
+      .padding(.horizontal, .Number16)
     }
   }
   

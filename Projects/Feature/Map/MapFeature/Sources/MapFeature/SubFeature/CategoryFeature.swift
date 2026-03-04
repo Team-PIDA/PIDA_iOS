@@ -18,6 +18,9 @@ extension CategoryFeature {
   struct Core: Reducer {
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
+      case let .tapCategory(id):
+        state.selectedCategoryId = id
+        return .none
       case .delegate: return .none
       }
     }
