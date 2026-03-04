@@ -1,6 +1,6 @@
 //
 //  CategoryFeature.swift
-//  MapFeatureInterface
+//  CategoryFeatureInterface
 //
 //  Created by Jiyeon on 3/4/26.
 //  Copyright © 2026 com.pida.me. All rights reserved.
@@ -45,6 +45,6 @@ public struct CategoryFeature {
 }
 
 public struct CategoryItem: Equatable {
-  var id: Int
-  var title: String
+  public var id: Int
+  public var title: String
 }

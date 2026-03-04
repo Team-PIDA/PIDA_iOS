@@ -10,6 +10,9 @@ import Foundation
 import SwiftUI
 import ComposableArchitecture
 
+import CategoryFeature
+import CategoryFeatureInterface
+
 import MapFeature
 import MapFeatureInterface
 

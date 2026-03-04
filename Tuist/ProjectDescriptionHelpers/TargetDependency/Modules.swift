@@ -18,6 +18,7 @@ public enum Folder {
 }
 
 public enum Feature: ModuleRepresentable {
+  case Category
   case Map
   case Search
   case Setting
