@@ -8,13 +8,13 @@
 
 import XCTest
 import ComposableArchitecture
-@testable import CategoryFeatureInterface
+@testable import CategoryListFeatureInterface
 
 final class CategoryUnitTests: XCTestCase {
     
     func testIncrement() {
-        let store = TestStore(initialState: CategoryFeature.State()) {
-            CategoryFeature()
+        let store = TestStore(initialState: CategoryListFeature.State()) {
+            CategoryListFeature()
         }
 
         store.send(.increment) {
@@ -23,8 +23,8 @@ final class CategoryUnitTests: XCTestCase {
     }
 
     func testDecrement() {
-        let store = TestStore(initialState: CategoryFeature.State()) {
-            CategoryFeature()
+        let store = TestStore(initialState: CategoryListFeature.State()) {
+            CategoryListFeature()
         }
 
         store.send(.decrement) {

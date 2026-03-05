@@ -8,9 +8,10 @@
 
 import Foundation
 import ComposableArchitecture
+import FlowerSpotClient
 
 @Reducer
-public struct CategoryFeature {
+public struct CategoryListFeature {
   private let reducer: Reduce<State, Action>
 
   public init(reducer: Reduce<State, Action>) {
@@ -20,7 +21,11 @@ public struct CategoryFeature {
   @ObservableState
   public struct State: Equatable {
     public var selectedCategoryId: Int = 1
-    public var categoryList: [CategoryItem]
+    public var categoryList: [CategoryListItem]
+    public var flowerSpots: [FlowerSpotEntity] = []
+    public var isLoading: Bool = true
+    public var isDataEmpty: Bool = false
+
     public init() {
       categoryList = [
         .init(id: 1, title: "전체"),
@@ -32,14 +37,17 @@ public struct CategoryFeature {
   }
 
   public enum Action: Equatable {
+    case onAppear
     case tapCategory(id: Int)
     case resetToAll
+    case storeFlowerSpots([FlowerSpotEntity])
+    case flowerSpotTapped(FlowerSpotEntity)
     case delegate(Delegate)
   }
 
   public enum Delegate: Equatable {
     case tapCategory(title: String)
-    case resetCategory
+    case showFlowerSpotDetail(FlowerSpotEntity)
   }
 
   public var body: some ReducerOf<Self> {
@@ -47,7 +55,12 @@ public struct CategoryFeature {
   }
 }
 
-public struct CategoryItem: Equatable {
+public struct CategoryListItem: Equatable {
   public var id: Int
   public var title: String
+
+  public init(id: Int, title: String) {
+    self.id = id
+    self.title = title
+  }
 }

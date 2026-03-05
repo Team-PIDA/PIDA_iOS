@@ -11,7 +11,6 @@ import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
 import SearchClient
-import CategoryFeatureInterface
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
 import Shared

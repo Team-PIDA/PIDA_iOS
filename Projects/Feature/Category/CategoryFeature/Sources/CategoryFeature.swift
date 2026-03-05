@@ -10,7 +10,7 @@ import Foundation
 import ComposableArchitecture
 import CategoryFeatureInterface
 
-extension CategoryFeature {
+extension CategoryListFeature {
   public init() {
     self.init(reducer: Reduce(Core()))
   }
@@ -18,11 +18,11 @@ extension CategoryFeature {
   struct Core: Reducer {
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
+      case .onAppear:
+        return .none
+
       case let .tapCategory(id):
         state.selectedCategoryId = id
-        if id == 1 {
-          return .send(.delegate(.resetCategory))
-        }
         let title = state.categoryList.first(where: { $0.id == id })?.title ?? ""
         return .send(.delegate(.tapCategory(title: title)))
 
@@ -30,7 +30,17 @@ extension CategoryFeature {
         state.selectedCategoryId = 1
         return .none
 
-      case .delegate: return .none
+      case let .storeFlowerSpots(flowerSpots):
+        state.flowerSpots = flowerSpots
+        state.isLoading = false
+        state.isDataEmpty = flowerSpots.isEmpty
+        return .none
+
+      case let .flowerSpotTapped(flowerSpot):
+        return .send(.delegate(.showFlowerSpotDetail(flowerSpot)))
+
+      case .delegate:
+        return .none
       }
     }
   }

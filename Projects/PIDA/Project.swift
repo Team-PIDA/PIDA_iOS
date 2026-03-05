@@ -10,7 +10,6 @@ import ProjectDescriptionHelpers
 
 let project = Project.buildApp(
   dependencies: [
-    .Feature.Category,
     .Feature.Map,
     .Feature.Search,
     .Feature.Setting,

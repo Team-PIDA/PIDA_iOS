@@ -10,7 +10,6 @@ import SwiftUI
 import Shared
 import ComposableArchitecture
 import MapFeatureInterface
-import CategoryFeatureInterface
 import FlowerSpotClient
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
