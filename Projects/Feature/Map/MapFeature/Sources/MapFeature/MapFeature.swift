@@ -133,10 +133,13 @@ extension MapFeature {
           
         case .resetMarkerTapped:
           return .send(.markerTapped(id: nil))
-          
+
         case .dismissFlowerSpotDetail:
           state.flowerSpotDetail = nil
           return .none
+
+        case .resetCategorySelection:
+          return .send(.category(.resetToAll))
         }
         
         // MARK: - Alert
@@ -252,8 +255,16 @@ extension MapFeature {
         state.mapActions.append(action)
         return .none
         
-      case .category(.delegate):
-        return .none
+      case let .category(.delegate(action)):
+        switch action {
+        case let .tapCategory(title):
+          state.mapSearch.currentNavigation = .category
+          return .send(.mapSearch(.setSearchBarText(title)))
+
+        case .resetCategory:
+          state.mapSearch.currentNavigation = .map
+          return .send(.mapSearch(.resetSearchBar))
+        }
 
       case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category:
         return .none

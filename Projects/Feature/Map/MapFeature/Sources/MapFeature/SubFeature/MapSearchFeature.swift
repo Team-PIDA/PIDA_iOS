@@ -94,6 +94,11 @@ extension MapSearchFeature {
             .send(.presentToSearch)
           )
           
+        case .category:
+          // 카테고리 → 뒤로 = 기본 지도 화면
+          state.currentNavigation = .map
+          return .send(.delegate(.resetCategorySelection))
+
         case .map:
           return .none
         }

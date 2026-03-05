@@ -109,7 +109,9 @@ extension MapView {
     VStack(spacing: .Number10) {
       searchView()
         .padding(.horizontal, .Number16)
-      categoryButton()
+      if store.mapSearch.searchText == nil {
+        categoryButton()
+      }
     }
     .padding(.vertical, .Number8)
   }

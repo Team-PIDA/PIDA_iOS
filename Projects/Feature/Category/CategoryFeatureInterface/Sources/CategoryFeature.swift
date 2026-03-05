@@ -33,10 +33,13 @@ public struct CategoryFeature {
 
   public enum Action: Equatable {
     case tapCategory(id: Int)
+    case resetToAll
     case delegate(Delegate)
   }
 
   public enum Delegate: Equatable {
+    case tapCategory(title: String)
+    case resetCategory
   }
 
   public var body: some ReducerOf<Self> {
