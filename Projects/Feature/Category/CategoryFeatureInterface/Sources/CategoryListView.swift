@@ -10,7 +10,6 @@ import SwiftUI
 import ComposableArchitecture
 import DesignKit
 import DotLottie
-import FlowerSpotClient
 
 public struct CategoryListView: View {
   let store: StoreOf<CategoryListFeature>
@@ -52,8 +51,13 @@ public struct CategoryListView: View {
         } else {
           LazyVStack(spacing: .Number0) {
             ForEach(store.flowerSpots, id: \.id) { flowerSpot in
-              flowerSpotItemView(flowerSpot)
-                .padding(.horizontal, .Number16)
+              CategoryListItemView(
+                flowerSpot: flowerSpot,
+                onTap: { flowerSpot in
+                  store.send(.flowerSpotTapped(flowerSpot))
+                }
+              )
+              .padding(.horizontal, .Number16)
             }
           }
           .padding(.top, .Number8)
@@ -106,45 +110,6 @@ public struct CategoryListView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .frame(minHeight: 300)
-  }
-
-  @ViewBuilder
-  private func flowerSpotItemView(_ flowerSpot: FlowerSpotEntity) -> some View {
-    VStack(alignment: .leading, spacing: .Number0) {
-      HStack(alignment: .center, spacing: .Number12) {
-        HStack {
-          VStack(alignment: .leading, spacing: .Number0) {
-            Text(flowerSpot.streetName)
-              .fontStyle(FontSet.Body.body2)
-              .foregroundStyle(ColorSet.Text.Primary)
-            Text(flowerSpot.address)
-              .fontStyle(FontSet.Caption.caption1)
-              .foregroundStyle(ColorSet.Text.Tertiary)
-            HStack(spacing: .Number4) {
-              if let bloomStatus = BloomStatus(rawValue: flowerSpot.bloomingStatus) {
-                BloomStateTagView(state: bloomStatus)
-              }
-              TagView(text: flowerSpot.recentlyVisitedCountString)
-            }
-            .padding(.top, .Number8)
-          }
-          Spacer()
-        }
-
-        if let previewUrl = flowerSpot.previewUrl {
-          RemoteImageView(urlString: previewUrl)
-            .frame(width: 72, height: 72)
-            .clipped()
-            .cornerRadius(.Number16)
-        }
-      }
-      .padding(.vertical, .Number12)
-      BorderView(size: .long)
-    }
-    .contentShape(Rectangle())
-    .onTapGesture {
-      store.send(.flowerSpotTapped(flowerSpot))
-    }
   }
 
   private var selectedCategoryTitle: String {
