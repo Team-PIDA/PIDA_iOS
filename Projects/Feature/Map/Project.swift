@@ -12,6 +12,7 @@ import ProjectDescriptionHelpers
 let project = Project.buildFeature(
   for: Feature.Map,
   interfaceDependencies: [
+    .Feature.Category_interface,
     .Feature.FlowerSpotDetail_interface,
     .Feature.SearchRegionList_interface,
     .Client.FlowerSpot,

@@ -10,6 +10,7 @@ import SwiftUI
 import Shared
 import ComposableArchitecture
 import MapFeatureInterface
+import CategoryFeatureInterface
 import FlowerSpotClient
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
@@ -22,7 +23,8 @@ extension MapFeature {
     mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>,
     category: Reduce<CategoryFeature.State, CategoryFeature.Action>,
     flowerSpotDetail: FlowerSpotDetailFeature,
-    searchRegionList: SearchRegionListFeature
+    searchRegionList: SearchRegionListFeature,
+    categoryListFeature: CategoryListFeature
   ) {
     self.init(
       reducer: Reduce(Core()),
@@ -30,7 +32,8 @@ extension MapFeature {
       mapSearch: mapSearch,
       category: category,
       flowerSpotDetail: flowerSpotDetail,
-      searchRegionList: searchRegionList
+      searchRegionList: searchRegionList,
+      categoryListFeature: categoryListFeature
     )
   }
   
@@ -258,14 +261,21 @@ extension MapFeature {
         switch action {
         case let .tapCategory(title):
           state.mapSearch.currentNavigation = .category
+          state.categoryList = .init()
+          state.category.isShowCategoryList = true
           return .send(.mapSearch(.setSearchBarText(title)))
 
         case .resetCategory:
           state.mapSearch.currentNavigation = .map
+          state.category.isShowCategoryList = false
+          state.categoryList = nil
           return .send(.mapSearch(.resetSearchBar))
         }
 
-      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category:
+      case .categoryList(.delegate):
+        return .none
+
+      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category, .categoryList:
         return .none
         
       }

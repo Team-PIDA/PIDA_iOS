@@ -10,6 +10,9 @@ import Foundation
 import SwiftUI
 import ComposableArchitecture
 
+import CategoryFeature
+import CategoryFeatureInterface
+
 import MapFeature
 import MapFeatureInterface
 
@@ -139,7 +142,8 @@ struct PIDAFeature {
         mapSearch: mapSearchReducer,
         category: categoryReducer,
         flowerSpotDetail: FlowerSpotDetailFeature(),
-        searchRegionList: SearchRegionListFeature()
+        searchRegionList: SearchRegionListFeature(),
+        categoryListFeature: CategoryListFeature()
       )
     }
     Reduce<State, Action> { state, action in

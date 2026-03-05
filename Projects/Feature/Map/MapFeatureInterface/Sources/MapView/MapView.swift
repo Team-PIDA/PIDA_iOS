@@ -10,6 +10,7 @@ import SwiftUI
 import Shared
 import DesignKit
 import ComposableArchitecture
+import CategoryFeatureInterface
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
 
@@ -64,6 +65,13 @@ public struct MapView: View {
       Group {
         if let store = store.scope(state: \.searchRegionList, action: \.searchRegionList) {
           regionListSheet(with: store)
+        }
+      }
+    }
+    .overlay {
+      Group {
+        if let categoryListStore = store.scope(state: \.categoryList, action: \.categoryList) {
+          categoryListSheet(with: categoryListStore)
         }
       }
     }
@@ -201,6 +209,8 @@ extension MapView {
       return .detailBottomSheetHeight
     } else if store.mapSearch.isShowRegionList {
       return min(store.mapSearch.regionBottomSheetHeight, 500)
+    } else if store.category.isShowCategoryList {
+      return min(store.category.categoryListBottomSheetHeight, 500)
     } else {
       return 20
     }
@@ -253,6 +263,16 @@ extension MapView {
       currentHeight: $store.mapSearch.regionBottomSheetHeight
     ) {
       SearchRegionListView(store: regionStore)
+    }
+  }
+
+  private func categoryListSheet(with categoryListStore: StoreOf<CategoryListFeature>) -> some View {
+    DetentBottomSheet(
+      isPresented: $store.category.isShowCategoryList,
+      detent: $store.category.categoryListDetent,
+      currentHeight: $store.category.categoryListBottomSheetHeight
+    ) {
+      CategoryListView(store: categoryListStore)
     }
   }
 }

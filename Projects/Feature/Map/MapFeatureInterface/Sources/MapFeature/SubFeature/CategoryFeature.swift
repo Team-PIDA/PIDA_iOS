@@ -7,6 +7,7 @@
 
 import Foundation
 import ComposableArchitecture
+import DesignKit
 
 @Reducer
 public struct CategoryFeature {
@@ -20,6 +21,10 @@ public struct CategoryFeature {
   public struct State: Equatable {
     public var selectedCategoryId: Int = 1
     public var categoryList: [CategoryItem]
+
+    public var isShowCategoryList: Bool = false
+    public var categoryListDetent: BottomSheetDetent = .medium
+    public var categoryListBottomSheetHeight: CGFloat = 0
 
     public init() {
       categoryList = [

@@ -11,6 +11,7 @@ import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
 import SearchClient
+import CategoryFeatureInterface
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
 import Shared
@@ -23,6 +24,7 @@ public struct MapFeature {
   private let category: Reduce<CategoryFeature.State, CategoryFeature.Action>
   private let flowerSpotDetail: FlowerSpotDetailFeature
   private let searchRegionList: SearchRegionListFeature
+  private let categoryListFeature: CategoryListFeature
 
   public init(
     reducer: Reduce<State, Action>,
@@ -30,7 +32,8 @@ public struct MapFeature {
     mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>,
     category: Reduce<CategoryFeature.State, CategoryFeature.Action>,
     flowerSpotDetail: FlowerSpotDetailFeature,
-    searchRegionList: SearchRegionListFeature
+    searchRegionList: SearchRegionListFeature,
+    categoryListFeature: CategoryListFeature
   ) {
     self.reducer = reducer
     self.location = location
@@ -38,6 +41,7 @@ public struct MapFeature {
     self.category = category
     self.flowerSpotDetail = flowerSpotDetail
     self.searchRegionList = searchRegionList
+    self.categoryListFeature = categoryListFeature
   }
   
   @ObservableState
@@ -78,6 +82,7 @@ public struct MapFeature {
     /// Optional State 패턴: nil이면 바텀시트 숨김, 값이 있으면 바텀시트 표시
     public var flowerSpotDetail: FlowerSpotDetailFeature.State? = nil
     public var searchRegionList: SearchRegionListFeature.State? = nil
+    public var categoryList: CategoryListFeature.State? = nil
 
     public init() {}
   }
@@ -90,6 +95,7 @@ public struct MapFeature {
     case category(CategoryFeature.Action)
     case flowerSpotDetail(FlowerSpotDetailFeature.Action)
     case searchRegionList(SearchRegionListFeature.Action)
+    case categoryList(CategoryListFeature.Action)
     
     case showToastView(message: String?, buttonLabel: String?)
     case moveToReportURL
@@ -136,6 +142,9 @@ public struct MapFeature {
     }
     .ifLet(\.searchRegionList, action: \.searchRegionList) {
       searchRegionList
+    }
+    .ifLet(\.categoryList, action: \.categoryList) {
+      categoryListFeature
     }
     reducer
   }
