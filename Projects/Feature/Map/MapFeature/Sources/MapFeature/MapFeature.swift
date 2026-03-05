@@ -141,6 +141,8 @@ extension MapFeature {
           return .none
 
         case .resetCategorySelection:
+          state.category.isShowCategoryList = false
+          state.categoryList = nil
           return .send(.category(.resetToAll))
         }
         
