@@ -108,6 +108,7 @@ extension MapView {
     }
     .cameraMoveEvent {
       store.send(.mapSearch(.changeRegionSheetDetent))
+      store.send(.category(.changeCategorySheetDetent))
     }
     .ignoresSafeArea()
   }

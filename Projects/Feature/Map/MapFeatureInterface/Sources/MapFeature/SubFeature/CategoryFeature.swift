@@ -39,6 +39,7 @@ public struct CategoryFeature {
   public enum Action: Equatable {
     case tapCategory(id: Int)
     case resetToAll
+    case changeCategorySheetDetent
     case delegate(Delegate)
   }
 

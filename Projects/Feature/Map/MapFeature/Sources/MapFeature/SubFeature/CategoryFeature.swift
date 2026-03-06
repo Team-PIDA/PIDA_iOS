@@ -26,6 +26,13 @@ extension CategoryFeature {
 
       case .resetToAll:
         state.selectedCategoryId = 1
+        state.categoryListDetent = .medium
+        return .none
+
+      case .changeCategorySheetDetent:
+        if state.isShowCategoryList {
+          state.categoryListDetent = .low
+        }
         return .none
 
       case .delegate:
