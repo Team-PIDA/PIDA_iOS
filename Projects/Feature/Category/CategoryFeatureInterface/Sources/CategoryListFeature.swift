@@ -29,9 +29,11 @@ public struct CategoryListFeature {
     public init() {
       categoryList = [
         .init(id: 1, title: "전체"),
-        .init(id: 2, title: "산책로 추천"),
-        .init(id: 3, title: "카페 추천"),
-        .init(id: 4, title: "벚꽃 축제")
+        .init(id: 2, title: "서울"),
+        .init(id: 3, title: "경기"),
+        .init(id: 4, title: "인천"),
+        .init(id: 5, title: "강원"),
+        .init(id: 6, title: "충북")
       ]
     }
   }

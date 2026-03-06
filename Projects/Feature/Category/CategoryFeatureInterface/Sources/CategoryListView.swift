@@ -19,23 +19,25 @@ public struct CategoryListView: View {
   }
 
   public var body: some View {
-    if store.isLoading {
-      VStack(alignment: .center) {
-        Spacer()
-        DotLottieAnimation(
-          fileName: LottieSet.dot_loading.name,
-          bundle: DesignKitResources.bundle,
-          config: AnimationConfig(autoplay: true, loop: true)
-        )
-        .view()
-        .frame(width: .Number100, height: .Number100)
-        Spacer()
-      }
-    } else {
-      content
-        .onAppear {
-          store.send(.onAppear)
+    Group {
+      if store.isLoading {
+        VStack(alignment: .center) {
+          Spacer()
+          DotLottieAnimation(
+            fileName: LottieSet.dot_loading.name,
+            bundle: DesignKitResources.bundle,
+            config: AnimationConfig(autoplay: true, loop: true)
+          )
+          .view()
+          .frame(width: .Number100, height: .Number100)
+          Spacer()
         }
+      } else {
+        content
+      }
+    }
+    .onAppear {
+      store.send(.onAppear)
     }
   }
 
