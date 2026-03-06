@@ -276,7 +276,12 @@ extension MapFeature {
           return .send(.mapSearch(.resetSearchBar))
 
         case let .didFetchFlowerSpots(data):
-          return .send(.categoryList(.storeFlowerSpots(data)))
+          state.flowerSpots.removeAll()
+          data.forEach { state.flowerSpots[$0.id] = $0 }
+          return .concatenate(
+            .send(.addMapAction(.updateMarkers(state.flowerSpots))),
+            .send(.categoryList(.storeFlowerSpots(data)))
+          )
         }
         
         // MARK: - CategoryListFeature Delegate Action
