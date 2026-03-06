@@ -50,6 +50,7 @@ public struct CategoryListFeature {
   public enum Delegate: Equatable {
     case tapCategory(title: String)
     case showFlowerSpotDetail(FlowerSpotEntity)
+    case requestFlowerSpots(title: String)
   }
 
   public var body: some ReducerOf<Self> {

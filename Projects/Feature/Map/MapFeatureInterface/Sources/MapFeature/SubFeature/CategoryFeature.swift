@@ -8,6 +8,7 @@
 import Foundation
 import ComposableArchitecture
 import DesignKit
+import FlowerSpotClient
 
 @Reducer
 public struct CategoryFeature {
@@ -40,12 +41,14 @@ public struct CategoryFeature {
     case tapCategory(id: Int)
     case resetToAll
     case changeCategorySheetDetent
+    case fetchFlowerSpots(title: String)
     case delegate(Delegate)
   }
 
   public enum Delegate: Equatable {
     case tapCategory(title: String)
     case resetCategory
+    case didFetchFlowerSpots([FlowerSpotEntity])
   }
 
   public var body: some ReducerOf<Self> {

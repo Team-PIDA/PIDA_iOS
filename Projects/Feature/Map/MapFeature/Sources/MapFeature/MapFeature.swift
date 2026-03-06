@@ -259,6 +259,8 @@ extension MapFeature {
         state.mapActions.append(action)
         return .none
         
+        // MARK: - CategoryFeature Delegate Action
+        
       case let .category(.delegate(action)):
         switch action {
         case let .tapCategory(title):
@@ -272,10 +274,24 @@ extension MapFeature {
           state.category.isShowCategoryList = false
           state.categoryList = nil
           return .send(.mapSearch(.resetSearchBar))
-        }
 
-      case .categoryList(.delegate):
-        return .none
+        case let .didFetchFlowerSpots(data):
+          return .send(.categoryList(.storeFlowerSpots(data)))
+        }
+        
+        // MARK: - CategoryListFeature Delegate Action
+
+      case let .categoryList(.delegate(action)):
+        switch action {
+        case let .tapCategory(title):
+          return .send(.mapSearch(.setSearchBarText(title)))
+
+        case let .requestFlowerSpots(title):
+          return .send(.category(.fetchFlowerSpots(title: title)))
+
+        case .showFlowerSpotDetail:
+          return .none
+        }
 
       case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category, .categoryList:
         return .none
@@ -312,4 +328,5 @@ extension MapFeature.Core {
       await send(.location(.fetchFlowersInRadius(coordinate: coord, radiusInKm: 1.0)))
     }
   }
+
 }
