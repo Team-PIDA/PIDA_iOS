@@ -28,6 +28,7 @@ extension TargetDependency {
   public struct Client: TargetDependencyFactory {
     public static let Cache = Self.project(.client(.Cache))
     public static let API = Self.project(.client(.API))
+    public static let Category = Self.project(.client(.Category))
     public static let Search = Self.project(.client(.Search))
     public static let FlowerSpot = Self.project(.client(.FlowerSpot))
     public static let Auth = Self.project(.client(.Auth))

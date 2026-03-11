@@ -31,6 +31,7 @@ public enum Feature: ModuleRepresentable {
 public enum Client: ModuleRepresentable {
   case API
   case Cache
+  case Category
   case Search
   case FlowerSpot
   case Auth

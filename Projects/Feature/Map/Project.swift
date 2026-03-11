@@ -15,6 +15,7 @@ let project = Project.buildFeature(
     .Feature.Category_interface,
     .Feature.FlowerSpotDetail_interface,
     .Feature.SearchRegionList_interface,
+    .Client.Category,
     .Client.FlowerSpot,
     .Client.Blooming,
     .Client.Location,
