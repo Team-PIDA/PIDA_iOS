@@ -9,7 +9,6 @@
 import Foundation
 import DesignKit
 import ComposableArchitecture
-import FlowerSpotClient
 import SearchClient
 import CategoryFeatureInterface
 import FlowerSpotDetailFeatureInterface
@@ -50,8 +49,8 @@ public struct MapFeature {
     /// 유저의 현재 위치
     public var userLocation: Coordinate? = nil
     
-    /// 현재 지도에 보여 줄 FlowerSpot 데이터
-    public var flowerSpots: [Int: FlowerSpotEntity] = [:]
+    /// 현재 지도에 보여 줄 명소 데이터 (지도 렌더링용)
+    public var spots: [Int: MapSpotEntity] = [:]
     /// 현재 그려져있는 경로
     public var selectedPathLines: [Coordinate] = []
     /// 초기 지도 범위 요청 트리거 (초기 진입용)

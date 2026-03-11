@@ -94,7 +94,7 @@ extension MapView {
   @ViewBuilder
   private var mapView: some View {
     MapViewRepresentable(
-      flowerPositions: $store.flowerSpots,
+      flowerPositions: $store.spots,
       isCameraMove: $store.researchButtonEnable,
       hasBottomSheet: $store.mapSearch.isShowRegionList,
       mapActions: $store.mapActions,

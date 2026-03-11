@@ -9,7 +9,6 @@
 import Foundation
 import DesignKit
 import NMapsMap
-import FlowerSpotClient
 import Shared
 
 // MARK: - Delegate
@@ -24,7 +23,7 @@ extension MapViewRepresentable {
     /// 현재 표시되어있는 마커 배열
     var markers: [NMFMarker] = []
     /// 현재 선택 된 마커가 있는지 체크하기 위한 프로퍼티
-    var selectedPin: FlowerSpotEntity?
+    var selectedPin: MapSpotEntity?
     /// 현재 선택되어있는 NMFMarker
     var activeMarker: NMFMarker? = nil
     /// 현재 그려져있는 경로 데이터
@@ -37,14 +36,14 @@ extension MapViewRepresentable {
     var isInitialBounds: Bool = true
     
     /// 특정 위치의 데이터
-    var focusData: FlowerSpotEntity? = nil
+    var focusData: MapSpotEntity? = nil
     /// 지도에 보여주기 위한 특정 위치 마커
     var focusMarker: NMFMarker? = nil
     
     /// 지도에 그려진 경로의 좌표 데이터
     var drawPathPoints: [Coordinate] = []
-    /// 현재 표시된 꽃 명소 데이터 (마커 업데이트 감지용)
-    var currentFlowerPositions: [Int: FlowerSpotEntity] = [:]
+    /// 현재 표시된 명소 데이터 (마커 업데이트 감지용)
+    var currentFlowerPositions: [Int: MapSpotEntity] = [:]
     
     init(_ parent: MapViewRepresentable) {
       self.parent = parent
@@ -118,8 +117,8 @@ extension MapViewRepresentable {
     /// 마커 비활성화 메서드
     func deleteMarker() {
       if let data = selectedPin,
-         let activeMarker = activeMarker,
-         let bloomingStatus = BloomStatus(rawValue: data.bloomingStatus) {
+         let activeMarker = activeMarker {
+        let bloomingStatus = data.bloomStatus
         let image = bloomingStatus.inactiveImage
         activeMarker.iconImage = NMFOverlayImage(image: image)
         self.activeMarker = nil
@@ -128,7 +127,7 @@ extension MapViewRepresentable {
     }
     
     /// 마커 탭 이벤트에 따른 데이터 상태 처리
-    func markerTapEvent(marker: NMFMarker, data: FlowerSpotEntity) {
+    func markerTapEvent(marker: NMFMarker, data: MapSpotEntity) {
       
       // 검색 결과가 있을 경우 기존 검색 기록 삭제
       if focusData != nil {
@@ -144,11 +143,13 @@ extension MapViewRepresentable {
     /// 마커 개화 상태 값 업데이트
     func updateMarker(state: BloomStatus) {
       if let activeMarker = activeMarker {
-        guard selectedPin?.bloomingStatus != state.rawValue else { return }
-        selectedPin?.bloomingStatus = state.rawValue
+        guard selectedPin?.bloomStatus != state else { return }
+        if let pin = selectedPin {
+          selectedPin = MapSpotEntity(id: pin.id, pinPoint: pin.pinPoint, path: pin.path, type: pin.type, bloomStatus: state)
+        }
         activeMarker.iconImage = NMFOverlayImage(image: state.activeImage)
       } else if let focusMarker = focusMarker {
-        guard focusData?.bloomingStatus != state.rawValue else { return }
+        guard focusData?.bloomStatus != state else { return }
         focusMarker.iconImage = NMFOverlayImage(image: state.activeImage)
       }
       if let path = paths,

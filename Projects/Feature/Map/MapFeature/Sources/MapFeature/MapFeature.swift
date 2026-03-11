@@ -67,7 +67,7 @@ extension MapFeature {
         state.researchButtonEnable = false
         if isRequest {
           analyticsClient.track(MapEvent.researchClicked(currentPage: "map"))
-          state.flowerSpots.removeAll()
+          state.spots.removeAll()
           return .send(.addMapAction(.requestBounds))
         }
         return .none
@@ -90,7 +90,7 @@ extension MapFeature {
         )
         
       case let .fetchPathLines(id):
-        if let data = state.flowerSpots[id] {
+        if let data = state.spots[id] {
           state.selectedPathLines = data.path
           state.mapActions.append(.drawPath(data, data.path))
         } else {
@@ -172,12 +172,12 @@ extension MapFeature {
       case let .location(.delegate(action)):
         switch action {
         case let .storeFlowerData(data):
-          state.flowerSpots.removeAll()
+          state.spots.removeAll()
           data.forEach {
-            state.flowerSpots[$0.id] = $0
+            state.spots[$0.id] = $0.asMapSpot
           }
           return .concatenate(
-            .send(.addMapAction(.updateMarkers(state.flowerSpots))),
+            .send(.addMapAction(.updateMarkers(state.spots))),
             state.searchRegionList != nil ? .send(.searchRegionList(.storeFlowerSpots(data))) : .none
           )
           
@@ -232,11 +232,8 @@ extension MapFeature {
           return .send(.location(.moveLocation(flowerSpot.pinPoint)))
 
         case let .didUpdateFlowerSpot(item):
-          let existData = state.flowerSpots[item.id]
-          if let existData = existData,
-             item.bloomingStatus != existData.bloomingStatus {
-            state.flowerSpots[item.id] = item
-          }
+          guard state.spots[item.id] != nil else { return .none }
+          state.spots[item.id] = item.asMapSpot
           return .none
           
         case let .updateMarkerStatus(bloomStatus):
@@ -247,7 +244,7 @@ extension MapFeature {
         switch action {
         case let .showFlowerSpotDetail(data):
           return .concatenate(
-            .send(.addMapAction(.changeActiveMarker(data))),
+            .send(.addMapAction(.changeActiveMarker(data.asMapSpot))),
             .send(.markerTapped(id: data.id))
           )
         }
@@ -276,10 +273,10 @@ extension MapFeature {
           return .send(.mapSearch(.resetSearchBar))
 
         case let .didFetchFlowerSpots(data):
-          state.flowerSpots.removeAll()
-          data.forEach { state.flowerSpots[$0.id] = $0 }
+          state.spots.removeAll()
+          data.forEach { state.spots[$0.id] = $0.asMapSpot }
           return .concatenate(
-            .send(.addMapAction(.updateMarkers(state.flowerSpots))),
+            .send(.addMapAction(.updateMarkers(state.spots))),
             .send(.categoryList(.storeFlowerSpots(data)))
           )
         }
@@ -317,7 +314,7 @@ extension MapFeature.Core {
       if let result = result {
         await send(.mapSearch(.setSearchBarText(result.streetName)))
         await send(.location(.moveLocation(result.pinPoint)))
-        await send(.addMapAction(.showFocus(result)))
+        await send(.addMapAction(.showFocus(result.asMapSpot)))
         await send(.flowerSpotDetail(.requestDetailInfo(result.id)))
       } else {
         await send(.addMapAction(.clearFocus))
