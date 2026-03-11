@@ -43,7 +43,7 @@ public struct CategoryListFeature {
     case tapCategory(id: Int)
     case resetToAll
     case storeFlowerSpots([FlowerSpotEntity])
-    case flowerSpotTapped(FlowerSpotEntity)
+    case flowerSpotTapped(id: Int)
     case delegate(Delegate)
   }
 

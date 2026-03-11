@@ -40,7 +40,8 @@ extension CategoryListFeature {
         state.isDataEmpty = flowerSpots.isEmpty
         return .none
 
-      case let .flowerSpotTapped(flowerSpot):
+      case let .flowerSpotTapped(id):
+        guard let flowerSpot = state.flowerSpots.first(where: { $0.id == id }) else { return .none }
         return .send(.delegate(.showFlowerSpotDetail(flowerSpot)))
 
       case .delegate:
