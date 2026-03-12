@@ -36,9 +36,6 @@ public struct CategoryListView: View {
         content
       }
     }
-    .onAppear {
-      store.send(.onAppear)
-    }
   }
 
   @ViewBuilder
@@ -62,7 +59,6 @@ public struct CategoryListView: View {
               .padding(.horizontal, .Number16)
             }
           }
-          .padding(.top, .Number8)
           .padding(.bottom, .Number16)
         }
       }
@@ -85,10 +81,10 @@ public struct CategoryListView: View {
   private var categoryScrollView: some View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: .Number8) {
-        ForEach(store.categoryList, id: \.id) { item in
+        ForEach(store.filterList, id: \.id) { item in
           CategoryButton(
             title: item.title,
-            isActive: item.id == store.selectedCategoryId
+            isActive: item.id == store.selectedFilterId
           )
           .onTapGesture {
             store.send(.tapCategory(id: item.id))

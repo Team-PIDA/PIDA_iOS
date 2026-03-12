@@ -72,6 +72,13 @@ extension MapFeature {
         }
         return .none
         
+      case let .receiveMapBounds(coordinates):
+        if state.category.selectedCategory == .all {
+          return .send(.location(.fetchFlowers(coordinates)))
+        } else {
+          return .send(.category(.fetchCategorySpots(coordinates)))
+        }
+        
         // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
       case let .markerTapped(id):
         guard let id = id else {
@@ -283,18 +290,15 @@ extension MapFeature {
             .send(.addMapAction(.updateMarkers(state.spots))),
             .send(.categoryList(.storeSpots(data)))
           )
+          
+        case .requestMapBounds:
+          return .send(.requestMapBounds(true))
         }
         
         // MARK: - CategoryListFeature Delegate Action
 
       case let .categoryList(.delegate(action)):
         switch action {
-        case let .tapCategory(title):
-          return .send(.mapSearch(.setSearchBarText(title)))
-
-        case let .requestFlowerSpots(title):
-          return .send(.category(.fetchFlowerSpots(title: title)))
-
         case .showFlowerSpotDetail:
           return .none
         }

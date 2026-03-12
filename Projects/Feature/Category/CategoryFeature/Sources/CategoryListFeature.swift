@@ -19,20 +19,8 @@ extension CategoryListFeature {
   struct Core: Reducer {
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
-      case .onAppear:
-        let title = state.categoryList.first(where: { $0.id == state.selectedCategoryId })?.title ?? ""
-        return .send(.delegate(.requestFlowerSpots(title: title)))
-
       case let .tapCategory(id):
-        state.selectedCategoryId = id
-        let title = state.categoryList.first(where: { $0.id == id })?.title ?? ""
-        return .concatenate(
-          .send(.delegate(.tapCategory(title: title))),
-          .send(.delegate(.requestFlowerSpots(title: title)))
-        )
-
-      case .resetToAll:
-        state.selectedCategoryId = 1
+        state.selectedFilterId = id
         return .none
 
       case let .storeSpots(flowerSpots):

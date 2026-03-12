@@ -21,10 +21,10 @@ public struct CategoryListFeature {
 
   @ObservableState
   public struct State: Equatable {
-    public var selectedCategoryId: Int = 1
+    public var selectedFilterId: Int = 1
     public var headerTitle: String = ""
     public var categoryItem: CategoryEntity
-    public var categoryList: [CategoryListItem] = []
+    public var filterList: [CategoryListItem] = []
     public var flowerSpots: [FlowerSpotEntity] = []
     public var isLoading: Bool = true
     public var isDataEmpty: Bool = false
@@ -32,7 +32,7 @@ public struct CategoryListFeature {
     public init(categoryItem: CategoryEntity) {
       self.categoryItem = categoryItem
       if categoryItem.type == .festival {
-        categoryList = [
+        filterList = [
           .init(id: 1, title: "전체"),
           .init(id: 2, title: "서울"),
           .init(id: 3, title: "경기"),
@@ -45,18 +45,14 @@ public struct CategoryListFeature {
   }
 
   public enum Action: Equatable {
-    case onAppear
     case tapCategory(id: Int)
-    case resetToAll
     case storeSpots([FlowerSpotEntity])
     case spotTapped(id: Int)
     case delegate(Delegate)
   }
 
   public enum Delegate: Equatable {
-    case tapCategory(title: String)
     case showFlowerSpotDetail(FlowerSpotEntity)
-    case requestFlowerSpots(title: String)
   }
 
   public var body: some ReducerOf<Self> {

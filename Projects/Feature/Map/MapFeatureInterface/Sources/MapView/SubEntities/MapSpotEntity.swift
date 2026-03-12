@@ -18,7 +18,13 @@ public struct MapSpotEntity: Equatable, Sendable {
   public let type: MapSpotType
   public let bloomStatus: BloomStatus
 
-  public init(id: Int, pinPoint: Coordinate, path: [Coordinate], type: MapSpotType, bloomStatus: BloomStatus) {
+  public init(
+    id: Int,
+    pinPoint: Coordinate,
+    path: [Coordinate],
+    type: MapSpotType,
+    bloomStatus: BloomStatus
+  ) {
     self.id = id
     self.pinPoint = pinPoint
     self.path = path

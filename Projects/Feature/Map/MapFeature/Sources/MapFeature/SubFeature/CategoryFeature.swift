@@ -33,7 +33,10 @@ extension CategoryFeature {
         if item.type == .all {
           return .send(.delegate(.resetCategory))
         }
-        return .send(.delegate(.tapCategory(item)))
+        return .concatenate(
+          .send(.delegate(.tapCategory(item))),
+          .send(.delegate(.requestMapBounds))
+        )
 
       case .resetToAll:
         state.selectedCategory = .all
@@ -45,9 +48,9 @@ extension CategoryFeature {
           state.categoryListDetent = .low
         }
         return .none
-
-      case let .fetchFlowerSpots(title):
-        return fetchFlowerSpots(title: title)
+        
+      case let .fetchCategorySpots(coordinates):
+        return fetchFlowerSpots()
 
       case .delegate:
         return .none
@@ -70,7 +73,7 @@ extension CategoryFeature.Core {
   }
   
   // TODO: 임시 데이터 - 서버 데이터 확정 후 실제 API 연동으로 교체 필요
-  private func fetchFlowerSpots(title: String) -> Effect<Action> {
+  private func fetchFlowerSpots() -> Effect<Action> {
     return .send(.delegate(.didFetchFlowerSpots([
       .init(
         id: 1,

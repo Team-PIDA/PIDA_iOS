@@ -10,6 +10,7 @@ import ComposableArchitecture
 import DesignKit
 import FlowerSpotClient
 import CategoryClient
+import Shared
 
 @Reducer
 public struct CategoryFeature {
@@ -39,7 +40,7 @@ public struct CategoryFeature {
     case tapCategory(CategoryEntity)
     case resetToAll
     case changeCategorySheetDetent
-    case fetchFlowerSpots(title: String)
+    case fetchCategorySpots([Coordinate])
     case delegate(Delegate)
   }
 
@@ -47,6 +48,7 @@ public struct CategoryFeature {
     case tapCategory(CategoryEntity)
     case resetCategory
     case didFetchFlowerSpots([FlowerSpotEntity])
+    case requestMapBounds
   }
 
   public var body: some ReducerOf<Self> {

@@ -101,6 +101,7 @@ public struct MapFeature {
     case viewDidAppear
     
     case requestMapBounds(Bool)
+    case receiveMapBounds([Coordinate])
     case addMapAction(MapAction)
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
