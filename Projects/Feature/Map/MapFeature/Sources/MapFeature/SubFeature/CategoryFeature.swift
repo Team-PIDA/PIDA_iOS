@@ -15,18 +15,28 @@ extension CategoryFeature {
   }
 
   struct Core: Reducer {
+    @Dependency(\.categoryClient) var categoryClient
+    
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
+      case .fetchCategoryList:
+        return fetchCategoryList()
+        
+      case let .storeCategoryList(item):
+        guard !item.isEmpty else { return .none }
+        state.categoryList = [.init(id: -1, category: "전체")] + item
+        return .none
+
       case let .tapCategory(id):
         state.selectedCategoryId = id
-        if id == 1 {
+        if id == -1 {
           return .send(.delegate(.resetCategory))
         }
-        let title = state.categoryList.first(where: { $0.id == id })?.title ?? ""
+        let title = state.categoryList.first(where: { $0.id == id })?.category ?? ""
         return .send(.delegate(.tapCategory(title: title)))
 
       case .resetToAll:
-        state.selectedCategoryId = 1
+        state.selectedCategoryId = -1
         state.categoryListDetent = .medium
         return .none
 
@@ -47,8 +57,20 @@ extension CategoryFeature {
 }
 
 extension CategoryFeature.Core {
+  
+  private func fetchCategoryList() -> Effect<Action> {
+    return .run { send in
+      do {
+        let categoryItem = try await categoryClient.fetchCategories()
+        await send(.storeCategoryList(categoryItem))
+      } catch {
+        
+      }
+    }
+  }
+  
   // TODO: 임시 데이터 - 서버 데이터 확정 후 실제 API 연동으로 교체 필요
-  private func fetchFlowerSpots(title: String) -> Effect<CategoryFeature.Action> {
+  private func fetchFlowerSpots(title: String) -> Effect<Action> {
     return .send(.delegate(.didFetchFlowerSpots([
       .init(
         id: 1,

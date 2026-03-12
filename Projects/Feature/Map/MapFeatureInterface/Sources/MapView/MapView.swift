@@ -175,7 +175,7 @@ extension MapView {
       HStack(spacing: .Number8) {
         ForEach(store.category.categoryList, id: \.id) { item in
           CategoryButton(
-            title: item.title,
+            title: item.category,
             isActive: item.id == store.category.selectedCategoryId
           )
           .onTapGesture {

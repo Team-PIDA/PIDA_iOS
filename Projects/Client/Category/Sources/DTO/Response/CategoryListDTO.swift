@@ -23,9 +23,9 @@ extension CategoryListDTO {
 
 struct CategoryItemDTO: Codable {
   var id: Int
-  var name: String
+  var category: String
 
   func toEntity() -> CategoryEntity {
-    CategoryEntity(id: id, name: name)
+    CategoryEntity(id: id, category: category)
   }
 }

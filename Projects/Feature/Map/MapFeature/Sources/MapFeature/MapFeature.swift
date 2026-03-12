@@ -60,7 +60,7 @@ extension MapFeature {
         
       case .viewDidAppear:
         state.isViewAppeared = true
-        return .none
+        return .send(.category(.fetchCategoryList))
         
       case let .requestMapBounds(isRequest):
         state.shouldRequestInitialBounds = true

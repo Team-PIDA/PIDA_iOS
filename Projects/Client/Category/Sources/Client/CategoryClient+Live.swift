@@ -15,8 +15,11 @@ extension CategoryClient: DependencyKey {
 
     return .init(
       fetchCategories: {
-        let endpoint = CategoryEndpoint.getCategories()
-        return try await apiClient.execute(endpoint).toEntity()
+        return [
+          CategoryEntity(id: 1, category: "벚꽃 축제"),
+          CategoryEntity(id: 2, category: "산책로 추천"),
+          CategoryEntity(id: 3, category: "카페 추천"),
+        ]
       }
     )
   }
