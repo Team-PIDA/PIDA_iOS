@@ -271,6 +271,8 @@ extension MapFeature {
           state.mapSearch.currentNavigation = .category
           state.categoryList = .init(categoryItem: category)
           state.category.isShowCategoryList = true
+          state.flowerSpotDetail = nil
+          state.mapActions.append(.deletePath)
           return .send(.mapSearch(.setSearchBarText(category.category)))
 
         case .resetCategory:
