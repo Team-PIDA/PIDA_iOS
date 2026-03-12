@@ -31,7 +31,7 @@ public struct MapView: View {
       mapView
       VStack {
         headerSection()
-        if store.researchButtonEnable {
+        if store.researchButtonEnable && store.category.selectedCategory != .festival {
           ResearchButton(
             action: {
               store.send(.requestMapBounds(true))
