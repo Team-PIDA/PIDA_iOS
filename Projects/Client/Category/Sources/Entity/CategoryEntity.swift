@@ -16,6 +16,6 @@ public struct CategoryEntity: Equatable, Sendable, Identifiable {
   public init(id: Int, category: String) {
     self.id = id
     self.category = category
-    self.type = CategoryType(rawValue: id) ?? .unknown
+    self.type = CategoryType(rawValue: id)
   }
 }

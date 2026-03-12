@@ -176,10 +176,10 @@ extension MapView {
         ForEach(store.category.categoryList, id: \.id) { item in
           CategoryButton(
             title: item.category,
-            isActive: item.id == store.category.selectedCategoryId
+            isActive: item.type == store.category.selectedCategory
           )
           .onTapGesture {
-            store.send(.category(.tapCategory(id: item.id)))
+            store.send(.category(.tapCategory(item.type)))
           }
         }
       }

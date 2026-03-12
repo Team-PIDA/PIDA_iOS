@@ -21,7 +21,7 @@ public struct CategoryFeature {
 
   @ObservableState
   public struct State: Equatable {
-    public var selectedCategoryId: Int = -1
+    public var selectedCategory: CategoryType = .all
     public var categoryList: [CategoryEntity] = []
 
     public var isShowCategoryList: Bool = false
@@ -36,7 +36,7 @@ public struct CategoryFeature {
   public enum Action: Equatable {
     case fetchCategoryList
     case storeCategoryList([CategoryEntity])
-    case tapCategory(id: Int)
+    case tapCategory(CategoryType)
     case resetToAll
     case changeCategorySheetDetent
     case fetchFlowerSpots(title: String)

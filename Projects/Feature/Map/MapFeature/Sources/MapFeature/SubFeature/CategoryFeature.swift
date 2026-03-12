@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 import MapFeatureInterface
+import CategoryClient
 import Shared
 
 extension CategoryFeature {
@@ -24,21 +25,21 @@ extension CategoryFeature {
         
       case let .storeCategoryList(item):
         guard !item.isEmpty else { return .none }
-        state.categoryList = [.init(id: -1, category: "전체")] + item
+        state.categoryList = [.init(id: 0, category: "전체")] + item
         return .none
 
-      case let .tapCategory(id):
-        state.selectedCategoryId = id
-        if id == -1 {
+      case let .tapCategory(item):
+        state.selectedCategory = item
+        if item == .all {
           return .send(.delegate(.resetCategory))
         }
-        let title = state.categoryList.first(where: { $0.id == id })?.category ?? ""
+        let title = state.categoryList.first(where: { $0.type == item })?.category ?? ""
         return .send(.delegate(.tapCategory(title: title)))
 
       case .resetToAll:
-        state.selectedCategoryId = -1
+        state.selectedCategory = .all
         state.categoryListDetent = .medium
-        return .none
+        return .send(.delegate(.resetCategory))
 
       case .changeCategorySheetDetent:
         if state.isShowCategoryList {

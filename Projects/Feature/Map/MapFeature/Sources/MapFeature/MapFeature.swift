@@ -270,7 +270,11 @@ extension MapFeature {
           state.mapSearch.currentNavigation = .map
           state.category.isShowCategoryList = false
           state.categoryList = nil
-          return .send(.mapSearch(.resetSearchBar))
+          state.spots.removeAll()
+          return .concatenate(
+            .send(.mapSearch(.resetSearchBar)),
+            .send(.addMapAction(.updateMarkers(state.spots)))
+          )
 
         case let .didFetchFlowerSpots(data):
           state.spots.removeAll()
