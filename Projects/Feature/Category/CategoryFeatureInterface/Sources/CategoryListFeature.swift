@@ -9,6 +9,7 @@
 import Foundation
 import ComposableArchitecture
 import FlowerSpotClient
+import CategoryClient
 
 @Reducer
 public struct CategoryListFeature {
@@ -21,20 +22,25 @@ public struct CategoryListFeature {
   @ObservableState
   public struct State: Equatable {
     public var selectedCategoryId: Int = 1
-    public var categoryList: [CategoryListItem]
+    public var headerTitle: String = ""
+    public var categoryItem: CategoryEntity
+    public var categoryList: [CategoryListItem] = []
     public var flowerSpots: [FlowerSpotEntity] = []
     public var isLoading: Bool = true
     public var isDataEmpty: Bool = false
 
-    public init() {
-      categoryList = [
-        .init(id: 1, title: "전체"),
-        .init(id: 2, title: "서울"),
-        .init(id: 3, title: "경기"),
-        .init(id: 4, title: "인천"),
-        .init(id: 5, title: "강원"),
-        .init(id: 6, title: "충북")
-      ]
+    public init(categoryItem: CategoryEntity) {
+      self.categoryItem = categoryItem
+      if categoryItem.type == .festival {
+        categoryList = [
+          .init(id: 1, title: "전체"),
+          .init(id: 2, title: "서울"),
+          .init(id: 3, title: "경기"),
+          .init(id: 4, title: "인천"),
+          .init(id: 5, title: "강원"),
+          .init(id: 6, title: "충북")
+        ]
+      }
     }
   }
 
@@ -42,8 +48,8 @@ public struct CategoryListFeature {
     case onAppear
     case tapCategory(id: Int)
     case resetToAll
-    case storeFlowerSpots([FlowerSpotEntity])
-    case flowerSpotTapped(id: Int)
+    case storeSpots([FlowerSpotEntity])
+    case spotTapped(id: Int)
     case delegate(Delegate)
   }
 

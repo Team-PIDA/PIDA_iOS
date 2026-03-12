@@ -56,7 +56,7 @@ public struct CategoryListView: View {
               CategoryListItemView(
                 flowerSpot: flowerSpot,
                 onTap: { flowerSpot in
-                  store.send(.flowerSpotTapped(id: flowerSpot.id))
+                  store.send(.spotTapped(id: flowerSpot.id))
                 }
               )
               .padding(.horizontal, .Number16)
@@ -72,7 +72,7 @@ public struct CategoryListView: View {
   @ViewBuilder
   private var headerView: some View {
     VStack(alignment: .leading) {
-      Text(selectedCategoryTitle + " 벚꽃길")
+      Text(store.headerTitle)
         .fontStyle(FontSet.Heading.heading3)
         .foregroundStyle(ColorSet.Text.Primary)
         .padding(.horizontal, .Number16)
@@ -114,7 +114,4 @@ public struct CategoryListView: View {
     .frame(minHeight: 300)
   }
 
-  private var selectedCategoryTitle: String {
-    store.categoryList.first { $0.id == store.selectedCategoryId }?.title ?? ""
-  }
 }

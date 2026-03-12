@@ -29,12 +29,11 @@ extension CategoryFeature {
         return .none
 
       case let .tapCategory(item):
-        state.selectedCategory = item
-        if item == .all {
+        state.selectedCategory = item.type
+        if item.type == .all {
           return .send(.delegate(.resetCategory))
         }
-        let title = state.categoryList.first(where: { $0.type == item })?.category ?? ""
-        return .send(.delegate(.tapCategory(title: title)))
+        return .send(.delegate(.tapCategory(item)))
 
       case .resetToAll:
         state.selectedCategory = .all

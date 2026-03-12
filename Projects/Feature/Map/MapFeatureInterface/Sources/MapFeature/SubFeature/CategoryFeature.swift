@@ -36,7 +36,7 @@ public struct CategoryFeature {
   public enum Action: Equatable {
     case fetchCategoryList
     case storeCategoryList([CategoryEntity])
-    case tapCategory(CategoryType)
+    case tapCategory(CategoryEntity)
     case resetToAll
     case changeCategorySheetDetent
     case fetchFlowerSpots(title: String)
@@ -44,7 +44,7 @@ public struct CategoryFeature {
   }
 
   public enum Delegate: Equatable {
-    case tapCategory(title: String)
+    case tapCategory(CategoryEntity)
     case resetCategory
     case didFetchFlowerSpots([FlowerSpotEntity])
   }

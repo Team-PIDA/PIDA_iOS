@@ -260,11 +260,11 @@ extension MapFeature {
         
       case let .category(.delegate(action)):
         switch action {
-        case let .tapCategory(title):
+        case let .tapCategory(category):
           state.mapSearch.currentNavigation = .category
-          state.categoryList = .init()
+          state.categoryList = .init(categoryItem: category)
           state.category.isShowCategoryList = true
-          return .send(.mapSearch(.setSearchBarText(title)))
+          return .send(.mapSearch(.setSearchBarText(category.category)))
 
         case .resetCategory:
           state.mapSearch.currentNavigation = .map
@@ -281,7 +281,7 @@ extension MapFeature {
           data.forEach { state.spots[$0.id] = $0.asMapSpot }
           return .concatenate(
             .send(.addMapAction(.updateMarkers(state.spots))),
-            .send(.categoryList(.storeFlowerSpots(data)))
+            .send(.categoryList(.storeSpots(data)))
           )
         }
         

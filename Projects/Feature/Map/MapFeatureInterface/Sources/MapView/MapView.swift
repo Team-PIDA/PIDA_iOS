@@ -179,7 +179,7 @@ extension MapView {
             isActive: item.type == store.category.selectedCategory
           )
           .onTapGesture {
-            store.send(.category(.tapCategory(item.type)))
+            store.send(.category(.tapCategory(item)))
           }
         }
       }
