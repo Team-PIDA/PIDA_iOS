@@ -63,6 +63,8 @@ public struct MapSearchFeature {
     case handleSearchBackNavigation
     /// 리전리스트에서 상세로 이동 시 네비게이션 상태 설정
     case setNavigationFromRegionList
+    /// 카테고리에서 상세로 이동 시 네비게이션 상태 설정
+    case setNavigationFromCategory
     
     case delegate(Delegate)
   }
@@ -74,6 +76,7 @@ public struct MapSearchFeature {
     case resetMarkerTapped
     case dismissFlowerSpotDetail
     case resetCategorySelection
+    case restoreCategoryList
   }
 
   public enum NavigationState: Equatable {
@@ -85,6 +88,7 @@ public struct MapSearchFeature {
     public enum DetailSource: Equatable {
       case fromSearch         // 검색에서 온 상세
       case fromRegionList     // 리전리스트에서 온 상세
+      case fromCategory       // 카테고리에서 온 상세
     }
   }
   

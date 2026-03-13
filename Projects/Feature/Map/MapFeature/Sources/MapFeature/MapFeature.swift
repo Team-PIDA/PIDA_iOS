@@ -88,10 +88,17 @@ extension MapFeature {
         }
         // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
         state.flowerSpotDetail = .init(userLocation: state.userLocation)
-        
+
+        let isFromCategory = state.mapSearch.currentNavigation == .category
+        if isFromCategory {
+          state.category.isShowCategoryList = false  // CategoryList 바텀시트 숨기기 (State는 유지)
+        }
+
         return .concatenate(
           .send(.mapSearch(.showRegionList(data: nil))),
-          .send(.mapSearch(.setNavigationFromRegionList)),
+          isFromCategory
+            ? .send(.mapSearch(.setNavigationFromCategory))
+            : .send(.mapSearch(.setNavigationFromRegionList)),
           .send(.fetchPathLines(id)),
           .send(.flowerSpotDetail(.requestDetailInfo(id)))
         )
@@ -151,6 +158,13 @@ extension MapFeature {
           state.category.isShowCategoryList = false
           state.categoryList = nil
           return .send(.category(.resetToAll))
+
+        case .restoreCategoryList:
+          state.category.isShowCategoryList = true
+          state.category.categoryListDetent = .medium
+          state.flowerSpotDetail = nil
+          state.mapActions.append(.deletePath)
+          return .none
         }
         
         // MARK: - Alert
@@ -224,8 +238,13 @@ extension MapFeature {
         switch action {
         case .dismiss:
           // 바텀시트 닫기: Optional State를 nil로 설정
+          let isFromCategory = state.mapSearch.currentNavigation == .flowerDetail(.fromCategory)
           state.flowerSpotDetail = nil
           state.mapActions.append(.deletePath)
+          if isFromCategory {
+            state.mapSearch.currentNavigation = .category
+            state.category.isShowCategoryList = true
+          }
           return .none
 
         case let .presentToBlooming(id, streetName, distance):
@@ -309,8 +328,12 @@ extension MapFeature {
 
       case let .categoryList(.delegate(action)):
         switch action {
-        case .showFlowerSpotDetail:
-          return .none
+        case let .showFlowerSpotDetail(flowerSpot):
+          return .concatenate(
+            .send(.location(.moveLocation(flowerSpot.pinPoint))),
+            .send(.addMapAction(.changeActiveMarker(flowerSpot.asMapSpot))),
+            .send(.markerTapped(id: flowerSpot.id))
+          )
         }
 
       case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category, .categoryList:

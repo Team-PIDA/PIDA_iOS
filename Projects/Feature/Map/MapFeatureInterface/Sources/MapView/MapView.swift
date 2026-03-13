@@ -96,7 +96,10 @@ extension MapView {
     MapViewRepresentable(
       flowerPositions: $store.spots,
       isCameraMove: $store.researchButtonEnable,
-      hasBottomSheet: $store.mapSearch.isShowRegionList,
+      hasBottomSheet: Binding(
+        get: { store.mapSearch.isShowRegionList || store.category.isShowCategoryList },
+        set: { _ in }
+      ),
       mapActions: $store.mapActions,
       shouldRequestInitialBounds: $store.shouldRequestInitialBounds
     )
