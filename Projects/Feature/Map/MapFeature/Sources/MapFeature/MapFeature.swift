@@ -15,7 +15,7 @@ import FlowerSpotClient
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
 import AnalyticsClient
-
+import DesignKit
 
 extension MapFeature {
   public init(
@@ -285,9 +285,17 @@ extension MapFeature {
             .send(.addMapAction(.updateMarkers(state.spots)))
           )
 
-        case let .didFetchFlowerSpots(data):
+        case let .didFetchFlowerSpots(data, type):
           state.spots.removeAll()
-          data.forEach { state.spots[$0.id] = $0.asMapSpot }
+          data.forEach {
+            state.spots[$0.id] = MapSpotEntity(
+              id: $0.id,
+              pinPoint: $0.pinPoint,
+              path: [],
+              type: type,
+              bloomStatus: BloomStatus(rawValue: $0.bloomingStatus) ?? .notBloomed
+            )
+          }
           return .concatenate(
             .send(.addMapAction(.updateMarkers(state.spots))),
             .send(.categoryList(.storeSpots(data)))

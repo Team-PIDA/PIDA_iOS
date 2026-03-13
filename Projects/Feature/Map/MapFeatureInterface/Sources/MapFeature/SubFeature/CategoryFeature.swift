@@ -47,7 +47,7 @@ public struct CategoryFeature {
   public enum Delegate: Equatable {
     case tapCategory(CategoryEntity)
     case resetCategory
-    case didFetchFlowerSpots([FlowerSpotEntity])
+    case didFetchFlowerSpots([FlowerSpotEntity], type: MapSpotType)
     case requestMapBounds
   }
 

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import DesignKit
 
 public enum CategoryType: Equatable, Sendable {
   case all              // id: 0
@@ -37,6 +38,21 @@ extension CategoryType: RawRepresentable {
     case .trail: return 2
     case .cafe: return 3
     case .unknown(let id): return id
+    }
+  }
+  
+  public var spotType: MapSpotType {
+    switch self {
+    case .all:
+      return .flower
+    case .festival:
+      return .festival
+    case .trail:
+      return .step
+    case .cafe:
+      return .cafe
+    case .unknown(let int):
+      return .flower
     }
   }
 }
