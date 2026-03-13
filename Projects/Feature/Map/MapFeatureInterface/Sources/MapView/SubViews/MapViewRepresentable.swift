@@ -160,7 +160,7 @@ extension MapViewRepresentable {
 
     let state = result.bloomStatus
     let coord = NMGLatLng(lat: result.pinPoint.latitude, lng: result.pinPoint.longitude)
-    let marker = drawMarker(view, to: coord, icon: state.activeImage)
+    let marker = drawMarker(view, to: coord, icon: state.activeMarker)
     marker.isHideCollidedMarkers = true
     marker.zIndex = 100
     context.coordinator.focusMarker = marker
@@ -355,11 +355,11 @@ extension MapViewRepresentable {
     
     let start = drawMarker(view,
                            to: firstPoint,
-                           icon: flowerState.circleImage,
+                           icon: flowerState.pathPointMarker,
                            anchor: CGPoint(x: 0.5, y: 0.5))
     let end = drawMarker(view,
                          to: lastPoint,
-                         icon: flowerState.circleImage,
+                         icon: flowerState.pathPointMarker,
                          anchor: CGPoint(x: 0.5, y: 0.5))
     start.globalZIndex = 2
     end.globalZIndex = 2
@@ -390,7 +390,7 @@ extension MapViewRepresentable {
       let marker = drawMarker(
         view,
         to: point,
-        icon: flowerState.inactiveImage
+        icon: flowerState.inactiveMarker
       )
       marker.tag = UInt(pin.key)
       
@@ -412,13 +412,12 @@ extension MapViewRepresentable {
   private func drawMarker(
     _ view: NMFNaverMapView,
     to point: NMGLatLng,
-    icon: UIImage?,
+    icon: NMFOverlayImage,
     anchor: CGPoint = CGPoint(x: 0.5, y: 1)
   ) -> NMFMarker{
     let marker = NMFMarker(position: point)
     marker.isHideCollidedSymbols = true
-    if let icon = icon { marker.iconImage = NMFOverlayImage(image: icon) }
-    // TODO: 혹시 모르는 디폴트 이미지
+    marker.iconImage = icon
     marker.anchor = anchor
     marker.mapView = view.mapView
     return marker
