@@ -109,4 +109,13 @@ public extension BloomStatus {
     }
   }
   
+  @MainActor
+  func activePinImage(spotType: MapSpotType) -> UIImage {
+    return MapPinImages.activeMapPinImage(status: self, type: spotType)
+  }
+  
+  @MainActor
+  func inactivePinImage(spotType: MapSpotType) -> UIImage {
+    return MapPinImages.inactiveMapPinImage(status: self, type: spotType)
+  }
 }

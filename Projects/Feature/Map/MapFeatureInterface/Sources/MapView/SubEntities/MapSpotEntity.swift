@@ -33,8 +33,8 @@ public struct MapSpotEntity: Equatable, Sendable {
   }
 }
 
-public enum MapSpotType: Equatable, Sendable {
-  case flowerPath
-  case festival
-  case cafe
-}
+//public enum MapSpotType: Equatable, Sendable {
+//  case flowerPath
+//  case festival
+//  case cafe
+//}

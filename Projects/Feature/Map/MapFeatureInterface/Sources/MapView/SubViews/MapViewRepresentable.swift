@@ -160,7 +160,7 @@ extension MapViewRepresentable {
 
     let state = result.bloomStatus
     let coord = NMGLatLng(lat: result.pinPoint.latitude, lng: result.pinPoint.longitude)
-    let marker = drawMarker(view, to: coord, icon: state.activeMarker)
+    let marker = drawMarker(view, to: coord, icon: state.activeMarker(type: result.type))
     marker.isHideCollidedMarkers = true
     marker.zIndex = 100
     context.coordinator.focusMarker = marker
@@ -235,12 +235,12 @@ extension MapViewRepresentable {
   }
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
-  private func markerTapEvent(to marker: NMFMarker, id: Int, context: Context) {
+  private func markerTapEvent(to marker: NMFMarker, id: Int, spotType: MapSpotType, context: Context) {
     // 같은 마커를 탭 하면 무시
     if marker == context.coordinator.activeMarker { return }
     if let data = flowerPositions[id] {
       let state = data.bloomStatus
-      marker.iconImage = NMFOverlayImage(image: state.activeImage)
+      marker.iconImage = state.activeMarker(type: spotType)
       context.coordinator.markerTapEvent(marker: marker, data: data)
       
       if let onMarkerTapped = onMarkerTapped {
@@ -390,14 +390,19 @@ extension MapViewRepresentable {
       let marker = drawMarker(
         view,
         to: point,
-        icon: flowerState.inactiveMarker
+        icon: flowerState.inactiveMarker(type: pin.value.type)
       )
       marker.tag = UInt(pin.key)
       
       // 마커 탭 이벤트 헨들러
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
-          markerTapEvent(to: marker, id: pin.value.id, context: context)
+          markerTapEvent(
+            to: marker,
+            id: pin.value.id,
+            spotType: pin.value.type,
+            context: context
+          )
           moveCamera(view, to: position, zoomLevel: 14)
         }
         return true

@@ -16,7 +16,7 @@ public extension FlowerSpotEntity {
       id: id,
       pinPoint: pinPoint,
       path: path,
-      type: .flowerPath,
+      type: .flower,
       bloomStatus: BloomStatus(rawValue: bloomingStatus) ?? .notBloomed
     )
   }
