@@ -174,7 +174,7 @@ extension MapView {
   }
   
   private func categoryButton() -> some View {
-    ScrollView(.horizontal) {
+    ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: .Number8) {
         ForEach(store.category.categoryList, id: \.id) { item in
           CategoryButton(
@@ -189,6 +189,7 @@ extension MapView {
       }
       .padding(.horizontal, .Number16)
     }
+    
   }
   
   @ViewBuilder

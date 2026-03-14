@@ -240,10 +240,14 @@ extension MapFeature {
           // 바텀시트 닫기: Optional State를 nil로 설정
           let isFromCategory = state.mapSearch.currentNavigation == .flowerDetail(.fromCategory)
           state.flowerSpotDetail = nil
-          state.mapActions.append(isFromCategory ? .clearFocus : .deletePath)
           if isFromCategory {
+            state.spots.removeAll()
+            state.mapActions.append(.clearFocus)
+            state.mapActions.append(.updateMarkers(state.spots))  // updateMarkers([]) → currentFlowerPositions 리셋 트리거
             state.mapSearch.currentNavigation = .category
             state.category.isShowCategoryList = true
+          } else {
+            state.mapActions.append(.deletePath)
           }
           return .none
 

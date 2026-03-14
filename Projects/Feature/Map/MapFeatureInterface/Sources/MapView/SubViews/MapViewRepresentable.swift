@@ -145,7 +145,9 @@ extension MapViewRepresentable {
       let shouldMoveCamera = Set(context.coordinator.currentFlowerPositions.keys) != Set(flowerPositions.keys)
       presentMarkers(view, flowers: flowers, context: context, shouldMoveCamera: shouldMoveCamera)
       context.coordinator.currentFlowerPositions = flowers
-      
+    } else {
+      // 마커를 비울 때 저장된 ID 세트도 함께 초기화 (재진입 시 카메라 이동 보장)
+      context.coordinator.currentFlowerPositions = [:]
     }
   }
   
