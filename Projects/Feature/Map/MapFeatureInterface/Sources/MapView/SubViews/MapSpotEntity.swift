@@ -32,9 +32,3 @@ public struct MapSpotEntity: Equatable, Sendable {
     self.bloomStatus = bloomStatus
   }
 }
-
-//public enum MapSpotType: Equatable, Sendable {
-//  case flowerPath
-//  case festival
-//  case cafe
-//}
