@@ -48,7 +48,7 @@ extension CategoryType: RawRepresentable {
     case .festival:
       return .festival
     case .trail:
-      return .step
+      return .steps
     case .cafe:
       return .cafe
     case .unknown:

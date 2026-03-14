@@ -52,16 +52,16 @@ extension BloomStatus {
   ]
 
   private static let activeStepMarkers: [Self: NMFOverlayImage] = [
-    .withered: NMFOverlayImage(image: Self.withered.activePinImage(spotType: .step)),
-    .bloomed: NMFOverlayImage(image: Self.bloomed.activePinImage(spotType: .step)),
-    .little: NMFOverlayImage(image: Self.little.activePinImage(spotType: .step)),
-    .notBloomed: NMFOverlayImage(image: Self.notBloomed.activePinImage(spotType: .step))
+    .withered: NMFOverlayImage(image: Self.withered.activePinImage(spotType: .steps)),
+    .bloomed: NMFOverlayImage(image: Self.bloomed.activePinImage(spotType: .steps)),
+    .little: NMFOverlayImage(image: Self.little.activePinImage(spotType: .steps)),
+    .notBloomed: NMFOverlayImage(image: Self.notBloomed.activePinImage(spotType: .steps))
   ]
   private static let inactiveStepMarkers: [Self: NMFOverlayImage] = [
-    .withered: NMFOverlayImage(image: Self.withered.inactivePinImage(spotType: .step)),
-    .bloomed: NMFOverlayImage(image: Self.bloomed.inactivePinImage(spotType: .step)),
-    .little: NMFOverlayImage(image: Self.little.inactivePinImage(spotType: .step)),
-    .notBloomed: NMFOverlayImage(image: Self.notBloomed.inactivePinImage(spotType: .step))
+    .withered: NMFOverlayImage(image: Self.withered.inactivePinImage(spotType: .steps)),
+    .bloomed: NMFOverlayImage(image: Self.bloomed.inactivePinImage(spotType: .steps)),
+    .little: NMFOverlayImage(image: Self.little.inactivePinImage(spotType: .steps)),
+    .notBloomed: NMFOverlayImage(image: Self.notBloomed.inactivePinImage(spotType: .steps))
   ]
 
   func activeMarker(type: MapSpotType) -> NMFOverlayImage {
@@ -70,8 +70,8 @@ extension BloomStatus {
       Self.activeFlowerMarkers[self] ?? NMFOverlayImage(image: self.activePinImage(spotType: .flower))
     case .cafe:
       Self.activeCafeMarkers[self] ?? NMFOverlayImage(image: self.activePinImage(spotType: .cafe))
-    case .step:
-      Self.activeStepMarkers[self] ?? NMFOverlayImage(image: self.activePinImage(spotType: .step))
+    case .steps:
+      Self.activeStepMarkers[self] ?? NMFOverlayImage(image: self.activePinImage(spotType: .steps))
     case .festival:
       Self.activeFestivalMarkers[self] ?? NMFOverlayImage(image: self.activePinImage(spotType: .festival))
     }
@@ -83,8 +83,8 @@ extension BloomStatus {
       Self.inactiveFlowerMarkers[self] ?? NMFOverlayImage(image: self.inactivePinImage(spotType: .flower))
     case .cafe:
       Self.inactiveCafeMarkers[self] ?? NMFOverlayImage(image: self.inactivePinImage(spotType: .cafe))
-    case .step:
-      Self.inactiveStepMarkers[self] ?? NMFOverlayImage(image: self.inactivePinImage(spotType: .step))
+    case .steps:
+      Self.inactiveStepMarkers[self] ?? NMFOverlayImage(image: self.inactivePinImage(spotType: .steps))
     case .festival:
       Self.inactiveFestivalMarkers[self] ?? NMFOverlayImage(image: self.inactivePinImage(spotType: .festival))
     }

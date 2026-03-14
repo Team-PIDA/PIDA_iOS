@@ -16,16 +16,16 @@ public enum MapPinState: Equatable, Sendable {
 public enum MapSpotType: Equatable, Sendable {
   case flower
   case cafe
-  case step
+  case steps
   case festival
-  
+
   var icon: ImageSet {
     switch self {
     case .flower:
       return ImageSet.flower
     case .cafe:
       return ImageSet.cafeFilled
-    case .step:
+    case .steps:
       return ImageSet.stepsFilled
     case .festival:
       return ImageSet.eventFilled
