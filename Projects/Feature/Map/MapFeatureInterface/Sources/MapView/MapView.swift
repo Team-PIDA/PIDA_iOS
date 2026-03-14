@@ -179,6 +179,7 @@ extension MapView {
         ForEach(store.category.categoryList, id: \.id) { item in
           CategoryButton(
             title: item.category,
+            icon: item.type.icon,
             isActive: item.type == store.category.selectedCategory
           )
           .onTapGesture {
