@@ -51,7 +51,7 @@ extension CategoryType: RawRepresentable {
       return .step
     case .cafe:
       return .cafe
-    case .unknown(let int):
+    case .unknown:
       return .flower
     }
   }
