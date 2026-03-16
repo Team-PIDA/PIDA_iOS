@@ -115,18 +115,19 @@ extension MapViewRepresentable {
     }
     
     /// 마커 비활성화 메서드
-    func deleteMarker() {
+    @MainActor
+     func deleteMarker() {
       if let data = selectedPin,
          let activeMarker = activeMarker {
         let bloomingStatus = data.bloomStatus
-        let image = bloomingStatus.inactiveImage
-        activeMarker.iconImage = NMFOverlayImage(image: image)
+        activeMarker.iconImage = bloomingStatus.inactiveMarker(type: data.type)
         self.activeMarker = nil
         self.selectedPin = nil
       }
     }
     
     /// 마커 탭 이벤트에 따른 데이터 상태 처리
+    @MainActor
     func markerTapEvent(marker: NMFMarker, data: MapSpotEntity) {
       
       // 검색 결과가 있을 경우 기존 검색 기록 삭제
@@ -141,24 +142,26 @@ extension MapViewRepresentable {
     }
     
     /// 마커 개화 상태 값 업데이트
+    @MainActor
     func updateMarker(state: BloomStatus) {
       if let activeMarker = activeMarker {
         guard selectedPin?.bloomStatus != state else { return }
         if let pin = selectedPin {
           selectedPin = MapSpotEntity(id: pin.id, pinPoint: pin.pinPoint, path: pin.path, type: pin.type, bloomStatus: state)
         }
-        activeMarker.iconImage = NMFOverlayImage(image: state.activeImage)
+        activeMarker.iconImage = state.activeMarker(type: selectedPin?.type ?? .flower)
+        
       } else if let focusMarker = focusMarker {
         guard focusData?.bloomStatus != state else { return }
-        focusMarker.iconImage = NMFOverlayImage(image: state.activeImage)
+        focusMarker.iconImage = state.activeMarker(type: focusData?.type ?? .flower)
       }
       if let path = paths,
           let startMarker = startMarker,
           let endMarker = endMarker {
         path.color = state.color
         path.outlineColor = state.color
-        startMarker.iconImage = NMFOverlayImage(image: state.circleImage)
-        endMarker.iconImage = NMFOverlayImage(image: state.circleImage)
+        startMarker.iconImage = state.pathPointMarker
+        endMarker.iconImage = state.pathPointMarker
       }
     }
     
