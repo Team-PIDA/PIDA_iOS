@@ -15,13 +15,19 @@ import BloomingClient
 public struct FlowerSpotDetailSmallContentView: View {
   let flowerSpotData: FlowerSpotEntity
   let bloomingStatus: BloomStatusEntity?
+  let spotCategory: SpotCategory
+  let festivalInfo: FestivalInfoEntity?
 
   public init(
     flowerSpotData: FlowerSpotEntity,
-    bloomingStatus: BloomStatusEntity?
+    bloomingStatus: BloomStatusEntity?,
+    spotCategory: SpotCategory = .trail,
+    festivalInfo: FestivalInfoEntity? = nil
   ) {
     self.flowerSpotData = flowerSpotData
     self.bloomingStatus = bloomingStatus
+    self.spotCategory = spotCategory
+    self.festivalInfo = festivalInfo
   }
 
   public var body: some View {
@@ -66,9 +72,16 @@ public struct FlowerSpotDetailSmallContentView: View {
         }
       }
 
-      Text(flowerSpotData.address)
-        .fontStyle(FontSet.Body.body3)
-        .foregroundColor(ColorSet.Text.Primary)
+      // 축제: 날짜 표시 / 그 외: 주소 표시
+      if spotCategory == .festival, let festival = festivalInfo {
+        Text("\(festival.startDate) ~ \(festival.endDate)")
+          .fontStyle(FontSet.Body.body3)
+          .foregroundColor(ColorSet.Text.Secondary)
+      } else {
+        Text(flowerSpotData.address)
+          .fontStyle(FontSet.Body.body3)
+          .foregroundColor(ColorSet.Text.Primary)
+      }
     }
   }
 
@@ -80,13 +93,25 @@ public struct FlowerSpotDetailSmallContentView: View {
       // 지역 태그
       TagView(text: flowerSpotData.district)
 
-      // 최근 방문자 수 태그
-      TagView(text: flowerSpotData.recentlyVisitedCountString)
+      switch spotCategory {
+      case .trail:
+        // 산책길: 방문 횟수 + 제보자
+        TagView(text: flowerSpotData.recentlyVisitedCountString)
+        if let nickname = bloomingStatus?.nickname {
+          TagView(text: nickname)
+            .icon(.verified)
+        }
 
-      // 제보자 태그 (있을 경우)
-      if let nickname = bloomingStatus?.nickname {
-        TagView(text: nickname)
-          .icon(.verified)
+      case .festival:
+        // 축제: 홈페이지 태그 (있을 경우)
+        if festivalInfo?.homepageURL != nil {
+          TagView(text: "홈페이지")
+        }
+
+      case .cafe:
+        // 카페: 방문 횟수 + 카테고리
+        TagView(text: flowerSpotData.recentlyVisitedCountString)
+        TagView(text: "카페")
       }
     }
   }

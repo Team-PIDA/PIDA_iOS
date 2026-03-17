@@ -200,7 +200,9 @@ extension MapView {
         } else {
           FlowerSpotDetailSmallContentView(
             flowerSpotData: detailStore.flowerSpotData,
-            bloomingStatus: detailStore.bloomingStatus
+            bloomingStatus: detailStore.bloomingStatus,
+            spotCategory: detailStore.spotCategory,
+            festivalInfo: detailStore.festivalInfo
           )
         }
       },

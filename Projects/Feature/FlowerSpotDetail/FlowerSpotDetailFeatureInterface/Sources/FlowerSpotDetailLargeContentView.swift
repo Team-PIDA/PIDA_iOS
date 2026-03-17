@@ -10,6 +10,7 @@ import SwiftUI
 import Shared
 import DesignKit
 import ComposableArchitecture
+import FlowerSpotClient
 
 /// 바텀시트 확장 상태에서 보여줄 콘텐츠
 public struct FlowerSpotDetailLargeContentView: View {
@@ -152,48 +153,144 @@ public struct FlowerSpotDetailLargeContentView: View {
   @ViewBuilder
   private var mainInfoSection: some View {
     VStack(alignment: .leading, spacing: .Number14) {
+      // 타이틀 + 서브 정보
       VStack(alignment: .leading, spacing: .Number6) {
-        Text(store.flowerSpotData.streetName)
+        Text(store.spotTitle)
           .fontStyle(FontSet.Heading.heading1)
           .foregroundColor(ColorSet.Text.Primary)
 
-        HStack(spacing: .Number4) {
-          Text(store.flowerSpotData.recentlyVisitedCountString)
-            .fontStyle(FontSet.Label.label2)
-            .foregroundColor(ColorSet.Text.Primary)
-
-          Text("·")
-            .fontStyle(FontSet.Caption.caption1)
-            .foregroundColor(ColorSet.Text.Secondary)
-
-          if let blooming = BloomStatus(rawValue: store.flowerSpotData.bloomingStatus) {
-            HStack(spacing: .Number4) {
-              GradiantIcon(image: .flower)
-                .size(.large)
-                .foregroundStyle(blooming.gradiant)
-              Text(blooming.text)
-                .fontStyle(FontSet.Label.label2)
-                .foregroundColor(blooming.textColor)
-            }
-          }
-        }
+        mainInfoSubtitle
       }
 
       Rectangle()
         .fill(ColorSet.Background.Tertiary)
         .frame(height: 1)
 
-      VStack(alignment: .leading, spacing: .Number6) {
-        HStack(spacing: .Number4) {
-          Icon(image: .distance)
-            .size(.small)
-            .foregroundColor(ColorSet.Icon.Secondary)
-          Text(headerDistanceText)
-            .fontStyle(FontSet.Body.body3)
-            .foregroundColor(ColorSet.Text.Primary)
+      // 카테고리별 정보 행
+      mainInfoRows
+
+      // Image Gallery (축제: 포스터 + 사진 / 그 외: 기존 갤러리)
+      if store.spotCategory == .festival {
+        FestivalImageGalleryView(
+          posterImageURL: store.festivalInfo?.posterImageURL,
+          images: store.flowerSpotData.images,
+          prefetchedImages: store.prefetchedImages,
+          onImageTapped: { index in
+            store.send(.presentPhotoViewer(index: index))
+          },
+          onMoreTapped: {
+            store.send(.pushToPhotoGallery)
+          },
+          onImageLoaded: { url, data in
+            store.send(.cacheImage(url: url, data: data))
+          }
+        )
+      } else {
+        FlowerSpotImageGalleryView(
+          images: store.flowerSpotData.images,
+          prefetchedImages: store.prefetchedImages,
+          onImageTapped: { index in
+            store.send(.presentPhotoViewer(index: index))
+          },
+          onMoreTapped: {
+            store.send(.pushToPhotoGallery)
+          },
+          onImageLoaded: { url, data in
+            store.send(.cacheImage(url: url, data: data))
+          }
+        )
+      }
+    }
+    .padding([.horizontal, .bottom], .Number16)
+    .padding(.top, .Number8)
+  }
+
+  // MARK: - Main Info Subtitle (카테고리별 분기)
+
+  @ViewBuilder
+  private var mainInfoSubtitle: some View {
+    switch store.spotCategory {
+    case .festival:
+      // 축제: 개화상태 + 홈페이지 링크
+      HStack(spacing: .Number4) {
+        bloomStatusBadge
+        if store.festivalInfo?.homepageURL != nil {
+          Text("·")
+            .fontStyle(FontSet.Caption.caption1)
+            .foregroundColor(ColorSet.Text.Secondary)
+          HStack(spacing: .Number2) {
+            Icon(image: .arrowOutward)
+              .size(.small)
+              .foregroundColor(ColorSet.Icon.Accent)
+            Text("홈페이지")
+              .fontStyle(FontSet.Caption.caption1)
+              .foregroundColor(ColorSet.Text.Accent)
+          }
+        }
+      }
+
+    case .trail, .cafe:
+      // 산책길/카페: 방문 횟수 + 개화상태
+      HStack(spacing: .Number4) {
+        Text(store.flowerSpotData.recentlyVisitedCountString)
+          .fontStyle(FontSet.Label.label2)
+          .foregroundColor(ColorSet.Text.Primary)
+        Text("·")
+          .fontStyle(FontSet.Caption.caption1)
+          .foregroundColor(ColorSet.Text.Secondary)
+        bloomStatusBadge
+      }
+    }
+  }
+
+  // MARK: - Bloom Status Badge (공통)
+
+  @ViewBuilder
+  private var bloomStatusBadge: some View {
+    if let blooming = BloomStatus(rawValue: store.flowerSpotData.bloomingStatus) {
+      HStack(spacing: .Number4) {
+        GradiantIcon(image: .flower)
+          .size(.large)
+          .foregroundStyle(blooming.gradiant)
+        Text(blooming.text)
+          .fontStyle(FontSet.Label.label2)
+          .foregroundColor(blooming.textColor)
+      }
+    }
+  }
+
+  // MARK: - Main Info Rows (카테고리별 분기)
+
+  @ViewBuilder
+  private var mainInfoRows: some View {
+    VStack(alignment: .leading, spacing: .Number6) {
+      // 거리 (공통)
+      HStack(spacing: .Number4) {
+        Icon(image: .distance)
+          .size(.small)
+          .foregroundColor(ColorSet.Icon.Secondary)
+        Text(headerDistanceText)
+          .fontStyle(FontSet.Body.body3)
+          .foregroundColor(ColorSet.Text.Primary)
+      }
+
+      switch store.spotCategory {
+      case .festival:
+        // 축제: 날짜 범위
+        if let festival = store.festivalInfo {
+          HStack(spacing: .Number4) {
+            Icon(image: .date)
+              .size(.small)
+              .foregroundColor(ColorSet.Icon.Secondary)
+            Text("\(festival.startDate) ~ \(festival.endDate)")
+              .fontStyle(FontSet.Body.body3)
+              .foregroundColor(ColorSet.Text.Primary)
+          }
         }
 
-        HStack(spacing: 4) {
+      case .trail:
+        // 산책길: 나무 종류 + 소요시간/거리
+        HStack(spacing: .Number4) {
           Icon(image: .forest)
             .size(.small)
             .foregroundColor(ColorSet.Icon.Secondary)
@@ -201,25 +298,49 @@ public struct FlowerSpotDetailLargeContentView: View {
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }
-      }
-
-      // Image Gallery
-      FlowerSpotImageGalleryView(
-        images: store.flowerSpotData.images,
-        prefetchedImages: store.prefetchedImages,
-        onImageTapped: { index in
-          store.send(.presentPhotoViewer(index: index))
-        },
-        onMoreTapped: {
-          store.send(.pushToPhotoGallery)
-        },
-        onImageLoaded: { url, data in
-          store.send(.cacheImage(url: url, data: data))
+        let walkingMinutes = max(1, Int((store.distance / 5.0) * 60))
+        HStack(spacing: .Number4) {
+          Icon(image: .steps)
+            .size(.small)
+            .foregroundColor(ColorSet.Icon.Secondary)
+          Text("총 \(walkingMinutes)분 소요 · \(formattedDistance)")
+            .fontStyle(FontSet.Body.body3)
+            .foregroundColor(ColorSet.Text.Primary)
         }
-      )
+
+      case .cafe:
+        // 카페: 나무 종류 + 카테고리 + 웹사이트
+        HStack(spacing: .Number4) {
+          Icon(image: .forest)
+            .size(.small)
+            .foregroundColor(ColorSet.Icon.Secondary)
+          Text(store.flowerSpotData.description)
+            .fontStyle(FontSet.Body.body3)
+            .foregroundColor(ColorSet.Text.Primary)
+        }
+        if let cafe = store.cafeInfo {
+          HStack(spacing: .Number4) {
+            Icon(image: .location)
+              .size(.small)
+              .foregroundColor(ColorSet.Icon.Secondary)
+            Text(cafe.categoryLabel)
+              .fontStyle(FontSet.Body.body3)
+              .foregroundColor(ColorSet.Text.Primary)
+          }
+          if let websiteURL = cafe.websiteURL {
+            HStack(spacing: .Number4) {
+              Icon(image: .globe)
+                .size(.small)
+                .foregroundColor(ColorSet.Icon.Secondary)
+              Text(websiteURL)
+                .fontStyle(FontSet.Body.body3)
+                .foregroundColor(ColorSet.Text.Accent)
+                .underline()
+            }
+          }
+        }
+      }
     }
-    .padding([.horizontal, .bottom], .Number16)
-    .padding(.top, .Number8)
   }
 
   // MARK: - Location Section
@@ -252,9 +373,12 @@ public struct FlowerSpotDetailLargeContentView: View {
           }
         }
 
-        Text(walkingTimeText)
-          .fontStyle(FontSet.Title.title4)
-          .foregroundColor(ColorSet.Text.Accent)
+        // 도보 시간 (산책길/카페만)
+        if store.showsWalkingTime {
+          Text(walkingTimeText)
+            .fontStyle(FontSet.Title.title4)
+            .foregroundColor(ColorSet.Text.Accent)
+        }
       }
 
       // Mini Map
@@ -270,8 +394,9 @@ public struct FlowerSpotDetailLargeContentView: View {
         .cornerRadius(10)
       }
 
-      // Informant Info
-      if let nickname = store.bloomingStatus.nickname,
+      // 제보자 배너 (산책길만)
+      if store.showsInformantBanner,
+         let nickname = store.bloomingStatus.nickname,
          let updateAt = store.bloomingStatus.updatedAt {
         HStack(spacing: .Number8) {
           Icon(image: .verified)
@@ -305,24 +430,34 @@ public struct FlowerSpotDetailLargeContentView: View {
   @ViewBuilder
   private var flowerInfoSection: some View {
     VStack(alignment: .leading, spacing: .Number28) {
-      VStack(alignment: .leading, spacing: .Number8) {
-        Text("나무 종류")
-          .fontStyle(FontSet.Heading.heading3)
-          .foregroundColor(ColorSet.Text.Primary)
-          .onAppear {
-            store.send(.scrollReachedBottom)
-          }
+      // 나무 종류 (산책길/카페만)
+      if store.showsTreeTypeSection {
+        VStack(alignment: .leading, spacing: .Number8) {
+          Text("나무 종류")
+            .fontStyle(FontSet.Heading.heading3)
+            .foregroundColor(ColorSet.Text.Primary)
+            .onAppear {
+              store.send(.scrollReachedBottom)
+            }
 
-        Text(store.flowerSpotData.description)
-          .fontStyle(FontSet.Body.body2)
-          .foregroundColor(ColorSet.Text.Primary)
+          Text(store.flowerSpotData.description)
+            .fontStyle(FontSet.Body.body2)
+            .foregroundColor(ColorSet.Text.Primary)
+        }
       }
 
+      // 개화 상태 (공통)
       VStack(alignment: .leading, spacing: .Number12) {
         VStack(alignment: .leading, spacing: .Number8) {
           Text("개화 상태")
             .fontStyle(FontSet.Heading.heading3)
             .foregroundColor(ColorSet.Text.Primary)
+            .onAppear {
+              // 축제의 경우 나무 종류 섹션이 없으므로 여기서 트래킹
+              if !store.showsTreeTypeSection {
+                store.send(.scrollReachedBottom)
+              }
+            }
 
           Text("최근 5일 동안 \(store.bloomingStatus.totalCount)명이 기록했어요")
             .fontStyle(FontSet.Body.body2)
