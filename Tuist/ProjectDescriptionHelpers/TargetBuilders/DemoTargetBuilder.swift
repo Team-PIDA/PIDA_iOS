@@ -21,11 +21,17 @@ public extension Target {
     resources: [ResourceFileElement] = [],
     dependencies: [TargetDependency] = []
   ) -> Target {
+    var mergedInfoPlist: [String: Plist.Value] = [
+      "UILaunchScreen": [:]
+    ]
+    for (key, value) in infoPlist {
+      mergedInfoPlist[key] = value
+    }
     return buildBaseTarget(
       for: module,
       product: .app,
       nameSuffix: "Demo",
-      infoPlist: infoPlist,
+      infoPlist: mergedInfoPlist,
       resources: resources,
       dependencies: dependencies
     )
