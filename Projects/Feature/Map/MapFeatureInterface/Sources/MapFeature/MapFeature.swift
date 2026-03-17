@@ -9,8 +9,8 @@
 import Foundation
 import DesignKit
 import ComposableArchitecture
-import FlowerSpotClient
 import SearchClient
+import CategoryFeatureInterface
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
 import Shared
@@ -20,21 +20,27 @@ public struct MapFeature {
   private let reducer: Reduce<State, Action>
   private let location: Reduce<LocationFeature.State, LocationFeature.Action>
   private let mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>
+  private let category: Reduce<CategoryFeature.State, CategoryFeature.Action>
   private let flowerSpotDetail: FlowerSpotDetailFeature
   private let searchRegionList: SearchRegionListFeature
+  private let categoryListFeature: CategoryListFeature
 
   public init(
     reducer: Reduce<State, Action>,
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
     mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>,
+    category: Reduce<CategoryFeature.State, CategoryFeature.Action>,
     flowerSpotDetail: FlowerSpotDetailFeature,
-    searchRegionList: SearchRegionListFeature
+    searchRegionList: SearchRegionListFeature,
+    categoryListFeature: CategoryListFeature
   ) {
     self.reducer = reducer
     self.location = location
     self.mapSearch = mapSearch
+    self.category = category
     self.flowerSpotDetail = flowerSpotDetail
     self.searchRegionList = searchRegionList
+    self.categoryListFeature = categoryListFeature
   }
   
   @ObservableState
@@ -43,8 +49,8 @@ public struct MapFeature {
     /// 유저의 현재 위치
     public var userLocation: Coordinate? = nil
     
-    /// 현재 지도에 보여 줄 FlowerSpot 데이터
-    public var flowerSpots: [Int: FlowerSpotEntity] = [:]
+    /// 현재 지도에 보여 줄 명소 데이터 (지도 렌더링용)
+    public var spots: [Int: MapSpotEntity] = [:]
     /// 현재 그려져있는 경로
     public var selectedPathLines: [Coordinate] = []
     /// 초기 지도 범위 요청 트리거 (초기 진입용)
@@ -67,12 +73,15 @@ public struct MapFeature {
     public var alertType: AlertType? = nil
 
     public var location: LocationFeature.State = .init()
-    
+
     public var mapSearch: MapSearchFeature.State = .init()
+
+    public var category: CategoryFeature.State = .init()
 
     /// Optional State 패턴: nil이면 바텀시트 숨김, 값이 있으면 바텀시트 표시
     public var flowerSpotDetail: FlowerSpotDetailFeature.State? = nil
     public var searchRegionList: SearchRegionListFeature.State? = nil
+    public var categoryList: CategoryListFeature.State? = nil
 
     public init() {}
   }
@@ -82,14 +91,17 @@ public struct MapFeature {
     case binding(BindingAction<State>)
     case location(LocationFeature.Action)
     case mapSearch(MapSearchFeature.Action)
+    case category(CategoryFeature.Action)
     case flowerSpotDetail(FlowerSpotDetailFeature.Action)
     case searchRegionList(SearchRegionListFeature.Action)
+    case categoryList(CategoryListFeature.Action)
     
     case showToastView(message: String?, buttonLabel: String?)
     case moveToReportURL
     case viewDidAppear
     
     case requestMapBounds(Bool)
+    case receiveMapBounds([Coordinate])
     case addMapAction(MapAction)
     case markerTapped(id: Int?)
     case fetchPathLines(Int)
@@ -122,11 +134,17 @@ public struct MapFeature {
     Scope(state: \.mapSearch, action: \.mapSearch) {
       mapSearch
     }
+    Scope(state: \.category, action: \.category) {
+      category
+    }
     .ifLet(\.flowerSpotDetail, action: \.flowerSpotDetail) {
       flowerSpotDetail
     }
     .ifLet(\.searchRegionList, action: \.searchRegionList) {
       searchRegionList
+    }
+    .ifLet(\.categoryList, action: \.categoryList) {
+      categoryListFeature
     }
     reducer
   }

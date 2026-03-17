@@ -15,7 +15,8 @@ public enum ImageSet {
        avatar, avatarLarge, loveletter, apple, kakao, loginLogo,
        fewLargePin, goneLargePin, manyLargePin, emptyResult, pullDown, forest, verified, feedback, camera,
        updateCompletedIcon,
-       arrowOutward, date, globe, steps
+       arrowOutward, date, globe, steps,
+       cafeFilled, cafe, event, eventFilled, stepsFilled, littlePin, littleActivePin, notBloomPin, notBloomActivePin, witheredPin, witheredPinActive, bloomPin, bloomActivePin
   
   public var swiftUIImage: DesignKitImages {
     switch self {
@@ -52,6 +53,19 @@ public enum ImageSet {
     case .date: return DesignKitAsset.Icons.date
     case .globe: return DesignKitAsset.Icons.globe
     case .steps: return DesignKitAsset.Icons.steps
+    case .cafeFilled: return DesignKitAsset.Icons.cafeFilled
+    case .cafe: return DesignKitAsset.Icons.cafe
+    case .event: return DesignKitAsset.Icons.event
+    case .eventFilled: return DesignKitAsset.Icons.eventFilled
+    case .stepsFilled: return DesignKitAsset.Icons.stepsFilled
+    case .littlePin: return DesignKitAsset.Icons.littlePin
+    case .littleActivePin: return DesignKitAsset.Icons.littleActivePin
+    case .notBloomPin: return DesignKitAsset.Icons.notBloomPin
+    case .notBloomActivePin: return DesignKitAsset.Icons.notBloomActivePin
+    case .witheredPin: return DesignKitAsset.Icons.witheredPin
+    case .witheredPinActive: return DesignKitAsset.Icons.witheredActivePin
+    case .bloomPin: return DesignKitAsset.Icons.bloomPin
+    case .bloomActivePin: return DesignKitAsset.Icons.bloomActivePin
     }
   }
 }
