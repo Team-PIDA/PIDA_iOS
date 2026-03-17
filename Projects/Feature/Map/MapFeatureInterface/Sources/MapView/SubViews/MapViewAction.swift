@@ -6,7 +6,6 @@
 //  Copyright © 2025 com.yongin.pida. All rights reserved.
 //
 
-import FlowerSpotClient
 import BloomingClient
 import Shared
 import DesignKit
@@ -33,26 +32,26 @@ public enum MapAction: Equatable {
   /// - Parameter Coordinate: 이동할 좌표 (위도, 경도)
   case moveToUserLocation(Coordinate)
   
-  /// 특정 꽃 명소까지의 경로를 지도에 그리기
+  /// 특정 명소까지의 경로를 지도에 그리기
   /// - Parameters:
-  ///   - FlowerSpotEntity: 목적지 꽃 명소 정보
+  ///   - MapSpotEntity: 목적지 명소 정보
   ///   - [Coordinate]: 경로를 구성하는 좌표 배열
-  case drawPath(FlowerSpotEntity, [Coordinate])
-  
+  case drawPath(MapSpotEntity, [Coordinate])
+
   /// 활성화된 마커를 변경 (선택된 상태로 표시)
-  /// - Parameter FlowerSpotEntity: 활성화할 꽃 명소 정보
-  case changeActiveMarker(FlowerSpotEntity)
-  
-  /// 특정 꽃 명소에 포커스 (경로 그리기 + 마커 활성화)
-  /// - Parameter FlowerSpotEntity: 포커스할 꽃 명소 정보
+  /// - Parameter MapSpotEntity: 활성화할 명소 정보
+  case changeActiveMarker(MapSpotEntity)
+
+  /// 특정 명소에 포커스 (경로 그리기 + 마커 활성화)
+  /// - Parameter MapSpotEntity: 포커스할 명소 정보
   /// - Note: 검색 결과나 상세 정보에서 해당 위치를 강조할 때 사용
-  case showFocus(FlowerSpotEntity)
-  
+  case showFocus(MapSpotEntity)
+
   /// 현재 포커스된 요소들을 모두 제거
   /// - Note: 검색 결과나 상세 정보 해제 시 사용
   case clearFocus
-  
-  /// 지도에 표시할 꽃 명소 마커들을 업데이트
-  /// - Parameter [Int: FlowerSpotEntity]: 꽃 명소 ID를 키로 하는 딕셔너리
-  case updateMarkers([Int: FlowerSpotEntity])
+
+  /// 지도에 표시할 명소 마커들을 업데이트
+  /// - Parameter [Int: MapSpotEntity]: 명소 ID를 키로 하는 딕셔너리
+  case updateMarkers([Int: MapSpotEntity])
 }

@@ -10,6 +10,8 @@ import ProjectDescription
 
 extension TargetDependency {
   public struct Feature: TargetDependencyFactory {
+    public static let Category = Self.project(.feature(.Category, false))
+    public static let Category_interface = Self.project(.feature(.Category, true))
     public static let Map = Self.project(.feature(.Map, false))
     public static let Search = Self.project(.feature(.Search, false))
     public static let Setting = Self.project(.feature(.Setting, false))
@@ -26,6 +28,7 @@ extension TargetDependency {
   public struct Client: TargetDependencyFactory {
     public static let Cache = Self.project(.client(.Cache))
     public static let API = Self.project(.client(.API))
+    public static let Category = Self.project(.client(.Category))
     public static let Search = Self.project(.client(.Search))
     public static let FlowerSpot = Self.project(.client(.FlowerSpot))
     public static let Auth = Self.project(.client(.Auth))

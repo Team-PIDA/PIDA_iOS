@@ -10,6 +10,9 @@ import Foundation
 import SwiftUI
 import ComposableArchitecture
 
+import CategoryFeature
+import CategoryFeatureInterface
+
 import MapFeature
 import MapFeatureInterface
 
@@ -58,6 +61,7 @@ struct PIDAFeature {
 
   let locationReducer = Reduce(LocationFeature())
   let mapSearchReducer = Reduce(MapSearchFeature())
+  let categoryReducer = Reduce(CategoryFeature())
   
   @ObservableState
   struct State: Equatable {
@@ -136,8 +140,10 @@ struct PIDAFeature {
       MapFeature(
         location: locationReducer,
         mapSearch: mapSearchReducer,
+        category: categoryReducer,
         flowerSpotDetail: FlowerSpotDetailFeature(),
-        searchRegionList: SearchRegionListFeature()
+        searchRegionList: SearchRegionListFeature(),
+        categoryListFeature: CategoryListFeature()
       )
     }
     Reduce<State, Action> { state, action in

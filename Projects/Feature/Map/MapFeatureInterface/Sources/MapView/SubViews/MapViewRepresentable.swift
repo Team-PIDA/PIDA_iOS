@@ -9,13 +9,12 @@
 import SwiftUI
 import DesignKit
 import NMapsMap
-import FlowerSpotClient
 import BloomingClient
 import Shared
 
 struct MapViewRepresentable: UIViewRepresentable {
   /// 지도에 보여줄 데이터
-  @Binding var flowerPositions: [Int: FlowerSpotEntity]
+  @Binding var flowerPositions: [Int: MapSpotEntity]
   
   /// 지도를 움직일 경우 현 위치 재검색 버튼 활성화 하기 위한 트리거
   @Binding var isCameraMove: Bool
@@ -131,8 +130,8 @@ extension MapViewRepresentable {
   
   /// 마커 데이터 업데이트 액션
   private func updateMarkersAction(
-    _ view: NMFNaverMapView, 
-    flowers: [Int: FlowerSpotEntity],
+    _ view: NMFNaverMapView,
+    flowers: [Int: MapSpotEntity],
     context: Context
   ) {
     flowerPositions = flowers
@@ -146,22 +145,24 @@ extension MapViewRepresentable {
       let shouldMoveCamera = Set(context.coordinator.currentFlowerPositions.keys) != Set(flowerPositions.keys)
       presentMarkers(view, flowers: flowers, context: context, shouldMoveCamera: shouldMoveCamera)
       context.coordinator.currentFlowerPositions = flowers
-      
+    } else {
+      // 마커를 비울 때 저장된 ID 세트도 함께 초기화 (재진입 시 카메라 이동 보장)
+      context.coordinator.currentFlowerPositions = [:]
     }
   }
   
   /// 특정 위치에 마커를 표시
-  func drawFocusMarker(_ view: NMFNaverMapView, result: FlowerSpotEntity, context: Context) {
+  func drawFocusMarker(_ view: NMFNaverMapView, result: MapSpotEntity, context: Context) {
     // 중복 그리기 방지
     if context.coordinator.focusData == result { return }
     if let marker = context.coordinator.focusMarker {
       marker.mapView = nil
     }
     context.coordinator.focusData = result
-    
-    let state = BloomStatus(rawValue: result.bloomingStatus)
+
+    let state = result.bloomStatus
     let coord = NMGLatLng(lat: result.pinPoint.latitude, lng: result.pinPoint.longitude)
-    let marker = drawMarker(view, to: coord, icon: state?.activeImage)
+    let marker = drawMarker(view, to: coord, icon: state.activeMarker(type: result.type))
     marker.isHideCollidedMarkers = true
     marker.zIndex = 100
     context.coordinator.focusMarker = marker
@@ -236,12 +237,12 @@ extension MapViewRepresentable {
   }
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
-  private func markerTapEvent(to marker: NMFMarker, id: Int, context: Context) {
+  private func markerTapEvent(to marker: NMFMarker, id: Int, spotType: MapSpotType, context: Context) {
     // 같은 마커를 탭 하면 무시
     if marker == context.coordinator.activeMarker { return }
-    if let data = flowerPositions[id],
-       let state = BloomStatus(rawValue: data.bloomingStatus){
-      marker.iconImage = NMFOverlayImage(image: state.activeImage)
+    if let data = flowerPositions[id] {
+      let state = data.bloomStatus
+      marker.iconImage = state.activeMarker(type: spotType)
       context.coordinator.markerTapEvent(marker: marker, data: data)
       
       if let onMarkerTapped = onMarkerTapped {
@@ -309,7 +310,7 @@ extension MapViewRepresentable {
   /// 경로 선을 그리기 위한 메서드
   private func drawPathLine(
     _ view: NMFNaverMapView,
-    data: FlowerSpotEntity,
+    data: MapSpotEntity,
     for newPath: [Coordinate],
     context: Context
   ) {
@@ -339,7 +340,7 @@ extension MapViewRepresentable {
     
     context.coordinator.drawPathPoints = newPath
     
-    let flowerState = BloomStatus(rawValue: data.bloomingStatus) ?? .notBloomed
+    let flowerState = data.bloomStatus
     // 새로운 경로 그리기
     let path = NMFPath()
     path.width = 6
@@ -356,11 +357,11 @@ extension MapViewRepresentable {
     
     let start = drawMarker(view,
                            to: firstPoint,
-                           icon: flowerState.circleImage,
+                           icon: flowerState.pathPointMarker,
                            anchor: CGPoint(x: 0.5, y: 0.5))
     let end = drawMarker(view,
                          to: lastPoint,
-                         icon: flowerState.circleImage,
+                         icon: flowerState.pathPointMarker,
                          anchor: CGPoint(x: 0.5, y: 0.5))
     start.globalZIndex = 2
     end.globalZIndex = 2
@@ -374,7 +375,7 @@ extension MapViewRepresentable {
   /// 지도 위에 비활성화 마커를 표시하기 위한 메서드
   private func presentMarkers(
     _ view: NMFNaverMapView,
-    flowers: [Int: FlowerSpotEntity],
+    flowers: [Int: MapSpotEntity],
     context: Context,
     shouldMoveCamera: Bool = true
   ) {
@@ -387,18 +388,23 @@ extension MapViewRepresentable {
     for pin in flowers {
       let position = pin.value.pinPoint
       let point = NMGLatLng(lat: position.latitude, lng: position.longitude)
-      let flowerState = BloomStatus(rawValue: pin.value.bloomingStatus) ?? .notBloomed
+      let flowerState = pin.value.bloomStatus
       let marker = drawMarker(
         view,
         to: point,
-        icon: flowerState.inactiveImage
+        icon: flowerState.inactiveMarker(type: pin.value.type)
       )
       marker.tag = UInt(pin.key)
       
       // 마커 탭 이벤트 헨들러
       marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
         if let marker = overlay as? NMFMarker {
-          markerTapEvent(to: marker, id: pin.value.id, context: context)
+          markerTapEvent(
+            to: marker,
+            id: pin.value.id,
+            spotType: pin.value.type,
+            context: context
+          )
           moveCamera(view, to: position, zoomLevel: 14)
         }
         return true
@@ -413,13 +419,12 @@ extension MapViewRepresentable {
   private func drawMarker(
     _ view: NMFNaverMapView,
     to point: NMGLatLng,
-    icon: UIImage?,
+    icon: NMFOverlayImage,
     anchor: CGPoint = CGPoint(x: 0.5, y: 1)
   ) -> NMFMarker{
     let marker = NMFMarker(position: point)
     marker.isHideCollidedSymbols = true
-    if let icon = icon { marker.iconImage = NMFOverlayImage(image: icon) }
-    // TODO: 혹시 모르는 디폴트 이미지
+    marker.iconImage = icon
     marker.anchor = anchor
     marker.mapView = view.mapView
     return marker

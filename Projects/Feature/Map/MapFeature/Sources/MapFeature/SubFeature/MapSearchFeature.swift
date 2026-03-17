@@ -64,9 +64,10 @@ extension MapSearchFeature {
         return .none
         
       case .searchBackButtonTapped:
+        let isFromCategory = state.currentNavigation == .flowerDetail(.fromCategory)
         return .concatenate(
           .send(.handleSearchBackNavigation),
-          .send(.resetSearchBar),
+          isFromCategory ? .none : .send(.resetSearchBar),
           .send(.delegate(.resetMarkerTapped))
         )
         
@@ -94,6 +95,16 @@ extension MapSearchFeature {
             .send(.presentToSearch)
           )
           
+        case .flowerDetail(.fromCategory):
+          // 카테고리 → 상세 → 뒤로 = 카테고리 복원
+          state.currentNavigation = .category
+          return .send(.delegate(.restoreCategoryList))
+
+        case .category:
+          // 카테고리 → 뒤로 = 기본 지도 화면
+          state.currentNavigation = .map
+          return .send(.delegate(.resetCategorySelection))
+
         case .map:
           return .none
         }
@@ -101,7 +112,11 @@ extension MapSearchFeature {
       case .setNavigationFromRegionList:
         state.currentNavigation = .flowerDetail(.fromRegionList)
         return .none
-        
+
+      case .setNavigationFromCategory:
+        state.currentNavigation = .flowerDetail(.fromCategory)
+        return .none
+
       case .binding, .delegate: return .none
       }
     }

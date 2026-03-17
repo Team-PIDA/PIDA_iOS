@@ -10,6 +10,7 @@ import SwiftUI
 import Shared
 import DesignKit
 import ComposableArchitecture
+import CategoryFeatureInterface
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
 
@@ -29,10 +30,8 @@ public struct MapView: View {
     ZStack(alignment: .bottom) {
       mapView
       VStack {
-        searchView()
-          .padding(.horizontal, .Number16)
-          .padding(.vertical, .Number8)
-        if store.researchButtonEnable {
+        headerSection()
+        if store.researchButtonEnable && store.category.selectedCategory != .festival {
           ResearchButton(
             action: {
               store.send(.requestMapBounds(true))
@@ -69,6 +68,13 @@ public struct MapView: View {
         }
       }
     }
+    .overlay {
+      Group {
+        if let categoryListStore = store.scope(state: \.categoryList, action: \.categoryList) {
+          categoryListSheet(with: categoryListStore)
+        }
+      }
+    }
     .ignoresSafeArea(edges: .bottom)
     .onAppear {
       if !store.isViewAppeared {
@@ -88,22 +94,38 @@ extension MapView {
   @ViewBuilder
   private var mapView: some View {
     MapViewRepresentable(
-      flowerPositions: $store.flowerSpots,
+      flowerPositions: $store.spots,
       isCameraMove: $store.researchButtonEnable,
-      hasBottomSheet: $store.mapSearch.isShowRegionList,
+      hasBottomSheet: Binding(
+        get: { store.mapSearch.isShowRegionList || store.category.isShowCategoryList },
+        set: { _ in }
+      ),
       mapActions: $store.mapActions,
       shouldRequestInitialBounds: $store.shouldRequestInitialBounds
     )
     .onReceiveMapBounds {
-      store.send(.location(.fetchFlowers($0)))
+      store.send(.receiveMapBounds($0))
     }
     .onMarkerTapped { id in
       store.send(.markerTapped(id: id))
     }
     .cameraMoveEvent {
       store.send(.mapSearch(.changeRegionSheetDetent))
+      store.send(.category(.changeCategorySheetDetent))
     }
     .ignoresSafeArea()
+  }
+  
+  @ViewBuilder
+  private func headerSection() -> some View {
+    VStack(spacing: .Number10) {
+      searchView()
+        .padding(.horizontal, .Number16)
+      if store.mapSearch.searchText == nil {
+        categoryButton()
+      }
+    }
+    .padding(.vertical, .Number8)
   }
   
   @ViewBuilder
@@ -151,6 +173,25 @@ extension MapView {
     }
   }
   
+  private func categoryButton() -> some View {
+    ScrollView(.horizontal, showsIndicators: false) {
+      HStack(spacing: .Number8) {
+        ForEach(store.category.categoryList, id: \.id) { item in
+          CategoryButton(
+            title: item.category,
+            icon: item.type.icon,
+            isActive: item.type == store.category.selectedCategory
+          )
+          .onTapGesture {
+            store.send(.category(.tapCategory(item)))
+          }
+        }
+      }
+      .padding(.horizontal, .Number16)
+    }
+    
+  }
+  
   @ViewBuilder
   private var currentButton: some View {
     HStack {
@@ -174,6 +215,8 @@ extension MapView {
       return .detailBottomSheetHeight
     } else if store.mapSearch.isShowRegionList {
       return min(store.mapSearch.regionBottomSheetHeight, 500)
+    } else if store.category.isShowCategoryList {
+      return min(store.category.categoryListBottomSheetHeight, 500)
     } else {
       return 20
     }
@@ -226,6 +269,16 @@ extension MapView {
       currentHeight: $store.mapSearch.regionBottomSheetHeight
     ) {
       SearchRegionListView(store: regionStore)
+    }
+  }
+
+  private func categoryListSheet(with categoryListStore: StoreOf<CategoryListFeature>) -> some View {
+    DetentBottomSheet(
+      isPresented: $store.category.isShowCategoryList,
+      detent: $store.category.categoryListDetent,
+      currentHeight: $store.category.categoryListBottomSheetHeight
+    ) {
+      CategoryListView(store: categoryListStore)
     }
   }
 }

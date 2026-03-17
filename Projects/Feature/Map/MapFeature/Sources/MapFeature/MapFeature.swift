@@ -10,25 +10,30 @@ import SwiftUI
 import Shared
 import ComposableArchitecture
 import MapFeatureInterface
+import CategoryFeatureInterface
 import FlowerSpotClient
 import FlowerSpotDetailFeatureInterface
 import SearchRegionListFeatureInterface
 import AnalyticsClient
-
+import DesignKit
 
 extension MapFeature {
   public init(
     location: Reduce<LocationFeature.State, LocationFeature.Action>,
     mapSearch: Reduce<MapSearchFeature.State, MapSearchFeature.Action>,
+    category: Reduce<CategoryFeature.State, CategoryFeature.Action>,
     flowerSpotDetail: FlowerSpotDetailFeature,
-    searchRegionList: SearchRegionListFeature
+    searchRegionList: SearchRegionListFeature,
+    categoryListFeature: CategoryListFeature
   ) {
     self.init(
       reducer: Reduce(Core()),
       location: location,
       mapSearch: mapSearch,
+      category: category,
       flowerSpotDetail: flowerSpotDetail,
-      searchRegionList: searchRegionList
+      searchRegionList: searchRegionList,
+      categoryListFeature: categoryListFeature
     )
   }
   
@@ -55,17 +60,24 @@ extension MapFeature {
         
       case .viewDidAppear:
         state.isViewAppeared = true
-        return .none
+        return .send(.category(.fetchCategoryList))
         
       case let .requestMapBounds(isRequest):
         state.shouldRequestInitialBounds = true
         state.researchButtonEnable = false
         if isRequest {
           analyticsClient.track(MapEvent.researchClicked(currentPage: "map"))
-          state.flowerSpots.removeAll()
+          state.spots.removeAll()
           return .send(.addMapAction(.requestBounds))
         }
         return .none
+        
+      case let .receiveMapBounds(coordinates):
+        if state.category.selectedCategory == .all {
+          return .send(.location(.fetchFlowers(coordinates)))
+        } else {
+          return .send(.category(.fetchCategorySpots(coordinates)))
+        }
         
         // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
       case let .markerTapped(id):
@@ -76,16 +88,23 @@ extension MapFeature {
         }
         // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
         state.flowerSpotDetail = .init(userLocation: state.userLocation)
-        
+
+        let isFromCategory = state.mapSearch.currentNavigation == .category
+        if isFromCategory {
+          state.category.isShowCategoryList = false  // CategoryList 바텀시트 숨기기 (State는 유지)
+        }
+
         return .concatenate(
           .send(.mapSearch(.showRegionList(data: nil))),
-          .send(.mapSearch(.setNavigationFromRegionList)),
+          isFromCategory
+            ? .send(.mapSearch(.setNavigationFromCategory))
+            : .send(.mapSearch(.setNavigationFromRegionList)),
           .send(.fetchPathLines(id)),
           .send(.flowerSpotDetail(.requestDetailInfo(id)))
         )
         
       case let .fetchPathLines(id):
-        if let data = state.flowerSpots[id] {
+        if let data = state.spots[id] {
           state.selectedPathLines = data.path
           state.mapActions.append(.drawPath(data, data.path))
         } else {
@@ -130,9 +149,21 @@ extension MapFeature {
           
         case .resetMarkerTapped:
           return .send(.markerTapped(id: nil))
-          
+
         case .dismissFlowerSpotDetail:
           state.flowerSpotDetail = nil
+          return .none
+
+        case .resetCategorySelection:
+          state.category.isShowCategoryList = false
+          state.categoryList = nil
+          return .send(.category(.resetToAll))
+
+        case .restoreCategoryList:
+          state.category.isShowCategoryList = true
+          state.category.categoryListDetent = .medium
+          state.flowerSpotDetail = nil
+          state.mapActions.append(.clearFocus)
           return .none
         }
         
@@ -162,12 +193,12 @@ extension MapFeature {
       case let .location(.delegate(action)):
         switch action {
         case let .storeFlowerData(data):
-          state.flowerSpots.removeAll()
+          state.spots.removeAll()
           data.forEach {
-            state.flowerSpots[$0.id] = $0
+            state.spots[$0.id] = $0.asMapSpot
           }
           return .concatenate(
-            .send(.addMapAction(.updateMarkers(state.flowerSpots))),
+            .send(.addMapAction(.updateMarkers(state.spots))),
             state.searchRegionList != nil ? .send(.searchRegionList(.storeFlowerSpots(data))) : .none
           )
           
@@ -207,8 +238,17 @@ extension MapFeature {
         switch action {
         case .dismiss:
           // 바텀시트 닫기: Optional State를 nil로 설정
+          let isFromCategory = state.mapSearch.currentNavigation == .flowerDetail(.fromCategory)
           state.flowerSpotDetail = nil
-          state.mapActions.append(.deletePath)
+          if isFromCategory {
+            state.spots.removeAll()
+            state.mapActions.append(.clearFocus)
+            state.mapActions.append(.updateMarkers(state.spots))  // updateMarkers([]) → currentFlowerPositions 리셋 트리거
+            state.mapSearch.currentNavigation = .category
+            state.category.isShowCategoryList = true
+          } else {
+            state.mapActions.append(.deletePath)
+          }
           return .none
 
         case let .presentToBlooming(id, streetName, distance):
@@ -222,11 +262,8 @@ extension MapFeature {
           return .send(.location(.moveLocation(flowerSpot.pinPoint)))
 
         case let .didUpdateFlowerSpot(item):
-          let existData = state.flowerSpots[item.id]
-          if let existData = existData,
-             item.bloomingStatus != existData.bloomingStatus {
-            state.flowerSpots[item.id] = item
-          }
+          guard state.spots[item.id] != nil else { return .none }
+          state.spots[item.id] = item.asMapSpot
           return .none
           
         case let .updateMarkerStatus(bloomStatus):
@@ -237,7 +274,7 @@ extension MapFeature {
         switch action {
         case let .showFlowerSpotDetail(data):
           return .concatenate(
-            .send(.addMapAction(.changeActiveMarker(data))),
+            .send(.addMapAction(.changeActiveMarker(data.asMapSpot))),
             .send(.markerTapped(id: data.id))
           )
         }
@@ -249,7 +286,61 @@ extension MapFeature {
         state.mapActions.append(action)
         return .none
         
-      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch:
+        // MARK: - CategoryFeature Delegate Action
+        
+      case let .category(.delegate(action)):
+        switch action {
+        case let .tapCategory(category):
+          state.mapSearch.currentNavigation = .category
+          state.categoryList = .init(categoryItem: category)
+          state.category.isShowCategoryList = true
+          state.flowerSpotDetail = nil
+          state.mapActions.append(.deletePath)
+          return .send(.mapSearch(.setSearchBarText(category.category)))
+
+        case .resetCategory:
+          state.mapSearch.currentNavigation = .map
+          state.category.isShowCategoryList = false
+          state.categoryList = nil
+          state.spots.removeAll()
+          return .concatenate(
+            .send(.mapSearch(.resetSearchBar)),
+            .send(.addMapAction(.updateMarkers(state.spots)))
+          )
+
+        case let .didFetchFlowerSpots(data, type):
+          state.spots.removeAll()
+          data.forEach {
+            state.spots[$0.id] = MapSpotEntity(
+              id: $0.id,
+              pinPoint: $0.pinPoint,
+              path: [],
+              type: type,
+              bloomStatus: BloomStatus(rawValue: $0.bloomingStatus) ?? .notBloomed
+            )
+          }
+          return .concatenate(
+            .send(.addMapAction(.updateMarkers(state.spots))),
+            .send(.categoryList(.storeSpots(data)))
+          )
+          
+        case .requestMapBounds:
+          return .send(.requestMapBounds(true))
+        }
+        
+        // MARK: - CategoryListFeature Delegate Action
+
+      case let .categoryList(.delegate(action)):
+        switch action {
+        case let .showFlowerSpotDetail(flowerSpot):
+          return .concatenate(
+            .send(.location(.moveLocation(flowerSpot.pinPoint))),
+            .send(.addMapAction(.changeActiveMarker(flowerSpot.asMapSpot))),
+            .send(.markerTapped(id: flowerSpot.id))
+          )
+        }
+
+      case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category, .categoryList:
         return .none
         
       }
@@ -268,7 +359,7 @@ extension MapFeature.Core {
       if let result = result {
         await send(.mapSearch(.setSearchBarText(result.streetName)))
         await send(.location(.moveLocation(result.pinPoint)))
-        await send(.addMapAction(.showFocus(result)))
+        await send(.addMapAction(.showFocus(result.asMapSpot)))
         await send(.flowerSpotDetail(.requestDetailInfo(result.id)))
       } else {
         await send(.addMapAction(.clearFocus))
@@ -284,4 +375,5 @@ extension MapFeature.Core {
       await send(.location(.fetchFlowersInRadius(coordinate: coord, radiusInKm: 1.0)))
     }
   }
+
 }

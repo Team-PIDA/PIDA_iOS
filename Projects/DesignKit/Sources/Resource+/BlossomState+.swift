@@ -11,28 +11,31 @@ import UIKit
 public extension BloomStatus {
   private typealias Images = DesignKitAsset.Icons
   
-  private static let activeImages: [Self: UIImage] = [
-    .withered: Images.goneActive.image,
-    .bloomed: Images.manyActive.image,
-    .little: Images.fewActive.image,
-    .notBloomed: Images.noneActive.image
-  ]
-  private static let inactiveImages: [Self: UIImage] = [
-    .withered: Images.goneInactive.image,
-    .bloomed: Images.manyInactive.image,
-    .little: Images.fewInactive.image,
-    .notBloomed: Images.noneInactive.image
-  ]
-  private static let pathPointImages: [Self: UIImage] = [
-    .withered: Images.gonePathpoint.image,
-    .bloomed: Images.manyPathpoint.image,
-    .little: Images.fewPathpoint.image,
-    .notBloomed: Images.nonePathpoint.image
-  ]
+  var activeImage: UIImage {
+    switch self {
+    case .little:
+      Images.fewActive.image
+    case .bloomed:
+      Images.manyActive.image
+    case .withered:
+      Images.goneActive.image
+    case .notBloomed:
+      Images.noneActive.image
+    }
+  }
   
-  var activeImage: UIImage { Self.activeImages[self]! }
-  
-  var inactiveImage: UIImage { Self.inactiveImages[self]! }
+  var inactiveImage: UIImage {
+    switch self {
+    case .little:
+      Images.fewInactive.image
+    case .bloomed:
+      Images.manyInactive.image
+    case .withered:
+      Images.goneInactive.image
+    case .notBloomed:
+      Images.noneInactive.image
+    }
+  }
   
   var color: UIColor {
     switch self {
@@ -47,6 +50,17 @@ public extension BloomStatus {
     }
   }
   
-  var circleImage: UIImage { Self.pathPointImages[self]! }
+  var circleImage: UIImage {
+    switch self {
+    case .little:
+      Images.fewPathpoint.image
+    case .bloomed:
+      Images.manyPathpoint.image
+    case .withered:
+      Images.gonePathpoint.image
+    case .notBloomed:
+      Images.nonePathpoint.image
+    }
+  }
 }
 
