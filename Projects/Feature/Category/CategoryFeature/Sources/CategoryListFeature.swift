@@ -44,7 +44,7 @@ extension CategoryListFeature {
 extension CategoryEntity {
   func title(count: Int) -> String {
     switch self.type {
-    case .festival: return "2026 벚꽃 축제 \(count)곳"
+    case .event: return "2026 벚꽃 축제 \(count)곳"
     case .trail: return "주변에 걷기 좋은 산책로 \(count)곳이 있어요"
     case .cafe: return "주변에 벚꽃 뷰 카페 \(count)곳을 찾았어요"
     default: return ""

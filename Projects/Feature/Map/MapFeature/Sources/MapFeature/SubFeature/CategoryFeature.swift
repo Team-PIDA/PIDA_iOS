@@ -26,7 +26,7 @@ extension CategoryFeature {
         
       case let .storeCategoryList(item):
         guard !item.isEmpty else { return .none }
-        state.categoryList = [.init(id: 0, category: "전체")] + item
+        state.categoryList = [.init(id: 0, title: "전체", label: "ALL")] + item
         return .none
 
       case let .tapCategory(item):

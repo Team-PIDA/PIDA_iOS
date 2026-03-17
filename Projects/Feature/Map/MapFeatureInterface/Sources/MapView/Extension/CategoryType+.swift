@@ -13,7 +13,7 @@ import CategoryClient
 extension CategoryType {
   var icon: ImageSet? {
     switch self {
-    case .festival: return ImageSet.event
+    case .event: return ImageSet.event
     case .trail: return ImageSet.steps
     case .cafe: return ImageSet.cafe
     default: return nil

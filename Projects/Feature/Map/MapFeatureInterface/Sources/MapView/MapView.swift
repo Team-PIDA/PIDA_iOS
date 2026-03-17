@@ -31,7 +31,7 @@ public struct MapView: View {
       mapView
       VStack {
         headerSection()
-        if store.researchButtonEnable && store.category.selectedCategory != .festival {
+        if store.researchButtonEnable && store.category.selectedCategory != .event {
           ResearchButton(
             action: {
               store.send(.requestMapBounds(true))
@@ -178,7 +178,7 @@ extension MapView {
       HStack(spacing: .Number8) {
         ForEach(store.category.categoryList, id: \.id) { item in
           CategoryButton(
-            title: item.category,
+            title: item.title,
             icon: item.type.icon,
             isActive: item.type == store.category.selectedCategory
           )

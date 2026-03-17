@@ -16,9 +16,9 @@ extension CategoryClient: DependencyKey {
     return .init(
       fetchCategories: {
         return [
-          CategoryEntity(id: 1, category: "벚꽃 축제"),
-          CategoryEntity(id: 2, category: "산책로 추천"),
-          CategoryEntity(id: 3, category: "카페 추천"),
+          CategoryEntity(id: 1, title: "벚꽃 축제", label: "EVENT"),
+          CategoryEntity(id: 2, title: "산책로 추천", label: "TRAIL"),
+          CategoryEntity(id: 3, title: "카페 추천", label: "CAFE"),
         ]
       }
     )

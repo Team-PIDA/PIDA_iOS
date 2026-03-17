@@ -31,7 +31,7 @@ public struct CategoryListFeature {
 
     public init(categoryItem: CategoryEntity) {
       self.categoryItem = categoryItem
-      if categoryItem.type == .festival {
+      if categoryItem.type == .event {
         filterList = [
           .init(id: 1, title: "전체"),
           .init(id: 2, title: "서울"),
