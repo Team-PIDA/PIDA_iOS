@@ -26,6 +26,7 @@ extension FlowerSpotDetailFeature {
     @Dependency(\.bloomingClient) var bloomingClient
     @Dependency(\.cache) var cache
     @Dependency(\.analyticsClient) var analyticsClient
+    @Dependency(\.openURL) var openURL
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
@@ -249,6 +250,14 @@ extension FlowerSpotDetailFeature {
           DetailsEvent.scrollReachBottom(scrollTimeToReach: scrollTimeToReach)
         )
         return .none
+
+      // MARK: - External URL
+
+      case let .openURL(urlString):
+        guard let url = URL(string: urlString) else { return .none }
+        return .run { [openURL] _ in
+          await openURL(url)
+        }
 
       case .delegate, .binding:
         return .none

@@ -169,6 +169,9 @@ public struct FlowerSpotDetailFeature {
     case copyAddressTapped
     case scrollReachedBottom
 
+    // MARK: - External URL
+    case openURL(String)
+
     // MARK: - Delegate
     case delegate(Delegate)
     case dismiss

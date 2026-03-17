@@ -1,9 +1,9 @@
 //
-//  FlowerSpotDetailView.swift
+//  SpotDetailSharedSections.swift
 //
 //  FlowerSpotDetail
 //
-//  Created by yongin
+//  Created by 조용인
 //
 
 import SwiftUI
@@ -12,85 +12,26 @@ import DesignKit
 import ComposableArchitecture
 import FlowerSpotClient
 
-public struct FlowerSpotDetailView: View {
-  @Bindable var store: StoreOf<FlowerSpotDetailFeature>
-  @State private var offsetY: CGPoint = .zero
-  
-  @State var isNeedDrawPath: Bool = true
-  @State var isNeedDeletePath: Bool = false
-  
-  public init(store: StoreOf<FlowerSpotDetailFeature>) {
-    self.store = store
-  }
-  
-  public var body: some View {
-    ZStack {
-      VStack(spacing: .Number0) {
-        navigationBar
-        mainScrollContent
-        floatingButton
-      }
-      ToastView(message: $store.toastMessage)
-        .padding(.bottom, .Number80)
-      if store.isShowLoginAlert {
-        PIDAlert(
-          type: .login,
-          closeAction: { store.send(.alertCancelTapped) },
-          acceptAction: { store.send(.alertAcceptTapped) }
-        )
-      }
-    }
-    .onAppear {
-      store.send(.onAppear)
-    }
-  }
-  
-  @ViewBuilder
-  private var navigationBar: some View {
-    NavigationBar(
-      backContent: {
-        TouchArea(image: .pullDown)
-          .size(.superLarge)
-          .action {
-            return await MainActor.run {
-              store.send(.dismiss)
-            }
-          }
-      },
-      title: offsetY.y > 36 ? store.flowerSpotData.streetName : ""
-    )
-  }
-  
-  @ViewBuilder
-  private var mainScrollContent: some View {
-    OffsetObservableScrollView(.vertical, scrollOffset: $offsetY) { _ in
-      VStack(alignment: .leading, spacing: .Number0) {
-        mainInfoSection
-        Rectangle()
-          .frame(height: .Number8)
-          .foregroundStyle(ColorSet.Background.Tertiary)
-        locationSection
-        Rectangle()
-          .frame(height: .Number8)
-          .foregroundStyle(ColorSet.Background.Tertiary)
-        flowerInfoSection
-      }
-    }
-    .background(ColorSet.Background.Primary)
-  }
-  
-  @ViewBuilder
-  private var mainInfoSection: some View {
+// MARK: - Main Info Section
+
+struct SpotDetailMainInfoSection: View {
+  let store: StoreOf<FlowerSpotDetailFeature>
+
+  var body: some View {
     VStack(alignment: .leading, spacing: .Number14) {
       // 타이틀 + 서브 정보
       VStack(alignment: .leading, spacing: .Number6) {
         Text(store.spotTitle)
           .fontStyle(FontSet.Heading.heading1)
           .foregroundColor(ColorSet.Text.Primary)
+
         mainInfoSubtitle
       }
-      Divider()
-        .background(ColorSet.Border.Secondary)
+
+      Rectangle()
+        .fill(ColorSet.Background.Tertiary)
+        .frame(height: 1)
+
       // 카테고리별 정보 행
       mainInfoRows
 
@@ -130,10 +71,13 @@ public struct FlowerSpotDetailView: View {
     .padding(.top, .Number8)
   }
 
+  // MARK: - Subtitle
+
   @ViewBuilder
   private var mainInfoSubtitle: some View {
     switch store.spotCategory {
     case .festival:
+      // 축제: 개화상태 + 홈페이지 링크
       HStack(spacing: .Number4) {
         bloomStatusBadge
         if store.festivalInfo?.homepageURL != nil {
@@ -148,10 +92,16 @@ public struct FlowerSpotDetailView: View {
               .fontStyle(FontSet.Caption.caption1)
               .foregroundColor(ColorSet.Text.Accent)
           }
+          .onTapGesture {
+            if let url = store.festivalInfo?.homepageURL {
+              store.send(.openURL(url))
+            }
+          }
         }
       }
 
     case .trail, .cafe:
+      // 산책길/카페: 방문 횟수 + 개화상태
       HStack(spacing: .Number4) {
         Text(store.flowerSpotData.recentlyVisitedCountString)
           .fontStyle(FontSet.Label.label2)
@@ -163,6 +113,8 @@ public struct FlowerSpotDetailView: View {
       }
     }
   }
+
+  // MARK: - Bloom Status Badge
 
   @ViewBuilder
   private var bloomStatusBadge: some View {
@@ -178,20 +130,24 @@ public struct FlowerSpotDetailView: View {
     }
   }
 
+  // MARK: - Info Rows
+
   @ViewBuilder
   private var mainInfoRows: some View {
     VStack(alignment: .leading, spacing: .Number6) {
+      // 거리 (공통)
       HStack(spacing: .Number4) {
         Icon(image: .distance)
           .size(.small)
           .foregroundColor(ColorSet.Icon.Secondary)
-        Text("내 위치로부터 " + "\(store.distance) km")
+        Text(headerDistanceText)
           .fontStyle(FontSet.Body.body3)
           .foregroundColor(ColorSet.Text.Primary)
       }
 
       switch store.spotCategory {
       case .festival:
+        // 축제: 날짜 범위
         if let festival = store.festivalInfo {
           HStack(spacing: .Number4) {
             Icon(image: .date)
@@ -204,6 +160,7 @@ public struct FlowerSpotDetailView: View {
         }
 
       case .trail:
+        // 산책길: 나무 종류 + 소요시간/거리
         HStack(spacing: .Number4) {
           Icon(image: .forest)
             .size(.small)
@@ -212,8 +169,18 @@ public struct FlowerSpotDetailView: View {
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }
+        let walkingMinutes = max(1, Int((store.distance / 5.0) * 60))
+        HStack(spacing: .Number4) {
+          Icon(image: .steps)
+            .size(.small)
+            .foregroundColor(ColorSet.Icon.Secondary)
+          Text("총 \(walkingMinutes)분 소요 · \(formattedDistance)")
+            .fontStyle(FontSet.Body.body3)
+            .foregroundColor(ColorSet.Text.Primary)
+        }
 
       case .cafe:
+        // 카페: 나무 종류 + 카테고리 + 웹사이트
         HStack(spacing: .Number4) {
           Icon(image: .forest)
             .size(.small)
@@ -241,23 +208,51 @@ public struct FlowerSpotDetailView: View {
                 .foregroundColor(ColorSet.Text.Accent)
                 .underline()
             }
+            .onTapGesture {
+              store.send(.openURL(websiteURL))
+            }
           }
         }
       }
     }
   }
-  
-  @ViewBuilder
-  private var locationSection: some View {
+
+  // MARK: - Distance Formatting
+
+  private var formattedDistance: String {
+    if store.distance < 1.0 {
+      return "\(Int(store.distance * 1000))m"
+    } else {
+      return String(format: "%.1f", store.distance) + "km"
+    }
+  }
+
+  private var headerDistanceText: String {
+    if store.distance < 1.0 {
+      return "내 위치로부터 \(formattedDistance)이내"
+    } else {
+      return "내 위치로부터 \(formattedDistance)"
+    }
+  }
+}
+
+// MARK: - Location Section
+
+struct SpotDetailLocationSection: View {
+  @Bindable var store: StoreOf<FlowerSpotDetailFeature>
+
+  var body: some View {
     VStack(alignment: .leading, spacing: .Number14) {
       VStack(alignment: .leading, spacing: .Number8) {
         Text("위치")
-          .fontStyle(FontSet.Heading.heading2)
+          .fontStyle(FontSet.Heading.heading3)
           .foregroundColor(ColorSet.Text.Primary)
+
         HStack(spacing: .Number4) {
           Text(store.flowerSpotData.address)
             .fontStyle(FontSet.Body.body2)
             .foregroundColor(ColorSet.Text.Primary)
+
           HStack(spacing: .Number0) {
             Icon(image: .copy)
               .size(.small)
@@ -272,14 +267,16 @@ public struct FlowerSpotDetailView: View {
             store.send(.showToastView(message: "주소가 복사되었습니다."))
           }
         }
+
         // 도보 시간 (산책길/카페만)
         if store.showsWalkingTime {
-          let walkingMinutes = max(1, Int((store.distance / 5.0) * 60))
-          Text("현재 위치에서 걸어서 약 \(walkingMinutes)분 (\(String(format: "%.1f", store.distance))km)")
+          Text(walkingTimeText)
             .fontStyle(FontSet.Title.title4)
             .foregroundColor(ColorSet.Text.Accent)
         }
       }
+
+      // Mini Map
       if let blooming = BloomStatus(rawValue: store.flowerSpotData.bloomingStatus) {
         DetailMapViewRepresentable(
           location: store.flowerSpotData.pinPoint,
@@ -291,6 +288,7 @@ public struct FlowerSpotDetailView: View {
         .frame(height: 160)
         .cornerRadius(10)
       }
+
       // 제보자 배너 (산책길만)
       if store.showsInformantBanner,
          let nickname = store.bloomingStatus.nickname,
@@ -299,6 +297,7 @@ public struct FlowerSpotDetailView: View {
           Icon(image: .verified)
             .size(.extremeLarge)
             .foregroundColor(ColorSet.Icon.Accent)
+
           VStack(alignment: .leading, spacing: .Number2) {
             (Text(nickname)
               .foregroundColor(ColorSet.Text.Accent) +
@@ -306,6 +305,7 @@ public struct FlowerSpotDetailView: View {
               .foregroundColor(ColorSet.Text.Primary))
             .fontStyle(FontSet.Title.title4)
             .frame(maxWidth: .infinity, alignment: .leading)
+
             Text("\(updateAt) 업데이트")
               .fontStyle(FontSet.Caption.caption1)
               .foregroundColor(ColorSet.Text.Secondary)
@@ -319,9 +319,27 @@ public struct FlowerSpotDetailView: View {
     }
     .padding(.Number16)
   }
-  
-  @ViewBuilder
-  private var flowerInfoSection: some View {
+
+  // MARK: - Walking Time Formatting
+
+  private var walkingTimeText: String {
+    let walkingMinutes = max(1, Int((store.distance / 5.0) * 60))
+    if store.distance < 1.0 {
+      let formatted = "\(Int(store.distance * 1000))m"
+      return "현재 위치에서 걸어서 \(walkingMinutes)분 (\(formatted) 이내)"
+    } else {
+      let formatted = String(format: "%.1f", store.distance) + "km"
+      return "현재 위치에서 걸어서 \(walkingMinutes)분 (\(formatted))"
+    }
+  }
+}
+
+// MARK: - Flower Info Section
+
+struct SpotDetailFlowerInfoSection: View {
+  let store: StoreOf<FlowerSpotDetailFeature>
+
+  var body: some View {
     VStack(alignment: .leading, spacing: .Number28) {
       // 나무 종류 (산책길/카페만)
       if store.showsTreeTypeSection {
@@ -346,14 +364,17 @@ public struct FlowerSpotDetailView: View {
             .fontStyle(FontSet.Heading.heading3)
             .foregroundColor(ColorSet.Text.Primary)
             .onAppear {
+              // 축제의 경우 나무 종류 섹션이 없으므로 여기서 트래킹
               if !store.showsTreeTypeSection {
                 store.send(.scrollReachedBottom)
               }
             }
+
           Text("최근 5일 동안 \(store.bloomingStatus.totalCount)명이 기록했어요")
             .fontStyle(FontSet.Body.body2)
             .foregroundColor(ColorSet.Text.Primary)
         }
+
         LazyVStack(alignment: .leading, spacing: .Number6) {
           ForEach(store.bloomingStatus.dayStatuses, id: \.id) { status in
             BloomStatusGraph(
@@ -369,26 +390,30 @@ public struct FlowerSpotDetailView: View {
     }
     .padding(.Number16)
   }
-  
-  @ViewBuilder
-  private var floatingButton: some View {
-    ZStack(alignment: .bottom) {
-      Rectangle()
-        .fill(.white)
-        .shadow(color: .black.opacity(0.16), radius: 8)
-        .ignoresSafeArea()
+}
+
+// MARK: - Floating Button
+
+struct SpotDetailFloatingButton: View {
+  let store: StoreOf<FlowerSpotDetailFeature>
+
+  var body: some View {
+    VStack(spacing: .Number0) {
       PIDButton(
         title: "오늘의 개화 상태 기록하기",
         size: .large
       )
       .action {
-        print("오늘의 개화 상태 기록하기")
         store.send(.checkAuth)
       }
       .isActive(!store.isVotedBlooming.isBlooming)
-      .padding(.Number16)
+      .padding(.horizontal, .Number16)
+      .padding(.vertical, .Number16)
+      .padding(.bottom, UIApplication.shared.safeAreaBottomInset)
     }
-    .frame(height: 80)
-    .background(Color.white)
+    .background(
+      ColorSet.Background.Primary
+        .shadow(color: .black.opacity(0.16), radius: 8)
+    )
   }
 }
