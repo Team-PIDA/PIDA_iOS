@@ -54,7 +54,7 @@ public enum ImageSet {
     case .eventFilled: return DesignKitAsset.Icons.eventFilled
     case .steps: return DesignKitAsset.Icons.steps
     case .stepsFilled: return DesignKitAsset.Icons.stepsFilled
-    case .littlePin: return DesignKitAsset.Icons.littelPin
+    case .littlePin: return DesignKitAsset.Icons.littlePin
     case .littleActivePin: return DesignKitAsset.Icons.littleActivePin
     case .notBloomPin: return DesignKitAsset.Icons.notBloomPin
     case .notBloomActivePin: return DesignKitAsset.Icons.notBloomActivePin
