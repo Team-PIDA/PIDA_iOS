@@ -86,22 +86,39 @@ extension MapFeature {
           state.flowerSpotDetail = nil  // 바텀시트 닫기
           return .none
         }
+        
+        if state.category.selectedCategory == .all {
+          // 꽃길 마커 탭
+          return .send(.flowerSpotMarkerTapped(id: id))
+        } else {
+          // 카테고리 마커 탭
+          return .send(.categorySpotMarkerTapped(id: id))
+        }
+        
+      case let .flowerSpotMarkerTapped(id):
         // flowerSpotDetail State 설정 (userLocation 전달하여 distance 계산 가능하게)
         state.flowerSpotDetail = .init(userLocation: state.userLocation)
-
-        let isFromCategory = state.mapSearch.currentNavigation == .category
-        if isFromCategory {
-          state.category.isShowCategoryList = false  // CategoryList 바텀시트 숨기기 (State는 유지)
-        }
-
         return .concatenate(
           .send(.mapSearch(.showRegionList(data: nil))),
-          isFromCategory
-            ? .send(.mapSearch(.setNavigationFromCategory))
-            : .send(.mapSearch(.setNavigationFromRegionList)),
+          .send(.mapSearch(.setNavigationFromRegionList)),
           .send(.fetchPathLines(id)),
           .send(.flowerSpotDetail(.requestDetailInfo(id)))
         )
+        
+      case let .categorySpotMarkerTapped(id):
+        guard let categoryId = state.category.selectedCategoryId else { return .none }
+        state.category.isShowCategoryList = false
+        return .concatenate(
+          .send(.mapSearch(.showRegionList(data: nil))),
+          .send(.mapSearch(.setNavigationFromCategory)),
+          .send(.fetchPathLines(id)),
+          .send(.fetchCategoryDetail(categoryId: categoryId, spotId: id))
+        )
+        
+      case let .fetchCategoryDetail(categoryId, spotId):
+        // TODO: - 카테고리 아이템 상세 조회 연결
+        print(categoryId, spotId)
+        return .none
         
       case let .fetchPathLines(id):
         if let data = state.spots[id] {
@@ -310,15 +327,8 @@ extension MapFeature {
 
         case let .didFetchCategoryItems(categoryItemList):
           state.spots.removeAll()
-          let spotType = categoryItemList.categoryType.spotType
-          categoryItemList.list.forEach {
-            state.spots[$0.id] = MapSpotEntity(
-              id: $0.id,
-              pinPoint: $0.pinPoint,
-              path: $0.path,
-              type: spotType,
-              bloomStatus: BloomStatus(rawValue: $0.bloomingStatus) ?? .notBloomed
-            )
+          categoryItemList.asMapSpot.forEach {
+            state.spots[$0.id] = $0
           }
           return .concatenate(
             .send(.addMapAction(.updateMarkers(state.spots))),
@@ -331,8 +341,15 @@ extension MapFeature {
         
         // MARK: - CategoryListFeature Delegate Action
 
-      case .categoryList(.delegate):
-        return .none
+      case let .categoryList(.delegate(action)):
+        switch action {
+        case let .showCategoryDetail(spotId):
+          guard let data = state.spots[spotId] else { return .none }
+          return .concatenate(
+            .send(.addMapAction(.changeActiveMarker(data))),
+            .send(.categorySpotMarkerTapped(id: spotId))
+          )
+        }
 
       case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category, .categoryList:
         return .none

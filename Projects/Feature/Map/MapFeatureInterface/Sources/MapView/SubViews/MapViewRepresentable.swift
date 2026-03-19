@@ -108,6 +108,7 @@ struct MapViewRepresentable: UIViewRepresentable {
       
     case let .changeActiveMarker(data):
       drawFocusMarker(uiView, result: data, context: context)
+      moveCamera(uiView, to: data.pinPoint, zoomLevel: 14)
       
     case .showFocus(let data):
       drawPathLine(uiView, data: data, for: data.path, context: context)

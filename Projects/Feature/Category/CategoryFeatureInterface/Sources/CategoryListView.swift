@@ -54,7 +54,7 @@ public struct CategoryListView: View {
                 type: store.categoryType,
                 item: item,
                 onTap: { item in
-                  store.send(.spotTapped(id: item.id))
+                  store.send(.spotTapped(spotId: item.id))
                 }
               )
               .padding(.horizontal, .Number16)

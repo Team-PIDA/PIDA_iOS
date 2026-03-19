@@ -23,6 +23,5 @@ extension CategoryClient: DependencyKey {
         return try await apiClient.execute(endpoint).toEntity()
       }
     )
-    
   }
 }

@@ -48,11 +48,13 @@ public struct CategoryListFeature {
   public enum Action: Equatable {
     case tapCategory(id: Int)
     case storeCategoryItems(CategoryItemListEntity)
-    case spotTapped(id: Int)
+    case spotTapped(spotId: Int)
     case delegate(Delegate)
   }
 
-  public enum Delegate: Equatable {}
+  public enum Delegate: Equatable {
+    case showCategoryDetail(spotId: Int)
+  }
 
   public var body: some ReducerOf<Self> {
     reducer

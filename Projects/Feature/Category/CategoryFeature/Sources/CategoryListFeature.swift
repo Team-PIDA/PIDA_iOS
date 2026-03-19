@@ -32,9 +32,8 @@ extension CategoryListFeature {
         state.headerTitle = state.categoryItem.title(count: categoryItemList.list.count)
         return .none
 
-      case let .spotTapped(id):
-        // TODO: 카테고리 아이템 상세 화면 연결 필요
-        return .none
+      case let .spotTapped(spotId):
+        return .send(.delegate(.showCategoryDetail(spotId: spotId)))
 
       case .delegate:
         return .none
