@@ -276,6 +276,7 @@ extension MapView {
     DetentBottomSheet(
       isPresented: $store.category.isShowCategoryList,
       detent: $store.category.categoryListDetent,
+      mediumRatio: store.category.selectedCategory == .event ? 0.65 : 0.6,
       currentHeight: $store.category.categoryListBottomSheetHeight
     ) {
       CategoryListView(store: categoryListStore)
