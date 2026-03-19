@@ -31,6 +31,7 @@ extension CategoryFeature {
 
       case let .tapCategory(item):
         state.selectedCategory = item.type
+        state.selectedCategoryId = item.id
         if item.type == .all {
           return .send(.delegate(.resetCategory))
         }
@@ -51,7 +52,15 @@ extension CategoryFeature {
         return .none
         
       case let .fetchCategorySpots(coordinates):
-        return fetchFlowerSpots(type: state.selectedCategory.spotType)
+        guard let categoryId = state.selectedCategoryId else { return .none }
+        return fetchCategoryItems(
+          categoryId: categoryId,
+          coordinates: coordinates
+        )
+        
+      case let .errorLog(description):
+        Logger.log(description, level: .error)
+        return .none 
 
       case .delegate:
         return .none
@@ -61,38 +70,40 @@ extension CategoryFeature {
 }
 
 extension CategoryFeature.Core {
-  
+
   private func fetchCategoryList() -> Effect<Action> {
     return .run { send in
       do {
         let categoryItem = try await categoryClient.fetchCategories()
         await send(.storeCategoryList(categoryItem))
+      } catch let error as NetworkError {
+        await send(.errorLog(error.localizedDescription))
+      } catch let error as FoundationError {
+        await send(.errorLog(error.localizedDescription))
       } catch {
-        
+        await send(.errorLog(error.localizedDescription))
       }
     }
   }
-  
-  // TODO: 임시 데이터 - 서버 데이터 확정 후 실제 API 연동으로 교체 필요
-  private func fetchFlowerSpots(type: MapSpotType) -> Effect<Action> {
-    return .send(
-      .delegate(
-        .didFetchFlowerSpots(
-          [.init(
-            id: 1,
-            address: "서울특별시 영등포구 여의도동 1",
-            recentlyVisitedCount: 0,
-            bloomingStatus: "BLOOMED",
-            streetName: "여의도 벚꽃길",
-            district: "여의도동",
-            description: "왕벚나무",
-            path: [],
-            pinPoint: .init(latitude: 37.5298, longitude: 126.9340),
-            region: "서울"
-          )],
-          type: type
-        )
-      )
+
+  private func fetchCategoryItems(categoryId: Int, coordinates: [Coordinate]) -> Effect<Action> {
+    let query = GetCategoryItemsQuery(
+      swLat: coordinates[0].latitude,
+      swLng: coordinates[0].longitude,
+      neLat: coordinates[1].latitude,
+      neLng: coordinates[1].longitude
     )
+    return .run { send in
+      do {
+        let result = try await categoryClient.fetchCategoryItems(categoryId, query)
+        await send(.delegate(.didFetchCategoryItems(result)))
+      } catch let error as NetworkError {
+        await send(.errorLog(error.localizedDescription))
+      } catch let error as FoundationError {
+        await send(.errorLog(error.localizedDescription))
+      } catch {
+        await send(.errorLog(error.localizedDescription))
+      }
+    }
   }
 }

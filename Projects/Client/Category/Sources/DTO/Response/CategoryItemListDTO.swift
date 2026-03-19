@@ -32,6 +32,8 @@ struct CategoryItemResponseDTO: DTO {
   var id: Int
   var name: String
   var address: String?
+  var recentlyVisitedCount: Int?
+  var bloomingStatus: String
   var description: String?
   var pinPoint: CategoryPointGeomDTO
   var geom: CategoryLineStringGeomDTO?
@@ -56,6 +58,8 @@ extension CategoryItemResponseDTO {
       id: id,
       name: name,
       address: address,
+      recentlyVisitedCount: recentlyVisitedCount,
+      bloomingStatus: bloomingStatus,
       description: description,
       pinPoint: coordinate,
       path: path,

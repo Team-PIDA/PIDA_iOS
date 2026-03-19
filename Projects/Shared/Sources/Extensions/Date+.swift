@@ -12,6 +12,7 @@ import Foundation
 public enum DateFormatType {
   case mmdd
   case yearMonthDay
+  case dateWithWeekday
   
   public var format: String {
     switch self {
@@ -19,6 +20,8 @@ public enum DateFormatType {
       return "MM.dd"
     case .yearMonthDay:
       return "yyyy-MM-dd"
+    case .dateWithWeekday:
+      return "yyyy-MM-dd(E)"
     }
   }
 }

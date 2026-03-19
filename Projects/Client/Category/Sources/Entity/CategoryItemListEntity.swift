@@ -20,6 +20,8 @@ public struct CategoryItemEntity: Equatable, Sendable, Identifiable {
   public let id: Int
   public let name: String
   public let address: String?
+  public var recentlyVisitedCount: Int?
+  public var bloomingStatus: String
   public let description: String?
   public let pinPoint: Coordinate
   public let path: [Coordinate]
@@ -30,34 +32,16 @@ public struct CategoryItemEntity: Equatable, Sendable, Identifiable {
   public let startDate: Date?
   public let endDate: Date?
   public let flowerSpotId: Int?
+
+  public var recentlyVisitedCountString: String {
+    "최근 방문 \(recentlyVisitedCount ?? 0)회"
+  }
   
-  public init(
-    id: Int,
-    name: String,
-    address: String?,
-    description: String?,
-    pinPoint: Coordinate,
-    path: [Coordinate] = [],
-    region: String,
-    imageURL: String?,
-    homepageUrl: String?,
-    mapUrl: String?,
-    startDate: Date?,
-    endDate: Date?,
-    flowerSpotId: Int?
-  ) {
-    self.id = id
-    self.name = name
-    self.address = address
-    self.description = description
-    self.pinPoint = pinPoint
-    self.path = path
-    self.region = region
-    self.imageURL = imageURL
-    self.homepageUrl = homepageUrl
-    self.mapUrl = mapUrl
-    self.startDate = startDate
-    self.endDate = endDate
-    self.flowerSpotId = flowerSpotId
+  public var period: String? {
+    if let startDate = startDate?.toString(format: .dateWithWeekday),
+       let endDate = endDate?.toString(format: .dateWithWeekday) {
+      return "\(startDate) ~ \(endDate)"
+    }
+    return nil
   }
 }

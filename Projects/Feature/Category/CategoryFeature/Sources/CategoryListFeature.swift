@@ -23,16 +23,18 @@ extension CategoryListFeature {
         state.selectedFilterId = id
         return .none
 
-      case let .storeSpots(flowerSpots):
-        state.flowerSpots = flowerSpots
+      case let .storeCategoryItems(categoryItemList):
+        state.categoryId = categoryItemList.categoryId
+        state.categoryType = categoryItemList.categoryType
+        state.categoryItems = categoryItemList.list
         state.isLoading = false
-        state.isDataEmpty = flowerSpots.isEmpty
-        state.headerTitle = state.categoryItem.title(count: flowerSpots.count)
+        state.isDataEmpty = categoryItemList.list.isEmpty
+        state.headerTitle = state.categoryItem.title(count: categoryItemList.list.count)
         return .none
 
       case let .spotTapped(id):
-        guard let flowerSpot = state.flowerSpots.first(where: { $0.id == id }) else { return .none }
-        return .send(.delegate(.showFlowerSpotDetail(flowerSpot)))
+        // TODO: 카테고리 아이템 상세 화면 연결 필요
+        return .none
 
       case .delegate:
         return .none

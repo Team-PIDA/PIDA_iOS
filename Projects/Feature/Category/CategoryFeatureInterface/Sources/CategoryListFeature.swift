@@ -8,7 +8,6 @@
 
 import Foundation
 import ComposableArchitecture
-import FlowerSpotClient
 import CategoryClient
 
 @Reducer
@@ -25,7 +24,9 @@ public struct CategoryListFeature {
     public var headerTitle: String = ""
     public var categoryItem: CategoryEntity
     public var filterList: [CategoryListItem] = []
-    public var flowerSpots: [FlowerSpotEntity] = []
+    public var categoryItems: [CategoryItemEntity] = []
+    public var categoryId: Int? = nil
+    public var categoryType: CategoryType? = nil
     public var isLoading: Bool = true
     public var isDataEmpty: Bool = false
 
@@ -46,14 +47,12 @@ public struct CategoryListFeature {
 
   public enum Action: Equatable {
     case tapCategory(id: Int)
-    case storeSpots([FlowerSpotEntity])
+    case storeCategoryItems(CategoryItemListEntity)
     case spotTapped(id: Int)
     case delegate(Delegate)
   }
 
-  public enum Delegate: Equatable {
-    case showFlowerSpotDetail(FlowerSpotEntity)
-  }
+  public enum Delegate: Equatable {}
 
   public var body: some ReducerOf<Self> {
     reducer

@@ -7,17 +7,20 @@
 
 import SwiftUI
 import DesignKit
-import FlowerSpotClient
+import CategoryClient
 
 public struct CategoryListItemView: View {
-  private let flowerSpot: FlowerSpotEntity
-  private let onTap: (FlowerSpotEntity) -> Void
+  private let type: CategoryType?
+  private let item: CategoryItemEntity
+  private let onTap: (CategoryItemEntity) -> Void
 
   public init(
-    flowerSpot: FlowerSpotEntity,
-    onTap: @escaping (FlowerSpotEntity) -> Void = { _ in }
+    type: CategoryType?,
+    item: CategoryItemEntity,
+    onTap: @escaping (CategoryItemEntity) -> Void = { _ in }
   ) {
-    self.flowerSpot = flowerSpot
+    self.type = type
+    self.item = item
     self.onTap = onTap
   }
 
@@ -26,8 +29,8 @@ public struct CategoryListItemView: View {
       HStack(alignment: .center, spacing: .Number12) {
         contentView
 
-        if let previewUrl = flowerSpot.previewUrl {
-          RemoteImageView(urlString: previewUrl)
+        if let imageURL = item.imageURL {
+          RemoteImageView(urlString: imageURL)
             .frame(width: 72, height: 72)
             .clipped()
             .cornerRadius(.Number16)
@@ -38,7 +41,7 @@ public struct CategoryListItemView: View {
     }
     .contentShape(Rectangle())
     .onTapGesture {
-      onTap(flowerSpot)
+      onTap(item)
     }
   }
 
@@ -46,17 +49,18 @@ public struct CategoryListItemView: View {
   private var contentView: some View {
     HStack {
       VStack(alignment: .leading, spacing: .Number0) {
-        Text(flowerSpot.streetName)
+        Text(item.name)
           .fontStyle(FontSet.Body.body2)
           .foregroundStyle(ColorSet.Text.Primary)
-        Text(flowerSpot.address)
+        Text(type == .event ? (item.period ?? "") : (item.address ?? ""))
           .fontStyle(FontSet.Caption.caption1)
           .foregroundStyle(ColorSet.Text.Tertiary)
         HStack(spacing: .Number4) {
-          if let bloomStatus = BloomStatus(rawValue: flowerSpot.bloomingStatus) {
+          if let bloomStatus = BloomStatus(rawValue: item.bloomingStatus) {
             BloomStateTagView(state: bloomStatus)
           }
-          TagView(text: flowerSpot.recentlyVisitedCountString)
+          
+          TagView(text: item.recentlyVisitedCountString)
         }
         .padding(.top, .Number8)
       }

@@ -49,11 +49,12 @@ public struct CategoryListView: View {
           emptyView
         } else {
           LazyVStack(spacing: .Number0) {
-            ForEach(store.flowerSpots, id: \.id) { flowerSpot in
+            ForEach(store.categoryItems, id: \.id) { item in
               CategoryListItemView(
-                flowerSpot: flowerSpot,
-                onTap: { flowerSpot in
-                  store.send(.spotTapped(id: flowerSpot.id))
+                type: store.categoryType,
+                item: item,
+                onTap: { item in
+                  store.send(.spotTapped(id: item.id))
                 }
               )
               .padding(.horizontal, .Number16)

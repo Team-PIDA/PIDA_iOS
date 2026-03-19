@@ -40,6 +40,21 @@ extension CategoryType: RawRepresentable {
     }
   }
   
+  public var title: String {
+    switch self {
+    case .all:
+      "꽃길"
+    case .event:
+      "축제"
+    case .trail:
+      "산책길"
+    case .cafe:
+      "카페"
+    case .others(let string):
+      ""
+    }
+  }
+  
   public var spotType: MapSpotType {
     switch self {
     case .all:

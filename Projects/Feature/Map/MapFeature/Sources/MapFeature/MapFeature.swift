@@ -308,20 +308,21 @@ extension MapFeature {
             .send(.addMapAction(.updateMarkers(state.spots)))
           )
 
-        case let .didFetchFlowerSpots(data, type):
+        case let .didFetchCategoryItems(categoryItemList):
           state.spots.removeAll()
-          data.forEach {
+          let spotType = categoryItemList.categoryType.spotType
+          categoryItemList.list.forEach {
             state.spots[$0.id] = MapSpotEntity(
               id: $0.id,
               pinPoint: $0.pinPoint,
-              path: [],
-              type: type,
+              path: $0.path,
+              type: spotType,
               bloomStatus: BloomStatus(rawValue: $0.bloomingStatus) ?? .notBloomed
             )
           }
           return .concatenate(
             .send(.addMapAction(.updateMarkers(state.spots))),
-            .send(.categoryList(.storeSpots(data)))
+            .send(.categoryList(.storeCategoryItems(categoryItemList)))
           )
           
         case .requestMapBounds:
@@ -330,15 +331,8 @@ extension MapFeature {
         
         // MARK: - CategoryListFeature Delegate Action
 
-      case let .categoryList(.delegate(action)):
-        switch action {
-        case let .showFlowerSpotDetail(flowerSpot):
-          return .concatenate(
-            .send(.location(.moveLocation(flowerSpot.pinPoint))),
-            .send(.addMapAction(.changeActiveMarker(flowerSpot.asMapSpot))),
-            .send(.markerTapped(id: flowerSpot.id))
-          )
-        }
+      case .categoryList(.delegate):
+        return .none
 
       case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category, .categoryList:
         return .none
