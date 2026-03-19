@@ -34,7 +34,9 @@ struct CategoryItemResponseDTO: DTO {
   var address: String?
   var description: String?
   var pinPoint: CategoryPointGeomDTO
+  var geom: CategoryLineStringGeomDTO?
   var region: String
+  var thumbnailUrl: String?
   var homepageUrl: String?
   var mapUrl: String?
   var startDate: String?
@@ -48,13 +50,17 @@ extension CategoryItemResponseDTO {
       throw FoundationError.failedToDecode(CategoryPointGeomDTO.self)
     }
     let formatter = Date.formatter(with: .yearMonthDay)
+    let path = (try? self.geom?.toEntity()) ?? []
+    
     return CategoryItemEntity(
       id: id,
       name: name,
       address: address,
       description: description,
       pinPoint: coordinate,
+      path: path,
       region: region,
+      imageURL: thumbnailUrl,
       homepageUrl: homepageUrl,
       mapUrl: mapUrl,
       startDate: startDate.flatMap { formatter.date(from: $0) },
@@ -73,5 +79,30 @@ struct CategoryPointGeomDTO: DTO {
       throw FoundationError.failedToDecode(CategoryPointGeomDTO.self)
     }
     return Coordinate(latitude: coordinates[1], longitude: coordinates[0])
+  }
+}
+
+struct CategoryLineStringGeomDTO: DTO {
+  typealias Entity = [Coordinate]?
+  var type: String
+  var coordinates: [[Double]]
+  
+  init(
+    type: String,
+    coordinates: [[Double]]
+  ) {
+    self.type = type
+    self.coordinates = coordinates
+  }
+}
+
+extension CategoryLineStringGeomDTO {
+  func toEntity() throws -> [Coordinate]? {
+    let points = coordinates.compactMap { coord -> Coordinate? in
+      guard coord.count == 2 else { return nil }
+      
+      return Coordinate(latitude: coord[1], longitude: coord[0])
+    }
+    return points.isEmpty ? nil : points
   }
 }
