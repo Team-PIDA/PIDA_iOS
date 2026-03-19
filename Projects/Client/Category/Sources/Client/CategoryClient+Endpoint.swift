@@ -19,4 +19,17 @@ struct CategoryEndpoint: Sendable {
       path: "/categories"
     )
   }
+
+  @discardableResult
+  static func getCategoryItems(
+    categoryId: Int,
+    query: GetCategoryItemsQuery
+  ) -> Endpoint<CategoryItemListDTO> {
+    return Endpoint(
+      method: .get,
+      baseURL: Constant.base_url_v2 ?? "",
+      path: "/categories/\(categoryId)/items",
+      parameters: .query(query)
+    )
+  }
 }
