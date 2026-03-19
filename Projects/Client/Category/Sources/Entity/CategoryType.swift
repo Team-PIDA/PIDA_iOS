@@ -24,7 +24,7 @@ extension CategoryType: RawRepresentable {
     switch rawValue {
     case "ALL": self = .all
     case "EVENT": self = .event
-    case "TRAIL": self = .trail
+    case "FLOWER_SPOT": self = .trail
     case "CAFE": self = .cafe
     default: self = .others(rawValue)
     }
@@ -34,7 +34,7 @@ extension CategoryType: RawRepresentable {
     switch self {
     case .all: return "ALL"
     case .event: return "EVENT"
-    case .trail: return "TRAIL"
+    case .trail: return "FLOWER_SPOT"
     case .cafe: return "CAFE"
     case .others(let value): return value
     }
