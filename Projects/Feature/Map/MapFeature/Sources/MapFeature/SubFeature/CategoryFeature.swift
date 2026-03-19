@@ -32,13 +32,22 @@ extension CategoryFeature {
       case let .tapCategory(item):
         state.selectedCategory = item.type
         state.selectedCategoryId = item.id
-        if item.type == .all {
+        
+        switch item.type {
+        case .all:
           return .send(.delegate(.resetCategory))
+        case .event:
+          return .concatenate(
+            .send(.delegate(.tapCategory(item))),
+            fetchCategoryItems(categoryId: item.id, coordinates: [])
+          )
+        default:
+          return .concatenate(
+            .send(.delegate(.tapCategory(item))),
+            .send(.delegate(.requestMapBounds))
+          )
         }
-        return .concatenate(
-          .send(.delegate(.tapCategory(item))),
-          .send(.delegate(.requestMapBounds))
-        )
+        
 
       case .resetToAll:
         state.selectedCategory = .all
@@ -87,12 +96,17 @@ extension CategoryFeature.Core {
   }
 
   private func fetchCategoryItems(categoryId: Int, coordinates: [Coordinate]) -> Effect<Action> {
-    let query = GetCategoryItemsQuery(
-      swLat: coordinates[0].latitude,
-      swLng: coordinates[0].longitude,
-      neLat: coordinates[1].latitude,
-      neLng: coordinates[1].longitude
-    )
+    let query: GetCategoryItemsQuery
+    if coordinates.isEmpty {
+      query = .init()
+    } else {
+      query = .init(
+        swLat: coordinates[0].latitude,
+        swLng: coordinates[0].longitude,
+        neLat: coordinates[1].latitude,
+        neLng: coordinates[1].longitude
+      )
+    }
     return .run { send in
       do {
         let result = try await categoryClient.fetchCategoryItems(categoryId, query)
