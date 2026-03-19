@@ -349,6 +349,9 @@ extension MapFeature {
             .send(.addMapAction(.changeActiveMarker(data))),
             .send(.categorySpotMarkerTapped(id: spotId))
           )
+
+        case let .showEmptyToast(message, buttonLabel):
+          return .send(.showToastView(message: message, buttonLabel: buttonLabel))
         }
 
       case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category, .categoryList:
