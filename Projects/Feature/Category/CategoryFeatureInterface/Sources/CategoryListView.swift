@@ -42,7 +42,10 @@ public struct CategoryListView: View {
   private var content: some View {
     VStack(alignment: .leading, spacing: 0) {
       headerView
-      categoryScrollView
+      
+      if store.categoryItem.type == .event {
+        categoryScrollView
+      }
 
       ScrollView {
         if store.isDataEmpty {
@@ -94,7 +97,7 @@ public struct CategoryListView: View {
       }
       .padding(.horizontal, .Number16)
     }
-    .padding(.bottom, .Number12)
+    .padding(.vertical, .Number12)
   }
 
   @ViewBuilder
