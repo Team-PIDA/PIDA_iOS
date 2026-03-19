@@ -63,7 +63,7 @@ extension CategoryItemResponseDTO {
       description: description,
       pinPoint: coordinate,
       path: path,
-      region: region,
+      region: Region(rawValue: region),
       imageURL: thumbnailUrl,
       homepageUrl: homepageUrl,
       mapUrl: mapUrl,

@@ -25,7 +25,7 @@ public struct CategoryItemEntity: Equatable, Sendable, Identifiable {
   public let description: String?
   public let pinPoint: Coordinate
   public let path: [Coordinate]
-  public let region: String
+  public let region: Region?
   public let imageURL: String?
   public let homepageUrl: String?
   public let mapUrl: String?
