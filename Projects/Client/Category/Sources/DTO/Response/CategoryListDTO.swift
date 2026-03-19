@@ -21,7 +21,7 @@ extension CategoryListDTO {
   }
 }
 
-struct CategoryItemDTO: Codable {
+struct CategoryItemDTO: DTO {
   var id: Int
   var title: String
   var categoryLabel: String
