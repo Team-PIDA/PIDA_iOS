@@ -363,6 +363,9 @@ extension MapFeature {
 
         case let .showEmptyToast(message, buttonLabel):
           return .send(.showToastView(message: message, buttonLabel: buttonLabel))
+
+        case let .refetchItemsWithRegion(item):
+          return .send(.category(.fetchEventCategoryItems(region: item.code)))
         }
 
       case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category, .categoryList:

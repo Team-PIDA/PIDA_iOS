@@ -49,6 +49,7 @@ public struct CategoryListFeature {
   public enum Delegate: Equatable {
     case showCategoryDetail(spotId: Int)
     case showEmptyToast(message: String, buttonLabel: String?)
+    case refetchItemsWithRegion(RegionEntity)
   }
 
   public var body: some ReducerOf<Self> {

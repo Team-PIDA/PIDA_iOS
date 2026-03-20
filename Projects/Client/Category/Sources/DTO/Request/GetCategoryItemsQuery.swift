@@ -13,16 +13,19 @@ public struct GetCategoryItemsQuery: Encodable {
   public let swLng: Double?
   public let neLat: Double?
   public let neLng: Double?
-  
+  public let region: String?
+
   public init(
     swLat: Double? = nil,
     swLng: Double? = nil,
     neLat: Double? = nil,
-    neLng: Double? = nil
+    neLng: Double? = nil,
+    region: String? = nil
   ) {
     self.swLat = swLat
     self.swLng = swLng
     self.neLat = neLat
     self.neLng = neLng
+    self.region = region
   }
 }

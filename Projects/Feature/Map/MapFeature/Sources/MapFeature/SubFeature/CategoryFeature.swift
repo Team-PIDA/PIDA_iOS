@@ -73,6 +73,10 @@ extension CategoryFeature {
           sw: sw,
           ne: ne
         )
+
+      case let .fetchEventCategoryItems(region):
+        guard let categoryId = state.selectedCategoryId else { return .none }
+        return fetchCategoryItems(categoryId: categoryId, region: region?.rawValue)
         
       case let .errorLog(description):
         Logger.log(description, level: .error)
@@ -120,13 +124,15 @@ extension CategoryFeature.Core {
   private func fetchCategoryItems(
     categoryId: Int,
     sw: Coordinate? = nil,
-    ne: Coordinate? = nil
+    ne: Coordinate? = nil,
+    region: String? = nil
   ) -> Effect<Action> {
     let query: GetCategoryItemsQuery = .init(
       swLat: sw?.latitude,
       swLng: sw?.longitude,
       neLat: ne?.latitude,
-      neLng: ne?.longitude
+      neLng: ne?.longitude,
+      region: region
     )
     
     return .run { send in

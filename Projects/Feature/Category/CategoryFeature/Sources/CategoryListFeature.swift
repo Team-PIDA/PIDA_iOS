@@ -21,7 +21,7 @@ extension CategoryListFeature {
       switch action {
       case let .tapFilter(item):
         state.selectedFilter = item.code
-        return .none
+        return .send(.delegate(.refetchItemsWithRegion(item)))
 
       case let .storeCategoryItems(categoryItemList):
         state.categoryId = categoryItemList.categoryId

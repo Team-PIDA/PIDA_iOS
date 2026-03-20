@@ -42,6 +42,7 @@ public struct CategoryFeature {
     case resetToAll
     case changeCategorySheetDetent
     case fetchCategorySpots(sw: Coordinate?, ne: Coordinate?)
+    case fetchEventCategoryItems(region: Region?)
     case errorLog(String)
     case delegate(Delegate)
   }
