@@ -268,6 +268,46 @@ extension MapViewRepresentable {
     )
   }
   
+  /// 마커 전체가 보이도록 카메라 조정
+  private func fitCameraToMarkers(_ view: NMFNaverMapView, flowers: [Int: MapSpotEntity]) {
+    let points = flowers.values.map { $0.pinPoint }
+    guard !points.isEmpty else { return }
+
+    // 마커 1개면 줌 고정으로 이동
+    if points.count == 1 {
+      moveCamera(view, to: points[0], zoomLevel: 14)
+      return
+    }
+
+    let latitudes = points.map { $0.latitude }
+    let longitudes = points.map { $0.longitude }
+
+    let bounds = NMGLatLngBounds(
+      southWestLat: latitudes.min() ?? 0,
+      southWestLng: longitudes.min() ?? 0,
+      northEastLat: latitudes.max() ?? 0,
+      northEastLng: longitudes.max() ?? 0
+    )
+
+    let bottomPadding: CGFloat
+    if hasBottomSheet {
+      let screenHeight = UIScreen.main.bounds.height
+      let bottomSheetHeight = BottomSheetDetent.medium.visibleHeight(minHeight: 0.0, screenHeight: screenHeight)
+      bottomPadding = bottomSheetHeight + 20
+    } else {
+      bottomPadding = 100
+    }
+
+    let cameraUpdate = NMFCameraUpdate(
+      fit: bounds,
+      paddingInsets: UIEdgeInsets(top: 100, left: 60, bottom: bottomPadding, right: 60)
+    )
+    cameraUpdate.animation = .easeOut
+    cameraUpdate.animationDuration = 1
+
+    view.mapView.moveCamera(cameraUpdate)
+  }
+
   /// 경로의 모든 포인트가 보이도록 카메라 조정
   private func fitCameraToPath(_ view: NMFNaverMapView, path: [Coordinate]) {
     guard !path.isEmpty else { return }
@@ -380,10 +420,9 @@ extension MapViewRepresentable {
     context: Context,
     shouldMoveCamera: Bool = true
   ) {
-    // 마커 중간지점으로 카메라 이동 (마커 ID 비교 확인 -> 현재 보이는 마커들)
+    // 마커 전체가 보이도록 카메라 조정 (마커 ID 비교 확인 -> 현재 보이는 마커들)
     if shouldMoveCamera {
-      let mid = averageCenter(of: flowers.values.map { $0.pinPoint })
-      moveCamera(view, to: mid, zoomLevel: view.mapView.cameraPosition.zoom)
+      fitCameraToMarkers(view, flowers: flowers)
     }
     
     for pin in flowers {

@@ -318,9 +318,9 @@ extension MapFeature {
         
       case let .category(.delegate(action)):
         switch action {
-        case let .tapCategory(category):
+        case let .tapCategory(category, regions, initialFilter):
           state.mapSearch.currentNavigation = .category
-          state.categoryList = .init(categoryItem: category)
+          state.categoryList = .init(categoryItem: category, regionList: regions, initialFilter: initialFilter)
           state.category.isShowCategoryList = true
           state.flowerSpotDetail = nil
           state.mapActions.append(.deletePath)
@@ -363,6 +363,9 @@ extension MapFeature {
 
         case let .showEmptyToast(message, buttonLabel):
           return .send(.showToastView(message: message, buttonLabel: buttonLabel))
+
+        case let .refetchItemsWithRegion(item):
+          return .send(.category(.fetchEventCategoryItems(region: item.code)))
         }
 
       case .binding, .delegate, .alertAcceptTapped, .location, .searchRegionList, .mapSearch, .category, .categoryList:

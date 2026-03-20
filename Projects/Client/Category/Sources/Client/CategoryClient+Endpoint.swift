@@ -11,7 +11,6 @@ import APIClient
 import Shared
 
 struct CategoryEndpoint: Sendable {
-  @discardableResult
   static func getCategories() -> Endpoint<CategoryListDTO> {
     return Endpoint(
       method: .get,
@@ -20,7 +19,6 @@ struct CategoryEndpoint: Sendable {
     )
   }
 
-  @discardableResult
   static func getCategoryItems(
     categoryId: Int,
     query: GetCategoryItemsQuery
@@ -41,6 +39,13 @@ struct CategoryEndpoint: Sendable {
       method: .get,
       baseURL: Constant.base_url_v2 ?? "",
       path: "/categories/\(categoryId)/items/\(itemId)"
+    )
+  }
+  
+  static func getRegionList() -> Endpoint<RegionListDTO> {
+    return Endpoint(
+      method: .get,
+      path: "/regions"
     )
   }
 }

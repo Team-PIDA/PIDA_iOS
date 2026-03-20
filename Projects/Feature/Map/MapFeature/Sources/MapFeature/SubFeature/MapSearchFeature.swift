@@ -42,6 +42,8 @@ extension MapSearchFeature {
         )
         
       case .presentToSearch:
+        guard state.currentNavigation != .category,
+              state.currentNavigation != .flowerDetail(.fromCategory) else { return .none }
         return .send(.delegate(.presentToSearch(state.searchText)))
         
       case let .showRegionList(result):

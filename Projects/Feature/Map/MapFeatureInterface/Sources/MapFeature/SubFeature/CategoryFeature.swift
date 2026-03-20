@@ -38,15 +38,18 @@ public struct CategoryFeature {
     case fetchCategoryList
     case storeCategoryList([CategoryEntity])
     case tapCategory(CategoryEntity)
+    case storeRegionList([RegionEntity], CategoryEntity, Region?)
     case resetToAll
     case changeCategorySheetDetent
     case fetchCategorySpots(sw: Coordinate?, ne: Coordinate?)
+    case fetchEventCategoryItems(region: Region?)
+    case changeBottomSheetDetent(BottomSheetDetent)
     case errorLog(String)
     case delegate(Delegate)
   }
 
   public enum Delegate: Equatable {
-    case tapCategory(CategoryEntity)
+    case tapCategory(CategoryEntity, [RegionEntity], initialFilter: Region?)
     case resetCategory
     case didFetchCategoryItems(CategoryItemListEntity)
     case requestMapBounds

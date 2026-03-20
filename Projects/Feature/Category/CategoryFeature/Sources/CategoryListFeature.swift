@@ -19,9 +19,9 @@ extension CategoryListFeature {
   struct Core: Reducer {
     public func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
-      case let .tapCategory(id):
-        state.selectedFilterId = id
-        return .none
+      case let .tapFilter(item):
+        state.selectedFilter = item.code
+        return .send(.delegate(.refetchItemsWithRegion(item)))
 
       case let .storeCategoryItems(categoryItemList):
         state.categoryId = categoryItemList.categoryId

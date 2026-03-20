@@ -83,19 +83,36 @@ public struct CategoryListView: View {
 
   @ViewBuilder
   private var categoryScrollView: some View {
-    ScrollView(.horizontal, showsIndicators: false) {
-      HStack(spacing: .Number8) {
-        ForEach(store.filterList, id: \.id) { item in
-          CategoryButton(
-            title: item.title,
-            isActive: item.id == store.selectedFilterId
-          )
-          .onTapGesture {
-            store.send(.tapCategory(id: item.id))
+    ScrollViewReader { proxy in
+      ScrollView(.horizontal, showsIndicators: false) {
+        HStack(spacing: .Number8) {
+          ForEach(store.regionFilterList, id: \.name) { item in
+            CategoryButton(
+              title: item.name,
+              isActive: item.code == store.selectedFilter
+            )
+            .id(item.name)
+            .onTapGesture {
+              store.send(.tapFilter(item))
+            }
+          }
+        }
+        .padding(.horizontal, .Number16)
+      }
+      .onAppear {
+        if let item = store.regionFilterList.first(where: { $0.code == store.selectedFilter }) {
+          proxy.scrollTo(item.name, anchor: .center)
+        }
+      }
+      .onChange(of: store.selectedFilter) { _, newFilter in
+        if let item = store.regionFilterList.first(where: { $0.code == newFilter }) {
+          Task { @MainActor in
+            withAnimation {
+              proxy.scrollTo(item.name, anchor: .center)
+            }
           }
         }
       }
-      .padding(.horizontal, .Number16)
     }
     .padding(.vertical, .Number12)
   }
