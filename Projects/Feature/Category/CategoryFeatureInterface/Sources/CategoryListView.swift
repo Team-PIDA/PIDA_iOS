@@ -85,13 +85,13 @@ public struct CategoryListView: View {
   private var categoryScrollView: some View {
     ScrollView(.horizontal, showsIndicators: false) {
       HStack(spacing: .Number8) {
-        ForEach(store.filterList, id: \.id) { item in
+        ForEach(store.regionFilterList, id: \.name) { item in
           CategoryButton(
-            title: item.title,
-            isActive: item.id == store.selectedFilterId
+            title: item.name,
+            isActive: item.code == store.selectedFilter
           )
           .onTapGesture {
-            store.send(.tapCategory(id: item.id))
+            store.send(.tapFilter(item))
           }
         }
       }
