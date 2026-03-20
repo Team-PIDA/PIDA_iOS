@@ -221,15 +221,8 @@ struct SpotDetailMainInfoSection: View {
 
   // MARK: - Path Distance (코스 전체 길이)
 
-  /// 산책길 경로의 총 거리 (km)
   private var totalPathDistance: Double {
-    let path = store.flowerSpotData.path
-    guard path.count >= 2 else { return 0 }
-    var total: Double = 0
-    for i in 0..<(path.count - 1) {
-      total += path[i].distance(from: path[i + 1])
-    }
-    return total
+    store.flowerSpotData.path.totalDistance
   }
 
   private var formattedPathDistance: String {

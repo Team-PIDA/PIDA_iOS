@@ -50,3 +50,17 @@ public struct Coordinate: Equatable, Hashable, Sendable, Codable {
     return longitude.description + "_" + latitude.description
   }
 }
+
+// MARK: - Array Extension
+
+public extension Array where Element == Coordinate {
+  /// 연속 좌표 간 거리를 합산한 경로 전체 길이 (km)
+  var totalDistance: Double {
+    guard count >= 2 else { return 0 }
+    var total: Double = 0
+    for i in 0..<(count - 1) {
+      total += self[i].distance(from: self[i + 1])
+    }
+    return total
+  }
+}

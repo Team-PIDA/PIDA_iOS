@@ -30,17 +30,6 @@ public struct FlowerSpotDetailSmallContentView: View {
     self.festivalInfo = festivalInfo
   }
 
-  /// 산책길 전체 경로의 총 거리 (km)
-  private var totalPathDistance: Double {
-    let path = flowerSpotData.path
-    guard path.count >= 2 else { return 0 }
-    var total: Double = 0
-    for i in 0..<(path.count - 1) {
-      total += path[i].distance(from: path[i + 1])
-    }
-    return total
-  }
-
   public var body: some View {
     HStack(alignment: .center, spacing: .Number12) {
       VStack(alignment: .leading, spacing: .Number10) {
@@ -109,8 +98,8 @@ public struct FlowerSpotDetailSmallContentView: View {
           TagView(text: "\(nickname) 제보")
             .icon(.verified)
         }
-        if totalPathDistance > 0 {
-          let walkingMinutes = max(1, Int((totalPathDistance / 5.0) * 60))
+        if flowerSpotData.path.totalDistance > 0 {
+          let walkingMinutes = max(1, Int((flowerSpotData.path.totalDistance / 5.0) * 60))
           TagView(text: "\(walkingMinutes)분 코스")
         }
 
