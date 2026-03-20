@@ -30,6 +30,14 @@ extension BloomingClient: DependencyKey {
         let endpoint = BloomingEndPoint.verifyBloomingToday(id: id)
         let result = try await apiClient.execute(endpoint).toEntity()
         return result
+      },
+      getBloomingStateByTarget: { query in
+        let endpoint = BloomingEndPoint.getBloomingStateByTarget(query: query)
+        return try await apiClient.execute(endpoint).toEntity()
+      },
+      verifyBloomingTodayByTarget: { query in
+        let endpoint = BloomingEndPoint.verifyBloomingTodayByTarget(query: query)
+        return try await apiClient.execute(endpoint).toEntity()
       }
     )
   }

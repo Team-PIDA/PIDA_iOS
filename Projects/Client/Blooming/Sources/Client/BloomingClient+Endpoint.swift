@@ -34,4 +34,24 @@ struct BloomingEndPoint: Sendable {
       path: "/blooming/\(id)/verify/today"
     )
   }
+
+  // MARK: - Query 기반 (flowerEventId 지원)
+
+  static func getBloomingStateByTarget(query: BloomingTargetQuery) -> Endpoint<BloomingStateDTO> {
+    return Endpoint(
+      headers: .authorization,
+      method: .get,
+      path: "/blooming/details",
+      parameters: .query(query)
+    )
+  }
+
+  static func verifyBloomingTodayByTarget(query: BloomingTargetQuery) -> Endpoint<VerifyBloomingStateDTO> {
+    return Endpoint(
+      headers: .authorization,
+      method: .get,
+      path: "/blooming/verify/today",
+      parameters: .query(query)
+    )
+  }
 }

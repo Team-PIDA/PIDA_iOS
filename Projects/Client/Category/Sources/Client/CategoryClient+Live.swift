@@ -21,6 +21,10 @@ extension CategoryClient: DependencyKey {
       fetchCategoryItems: { id, query in
         let endpoint = CategoryEndpoint.getCategoryItems(categoryId: id, query: query)
         return try await apiClient.execute(endpoint).toEntity()
+      },
+      fetchCategoryItemDetail: { categoryId, itemId in
+        let endpoint = CategoryEndpoint.getCategoryItemDetail(categoryId: categoryId, itemId: itemId)
+        return try await apiClient.execute(endpoint).toEntity()
       }
     )
   }

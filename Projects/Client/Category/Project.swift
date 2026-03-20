@@ -12,6 +12,8 @@ let project = Project.buildStaticLibrary(
   for: Client.Category,
   dependencies: [
     .Client.API,
+    .Client.FlowerSpot,
+    .Client.Blooming,
     .SPM.TCA
   ]
 )

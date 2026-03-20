@@ -17,6 +17,19 @@ public enum SpotCategory: String, Equatable, Sendable, Codable {
   case cafe
 }
 
+// MARK: - categoryLabel 변환
+
+public extension SpotCategory {
+  /// 서버 categoryLabel → SpotCategory
+  static func from(categoryLabel: String) -> SpotCategory {
+    switch categoryLabel {
+    case "EVENT": return .festival
+    case "CAFE": return .cafe
+    default: return .trail
+    }
+  }
+}
+
 // MARK: - 상세페이지 섹션 표시 규칙
 
 public extension SpotCategory {
