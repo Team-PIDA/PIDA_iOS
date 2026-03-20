@@ -30,6 +30,17 @@ public struct FlowerSpotDetailSmallContentView: View {
     self.festivalInfo = festivalInfo
   }
 
+  /// 산책길 전체 경로의 총 거리 (km)
+  private var totalPathDistance: Double {
+    let path = flowerSpotData.path
+    guard path.count >= 2 else { return 0 }
+    var total: Double = 0
+    for i in 0..<(path.count - 1) {
+      total += path[i].distance(from: path[i + 1])
+    }
+    return total
+  }
+
   public var body: some View {
     HStack(alignment: .center, spacing: .Number12) {
       VStack(alignment: .leading, spacing: .Number10) {
@@ -43,7 +54,7 @@ public struct FlowerSpotDetailSmallContentView: View {
         RemoteImageView(urlString: firstImageUrl)
           .frame(width: 80, height: 80)
           .clipped()
-          .cornerRadius(16)
+          .cornerRadius(8)
       }
     }
     .padding(.horizontal, .Number16)
@@ -76,7 +87,7 @@ public struct FlowerSpotDetailSmallContentView: View {
       if spotCategory == .festival, let festival = festivalInfo {
         Text("\(festival.startDate) ~ \(festival.endDate)")
           .fontStyle(FontSet.Body.body3)
-          .foregroundColor(ColorSet.Text.Secondary)
+          .foregroundColor(ColorSet.Text.Primary)
       } else {
         Text(flowerSpotData.address)
           .fontStyle(FontSet.Body.body3)
@@ -90,26 +101,25 @@ public struct FlowerSpotDetailSmallContentView: View {
   @ViewBuilder
   private var tagSection: some View {
     HStack(spacing: .Number4) {
-      // 지역 태그
-      TagView(text: flowerSpotData.district)
-
       switch spotCategory {
       case .trail:
-        // 산책길: 방문 횟수 + 제보자
+        // 산책길: 방문 횟수 + 제보자 + 코스 시간
         TagView(text: flowerSpotData.recentlyVisitedCountString)
         if let nickname = bloomingStatus?.nickname {
-          TagView(text: nickname)
+          TagView(text: "\(nickname) 제보")
             .icon(.verified)
+        }
+        if totalPathDistance > 0 {
+          let walkingMinutes = max(1, Int((totalPathDistance / 5.0) * 60))
+          TagView(text: "\(walkingMinutes)분 코스")
         }
 
       case .festival:
-        // 축제: 홈페이지 태그 (있을 경우)
-        if festivalInfo?.homepageURL != nil {
-          TagView(text: "홈페이지")
-        }
+        // 축제: 지역명만
+        TagView(text: flowerSpotData.district)
 
       case .cafe:
-        // 카페: 방문 횟수 + 카테고리
+        // 카페: 방문 횟수 + 카페
         TagView(text: flowerSpotData.recentlyVisitedCountString)
         TagView(text: "카페")
       }

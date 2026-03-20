@@ -160,7 +160,7 @@ struct SpotDetailMainInfoSection: View {
         }
 
       case .trail:
-        // 산책길: 나무 종류 + 소요시간/거리
+        // 산책길: 나무 종류 + 소요시간/코스거리
         HStack(spacing: .Number4) {
           Icon(image: .forest)
             .size(.small)
@@ -169,14 +169,16 @@ struct SpotDetailMainInfoSection: View {
             .fontStyle(FontSet.Body.body3)
             .foregroundColor(ColorSet.Text.Primary)
         }
-        let walkingMinutes = max(1, Int((store.distance / 5.0) * 60))
-        HStack(spacing: .Number4) {
-          Icon(image: .steps)
-            .size(.small)
-            .foregroundColor(ColorSet.Icon.Secondary)
-          Text("총 \(walkingMinutes)분 소요 · \(formattedDistance)")
-            .fontStyle(FontSet.Body.body3)
-            .foregroundColor(ColorSet.Text.Primary)
+        if totalPathDistance > 0 {
+          let walkingMinutes = max(1, Int((totalPathDistance / 5.0) * 60))
+          HStack(spacing: .Number4) {
+            Icon(image: .steps)
+              .size(.small)
+              .foregroundColor(ColorSet.Icon.Secondary)
+            Text("총 \(walkingMinutes)분 소요 · \(formattedPathDistance)")
+              .fontStyle(FontSet.Body.body3)
+              .foregroundColor(ColorSet.Text.Primary)
+          }
         }
 
       case .cafe:
@@ -217,7 +219,28 @@ struct SpotDetailMainInfoSection: View {
     }
   }
 
-  // MARK: - Distance Formatting
+  // MARK: - Path Distance (코스 전체 길이)
+
+  /// 산책길 경로의 총 거리 (km)
+  private var totalPathDistance: Double {
+    let path = store.flowerSpotData.path
+    guard path.count >= 2 else { return 0 }
+    var total: Double = 0
+    for i in 0..<(path.count - 1) {
+      total += path[i].distance(from: path[i + 1])
+    }
+    return total
+  }
+
+  private var formattedPathDistance: String {
+    if totalPathDistance < 1.0 {
+      return "\(Int(totalPathDistance * 1000))m"
+    } else {
+      return String(format: "%.1f", totalPathDistance) + "km"
+    }
+  }
+
+  // MARK: - Distance Formatting (내 위치 기준)
 
   private var formattedDistance: String {
     if store.distance < 1.0 {
