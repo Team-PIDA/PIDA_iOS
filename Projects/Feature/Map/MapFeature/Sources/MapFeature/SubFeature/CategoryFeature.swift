@@ -31,26 +31,28 @@ extension CategoryFeature {
 
       case let .tapCategory(item):
         state.selectedCategory = item.type
-        state.selectedCategoryId = item.id
         
         switch item.type {
         case .all:
+          state.selectedCategoryId = nil
           return .send(.delegate(.resetCategory))
         case .event:
+          state.selectedCategoryId = item.id
           return .concatenate(
             .send(.delegate(.tapCategory(item))),
             fetchCategoryItems(categoryId: item.id)
           )
         default:
+          state.selectedCategoryId = item.id
           return .concatenate(
             .send(.delegate(.tapCategory(item))),
             .send(.delegate(.requestMapBounds))
           )
         }
         
-
       case .resetToAll:
         state.selectedCategory = .all
+        state.selectedCategoryId = nil
         state.categoryListDetent = .medium
         return .send(.delegate(.resetCategory))
 
