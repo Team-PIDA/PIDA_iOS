@@ -52,6 +52,10 @@ public struct CategoryFeature {
     case requestMapBounds
   }
 
+  public enum CancelID {
+    case fetchCategoryItems
+  }
+
   public var body: some ReducerOf<Self> {
     reducer
   }

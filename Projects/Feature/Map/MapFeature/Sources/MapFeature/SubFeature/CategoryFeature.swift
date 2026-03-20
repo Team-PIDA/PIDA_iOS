@@ -30,6 +30,7 @@ extension CategoryFeature {
         return .none
 
       case let .tapCategory(item):
+        guard item.type != state.selectedCategory else { return .none }
         state.selectedCategory = item.type
         
         switch item.type {
@@ -122,5 +123,6 @@ extension CategoryFeature.Core {
         await send(.errorLog(error.localizedDescription))
       }
     }
+    .cancellable(id: CategoryFeature.CancelID.fetchCategoryItems, cancelInFlight: true)
   }
 }

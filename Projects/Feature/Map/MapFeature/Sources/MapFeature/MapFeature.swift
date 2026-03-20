@@ -174,7 +174,10 @@ extension MapFeature {
         case .resetCategorySelection:
           state.category.isShowCategoryList = false
           state.categoryList = nil
-          return .send(.category(.resetToAll))
+          return .concatenate(
+            .cancel(id: CategoryFeature.CancelID.fetchCategoryItems),
+            .send(.category(.resetToAll))
+          )
 
         case .restoreCategoryList:
           state.category.isShowCategoryList = true
