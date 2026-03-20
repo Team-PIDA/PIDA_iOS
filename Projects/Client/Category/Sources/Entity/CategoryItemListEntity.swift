@@ -32,6 +32,7 @@ public struct CategoryItemEntity: Equatable, Sendable, Identifiable {
   public let startDate: Date?
   public let endDate: Date?
   public let flowerSpotId: Int?
+  public let badges: [CategoryBadgeEntity]
 
   public var recentlyVisitedCountString: String {
     "최근 방문 \(recentlyVisitedCount ?? 0)회"
@@ -44,4 +45,9 @@ public struct CategoryItemEntity: Equatable, Sendable, Identifiable {
     }
     return nil
   }
+}
+
+public struct CategoryBadgeEntity: Equatable, Sendable {
+  public let type: String
+  public let label: String
 }

@@ -44,6 +44,7 @@ struct CategoryItemResponseDTO: DTO {
   var startDate: String?
   var endDate: String?
   var flowerSpotId: Int?
+  var badges: [CategoryBadgeDTO] = []
 }
 
 extension CategoryItemResponseDTO {
@@ -69,7 +70,8 @@ extension CategoryItemResponseDTO {
       mapUrl: mapUrl,
       startDate: startDate.flatMap { formatter.date(from: $0) },
       endDate: endDate.flatMap { formatter.date(from: $0) },
-      flowerSpotId: flowerSpotId
+      flowerSpotId: flowerSpotId,
+      badges: try badges.map { try $0.toEntity() }
     )
   }
 }

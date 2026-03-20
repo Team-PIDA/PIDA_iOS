@@ -60,12 +60,8 @@ public struct CategoryListItemView: View {
             BloomStateTagView(state: bloomStatus)
           }
 
-          if type == .event {
-            if let region = item.region {
-              TagView(text: region.name)
-            }
-          } else {
-            TagView(text: item.recentlyVisitedCountString)
+          ForEach(item.badges, id: \.label) { badge in
+            TagView(text: badge.label)
           }
         }
         .padding(.top, .Number8)
