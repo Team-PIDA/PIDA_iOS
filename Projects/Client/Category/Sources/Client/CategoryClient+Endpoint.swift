@@ -39,6 +39,7 @@ struct CategoryEndpoint: Sendable {
       method: .get,
       baseURL: Constant.base_url_v2 ?? "",
       path: "/categories/\(categoryId)/items/\(itemId)"
+    )
   }
   
   static func getRegionList() -> Endpoint<RegionListDTO> {

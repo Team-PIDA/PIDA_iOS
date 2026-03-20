@@ -100,14 +100,12 @@ public struct CategoryListView: View {
         .padding(.horizontal, .Number16)
       }
       .onAppear {
-        if let filter = store.selectedFilter,
-           let item = store.regionFilterList.first(where: { $0.code == filter }) {
+        if let item = store.regionFilterList.first(where: { $0.code == store.selectedFilter }) {
           proxy.scrollTo(item.name, anchor: .center)
         }
       }
       .onChange(of: store.selectedFilter) { _, newFilter in
-        if let newFilter,
-           let item = store.regionFilterList.first(where: { $0.code == newFilter }) {
+        if let item = store.regionFilterList.first(where: { $0.code == newFilter }) {
           Task { @MainActor in
             withAnimation {
               proxy.scrollTo(item.name, anchor: .center)
