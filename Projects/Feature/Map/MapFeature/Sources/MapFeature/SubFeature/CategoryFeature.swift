@@ -39,7 +39,7 @@ extension CategoryFeature {
         case .event:
           return .concatenate(
             .send(.delegate(.tapCategory(item))),
-            fetchCategoryItems(categoryId: item.id, coordinates: [])
+            fetchCategoryItems(categoryId: item.id)
           )
         default:
           return .concatenate(
@@ -60,11 +60,12 @@ extension CategoryFeature {
         }
         return .none
         
-      case let .fetchCategorySpots(coordinates):
+      case let .fetchCategorySpots(sw, ne):
         guard let categoryId = state.selectedCategoryId else { return .none }
         return fetchCategoryItems(
           categoryId: categoryId,
-          coordinates: coordinates
+          sw: sw,
+          ne: ne
         )
         
       case let .errorLog(description):
@@ -95,18 +96,18 @@ extension CategoryFeature.Core {
     }
   }
 
-  private func fetchCategoryItems(categoryId: Int, coordinates: [Coordinate]) -> Effect<Action> {
-    let query: GetCategoryItemsQuery
-    if coordinates.isEmpty {
-      query = .init()
-    } else {
-      query = .init(
-        swLat: coordinates[0].latitude,
-        swLng: coordinates[0].longitude,
-        neLat: coordinates[1].latitude,
-        neLng: coordinates[1].longitude
-      )
-    }
+  private func fetchCategoryItems(
+    categoryId: Int,
+    sw: Coordinate? = nil,
+    ne: Coordinate? = nil
+  ) -> Effect<Action> {
+    let query: GetCategoryItemsQuery = .init(
+      swLat: sw?.latitude,
+      swLng: sw?.longitude,
+      neLat: ne?.latitude,
+      neLng: ne?.longitude
+    )
+    
     return .run { send in
       do {
         let result = try await categoryClient.fetchCategoryItems(categoryId, query)

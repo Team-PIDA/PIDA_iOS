@@ -104,7 +104,7 @@ extension MapView {
       shouldRequestInitialBounds: $store.shouldRequestInitialBounds
     )
     .onReceiveMapBounds {
-      store.send(.receiveMapBounds($0))
+      store.send(.receiveMapBounds(sw: $0, ne: $1))
     }
     .onMarkerTapped { id in
       store.send(.markerTapped(id: id))

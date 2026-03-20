@@ -40,7 +40,7 @@ public struct CategoryFeature {
     case tapCategory(CategoryEntity)
     case resetToAll
     case changeCategorySheetDetent
-    case fetchCategorySpots([Coordinate])
+    case fetchCategorySpots(sw: Coordinate?, ne: Coordinate?)
     case errorLog(String)
     case delegate(Delegate)
   }

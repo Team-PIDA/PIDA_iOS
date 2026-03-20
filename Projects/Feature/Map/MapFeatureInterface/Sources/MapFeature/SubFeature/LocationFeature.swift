@@ -41,7 +41,7 @@ public struct LocationFeature {
     
     case currentButtonTapped(Bool)
     
-    case fetchFlowers([Coordinate])
+    case fetchFlowers(sw: Coordinate?, ne: Coordinate?)
     case fetchFlowersInRadius(coordinate: Coordinate, radiusInKm: Double)
     case storeFlowerData([FlowerSpotEntity])
     

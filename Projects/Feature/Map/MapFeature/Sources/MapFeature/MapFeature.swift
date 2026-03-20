@@ -72,11 +72,11 @@ extension MapFeature {
         }
         return .none
         
-      case let .receiveMapBounds(coordinates):
+      case let .receiveMapBounds(sw, ne):
         if state.category.selectedCategory == .all {
-          return .send(.location(.fetchFlowers(coordinates)))
+          return .send(.location(.fetchFlowers(sw: sw, ne: ne)))
         } else {
-          return .send(.category(.fetchCategorySpots(coordinates)))
+          return .send(.category(.fetchCategorySpots(sw: sw, ne: ne)))
         }
         
         // 마커 탭 시, 디테일정보 불러오기 및 바텀시트 on
