@@ -12,11 +12,11 @@ public enum BottomSheetDetent: CaseIterable, Equatable {
   case medium
   case high
   
-  public func visibleHeight(minHeight: CGFloat, screenHeight: CGFloat) -> CGFloat {
+  public func visibleHeight(minHeight: CGFloat, screenHeight: CGFloat, mediumRatio: CGFloat = 3.0 / 5.0) -> CGFloat {
     switch self {
-    case .low:       return minHeight
-    case .medium: return (screenHeight - 64.0) * (3.0 / 5.0)
-    case .high:      return screenHeight
+    case .low:    return minHeight
+    case .medium: return (screenHeight - 64.0) * mediumRatio
+    case .high:   return screenHeight
     }
   }
 }

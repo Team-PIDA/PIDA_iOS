@@ -4,4 +4,5 @@ SWIFT_OPTIMIZATION_LEVEL = -Owholemodule
 #include? "Release-Secrets.xcconfig"
 NM_CLIENT_ID = ${NM_CLIENT_ID}
 BASE_URL = ${BASE_URL}
+BASE_URL_V2 = ${BASE_URL_V2}
 MIXPANEL_TOKEN = ${MIXPANEL_TOKEN}

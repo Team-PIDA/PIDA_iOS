@@ -31,7 +31,7 @@ struct MapViewRepresentable: UIViewRepresentable {
   /// 마커 탭 시 id값을 전달하기 위한 클로저
   var onMarkerTapped: ((Int?) -> Void)? = nil
   /// 지도 범위 좌표 값을 전달하기 위한 클로저
-  var mapBounds: (([Coordinate]) -> Void)? = nil
+  var mapBounds: ((_ southWest: Coordinate, _ northEast: Coordinate) -> Void)? = nil
   
   var cameraMoveEvent: (() -> Void)? = nil
   
@@ -108,6 +108,7 @@ struct MapViewRepresentable: UIViewRepresentable {
       
     case let .changeActiveMarker(data):
       drawFocusMarker(uiView, result: data, context: context)
+      moveCamera(uiView, to: data.pinPoint, zoomLevel: 14)
       
     case .showFocus(let data):
       drawPathLine(uiView, data: data, for: data.path, context: context)
@@ -180,7 +181,7 @@ extension MapViewRepresentable {
       longitude: bounds.southWestLng.rounded(to: 6)
     )
     if let mapBounds = mapBounds {
-      mapBounds([southWest, northEast])
+      mapBounds(southWest, northEast)
     }
   }
   

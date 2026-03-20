@@ -31,7 +31,7 @@ public struct MapView: View {
       mapView
       VStack {
         headerSection()
-        if store.researchButtonEnable && store.category.selectedCategory != .festival {
+        if store.researchButtonEnable && store.category.selectedCategory != .event {
           ResearchButton(
             action: {
               store.send(.requestMapBounds(true))
@@ -104,7 +104,7 @@ extension MapView {
       shouldRequestInitialBounds: $store.shouldRequestInitialBounds
     )
     .onReceiveMapBounds {
-      store.send(.receiveMapBounds($0))
+      store.send(.receiveMapBounds(sw: $0, ne: $1))
     }
     .onMarkerTapped { id in
       store.send(.markerTapped(id: id))
@@ -178,7 +178,7 @@ extension MapView {
       HStack(spacing: .Number8) {
         ForEach(store.category.categoryList, id: \.id) { item in
           CategoryButton(
-            title: item.category,
+            title: item.title,
             icon: item.type.icon,
             isActive: item.type == store.category.selectedCategory
           )
@@ -278,6 +278,7 @@ extension MapView {
     DetentBottomSheet(
       isPresented: $store.category.isShowCategoryList,
       detent: $store.category.categoryListDetent,
+      mediumRatio: store.category.selectedCategory == .event ? 0.65 : 0.6,
       currentHeight: $store.category.categoryListBottomSheetHeight
     ) {
       CategoryListView(store: categoryListStore)

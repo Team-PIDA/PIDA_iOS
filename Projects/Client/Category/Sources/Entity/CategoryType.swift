@@ -10,34 +10,48 @@ import Foundation
 import DesignKit
 
 public enum CategoryType: Equatable, Sendable {
-  case all              // id: 0
-  case festival         // id: 1
-  case trail            // id: 2
-  case cafe             // id: 3
-  case unknown(Int)
+  case all
+  case event
+  case trail
+  case cafe
+  case others(String)
 }
 
 extension CategoryType: RawRepresentable {
-  public typealias RawValue = Int
+  public typealias RawValue = String
 
-  // TODO: API 스펙 확정 후 id 값 수정 필요
-  public init(rawValue: Int) {
+  public init(rawValue: String) {
     switch rawValue {
-    case 0: self = .all
-    case 1: self = .festival
-    case 2: self = .trail
-    case 3: self = .cafe
-    default: self = .unknown(rawValue)
+    case "ALL": self = .all
+    case "EVENT": self = .event
+    case "FLOWER_SPOT": self = .trail
+    case "CAFE": self = .cafe
+    default: self = .others(rawValue)
     }
   }
 
-  public var rawValue: Int {
+  public var rawValue: String {
     switch self {
-    case .all: return 0
-    case .festival: return 1
-    case .trail: return 2
-    case .cafe: return 3
-    case .unknown(let id): return id
+    case .all: return "ALL"
+    case .event: return "EVENT"
+    case .trail: return "FLOWER_SPOT"
+    case .cafe: return "CAFE"
+    case .others(let value): return value
+    }
+  }
+  
+  public var title: String {
+    switch self {
+    case .all:
+      "꽃길"
+    case .event:
+      "축제"
+    case .trail:
+      "산책길"
+    case .cafe:
+      "카페"
+    case .others(let string):
+      ""
     }
   }
   
@@ -45,13 +59,13 @@ extension CategoryType: RawRepresentable {
     switch self {
     case .all:
       return .flower
-    case .festival:
+    case .event:
       return .festival
     case .trail:
       return .steps
     case .cafe:
       return .cafe
-    case .unknown:
+    case .others:
       return .flower
     }
   }

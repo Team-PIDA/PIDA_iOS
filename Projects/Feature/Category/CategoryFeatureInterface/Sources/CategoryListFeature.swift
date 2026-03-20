@@ -8,7 +8,6 @@
 
 import Foundation
 import ComposableArchitecture
-import FlowerSpotClient
 import CategoryClient
 
 @Reducer
@@ -25,13 +24,15 @@ public struct CategoryListFeature {
     public var headerTitle: String = ""
     public var categoryItem: CategoryEntity
     public var filterList: [CategoryListItem] = []
-    public var flowerSpots: [FlowerSpotEntity] = []
+    public var categoryItems: [CategoryItemEntity] = []
+    public var categoryId: Int? = nil
+    public var categoryType: CategoryType? = nil
     public var isLoading: Bool = true
     public var isDataEmpty: Bool = false
 
     public init(categoryItem: CategoryEntity) {
       self.categoryItem = categoryItem
-      if categoryItem.type == .festival {
+      if categoryItem.type == .event {
         filterList = [
           .init(id: 1, title: "전체"),
           .init(id: 2, title: "서울"),
@@ -46,13 +47,14 @@ public struct CategoryListFeature {
 
   public enum Action: Equatable {
     case tapCategory(id: Int)
-    case storeSpots([FlowerSpotEntity])
-    case spotTapped(id: Int)
+    case storeCategoryItems(CategoryItemListEntity)
+    case spotTapped(spotId: Int)
     case delegate(Delegate)
   }
 
   public enum Delegate: Equatable {
-    case showFlowerSpotDetail(FlowerSpotEntity)
+    case showCategoryDetail(spotId: Int)
+    case showEmptyToast(message: String, buttonLabel: String?)
   }
 
   public var body: some ReducerOf<Self> {

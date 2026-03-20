@@ -14,6 +14,8 @@ public struct DetentBottomSheet<Content: View>: View {
   private let minHeight: CGFloat
   // 상단 코너 라운드 값
   private let cornerRadius: CGFloat
+  // medium detent 높이 비율
+  private let mediumRatio: CGFloat
   // 외부에서 주입받는 시트 콘텐츠
   private let content: Content
   
@@ -54,6 +56,7 @@ public struct DetentBottomSheet<Content: View>: View {
     minHeight: CGFloat = 115,
     cornerRadius: CGFloat = .Number16,
     detent: Binding<BottomSheetDetent> = .constant(.medium),
+    mediumRatio: CGFloat = 3.0 / 5.0,
     currentHeight: Binding<CGFloat>? = nil,
     @ViewBuilder content: () -> Content
   ) {
@@ -62,6 +65,7 @@ public struct DetentBottomSheet<Content: View>: View {
     self.cornerRadius = cornerRadius
     self._detent = detent
     self.initialDetent = detent.wrappedValue
+    self.mediumRatio = mediumRatio
     self._currentHeightBinding = currentHeight ?? .constant(0)
     self.content = content()
   }
@@ -151,7 +155,7 @@ public struct DetentBottomSheet<Content: View>: View {
   
   // detent → 실제 y offset 값 변환
   private func offset(for detent: BottomSheetDetent, screenHeight: CGFloat, maxHeight: CGFloat) -> CGFloat {
-    let visible = detent.visibleHeight(minHeight: minHeight, screenHeight: screenHeight)
+    let visible = detent.visibleHeight(minHeight: minHeight, screenHeight: screenHeight, mediumRatio: mediumRatio)
     let raw = -(visible - minHeight)
     return clamp(raw, min: -maxHeight, max: 0)
   }

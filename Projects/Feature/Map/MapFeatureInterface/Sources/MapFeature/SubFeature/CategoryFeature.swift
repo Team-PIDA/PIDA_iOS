@@ -8,7 +8,6 @@
 import Foundation
 import ComposableArchitecture
 import DesignKit
-import FlowerSpotClient
 import CategoryClient
 import Shared
 
@@ -23,6 +22,7 @@ public struct CategoryFeature {
   @ObservableState
   public struct State: Equatable {
     public var selectedCategory: CategoryType = .all
+    public var selectedCategoryId: Int? = nil
     public var categoryList: [CategoryEntity] = []
 
     public var isShowCategoryList: Bool = false
@@ -40,15 +40,20 @@ public struct CategoryFeature {
     case tapCategory(CategoryEntity)
     case resetToAll
     case changeCategorySheetDetent
-    case fetchCategorySpots([Coordinate])
+    case fetchCategorySpots(sw: Coordinate?, ne: Coordinate?)
+    case errorLog(String)
     case delegate(Delegate)
   }
 
   public enum Delegate: Equatable {
     case tapCategory(CategoryEntity)
     case resetCategory
-    case didFetchFlowerSpots([FlowerSpotEntity], type: MapSpotType)
+    case didFetchCategoryItems(CategoryItemListEntity)
     case requestMapBounds
+  }
+
+  public enum CancelID {
+    case fetchCategoryItems
   }
 
   public var body: some ReducerOf<Self> {
