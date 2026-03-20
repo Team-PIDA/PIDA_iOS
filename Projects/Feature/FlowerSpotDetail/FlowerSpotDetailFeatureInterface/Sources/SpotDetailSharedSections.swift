@@ -257,6 +257,14 @@ struct SpotDetailMainInfoSection: View {
 struct SpotDetailLocationSection: View {
   @Bindable var store: StoreOf<FlowerSpotDetailFeature>
 
+  private var mapSpotType: MapSpotType {
+    switch store.spotCategory {
+    case .festival: return .festival
+    case .cafe: return .cafe
+    case .trail: return .flower
+    }
+  }
+
   var body: some View {
     VStack(alignment: .leading, spacing: .Number14) {
       VStack(alignment: .leading, spacing: .Number8) {
@@ -298,6 +306,7 @@ struct SpotDetailLocationSection: View {
           location: store.flowerSpotData.pinPoint,
           pathMarkers: store.flowerSpotData.path,
           state: blooming,
+          spotType: mapSpotType,
           isNeedDrawPath: $store.isNeedDrawPath,
           isNeedDeletePath: $store.isNeedDeletePath
         )

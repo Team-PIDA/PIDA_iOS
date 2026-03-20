@@ -10,6 +10,7 @@ import SwiftUI
 import DesignKit
 import FlowerSpotClient
 import BloomingClient
+import CategoryClient
 
 /// 바텀시트 축소 상태에서 보여줄 콘텐츠
 public struct FlowerSpotDetailSmallContentView: View {
@@ -17,17 +18,20 @@ public struct FlowerSpotDetailSmallContentView: View {
   let bloomingStatus: BloomStatusEntity?
   let spotCategory: SpotCategory
   let festivalInfo: FestivalInfoEntity?
+  let badges: [CategoryBadgeEntity]
 
   public init(
     flowerSpotData: FlowerSpotEntity,
     bloomingStatus: BloomStatusEntity?,
     spotCategory: SpotCategory = .trail,
-    festivalInfo: FestivalInfoEntity? = nil
+    festivalInfo: FestivalInfoEntity? = nil,
+    badges: [CategoryBadgeEntity] = []
   ) {
     self.flowerSpotData = flowerSpotData
     self.bloomingStatus = bloomingStatus
     self.spotCategory = spotCategory
     self.festivalInfo = festivalInfo
+    self.badges = badges
   }
 
   public var body: some View {
@@ -90,27 +94,8 @@ public struct FlowerSpotDetailSmallContentView: View {
   @ViewBuilder
   private var tagSection: some View {
     HStack(spacing: .Number4) {
-      switch spotCategory {
-      case .trail:
-        // 산책길: 방문 횟수 + 제보자 + 코스 시간
-        TagView(text: flowerSpotData.recentlyVisitedCountString)
-        if let nickname = bloomingStatus?.nickname {
-          TagView(text: "\(nickname) 제보")
-            .icon(.verified)
-        }
-        if flowerSpotData.path.totalDistance > 0 {
-          let walkingMinutes = max(1, Int((flowerSpotData.path.totalDistance / 5.0) * 60))
-          TagView(text: "\(walkingMinutes)분 코스")
-        }
-
-      case .festival:
-        // 축제: 지역명만
-        TagView(text: flowerSpotData.district)
-
-      case .cafe:
-        // 카페: 방문 횟수 + 카페
-        TagView(text: flowerSpotData.recentlyVisitedCountString)
-        TagView(text: "카페")
+      ForEach(badges, id: \.label) { badge in
+        TagView(text: badge.label)
       }
     }
   }

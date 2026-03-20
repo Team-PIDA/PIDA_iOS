@@ -69,6 +69,8 @@ public struct FlowerSpotDetailFeature {
     public var festivalInfo: FestivalInfoEntity? = nil
     /// 카페 전용 정보 (spotCategory == .cafe 일 때)
     public var cafeInfo: CafeInfoEntity? = nil
+    /// 배지 목록 (서버에서 내려온 태그 데이터)
+    public var badges: [CategoryBadgeEntity] = []
 
     // MARK: - Navigation State
 

@@ -219,6 +219,7 @@ extension FlowerSpotDetailFeature {
         state.spotCategory = detail.spotCategory
         state.festivalInfo = detail.festivalInfo
         state.cafeInfo = detail.cafeInfo
+        state.badges = detail.badges
         state.spotId = detail.flowerSpotData.id
         if let userLocation = state.userLocation {
           state.distance = detail.flowerSpotData.pinPoint.distance(from: userLocation)

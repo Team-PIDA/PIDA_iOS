@@ -245,7 +245,8 @@ extension MapView {
             flowerSpotData: detailStore.flowerSpotData,
             bloomingStatus: detailStore.bloomingStatus,
             spotCategory: detailStore.spotCategory,
-            festivalInfo: detailStore.festivalInfo
+            festivalInfo: detailStore.festivalInfo,
+            badges: detailStore.badges
           )
         }
       },

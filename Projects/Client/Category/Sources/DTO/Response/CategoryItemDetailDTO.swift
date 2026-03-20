@@ -75,13 +75,16 @@ extension CategoryItemDetailDTO {
       )
     }
 
+    let badges = common.badges.map { CategoryBadgeEntity(type: $0.type, label: $0.label) }
+
     return CategoryItemDetailEntity(
       categoryId: categoryId,
       spotCategory: spotCategory,
       flowerSpotData: flowerSpotData,
       bloomingStatus: bloomingStatus,
       festivalInfo: festivalInfo,
-      cafeInfo: cafeInfo
+      cafeInfo: cafeInfo,
+      badges: badges
     )
   }
 }

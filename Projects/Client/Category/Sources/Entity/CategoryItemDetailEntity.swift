@@ -17,6 +17,7 @@ public struct CategoryItemDetailEntity: Equatable, Sendable {
   public let bloomingStatus: BloomStatusEntity
   public let festivalInfo: FestivalInfoEntity?
   public let cafeInfo: CafeInfoEntity?
+  public let badges: [CategoryBadgeEntity]
 
   public init(
     categoryId: Int,
@@ -24,7 +25,8 @@ public struct CategoryItemDetailEntity: Equatable, Sendable {
     flowerSpotData: FlowerSpotEntity,
     bloomingStatus: BloomStatusEntity,
     festivalInfo: FestivalInfoEntity? = nil,
-    cafeInfo: CafeInfoEntity? = nil
+    cafeInfo: CafeInfoEntity? = nil,
+    badges: [CategoryBadgeEntity] = []
   ) {
     self.categoryId = categoryId
     self.spotCategory = spotCategory
@@ -32,5 +34,6 @@ public struct CategoryItemDetailEntity: Equatable, Sendable {
     self.bloomingStatus = bloomingStatus
     self.festivalInfo = festivalInfo
     self.cafeInfo = cafeInfo
+    self.badges = badges
   }
 }
