@@ -283,8 +283,15 @@ extension MapFeature {
           return .send(.location(.moveLocation(flowerSpot.pinPoint)))
 
         case let .didUpdateFlowerSpot(item):
-          guard state.spots[item.id] != nil else { return .none }
-          state.spots[item.id] = item.asMapSpot
+          guard let existing = state.spots[item.id] else { return .none }
+          // 기존 spot의 type을 유지하면서 데이터만 갱신
+          state.spots[item.id] = MapSpotEntity(
+            id: item.id,
+            pinPoint: item.pinPoint,
+            path: item.path,
+            type: existing.type,
+            bloomStatus: BloomStatus(rawValue: item.bloomingStatus) ?? existing.bloomStatus
+          )
           return .none
           
         case let .updateMarkerStatus(bloomStatus):
