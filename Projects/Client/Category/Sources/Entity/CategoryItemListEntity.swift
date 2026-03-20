@@ -13,6 +13,8 @@ import Shared
 public struct CategoryItemListEntity: Equatable, Sendable {
   public let categoryId: Int
   public let categoryType: CategoryType
+  public let title: String
+  public let count: Int
   public let list: [CategoryItemEntity]
 }
 
