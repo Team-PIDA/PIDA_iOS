@@ -31,13 +31,10 @@ public struct CategoryListFeature {
     public var isLoading: Bool = true
     public var isDataEmpty: Bool = false
 
-    public init(categoryItem: CategoryEntity) {
+    public init(categoryItem: CategoryEntity, regionList: [RegionEntity] = []) {
       self.categoryItem = categoryItem
       if categoryItem.type == .event {
-        regionFilterList = [
-          .init(code: nil, name: "전체"),
-          .init(code: .seoul, name: "서울")
-        ]
+        regionFilterList = [.init(code: nil, name: "전체")] + regionList
       }
     }
   }

@@ -32,24 +32,27 @@ extension CategoryFeature {
       case let .tapCategory(item):
         guard item.type != state.selectedCategory else { return .none }
         state.selectedCategory = item.type
-        
+
         switch item.type {
         case .all:
           state.selectedCategoryId = nil
           return .send(.delegate(.resetCategory))
         case .event:
           state.selectedCategoryId = item.id
-          return .concatenate(
-            .send(.delegate(.tapCategory(item))),
-            fetchCategoryItems(categoryId: item.id)
-          )
+          return fetchRegionList(item: item)
         default:
           state.selectedCategoryId = item.id
           return .concatenate(
-            .send(.delegate(.tapCategory(item))),
+            .send(.delegate(.tapCategory(item, []))),
             .send(.delegate(.requestMapBounds))
           )
         }
+
+      case let .storeRegionList(regions, item):
+        return .concatenate(
+          .send(.delegate(.tapCategory(item, regions))),
+          fetchCategoryItems(categoryId: item.id)
+        )
         
       case .resetToAll:
         state.selectedCategory = .all
@@ -83,6 +86,21 @@ extension CategoryFeature {
 }
 
 extension CategoryFeature.Core {
+
+  private func fetchRegionList(item: CategoryEntity) -> Effect<Action> {
+    return .run { send in
+      do {
+        let regions = try await categoryClient.fetchRegionList()
+        await send(.storeRegionList(regions, item))
+      } catch let error as NetworkError {
+        await send(.errorLog(error.localizedDescription))
+      } catch let error as FoundationError {
+        await send(.errorLog(error.localizedDescription))
+      } catch {
+        await send(.errorLog(error.localizedDescription))
+      }
+    }
+  }
 
   private func fetchCategoryList() -> Effect<Action> {
     return .run { send in

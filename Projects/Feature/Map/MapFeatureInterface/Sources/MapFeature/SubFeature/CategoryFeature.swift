@@ -38,6 +38,7 @@ public struct CategoryFeature {
     case fetchCategoryList
     case storeCategoryList([CategoryEntity])
     case tapCategory(CategoryEntity)
+    case storeRegionList([RegionEntity], CategoryEntity)
     case resetToAll
     case changeCategorySheetDetent
     case fetchCategorySpots(sw: Coordinate?, ne: Coordinate?)
@@ -46,7 +47,7 @@ public struct CategoryFeature {
   }
 
   public enum Delegate: Equatable {
-    case tapCategory(CategoryEntity)
+    case tapCategory(CategoryEntity, [RegionEntity])
     case resetCategory
     case didFetchCategoryItems(CategoryItemListEntity)
     case requestMapBounds
