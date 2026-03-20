@@ -45,15 +45,21 @@ extension CategoryFeature {
         default:
           state.selectedCategoryId = item.id
           return .concatenate(
-            .send(.delegate(.tapCategory(item, []))),
+            .send(.delegate(.tapCategory(item, [], initialFilter: nil))),
             .send(.delegate(.requestMapBounds))
           )
         }
 
-      case let .storeRegionList(regions, item):
+      case let .storeRegionList(regions, item, userRegion):
+        let effectiveRegion: Region?
+        if let userRegion, regions.compactMap(\.code).contains(userRegion) {
+          effectiveRegion = userRegion
+        } else {
+          effectiveRegion = nil
+        }
         return .concatenate(
-          .send(.delegate(.tapCategory(item, regions))),
-          fetchCategoryItems(categoryId: item.id)
+          .send(.delegate(.tapCategory(item, regions, initialFilter: effectiveRegion))),
+          fetchCategoryItems(categoryId: item.id, region: effectiveRegion?.rawValue)
         )
         
       case .resetToAll:
@@ -100,8 +106,10 @@ extension CategoryFeature.Core {
   private func fetchRegionList(item: CategoryEntity) -> Effect<Action> {
     return .run { send in
       do {
-        let regions = try await categoryClient.fetchRegionList()
-        await send(.storeRegionList(regions, item))
+        async let regions = categoryClient.fetchRegionList()
+        async let userRegion = locationClient.requestUserRegion()
+        let (fetchedRegions, fetchedUserRegion) = try await (regions, userRegion)
+        await send(.storeRegionList(fetchedRegions, item, fetchedUserRegion))
       } catch let error as NetworkError {
         await send(.errorLog(error.localizedDescription))
       } catch let error as FoundationError {

@@ -31,8 +31,9 @@ public struct CategoryListFeature {
     public var isLoading: Bool = true
     public var isDataEmpty: Bool = false
 
-    public init(categoryItem: CategoryEntity, regionList: [RegionEntity] = []) {
+    public init(categoryItem: CategoryEntity, regionList: [RegionEntity] = [], initialFilter: Region? = nil) {
       self.categoryItem = categoryItem
+      self.selectedFilter = initialFilter
       if categoryItem.type == .event {
         regionFilterList = [.init(code: nil, name: "전체")] + regionList
       }

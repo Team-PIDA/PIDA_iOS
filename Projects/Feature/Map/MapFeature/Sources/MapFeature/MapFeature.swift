@@ -318,9 +318,9 @@ extension MapFeature {
         
       case let .category(.delegate(action)):
         switch action {
-        case let .tapCategory(category, regions):
+        case let .tapCategory(category, regions, initialFilter):
           state.mapSearch.currentNavigation = .category
-          state.categoryList = .init(categoryItem: category, regionList: regions)
+          state.categoryList = .init(categoryItem: category, regionList: regions, initialFilter: initialFilter)
           state.category.isShowCategoryList = true
           state.flowerSpotDetail = nil
           state.mapActions.append(.deletePath)
