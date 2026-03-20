@@ -51,6 +51,15 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
     }
   }
   
+  func requestUserRegion() async -> Region? {
+    guard let coordinate = await requestUserLocation() else { return nil }
+    let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    let geocoder = CLGeocoder()
+    let placemarks = try? await geocoder.reverseGeocodeLocation(location)
+    guard let area = placemarks?.first?.administrativeArea else { return nil }
+    return Region(administrativeArea: area)
+  }
+
   private func finish(_ value: Coordinate?) {
     continuation?.resume(returning: value)
     continuation = nil

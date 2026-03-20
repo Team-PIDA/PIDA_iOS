@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 import MapFeatureInterface
+import LocationClient
 import CategoryClient
 import Shared
 import DesignKit
@@ -18,6 +19,7 @@ extension CategoryFeature {
 
   struct Core: Reducer {
     @Dependency(\.categoryClient) var categoryClient
+    @Dependency(\.locationClient) var locationClient
     
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {

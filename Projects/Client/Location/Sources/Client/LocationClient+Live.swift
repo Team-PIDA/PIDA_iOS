@@ -15,6 +15,9 @@ extension LocationClient: DependencyKey {
       requestUserLocation: {
         await LocationService().requestUserLocation()
       },
+      requestUserRegion: {
+        await LocationService().requestUserRegion()
+      },
       checkAuthorizationStatus: {
         let status = CLLocationManager().authorizationStatus
         return status == .authorizedAlways || status == .authorizedWhenInUse

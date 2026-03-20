@@ -17,6 +17,27 @@ public enum Region: String, Equatable, Sendable {
   case gyeongnam = "GYEONGNAM"
   case jeju = "JEJU"
 
+  public init?(administrativeArea: String) {
+    if administrativeArea.contains("서울")           { self = .seoul }
+    else if administrativeArea.contains("경기")      { self = .gyeonggi }
+    else if administrativeArea.contains("부산")      { self = .busan }
+    else if administrativeArea.contains("대구")      { self = .daegu }
+    else if administrativeArea.contains("인천")      { self = .incheon }
+    else if administrativeArea.contains("광주")      { self = .gwangju }
+    else if administrativeArea.contains("대전")      { self = .daejeon }
+    else if administrativeArea.contains("울산")      { self = .ulsan }
+    else if administrativeArea.contains("세종")      { self = .sejong }
+    else if administrativeArea.contains("강원")      { self = .gangwon }
+    else if administrativeArea.contains("충청북")    { self = .chungbuk }
+    else if administrativeArea.contains("충청남")    { self = .chungnam }
+    else if administrativeArea.contains("전라북") || administrativeArea.contains("전북") { self = .jeonbuk }
+    else if administrativeArea.contains("전라남")    { self = .jeonnam }
+    else if administrativeArea.contains("경상북")    { self = .gyeongbuk }
+    else if administrativeArea.contains("경상남")    { self = .gyeongnam }
+    else if administrativeArea.contains("제주")      { self = .jeju }
+    else { return nil }
+  }
+
   public var name: String {
     switch self {
     case .seoul:    return "서울"
