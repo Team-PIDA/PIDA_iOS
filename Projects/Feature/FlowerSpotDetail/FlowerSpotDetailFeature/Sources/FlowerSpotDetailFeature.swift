@@ -13,6 +13,7 @@ import ComposableArchitecture
 import FlowerSpotDetailFeatureInterface
 import FlowerSpotClient
 import BloomingClient
+import CategoryClient
 import CacheClient
 import AnalyticsClient
 
@@ -24,8 +25,10 @@ extension FlowerSpotDetailFeature {
   struct Core: Reducer {
     @Dependency(\.flowerSpotClient) var flowerSpotClient
     @Dependency(\.bloomingClient) var bloomingClient
+    @Dependency(\.categoryClient) var categoryClient
     @Dependency(\.cache) var cache
     @Dependency(\.analyticsClient) var analyticsClient
+    @Dependency(\.openURL) var openURL
 
     func reduce(into state: inout State, action: Action) -> Effect<Action> {
       switch action {
@@ -178,32 +181,20 @@ extension FlowerSpotDetailFeature {
         state.isDetailLoading = true
         return fetchDetailInfo(id: id)
 
-      case let .detailResponse(item, shouldUpdateMap):
+      case let .detailResponse(item, _):
         state.flowerSpotData = item
         state.spotId = item.id
-        // distance 계산
         if let userLocation = state.userLocation {
           state.distance = item.pinPoint.distance(from: userLocation)
         } else {
           state.distance = .zero
         }
         checkLoadingComplete(&state)
-        // 이미지 프리페치 시작 + 부모에게 최신 데이터 전달
-        if shouldUpdateMap {
-          // 딥링크 진입: 지도 위치 이동 + 마커 표시
-          return .concatenate(
-            checkBloomStatus(status: state.flowerSpotData.bloomingStatus),
-            .send(.prefetchImages),
-            .send(.delegate(.didUpdateFlowerSpot(item)))
-          )
-        } else {
-          // 마커 탭/검색: 프리페치 + 부모 동기화
-          return .concatenate(
-            checkBloomStatus(status: state.flowerSpotData.bloomingStatus),
-            .send(.prefetchImages),
-            .send(.delegate(.didUpdateFlowerSpot(item)))
-          )
-        }
+        return .concatenate(
+          checkBloomStatus(status: state.flowerSpotData.bloomingStatus),
+          .send(.prefetchImages),
+          .send(.delegate(.didUpdateFlowerSpot(item)))
+        )
 
       case let .bloomingResponse(item):
         state.bloomingStatus = item
@@ -214,6 +205,40 @@ extension FlowerSpotDetailFeature {
         state.isVotedBlooming = item
         checkLoadingComplete(&state)
         return checkBloomStatus(status: state.flowerSpotData.bloomingStatus)
+
+      // MARK: - Category Detail (v2)
+
+      case let .requestCategoryDetail(categoryId, itemId):
+        state.spotId = itemId
+        state.isDetailLoading = true
+        return requestCategoryDetail(categoryId: categoryId, itemId: itemId)
+
+      case let .categoryDetailResponse(detail):
+        state.flowerSpotData = detail.flowerSpotData
+        state.bloomingStatus = detail.bloomingStatus
+        state.spotCategory = detail.spotCategory
+        state.festivalInfo = detail.festivalInfo
+        state.cafeInfo = detail.cafeInfo
+        state.badges = detail.badges
+        state.spotId = detail.flowerSpotData.id
+        if let userLocation = state.userLocation {
+          state.distance = detail.flowerSpotData.pinPoint.distance(from: userLocation)
+        } else {
+          state.distance = .zero
+        }
+        checkLoadingComplete(&state)
+        return .concatenate(
+          checkBloomStatus(status: state.flowerSpotData.bloomingStatus),
+          .send(.prefetchImages),
+          .send(.delegate(.didUpdateFlowerSpot(detail.flowerSpotData)))
+        )
+
+      case .fetchDetailFailed:
+        state.isDetailLoading = false
+        return .concatenate(
+          .send(.showToastView(message: "정보를 불러올 수 없습니다.")),
+          .send(.delegate(.dismiss))
+        )
 
       // MARK: - Analytics
 
@@ -249,6 +274,17 @@ extension FlowerSpotDetailFeature {
           DetailsEvent.scrollReachBottom(scrollTimeToReach: scrollTimeToReach)
         )
         return .none
+
+      // MARK: - External URL
+
+      case let .openURL(urlString):
+        let normalized = urlString.hasPrefix("http://") || urlString.hasPrefix("https://")
+          ? urlString
+          : "https://\(urlString)"
+        guard let url = URL(string: normalized) else { return .none }
+        return .run { [openURL] _ in
+          await openURL(url)
+        }
 
       case .delegate, .binding:
         return .none
@@ -323,12 +359,9 @@ extension FlowerSpotDetailFeature.Core {
           send(.bloomingResponse(blooming))
           send(.verifyTodayBlooming(verifyTodayResult))
         }
-      } catch let error as NetworkError {
-        print("[FlowerSpotDetailFeature] Network Error: \(error.errorDescription)")
-      } catch let error as FoundationError {
-        print("[FlowerSpotDetailFeature] Foundation Error: \(error.errorDescription)")
       } catch {
-        print("[FlowerSpotDetailFeature] Error: \(error.localizedDescription)")
+        Logger.log("[FlowerSpotDetailFeature] Error: \(error.localizedDescription)", level: .error)
+        await send(.fetchDetailFailed)
       }
     }
   }
@@ -350,12 +383,38 @@ extension FlowerSpotDetailFeature.Core {
           send(.bloomingResponse(blooming))
           send(.verifyTodayBlooming(verifyTodayResult))
         }
-      } catch let error as NetworkError {
-        print("[FlowerSpotDetailFeature] Network Error: \(error.errorDescription)")
-      } catch let error as FoundationError {
-        print("[FlowerSpotDetailFeature] Foundation Error: \(error.errorDescription)")
       } catch {
-        print("[FlowerSpotDetailFeature] Error: \(error.localizedDescription)")
+        Logger.log("[FlowerSpotDetailFeature] Error: \(error.localizedDescription)", level: .error)
+        await send(.fetchDetailFailed)
+      }
+    }
+  }
+
+  /// v2 카테고리 상세 API + 투표 검증 호출
+  private func requestCategoryDetail(categoryId: Int, itemId: Int) -> Effect<Action> {
+    return .run { [categoryClient, bloomingClient] send in
+      do {
+        let detail = try await categoryClient.fetchCategoryItemDetail(categoryId, itemId)
+
+        // 투표 검증: EVENT → flowerEventId, 나머지 → flowerSpotId (응답의 실제 ID 사용)
+        let verifyQuery: BloomingTargetQuery = detail.spotCategory == .festival
+          ? .init(flowerEventId: detail.flowerSpotData.id)
+          : .init(flowerSpotId: detail.flowerSpotData.id)
+        let verifyResult = UserDefaultsKeys.isLoggedIn == true
+          ? try await bloomingClient.verifyBloomingTodayByTarget(verifyQuery)
+          : VerifyBloomingStateEntity(isBlooming: false)
+
+        await send(.categoryDetailResponse(detail))
+        await send(.verifyTodayBlooming(verifyResult))
+      } catch {
+        if let networkError = error as? NetworkError {
+          Logger.log("[FlowerSpotDetailFeature] Category Detail Network Error: \(networkError.errorDescription)", level: .error)
+        } else if let foundationError = error as? FoundationError {
+          Logger.log("[FlowerSpotDetailFeature] Category Detail Foundation Error: \(foundationError.errorDescription)", level: .error)
+        } else {
+          Logger.log("[FlowerSpotDetailFeature] Category Detail Error: \(error.localizedDescription)", level: .error)
+        }
+        await send(.fetchDetailFailed)
       }
     }
   }

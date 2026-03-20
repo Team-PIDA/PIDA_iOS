@@ -15,7 +15,8 @@ public enum ImageSet {
        avatar, avatarLarge, loveletter, apple, kakao, loginLogo,
        fewLargePin, goneLargePin, manyLargePin, emptyResult, pullDown, forest, verified, feedback, camera,
        updateCompletedIcon,
-      cafeFilled, cafe, event, eventFilled, stepsFilled, steps, littlePin, littleActivePin, notBloomPin, notBloomActivePin, witheredPin, witheredPinActive, bloomPin, bloomActivePin
+       arrowOutward, date, globe, steps,
+       cafeFilled, cafe, event, eventFilled, stepsFilled, littlePin, littleActivePin, notBloomPin, notBloomActivePin, witheredPin, witheredPinActive, bloomPin, bloomActivePin
   
   public var swiftUIImage: DesignKitImages {
     switch self {
@@ -48,11 +49,14 @@ public enum ImageSet {
     case .feedback: return DesignKitAsset.Icons.feedback
     case .camera: return DesignKitAsset.Icons.camera
     case .updateCompletedIcon: return DesignKitAsset.Icons.updateCompletedIcon
-    case .cafeFilled:return DesignKitAsset.Icons.cafeFilled
+    case .arrowOutward: return DesignKitAsset.Icons.arrowOutward
+    case .date: return DesignKitAsset.Icons.date
+    case .globe: return DesignKitAsset.Icons.globe
+    case .steps: return DesignKitAsset.Icons.steps
+    case .cafeFilled: return DesignKitAsset.Icons.cafeFilled
     case .cafe: return DesignKitAsset.Icons.cafe
     case .event: return DesignKitAsset.Icons.event
     case .eventFilled: return DesignKitAsset.Icons.eventFilled
-    case .steps: return DesignKitAsset.Icons.steps
     case .stepsFilled: return DesignKitAsset.Icons.stepsFilled
     case .littlePin: return DesignKitAsset.Icons.littlePin
     case .littleActivePin: return DesignKitAsset.Icons.littleActivePin

@@ -32,4 +32,15 @@ struct CategoryEndpoint: Sendable {
       parameters: .query(query)
     )
   }
+
+  static func getCategoryItemDetail(
+    categoryId: Int,
+    itemId: Int
+  ) -> Endpoint<CategoryItemDetailDTO> {
+    return Endpoint(
+      method: .get,
+      baseURL: Constant.base_url_v2 ?? "",
+      path: "/categories/\(categoryId)/items/\(itemId)"
+    )
+  }
 }

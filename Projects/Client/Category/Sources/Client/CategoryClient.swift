@@ -13,6 +13,7 @@ import APIClient
 public struct CategoryClient: Sendable {
   public var fetchCategories: @Sendable () async throws -> [CategoryEntity]
   public var fetchCategoryItems: @Sendable (_ id: Int, _ query: GetCategoryItemsQuery) async throws -> CategoryItemListEntity
+  public var fetchCategoryItemDetail: @Sendable (_ categoryId: Int, _ itemId: Int) async throws -> CategoryItemDetailEntity
 }
 
 public extension DependencyValues {

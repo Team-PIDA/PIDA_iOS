@@ -10,6 +10,7 @@ import Foundation
 import ComposableArchitecture
 import FlowerSpotClient
 import BloomingClient
+import CategoryClient
 import DesignKit
 import Shared
 import AnalyticsClient
@@ -60,6 +61,17 @@ public struct FlowerSpotDetailFeature {
     public var isDetailLoading: Bool = false
     public var userLocation: Coordinate? = nil
 
+    // MARK: - Category State
+
+    /// 장소 카테고리 (산책길/축제/카페)
+    public var spotCategory: SpotCategory = .trail
+    /// 축제 전용 정보 (spotCategory == .festival 일 때)
+    public var festivalInfo: FestivalInfoEntity? = nil
+    /// 카페 전용 정보 (spotCategory == .cafe 일 때)
+    public var cafeInfo: CafeInfoEntity? = nil
+    /// 배지 목록 (서버에서 내려온 태그 데이터)
+    public var badges: [CategoryBadgeEntity] = []
+
     // MARK: - Navigation State
 
     public var isPresentPhotoGallery: Bool = false
@@ -85,10 +97,35 @@ public struct FlowerSpotDetailFeature {
     /// 하단 도달 이벤트 트래킹 여부
     public var hasTrackedScrollReachBottom: Bool = false
 
-    public init(userLocation: Coordinate? = nil, entryPoint: MapEvent.EntryPoint = .mapPin) {
+    public init(
+      userLocation: Coordinate? = nil,
+      entryPoint: MapEvent.EntryPoint = .mapPin,
+      spotCategory: SpotCategory = .trail,
+      festivalInfo: FestivalInfoEntity? = nil,
+      cafeInfo: CafeInfoEntity? = nil
+    ) {
       self.userLocation = userLocation
       self.entryPoint = entryPoint
+      self.spotCategory = spotCategory
+      self.festivalInfo = festivalInfo
+      self.cafeInfo = cafeInfo
     }
+
+    // MARK: - Computed Properties
+
+    /// 상세페이지 타이틀 (카테고리 무관 공통)
+    public var spotTitle: String {
+      flowerSpotData.streetName
+    }
+
+    /// 나무 종류 섹션 표시 여부
+    public var showsTreeTypeSection: Bool { spotCategory.showsTreeTypeSection }
+    /// 도보 시간 텍스트 표시 여부
+    public var showsWalkingTime: Bool { spotCategory.showsWalkingTime }
+    /// 제보자 배너 표시 여부
+    public var showsInformantBanner: Bool { spotCategory.showsInformantBanner }
+    /// 방문 횟수 표시 여부
+    public var showsVisitCount: Bool { spotCategory.showsVisitCount }
   }
 
   public enum Action: BindableAction, Equatable {
@@ -114,6 +151,12 @@ public struct FlowerSpotDetailFeature {
     case bloomingResponse(BloomStatusEntity)
     case verifyTodayBlooming(VerifyBloomingStateEntity)
 
+    // MARK: - Category Detail (v2)
+    /// 카테고리 마커 탭 시 호출
+    case requestCategoryDetail(categoryId: Int, itemId: Int)
+    case categoryDetailResponse(CategoryItemDetailEntity)
+    case fetchDetailFailed
+
     // MARK: - Navigation (PhotoGallery)
     case pushToPhotoGallery
     case popFromPhotoGallery
@@ -134,6 +177,9 @@ public struct FlowerSpotDetailFeature {
     // MARK: - Analytics
     case copyAddressTapped
     case scrollReachedBottom
+
+    // MARK: - External URL
+    case openURL(String)
 
     // MARK: - Delegate
     case delegate(Delegate)

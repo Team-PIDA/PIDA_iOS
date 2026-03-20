@@ -18,7 +18,8 @@ struct DetailMapViewRepresentable: UIViewRepresentable {
   var location: Coordinate
   var pathMarkers: [Coordinate]
   var state: BloomStatus
-  
+  var spotType: MapSpotType
+
   @Binding var isNeedDrawPath: Bool
   @Binding var isNeedDeletePath: Bool
   
@@ -139,7 +140,8 @@ fileprivate extension DetailMapViewRepresentable {
     context: Context
   ) {
     let point = NMGLatLng(lat: location.latitude, lng: location.longitude)
-    let marker = drawMarker(view, to: point, icon: state.activeImage)
+    let icon = MapPinImages.activeMapPinImage(status: state, type: spotType)
+    let marker = drawMarker(view, to: point, icon: icon)
     if context.coordinator.activeMarker == nil {
       context.coordinator.activeMarker = marker
     }
@@ -222,12 +224,12 @@ extension DetailMapViewRepresentable {
       self.parent = parent
     }
     
-    func updateBloomingStatue(state: BloomStatus) {
+    @MainActor func updateBloomingStatue(state: BloomStatus) {
       if let activeMarker = activeMarker,
           let path = path,
           let startMarker = startMarker,
           let endMarker = endMarker {
-        activeMarker.iconImage = NMFOverlayImage(image: state.activeImage)
+        activeMarker.iconImage = NMFOverlayImage(image: MapPinImages.activeMapPinImage(status: state, type: parent.spotType))
         path.color = state.color
         path.outlineColor = state.color
         startMarker.iconImage = NMFOverlayImage(image: state.circleImage)

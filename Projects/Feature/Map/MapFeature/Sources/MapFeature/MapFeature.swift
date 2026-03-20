@@ -107,6 +107,7 @@ extension MapFeature {
         
       case let .categorySpotMarkerTapped(id):
         guard let categoryId = state.category.selectedCategoryId else { return .none }
+        state.flowerSpotDetail = .init(userLocation: state.userLocation)
         state.category.isShowCategoryList = false
         return .concatenate(
           .send(.mapSearch(.showRegionList(data: nil))),
@@ -114,11 +115,11 @@ extension MapFeature {
           .send(.fetchPathLines(id)),
           .send(.fetchCategoryDetail(categoryId: categoryId, spotId: id))
         )
-        
+
       case let .fetchCategoryDetail(categoryId, spotId):
-        // TODO: - 카테고리 아이템 상세 조회 연결
-        print(categoryId, spotId)
-        return .none
+        return .send(.flowerSpotDetail(.requestCategoryDetail(
+          categoryId: categoryId, itemId: spotId
+        )))
         
       case let .fetchPathLines(id):
         if let data = state.spots[id] {
@@ -282,8 +283,15 @@ extension MapFeature {
           return .send(.location(.moveLocation(flowerSpot.pinPoint)))
 
         case let .didUpdateFlowerSpot(item):
-          guard state.spots[item.id] != nil else { return .none }
-          state.spots[item.id] = item.asMapSpot
+          guard let existing = state.spots[item.id] else { return .none }
+          // 기존 spot의 type을 유지하면서 데이터만 갱신
+          state.spots[item.id] = MapSpotEntity(
+            id: item.id,
+            pinPoint: item.pinPoint,
+            path: item.path,
+            type: existing.type,
+            bloomStatus: BloomStatus(rawValue: item.bloomingStatus) ?? existing.bloomStatus
+          )
           return .none
           
         case let .updateMarkerStatus(bloomStatus):
