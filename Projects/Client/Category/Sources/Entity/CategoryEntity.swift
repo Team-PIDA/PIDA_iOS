@@ -10,12 +10,12 @@ import Foundation
 
 public struct CategoryEntity: Equatable, Sendable, Identifiable {
   public let id: Int
-  public let category: String
+  public let title: String
   public let type: CategoryType
 
-  public init(id: Int, category: String) {
+  public init(id: Int, title: String, label: String) {
     self.id = id
-    self.category = category
-    self.type = CategoryType(rawValue: id)
+    self.title = title
+    self.type = CategoryType(rawValue: label)
   }
 }

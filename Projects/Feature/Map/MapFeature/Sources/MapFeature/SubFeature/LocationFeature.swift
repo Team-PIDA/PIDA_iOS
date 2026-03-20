@@ -47,8 +47,8 @@ extension LocationFeature {
         }
         return .none
         
-      case let .fetchFlowers(positions):
-        return fetchFlowerSpots(positions: positions)
+      case let .fetchFlowers(sw, ne):
+        return fetchFlowerSpots(sw: sw, ne: ne)
         
       case let .fetchFlowersInRadius(coordinate, radiusInKm):
         return fetchFlowerSpotsInRadius(coordinate: coordinate, radiusInKm: radiusInKm)
@@ -91,15 +91,15 @@ extension LocationFeature.Core {
     }
   }
   
-  private func fetchFlowerSpots(positions: [Coordinate]) -> Effect<Action> {
+  private func fetchFlowerSpots(sw: Coordinate?, ne: Coordinate?) -> Effect<Action> {
     
     return .run { send in
       do {
         let query = GetFlowerSpotQuery(
-          swLat: positions[0].latitude,
-          swLng: positions[0].longitude,
-          neLat: positions[1].latitude,
-          neLng: positions[1].longitude
+          swLat: sw?.latitude,
+          swLng: sw?.longitude,
+          neLat: ne?.latitude,
+          neLng: ne?.longitude
         )
         let result = try await flowerSpotClient.fetchAllFlowerPin(query: query)
         if result.itemList.count == 0 {
@@ -122,10 +122,10 @@ extension LocationFeature.Core {
       do {
         let bounds = coordinate.boundingBoxForRadius(radiusInKm: radiusInKm)
         let query = GetFlowerSpotQuery(
-          swLat: bounds[0].latitude,
-          swLng: bounds[0].longitude,
-          neLat: bounds[1].latitude,
-          neLng: bounds[1].longitude
+          swLat: bounds.0.latitude,
+          swLng: bounds.0.longitude,
+          neLat: bounds.1.latitude,
+          neLng: bounds.1.longitude
         )
         let result = try await flowerSpotClient.fetchAllFlowerPin(query: query)
         await send(.storeFlowerData(result.itemList))

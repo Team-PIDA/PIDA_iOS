@@ -101,11 +101,15 @@ public struct MapFeature {
     case viewDidAppear
     
     case requestMapBounds(Bool)
-    case receiveMapBounds([Coordinate])
+    case receiveMapBounds(sw: Coordinate?, ne: Coordinate?)
     case addMapAction(MapAction)
     case markerTapped(id: Int?)
+    case flowerSpotMarkerTapped(id: Int)
+    case categorySpotMarkerTapped(id: Int)
+    
     case fetchPathLines(Int)
     case fetchDetailInfo(Int)
+    case fetchCategoryDetail(categoryId: Int, spotId: Int)
     
     case presentAlert(type: AlertType)
     case alertCancelTapped

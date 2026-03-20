@@ -42,18 +42,22 @@ public struct CategoryListView: View {
   private var content: some View {
     VStack(alignment: .leading, spacing: 0) {
       headerView
-      categoryScrollView
+      
+      if store.categoryItem.type == .event {
+        categoryScrollView
+      }
 
       ScrollView {
         if store.isDataEmpty {
           emptyView
         } else {
           LazyVStack(spacing: .Number0) {
-            ForEach(store.flowerSpots, id: \.id) { flowerSpot in
+            ForEach(store.categoryItems, id: \.id) { item in
               CategoryListItemView(
-                flowerSpot: flowerSpot,
-                onTap: { flowerSpot in
-                  store.send(.spotTapped(id: flowerSpot.id))
+                type: store.categoryType,
+                item: item,
+                onTap: { item in
+                  store.send(.spotTapped(spotId: item.id))
                 }
               )
               .padding(.horizontal, .Number16)
@@ -93,7 +97,7 @@ public struct CategoryListView: View {
       }
       .padding(.horizontal, .Number16)
     }
-    .padding(.bottom, .Number12)
+    .padding(.vertical, .Number12)
   }
 
   @ViewBuilder

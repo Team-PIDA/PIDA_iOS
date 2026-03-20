@@ -8,13 +8,28 @@
 
 import Foundation
 import APIClient
+import Shared
 
 struct CategoryEndpoint: Sendable {
   @discardableResult
   static func getCategories() -> Endpoint<CategoryListDTO> {
     return Endpoint(
       method: .get,
+      baseURL: Constant.base_url_v2 ?? "",
       path: "/categories"
+    )
+  }
+
+  @discardableResult
+  static func getCategoryItems(
+    categoryId: Int,
+    query: GetCategoryItemsQuery
+  ) -> Endpoint<CategoryItemListDTO> {
+    return Endpoint(
+      method: .get,
+      baseURL: Constant.base_url_v2 ?? "",
+      path: "/categories/\(categoryId)/items",
+      parameters: .query(query)
     )
   }
 }
