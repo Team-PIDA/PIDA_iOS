@@ -78,6 +78,10 @@ extension CategoryFeature {
         guard let categoryId = state.selectedCategoryId else { return .none }
         return fetchCategoryItems(categoryId: categoryId, region: region?.rawValue)
         
+      case let .changeBottomSheetDetent(detent):
+        state.categoryListDetent = detent
+        return .none
+        
       case let .errorLog(description):
         Logger.log(description, level: .error)
         return .none 
@@ -139,6 +143,7 @@ extension CategoryFeature.Core {
       do {
         let result = try await categoryClient.fetchCategoryItems(categoryId, query)
         await send(.delegate(.didFetchCategoryItems(result)))
+        await send(.changeBottomSheetDetent(.medium))
       } catch let error as NetworkError {
         await send(.errorLog(error.localizedDescription))
       } catch let error as FoundationError {
