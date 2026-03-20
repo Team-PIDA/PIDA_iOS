@@ -181,32 +181,20 @@ extension FlowerSpotDetailFeature {
         state.isDetailLoading = true
         return fetchDetailInfo(id: id)
 
-      case let .detailResponse(item, shouldUpdateMap):
+      case let .detailResponse(item, _):
         state.flowerSpotData = item
         state.spotId = item.id
-        // distance 계산
         if let userLocation = state.userLocation {
           state.distance = item.pinPoint.distance(from: userLocation)
         } else {
           state.distance = .zero
         }
         checkLoadingComplete(&state)
-        // 이미지 프리페치 시작 + 부모에게 최신 데이터 전달
-        if shouldUpdateMap {
-          // 딥링크 진입: 지도 위치 이동 + 마커 표시
-          return .concatenate(
-            checkBloomStatus(status: state.flowerSpotData.bloomingStatus),
-            .send(.prefetchImages),
-            .send(.delegate(.didUpdateFlowerSpot(item)))
-          )
-        } else {
-          // 마커 탭/검색: 프리페치 + 부모 동기화
-          return .concatenate(
-            checkBloomStatus(status: state.flowerSpotData.bloomingStatus),
-            .send(.prefetchImages),
-            .send(.delegate(.didUpdateFlowerSpot(item)))
-          )
-        }
+        return .concatenate(
+          checkBloomStatus(status: state.flowerSpotData.bloomingStatus),
+          .send(.prefetchImages),
+          .send(.delegate(.didUpdateFlowerSpot(item)))
+        )
 
       case let .bloomingResponse(item):
         state.bloomingStatus = item
@@ -246,7 +234,10 @@ extension FlowerSpotDetailFeature {
 
       case .fetchDetailFailed:
         state.isDetailLoading = false
-        return .none
+        return .concatenate(
+          .send(.showToastView(message: "정보를 불러올 수 없습니다.")),
+          .send(.delegate(.dismiss))
+        )
 
       // MARK: - Analytics
 
@@ -286,7 +277,10 @@ extension FlowerSpotDetailFeature {
       // MARK: - External URL
 
       case let .openURL(urlString):
-        guard let url = URL(string: urlString) else { return .none }
+        let normalized = urlString.hasPrefix("http://") || urlString.hasPrefix("https://")
+          ? urlString
+          : "https://\(urlString)"
+        guard let url = URL(string: normalized) else { return .none }
         return .run { [openURL] _ in
           await openURL(url)
         }
@@ -364,12 +358,9 @@ extension FlowerSpotDetailFeature.Core {
           send(.bloomingResponse(blooming))
           send(.verifyTodayBlooming(verifyTodayResult))
         }
-      } catch let error as NetworkError {
-        print("[FlowerSpotDetailFeature] Network Error: \(error.errorDescription)")
-      } catch let error as FoundationError {
-        print("[FlowerSpotDetailFeature] Foundation Error: \(error.errorDescription)")
       } catch {
-        print("[FlowerSpotDetailFeature] Error: \(error.localizedDescription)")
+        Logger.log("[FlowerSpotDetailFeature] Error: \(error.localizedDescription)", level: .error)
+        await send(.fetchDetailFailed)
       }
     }
   }
@@ -391,12 +382,9 @@ extension FlowerSpotDetailFeature.Core {
           send(.bloomingResponse(blooming))
           send(.verifyTodayBlooming(verifyTodayResult))
         }
-      } catch let error as NetworkError {
-        print("[FlowerSpotDetailFeature] Network Error: \(error.errorDescription)")
-      } catch let error as FoundationError {
-        print("[FlowerSpotDetailFeature] Foundation Error: \(error.errorDescription)")
       } catch {
-        print("[FlowerSpotDetailFeature] Error: \(error.localizedDescription)")
+        Logger.log("[FlowerSpotDetailFeature] Error: \(error.localizedDescription)", level: .error)
+        await send(.fetchDetailFailed)
       }
     }
   }
