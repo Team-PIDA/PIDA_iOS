@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Shared
 import DesignKit
 import FlowerSpotClient
 import BloomingClient
@@ -63,6 +64,8 @@ public struct FlowerSpotDetailSmallContentView: View {
         Text(flowerSpotData.streetName)
           .fontStyle(FontSet.Heading.heading2)
           .foregroundColor(ColorSet.Text.Primary)
+          .minimumScaleFactor(0.7)
+          .lineLimit(1)
 
         if let blooming = BloomStatus(rawValue: flowerSpotData.bloomingStatus) {
           HStack(spacing: 4) {
@@ -73,6 +76,7 @@ public struct FlowerSpotDetailSmallContentView: View {
               .fontStyle(FontSet.Label.label2)
               .foregroundColor(blooming.textColor)
           }
+          .fixedSize()
         }
       }
 
@@ -94,8 +98,31 @@ public struct FlowerSpotDetailSmallContentView: View {
   @ViewBuilder
   private var tagSection: some View {
     HStack(spacing: .Number4) {
-      ForEach(badges, id: \.label) { badge in
-        TagView(text: badge.label)
+      switch spotCategory {
+      case .trail:
+        // 산책길: 클라이언트에서 직접 생성
+        TagView(text: flowerSpotData.recentlyVisitedCountString)
+        if let nickname = bloomingStatus?.nickname {
+          TagView(text: "\(nickname) 제보")
+            .icon(.verified)
+        }
+        if flowerSpotData.path.totalDistance > 0 {
+          let walkingMinutes = max(1, Int((flowerSpotData.path.totalDistance / 5.0) * 60))
+          TagView(text: "\(walkingMinutes)분 코스")
+        }
+
+      case .cafe:
+        // 카페: 서버 badges + 최근 방문횟수
+        TagView(text: flowerSpotData.recentlyVisitedCountString)
+        ForEach(badges, id: \.label) { badge in
+          TagView(text: badge.label)
+        }
+
+      case .festival:
+        // 이벤트: 서버 badges만
+        ForEach(badges, id: \.label) { badge in
+          TagView(text: badge.label)
+        }
       }
     }
   }
