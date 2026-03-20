@@ -10,6 +10,7 @@ import Foundation
 import ComposableArchitecture
 import FlowerSpotClient
 import BloomingClient
+import CategoryClient
 import DesignKit
 import Shared
 import AnalyticsClient
@@ -147,6 +148,12 @@ public struct FlowerSpotDetailFeature {
     case detailResponse(FlowerSpotEntity, shouldUpdateMap: Bool)
     case bloomingResponse(BloomStatusEntity)
     case verifyTodayBlooming(VerifyBloomingStateEntity)
+
+    // MARK: - Category Detail (v2)
+    /// 카테고리 마커 탭 시 호출
+    case requestCategoryDetail(categoryId: Int, itemId: Int)
+    case categoryDetailResponse(CategoryItemDetailEntity)
+    case fetchDetailFailed
 
     // MARK: - Navigation (PhotoGallery)
     case pushToPhotoGallery

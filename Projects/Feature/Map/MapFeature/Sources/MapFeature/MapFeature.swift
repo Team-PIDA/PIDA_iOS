@@ -107,6 +107,7 @@ extension MapFeature {
         
       case let .categorySpotMarkerTapped(id):
         guard let categoryId = state.category.selectedCategoryId else { return .none }
+        state.flowerSpotDetail = .init(userLocation: state.userLocation)
         state.category.isShowCategoryList = false
         return .concatenate(
           .send(.mapSearch(.showRegionList(data: nil))),
@@ -114,11 +115,11 @@ extension MapFeature {
           .send(.fetchPathLines(id)),
           .send(.fetchCategoryDetail(categoryId: categoryId, spotId: id))
         )
-        
+
       case let .fetchCategoryDetail(categoryId, spotId):
-        // TODO: - 카테고리 아이템 상세 조회 연결
-        print(categoryId, spotId)
-        return .none
+        return .send(.flowerSpotDetail(.requestCategoryDetail(
+          categoryId: categoryId, itemId: spotId
+        )))
         
       case let .fetchPathLines(id):
         if let data = state.spots[id] {
