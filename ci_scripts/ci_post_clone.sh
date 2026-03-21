@@ -14,11 +14,15 @@ mise use --global tuist@4.97.2
 cat > ../Config/Debug-Secrets.xcconfig << EOF
 NM_CLIENT_ID = ${NM_CLIENT_ID}
 BASE_URL = ${BASE_URL}
+BASE_URL_V2 = ${BASE_URL_V2}
+MIXPANEL_TOKEN = ${MIXPANEL_TOKEN}
 EOF
 
 cat > ../Config/Release-Secrets.xcconfig << EOF
 NM_CLIENT_ID = ${NM_CLIENT_ID}
 BASE_URL = ${BASE_URL}
+BASE_URL_V2 = ${BASE_URL_V2}
+MIXPANEL_TOKEN = ${MIXPANEL_TOKEN}
 EOF
 
 # Install dependencies and generate workspace

@@ -14,6 +14,8 @@ struct CategoryItemListDTO: DTO {
   typealias Entity = CategoryItemListEntity
   var categoryId: Int
   var categoryLabel: String
+  var title: String
+  var count: Int
   var list: [CategoryItemResponseDTO]
 }
 
@@ -23,6 +25,8 @@ extension CategoryItemListDTO {
     return CategoryItemListEntity(
       categoryId: categoryId,
       categoryType: CategoryType(rawValue: categoryLabel),
+      title: title,
+      count: count,
       list: items
     )
   }
