@@ -45,7 +45,7 @@ struct MapViewRepresentable: UIViewRepresentable {
     view.showZoomControls = false
     view.mapView.positionMode = .direction
     view.mapView.zoomLevel = 13
-    view.mapView.minZoomLevel = 9
+    view.mapView.minZoomLevel = 5
     view.mapView.maxZoomLevel = 18
     view.mapView.isIndoorMapEnabled = false
     view.showIndoorLevelPicker = false
@@ -202,12 +202,12 @@ extension MapViewRepresentable {
   private func moveCamera(_ view: NMFNaverMapView, to point: Coordinate?, zoomLevel: Double = 13) {
     if let point = point {
       var adjustedPoint = point
-      
+
       // 바텀시트가 있을 때 중앙 위치 조정
       if hasBottomSheet {
-        adjustedPoint = adjustCenterForBottomSheet(originalPoint: point, mapView: view.mapView)
+        adjustedPoint = adjustCenterForBottomSheet(originalPoint: point, targetZoom: zoomLevel)
       }
-      
+      print(adjustedPoint)
       let coord = NMGLatLng(lat: adjustedPoint.latitude, lng: adjustedPoint.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: coord, zoomTo: zoomLevel)
       cameraUpdate.animation = .easeOut
@@ -218,23 +218,25 @@ extension MapViewRepresentable {
   }
   
   /// 바텀시트를 고려한 중앙 위치 조정
-  private func adjustCenterForBottomSheet(originalPoint: Coordinate, mapView: NMFMapView) -> Coordinate {
+  /// 바텀시트가 올라온 만큼 카메라 중앙 좌표를 위로 올려, 마커가 가시 영역 중앙에 오도록 조정
+  private func adjustCenterForBottomSheet(originalPoint: Coordinate, targetZoom: Double) -> Coordinate {
     let screenHeight = UIScreen.main.bounds.height
-    let bottomSheetHeight = BottomSheetDetent.medium.visibleHeight(minHeight: 0.0, screenHeight: screenHeight) 
-    let searchBarHeight: CGFloat = 60 // 대략적인 SearchBar 높이
-    
-    // 화면 중앙에서 위로 올릴 픽셀 오프셋
-    let offsetFromCenter = (bottomSheetHeight / 2) - (searchBarHeight / 2)
-    
-    // 위도 오프셋 계산 (대략 1도 ≈ 111km, 픽셀당 변환)
-    let projection = mapView.projection
-    
-    let originalLatLng = NMGLatLng(lat: originalPoint.latitude, lng: originalPoint.longitude)
-    let centerScreenPoint = projection.point(from: originalLatLng)
-    let adjustedScreenPoint = CGPoint(x: centerScreenPoint.x, y: centerScreenPoint.y + offsetFromCenter)
-    let adjustedLatLng = projection.latlng(from: adjustedScreenPoint)
-    
-    return Coordinate(latitude: adjustedLatLng.lat, longitude: adjustedLatLng.lng)
+    let bottomSheetHeight = BottomSheetDetent.medium.visibleHeight(minHeight: 0.0, screenHeight: screenHeight)
+    let searchBarHeight: CGFloat = 60
+
+    // 바텀시트 위 가시 영역 중앙이 화면 중앙보다 위에 있는 만큼 오프셋
+    let offsetPixels = (bottomSheetHeight / 2) - (searchBarHeight / 2)
+
+    // 타겟 줌 레벨 기준으로 픽셀당 위도 계산 (Web Mercator 공식)
+    let latRad = originalPoint.latitude * .pi / 180.0
+    let metersPerPixel = 156543.03392 * cos(latRad) / pow(2.0, targetZoom)
+    let latOffsetDegrees = Double(offsetPixels) * metersPerPixel / 111111.0
+
+    // 카메라 타겟을 마커보다 남쪽으로 내려야 마커가 화면 상단(바텀시트 위 가시 영역 중앙)에 위치
+    return Coordinate(
+      latitude: originalPoint.latitude - latOffsetDegrees,
+      longitude: originalPoint.longitude
+    )
   }
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
@@ -273,21 +275,8 @@ extension MapViewRepresentable {
     let points = flowers.values.map { $0.pinPoint }
     guard !points.isEmpty else { return }
 
-    // 마커 1개면 줌 고정으로 이동
-    if points.count == 1 {
-      moveCamera(view, to: points[0], zoomLevel: 14)
-      return
-    }
-
     let latitudes = points.map { $0.latitude }
     let longitudes = points.map { $0.longitude }
-
-    let bounds = NMGLatLngBounds(
-      southWestLat: latitudes.min() ?? 0,
-      southWestLng: longitudes.min() ?? 0,
-      northEastLat: latitudes.max() ?? 0,
-      northEastLng: longitudes.max() ?? 0
-    )
 
     let bottomPadding: CGFloat
     if hasBottomSheet {
@@ -298,9 +287,32 @@ extension MapViewRepresentable {
       bottomPadding = 100
     }
 
+    // 마커 1개면 줌 14 고정, pivot으로 바텀시트 위 가시 영역 중앙에 위치
+    if points.count == 1 {
+      let coord = NMGLatLng(lat: points[0].latitude, lng: points[0].longitude)
+      let cameraUpdate = NMFCameraUpdate(scrollTo: coord, zoomTo: 13)
+      if hasBottomSheet {
+        let screenHeight = UIScreen.main.bounds.height
+        let topInset: CGFloat = 110
+        let visibleAreaCenterY = (topInset + (screenHeight - bottomPadding)) / 2 / screenHeight
+        cameraUpdate.pivot = CGPoint(x: 0.5, y: visibleAreaCenterY)
+      }
+      cameraUpdate.animation = .easeOut
+      cameraUpdate.animationDuration = 1
+      view.mapView.moveCamera(cameraUpdate)
+      return
+    }
+
+    let bounds = NMGLatLngBounds(
+      southWestLat: latitudes.min() ?? 0,
+      southWestLng: longitudes.min() ?? 0,
+      northEastLat: latitudes.max() ?? 0,
+      northEastLng: longitudes.max() ?? 0
+    )
+
     let cameraUpdate = NMFCameraUpdate(
       fit: bounds,
-      paddingInsets: UIEdgeInsets(top: 100, left: 60, bottom: bottomPadding, right: 60)
+      paddingInsets: UIEdgeInsets(top: 110, left: 60, bottom: bottomPadding, right: 60)
     )
     cameraUpdate.animation = .easeOut
     cameraUpdate.animationDuration = 1
