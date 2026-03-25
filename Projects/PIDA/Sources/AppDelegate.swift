@@ -36,6 +36,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     // MARK: - 푸시 알림 설정
     Messaging.messaging().delegate = self
     UNUserNotificationCenter.current().delegate = self
+    UIApplication.shared.registerForRemoteNotifications()
 
     // MARK: - Cold Start에서 푸시 알림으로 앱 실행 시 딥링크 저장 (legacy)
     if let remoteNotification = launchOptions?[.remoteNotification] as? [AnyHashable: Any],
