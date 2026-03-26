@@ -20,7 +20,7 @@ struct MapViewRepresentable: UIViewRepresentable {
   @Binding var isCameraMove: Bool
   
   /// 바텀시트 표시 여부 (카메라 중앙 위치 조정용)
-  @Binding var hasBottomSheet: Bool
+  var hasBottomSheet: Bool
   
   /// 지도 액션 명령 큐
   @Binding var mapActions: [MapAction]
@@ -201,42 +201,22 @@ extension MapViewRepresentable {
   /// 카메라 이동 메서드
   private func moveCamera(_ view: NMFNaverMapView, to point: Coordinate?, zoomLevel: Double = 13) {
     if let point = point {
-      var adjustedPoint = point
-
-      // 바텀시트가 있을 때 중앙 위치 조정
-      if hasBottomSheet {
-        adjustedPoint = adjustCenterForBottomSheet(originalPoint: point, targetZoom: zoomLevel)
-      }
-      print(adjustedPoint)
-      let coord = NMGLatLng(lat: adjustedPoint.latitude, lng: adjustedPoint.longitude)
+      let coord = NMGLatLng(lat: point.latitude, lng: point.longitude)
       let cameraUpdate = NMFCameraUpdate(scrollTo: coord, zoomTo: zoomLevel)
       cameraUpdate.animation = .easeOut
       cameraUpdate.animationDuration = 1
-      
+
+      if hasBottomSheet {
+        let screenHeight = UIScreen.main.bounds.height
+        let bottomSheetHeight = BottomSheetDetent.medium.visibleHeight(minHeight: 0.0, screenHeight: screenHeight)
+        let bottomPadding = bottomSheetHeight + 20
+        let topInset: CGFloat = 110
+        let visibleAreaCenterY = (topInset + (screenHeight - bottomPadding)) / 2 / screenHeight
+        cameraUpdate.pivot = CGPoint(x: 0.5, y: visibleAreaCenterY)
+      }
+
       view.mapView.moveCamera(cameraUpdate)
     }
-  }
-  
-  /// 바텀시트를 고려한 중앙 위치 조정
-  /// 바텀시트가 올라온 만큼 카메라 중앙 좌표를 위로 올려, 마커가 가시 영역 중앙에 오도록 조정
-  private func adjustCenterForBottomSheet(originalPoint: Coordinate, targetZoom: Double) -> Coordinate {
-    let screenHeight = UIScreen.main.bounds.height
-    let bottomSheetHeight = BottomSheetDetent.medium.visibleHeight(minHeight: 0.0, screenHeight: screenHeight)
-    let searchBarHeight: CGFloat = 60
-
-    // 바텀시트 위 가시 영역 중앙이 화면 중앙보다 위에 있는 만큼 오프셋
-    let offsetPixels = (bottomSheetHeight / 2) - (searchBarHeight / 2)
-
-    // 타겟 줌 레벨 기준으로 픽셀당 위도 계산 (Web Mercator 공식)
-    let latRad = originalPoint.latitude * .pi / 180.0
-    let metersPerPixel = 156543.03392 * cos(latRad) / pow(2.0, targetZoom)
-    let latOffsetDegrees = Double(offsetPixels) * metersPerPixel / 111111.0
-
-    // 카메라 타겟을 마커보다 남쪽으로 내려야 마커가 화면 상단(바텀시트 위 가시 영역 중앙)에 위치
-    return Coordinate(
-      latitude: originalPoint.latitude - latOffsetDegrees,
-      longitude: originalPoint.longitude
-    )
   }
   
   /// 마커 탭 시 경로 데이터를 가져오기 위한 이벤트 처리 메서드
