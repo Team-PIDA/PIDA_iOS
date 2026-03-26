@@ -71,6 +71,11 @@ public struct MapFeature {
     public var isInitialMapLoadCompleted: Bool = false
     
     public var alertType: AlertType? = nil
+    
+    /// 지도 카메라 중앙 좌표 조절 여부 판단 값
+    public var hasBottomSheet: Bool {
+      mapSearch.activeBottomSheet || category.activeBottomSheet
+    }
 
     public var location: LocationFeature.State = .init()
 

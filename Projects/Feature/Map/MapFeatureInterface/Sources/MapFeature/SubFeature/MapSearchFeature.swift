@@ -36,6 +36,10 @@ public struct MapSearchFeature {
     public var regionSheetDetent: BottomSheetDetent = .medium
     /// 리전 검색 리스트 바텀시트 높이
     public var regionBottomSheetHeight: CGFloat = 0
+    /// 지도 카메라 중앙 좌표 조절 여부 판단 값
+    public var activeBottomSheet: Bool {
+      isShowRegionList && regionSheetDetent == .medium
+    }
     
     public init() {}
   }

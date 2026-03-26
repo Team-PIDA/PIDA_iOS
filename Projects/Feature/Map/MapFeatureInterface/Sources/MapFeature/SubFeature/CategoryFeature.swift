@@ -28,6 +28,11 @@ public struct CategoryFeature {
     public var isShowCategoryList: Bool = false
     public var categoryListDetent: BottomSheetDetent = .medium
     public var categoryListBottomSheetHeight: CGFloat = 0
+    
+    /// 지도 카메라 중앙 좌표 조절 여부 판단 값
+    public var activeBottomSheet: Bool {
+      isShowCategoryList && categoryListDetent == .medium
+    }
 
     public init() {
       
