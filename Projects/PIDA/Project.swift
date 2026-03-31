@@ -24,6 +24,7 @@ let project = Project.buildApp(
     .Client.Analytics,
     .SPM.FirebaseCore,
     .SPM.FirebaseMessaging,
-    .Feature.SearchRegionList
+    .Feature.SearchRegionList,
+    .SPM.FacebookCore
   ]
 )

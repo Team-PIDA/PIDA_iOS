@@ -49,4 +49,5 @@ public enum SPM: ModuleRepresentable {
   case FirebaseCore
   case FirebaseMessaging
   case Mixpanel
+  case FacebookCore
 }
