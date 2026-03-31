@@ -27,7 +27,14 @@ extension CategoryItemDetailDTO {
     let spotCategory = SpotCategory.from(categoryLabel: categoryLabel)
     let pinPoint = try common.pinPoint.toEntity()
     let path = (try? detail.flowerSpot?.geom?.toEntity())?.flatMap { $0 } ?? []
-    let images = common.imageUrls?.map { $0.toEntity() } ?? []
+    var images = common.imageUrls?.map { $0.toEntity() } ?? []
+    // common.imageUrls가 비어있으면 카테고리별 thumbnail을 images에 포함
+    if images.isEmpty {
+      let thumbnailUrl = detail.event?.thumbnailUrl ?? detail.cafe?.thumbnailUrl
+      if let thumbnailUrl {
+        images = [FlowerSpotImageEntity(url: thumbnailUrl, createdAt: nil)]
+      }
+    }
     let recentlyVisitedCount = detail.flowerSpot?.recentlyVisitedCount
       ?? detail.cafe?.recentlyVisitedCount
       ?? 0
@@ -71,7 +78,8 @@ extension CategoryItemDetailDTO {
     let cafeInfo = detail.cafe.map { cafe in
       CafeInfoEntity(
         categoryLabel: "카페",
-        websiteURL: cafe.mapUrl
+        websiteURL: cafe.mapUrl,
+        thumbnailURL: cafe.thumbnailUrl
       )
     }
 

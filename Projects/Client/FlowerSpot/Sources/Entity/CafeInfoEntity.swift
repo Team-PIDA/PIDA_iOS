@@ -13,12 +13,16 @@ public struct CafeInfoEntity: Equatable, Sendable {
   public var categoryLabel: String
   /// 웹사이트 URL
   public var websiteURL: String?
+  /// 썸네일 이미지 URL
+  public var thumbnailURL: String?
 
   public init(
     categoryLabel: String = "카페",
-    websiteURL: String? = nil
+    websiteURL: String? = nil,
+    thumbnailURL: String? = nil
   ) {
     self.categoryLabel = categoryLabel
     self.websiteURL = websiteURL
+    self.thumbnailURL = thumbnailURL
   }
 }
