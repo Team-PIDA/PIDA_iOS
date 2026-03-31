@@ -11,6 +11,13 @@ export PATH="$HOME/.local/bin:$PATH"
 mise install tuist@4.97.2
 mise use --global tuist@4.97.2
 
+# ===== 캐시 정리 =====
+rm -rf ~/Library/Developer/Xcode/DerivedData
+rm -rf ~/Library/Caches/org.swift.swiftpm
+rm -rf ~/Library/org.swift.swiftpm
+mise exec tuist@4.97.2 -- tuist clean --path ../
+# ====================
+
 cat > ../Config/Debug-Secrets.xcconfig << EOF
 NM_CLIENT_ID = ${NM_CLIENT_ID}
 BASE_URL = ${BASE_URL}
