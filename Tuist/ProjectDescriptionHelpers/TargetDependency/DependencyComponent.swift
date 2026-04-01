@@ -57,7 +57,6 @@ extension TargetDependency {
     public static let FirebaseCore = Self.project(.spm(.FirebaseCore))
     public static let FirebaseMessaging = Self.project(.spm(.FirebaseMessaging))
     public static let Mixpanel = Self.project(.spm(.Mixpanel))
-    public static let FacebookCore = Self.project(.spm(.FacebookCore))
   }
 }
 

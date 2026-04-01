@@ -9,7 +9,6 @@
 import UIKit
 import FirebaseCore
 import FirebaseMessaging
-import FBSDKCoreKit
 import ComposableArchitecture
 import Shared
 import DeepLinkClient
@@ -27,9 +26,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     // MARK: - Firebase 초기 설정
     FirebaseConfiguration.shared.setLoggerLevel(.min)
     FirebaseApp.configure()
-
-    // MARK: - Facebook SDK 초기화
-    ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
 
     // MARK: - Mixpanel 초기화
     if let mixpanelToken = Constant.mixpanel_token {

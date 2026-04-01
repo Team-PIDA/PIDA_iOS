@@ -93,17 +93,6 @@ public enum Scheme {
       "ITSAppUsesNonExemptEncryption": false,
       // Firebase
       "FirebaseAppDelegateProxyEnabled": false,
-      // Facebook SDK
-      "FacebookAppID": "$(FACEBOOK_APP_ID)",
-      "FacebookClientToken": "$(FACEBOOK_CLIENT_TOKEN)",
-      "FacebookDisplayName": .string(APP_DISPLAY_NAME),
-      "FacebookAutoLogAppEventsEnabled": true,
-      "FacebookAdvertiserIDCollectionEnabled": true,
-      "CFBundleURLTypes": [
-        [
-          "CFBundleURLSchemes": ["fb$(FACEBOOK_APP_ID)"]
-        ]
-      ],
       // Push Notification Background Mode
       "UIBackgroundModes": ["remote-notification"],
     ]
