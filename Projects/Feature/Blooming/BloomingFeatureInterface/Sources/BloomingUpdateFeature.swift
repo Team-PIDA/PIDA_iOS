@@ -9,6 +9,7 @@
 import UIKit
 import DesignKit
 import ComposableArchitecture
+import FlowerSpotClient
 
 
 @Reducer
@@ -45,10 +46,19 @@ public struct BloomingUpdateFeature {
     // Alert 상태
     public var alertType: AlertType? = nil
 
-    public init(spotId: Int?, streetName: String, distanceFromSpot: Double? = nil) {
+    // 장소 카테고리
+    public var category: SpotCategory = .trail
+
+    public init(
+      spotId: Int?,
+      streetName: String,
+      distanceFromSpot: Double? = nil,
+      category: SpotCategory = .trail
+    ) {
       self.spotId = spotId
       self.streetName = streetName
       self.distanceFromSpot = distanceFromSpot
+      self.category = category
     }
   }
   

@@ -20,8 +20,8 @@ extension BloomingClient: DependencyKey {
         let result = try await apiClient.execute(endpoint).toEntity()
         return result
       },
-      updateBloomingState: { id, status in
-        let body = UpdateBloomingBody(flowerSpotId: id, status: status)
+      updateBloomingState: { query, status in
+        let body = UpdateBloomingBody(query: query, status: status)
         let endpoint = BloomingEndPoint.updateBlooming(body: body)
         let result = try await apiClient.execute(endpoint).toEntity()
         return result

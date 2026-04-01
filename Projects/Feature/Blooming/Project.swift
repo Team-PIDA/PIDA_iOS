@@ -13,6 +13,7 @@ let project = Project.buildFeature(
   for: Feature.Blooming,
   interfaceDependencies: [
     .Client.Blooming,
-    .Client.Analytics
+    .Client.Analytics,
+    .Client.FlowerSpot
   ]
 )

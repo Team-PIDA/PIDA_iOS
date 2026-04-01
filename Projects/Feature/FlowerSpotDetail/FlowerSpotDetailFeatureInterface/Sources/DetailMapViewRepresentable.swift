@@ -186,18 +186,18 @@ extension DetailMapViewRepresentable {
     }
     
     @MainActor func updateBloomingStatue(state: BloomStatus) {
-      if let activeMarker = activeMarker,
-          let path = path,
-          let startMarker = startMarker,
-          let endMarker = endMarker {
+      if let activeMarker {
         activeMarker.iconImage = NMFOverlayImage(image: MapPinImages.activeMapPinImage(status: state, type: parent.spotType))
+      }
+      if let path {
         path.color = state.color
         path.outlineColor = state.color
+      }
+      if let startMarker, let endMarker {
         startMarker.iconImage = NMFOverlayImage(image: state.circleImage)
         endMarker.iconImage = NMFOverlayImage(image: state.circleImage)
-        bloomStatus = state
       }
-      
+      bloomStatus = state
     }
     
     /// 경로 비활성화 처리 메서드

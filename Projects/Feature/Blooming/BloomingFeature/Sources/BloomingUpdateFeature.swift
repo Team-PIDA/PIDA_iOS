@@ -101,8 +101,17 @@ extension BloomingUpdateFeature {
               let status = state.selectedStatus else {
           return .none
         }
+        let query: BloomingTargetQuery
+        switch state.category {
+        case .festival:
+          query = .init(flowerEventId: id)
+        case .cafe:
+          query = .init(flowerSpotCafeId: id)
+        case .trail:
+          query = .init(flowerSpotId: id)
+        }
         return updateBloomingRequest(
-          id: id,
+          query: query,
           status: status,
           imageData: state.selectedImageData,
           distanceFromSpot: state.distanceFromSpot,
@@ -179,7 +188,7 @@ extension BloomingUpdateFeature {
 
 extension BloomingUpdateFeature.Core {
   private func updateBloomingRequest(
-    id: Int,
+    query: BloomingTargetQuery,
     status: BloomStatus,
     imageData: Data?,
     distanceFromSpot: Double?,
@@ -188,8 +197,8 @@ extension BloomingUpdateFeature.Core {
     return .run { [apiClient, analyticsClient] send in
       do {
         let result = try await bloomingClient.updateBloomingState(
-          id: id,
-          status: status.rawValue
+          query,
+          status.rawValue
         )
 
         // bloom_status_submitted 이벤트 트래킹

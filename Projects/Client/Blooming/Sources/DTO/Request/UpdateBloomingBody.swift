@@ -9,11 +9,15 @@
 import Foundation
 
 struct UpdateBloomingBody: Encodable {
-  let flowerSpotId: Int
+  let flowerSpotId: Int?
+  let flowerEventId: Int?
+  let flowerSpotCafeId: Int?
   let status: String
-  
-  init(flowerSpotId: Int, status: String) {
-    self.flowerSpotId = flowerSpotId
+
+  init(query: BloomingTargetQuery, status: String) {
+    self.flowerSpotId = query.flowerSpotId
+    self.flowerEventId = query.flowerEventId
+    self.flowerSpotCafeId = query.flowerSpotCafeId
     self.status = status
   }
 }

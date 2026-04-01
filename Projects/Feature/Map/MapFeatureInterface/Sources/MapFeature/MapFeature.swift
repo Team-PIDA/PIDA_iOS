@@ -12,6 +12,7 @@ import ComposableArchitecture
 import SearchClient
 import CategoryFeatureInterface
 import FlowerSpotDetailFeatureInterface
+import FlowerSpotClient
 import SearchRegionListFeatureInterface
 import Shared
 
@@ -130,7 +131,7 @@ public struct MapFeature {
   public enum Delegate: Equatable {
     case presentToSearch(String?)
     case pushToSetting
-    case presentToBlooming(id: Int, streetName: String, distance: Double?)
+    case presentToBlooming(id: Int, streetName: String, distance: Double?, category: SpotCategory)
     case presentToLogin(id: Int)
     case mapDidLoad
   }

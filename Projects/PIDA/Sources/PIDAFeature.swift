@@ -30,6 +30,7 @@ import BloomingFeatureInterface
 
 import FlowerSpotDetailFeature
 import FlowerSpotDetailFeatureInterface
+import FlowerSpotClient
 
 import SearchRegionListFeature
 import SearchRegionListFeatureInterface
@@ -106,7 +107,7 @@ struct PIDAFeature {
 
     case binding(BindingAction<State>)
     case presentSearch(Bool, keyword: String?)
-    case presentBloomingUpdate(Bool, id: Int?, streetName: String, distance: Double? = nil)
+    case presentBloomingUpdate(Bool, id: Int?, streetName: String, distance: Double? = nil, category: SpotCategory = .trail)
     case presentToLogin(Bool)
     case presentSignUp(Bool)
 
@@ -214,9 +215,9 @@ struct PIDAFeature {
         state.isShowSearch = isShow
         return .none
 
-      case let .presentBloomingUpdate(isPresent, id, streetName, distance):
+      case let .presentBloomingUpdate(isPresent, id, streetName, distance, category):
         if isPresent {
-          state.blooming = .init(spotId: id, streetName: streetName, distanceFromSpot: distance)
+          state.blooming = .init(spotId: id, streetName: streetName, distanceFromSpot: distance, category: category)
         }
         state.isPresentBlooming = isPresent
         return .none
@@ -290,8 +291,8 @@ struct PIDAFeature {
         
       case let .map(.delegate(action)):
         switch action {
-        case let .presentToBlooming(id, streetName, distance):
-          return .send(.presentBloomingUpdate(true, id: id, streetName: streetName, distance: distance))
+        case let .presentToBlooming(id, streetName, distance, category):
+          return .send(.presentBloomingUpdate(true, id: id, streetName: streetName, distance: distance, category: category))
           
         case let .presentToLogin(id):
           state.loginSource = .flowerSpotDetail(spotId: id)

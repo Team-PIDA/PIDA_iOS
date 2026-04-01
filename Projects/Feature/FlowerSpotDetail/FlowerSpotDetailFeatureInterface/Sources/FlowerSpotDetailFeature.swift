@@ -96,17 +96,22 @@ public struct FlowerSpotDetailFeature {
 
     /// 하단 도달 이벤트 트래킹 여부
     public var hasTrackedScrollReachBottom: Bool = false
+    
+    /// 상세 화면 내 지도 마커 타입 구분 용도
+    public var mapSpotType: MapSpotType
 
     public init(
       userLocation: Coordinate? = nil,
       entryPoint: MapEvent.EntryPoint = .mapPin,
       spotCategory: SpotCategory = .trail,
+      mapSpotType: MapSpotType = .flower,
       festivalInfo: FestivalInfoEntity? = nil,
       cafeInfo: CafeInfoEntity? = nil
     ) {
       self.userLocation = userLocation
       self.entryPoint = entryPoint
       self.spotCategory = spotCategory
+      self.mapSpotType = mapSpotType
       self.festivalInfo = festivalInfo
       self.cafeInfo = cafeInfo
     }
@@ -184,12 +189,12 @@ public struct FlowerSpotDetailFeature {
     // MARK: - Delegate
     case delegate(Delegate)
     case dismiss
-    case presentToBlooming(id: Int, streetName: String, distance: Double?)
+    case presentToBlooming(id: Int, streetName: String, distance: Double?, category: SpotCategory)
   }
 
   public enum Delegate: Equatable {
     case dismiss
-    case presentToBlooming(id: Int, streetName: String, distance: Double?)
+    case presentToBlooming(id: Int, streetName: String, distance: Double?, category: SpotCategory)
     case presentToLogin(id: Int)
     case showOnMap(FlowerSpotEntity)
     case didUpdateFlowerSpot(FlowerSpotEntity)

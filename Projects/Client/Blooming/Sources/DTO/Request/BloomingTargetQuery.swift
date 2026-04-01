@@ -7,13 +7,15 @@
 
 import Foundation
 
-/// query 기반 blooming API용 (flowerSpotId / flowerEventId 중 하나 전달)
+/// query 기반 blooming API용 (flowerSpotId / flowerEventId / flowerSpotCafeId 중 하나 전달)
 public struct BloomingTargetQuery: Encodable, Sendable {
   public let flowerSpotId: Int?
   public let flowerEventId: Int?
+  public let flowerSpotCafeId: Int?
 
-  public init(flowerSpotId: Int? = nil, flowerEventId: Int? = nil) {
+  public init(flowerSpotId: Int? = nil, flowerEventId: Int? = nil, flowerSpotCafeId: Int? = nil) {
     self.flowerSpotId = flowerSpotId
     self.flowerEventId = flowerEventId
+    self.flowerSpotCafeId = flowerSpotCafeId
   }
 }

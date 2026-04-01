@@ -107,7 +107,10 @@ extension MapFeature {
         
       case let .categorySpotMarkerTapped(id):
         guard let categoryId = state.category.selectedCategoryId else { return .none }
-        state.flowerSpotDetail = .init(userLocation: state.userLocation)
+        state.flowerSpotDetail = .init(
+          userLocation: state.userLocation,
+          mapSpotType: state.category.selectedCategory.spotType
+        )
         state.category.isShowCategoryList = false
         return .concatenate(
           .send(.mapSearch(.showRegionList(data: nil))),
@@ -280,8 +283,8 @@ extension MapFeature {
           }
           return .none
 
-        case let .presentToBlooming(id, streetName, distance):
-          return .send(.delegate(.presentToBlooming(id: id, streetName: streetName, distance: distance)))
+        case let .presentToBlooming(id, streetName, distance, category):
+          return .send(.delegate(.presentToBlooming(id: id, streetName: streetName, distance: distance, category: category)))
 
         case let .presentToLogin(id):
           return .send(.delegate(.presentToLogin(id: id)))
