@@ -104,10 +104,6 @@ fileprivate extension DetailMapViewRepresentable {
       NMGLatLng(lat: $0.latitude, lng: $0.longitude)
     }
     
-    // 범위 제한
-    let bounds = calculateBounds(from: lines)
-    view.mapView.extent = bounds
-    
     let path = NMFPath()
     path.width = 6
     path.color = state.color
@@ -165,41 +161,6 @@ fileprivate extension DetailMapViewRepresentable {
   }
   
   
-  private func calculateShrunkenBounds(from points: [NMGLatLng], by delta: Double) -> NMGLatLngBounds? {
-    guard let bounds = calculateBounds(from: points) else { return nil }
-    
-    return NMGLatLngBounds(
-      southWest: NMGLatLng(
-        lat: bounds.southWestLat + delta,
-        lng: bounds.southWestLng + delta
-      ),
-      northEast: NMGLatLng(
-        lat: bounds.northEastLat - delta,
-        lng: bounds.northEastLng - delta
-      )
-    )
-  }
-  
-  private func calculateBounds(from points: [NMGLatLng]) -> NMGLatLngBounds? {
-    guard !points.isEmpty else { return nil }
-    
-    var minLat = points[0].lat
-    var maxLat = points[0].lat
-    var minLng = points[0].lng
-    var maxLng = points[0].lng
-    
-    for point in points {
-      minLat = min(minLat, point.lat)
-      maxLat = max(maxLat, point.lat)
-      minLng = min(minLng, point.lng)
-      maxLng = max(maxLng, point.lng)
-    }
-    
-    return NMGLatLngBounds(
-      southWest: NMGLatLng(lat: minLat, lng: minLng),
-      northEast: NMGLatLng(lat: maxLat, lng: maxLng)
-    )
-  }
   
 }
 
