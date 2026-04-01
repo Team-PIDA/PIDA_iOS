@@ -135,6 +135,14 @@ extension MapFeature {
         if state.flowerSpotDetail == nil {
           state.flowerSpotDetail = .init(userLocation: state.userLocation)
         }
+        // 카테고리 Spot(cafe/festival)인 경우 카테고리 전용 API 사용
+        if let categoryId = state.category.selectedCategoryId,
+           state.flowerSpotDetail?.spotCategory != .trail {
+          return .concatenate(
+            .send(.fetchPathLines(id)),
+            .send(.fetchCategoryDetail(categoryId: categoryId, spotId: id))
+          )
+        }
         return .concatenate(
           .send(.fetchPathLines(id)),
           .send(.flowerSpotDetail(.fetchDetailInfo(id)))
